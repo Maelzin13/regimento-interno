@@ -1,0 +1,7 @@
+{
+  "name": "regimento-interno",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
