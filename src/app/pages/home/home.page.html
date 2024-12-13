@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngFor="let book of this.books">
+    <ion-list>
+      <ion-item [routerLink]="['/view-text', book.id]">
+        {{ book.conteudo }}
+      </ion-item>
+    </ion-list>
+  </ng-container>
+</ion-content>

@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Capítulos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let chapter of chapters" [routerLink]="['/sections', chapter.id]">
+      {{ chapter.name }}
+    </ion-item>
+  </ion-list>
+</ion-content>

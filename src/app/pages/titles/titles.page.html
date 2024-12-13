@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Títulos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let title of titles" [routerLink]="['/chapters', title.id]">
+      {{ title.name }}
+    </ion-item>
+  </ion-list>
+</ion-content>

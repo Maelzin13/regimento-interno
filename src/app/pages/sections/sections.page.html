@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Sessões</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let section of sections" [routerLink]="['/articles', section.id]">
+      {{ section.name }}
+    </ion-item>
+  </ion-list>
+</ion-content>

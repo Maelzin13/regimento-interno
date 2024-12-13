@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ book?.conteudo || 'Carregando...' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div *ngIf="book">
+    <ion-list>
+      <ion-item *ngFor="let titulo of book.titulos">
+        {{ titulo.conteudo }}
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Mensagem caso o livro não seja encontrado -->
+  <div *ngIf="!book">
+    <p>Livro não encontrado ou ainda carregando...</p>
+  </div>
+
+  <span class="comment-text" (click)="showModal(book.book_description)">Comentário adicional</span>
+</ion-content>
