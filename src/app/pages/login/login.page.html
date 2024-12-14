@@ -16,4 +16,27 @@
     </ion-item>
     <ion-button expand="block" type="submit">Entrar</ion-button>
   </form>
+
+  <!-- Separador -->
+  <div class="separator">
+    <span>Ou entre com</span>
+  </div>
+
+  <!-- Botões de Login Social -->
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" color="danger" (click)="loginWithGoogle()">
+          <ion-icon slot="start" name="logo-google"></ion-icon>
+          Google
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" color="primary" (click)="loginWithFacebook()">
+          <ion-icon slot="start" name="logo-facebook"></ion-icon>
+          Facebook
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
