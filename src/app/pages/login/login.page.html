@@ -1,42 +1,48 @@
-<ion-header>
+<ion-header style="background-color: transparent;">
   <ion-toolbar>
-    <ion-title>Login</ion-title>
+    <ion-title class="header-title">Regimento Interno</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <form (submit)="login()">
-    <ion-item>
-      <ion-label position="floating">Email</ion-label>
-      <ion-input type="email" [(ngModel)]="email" required></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Senha</ion-label>
-      <ion-input type="password" [(ngModel)]="password" required></ion-input>
-    </ion-item>
-    <ion-button expand="block" type="submit">Entrar</ion-button>
-  </form>
+<ion-content id="content">
+  <div class="scrollable-content center-container">
+    <ion-card id="loginCard">
+      <ion-card-content>
+        <ion-item lines="full" class="input-item">
+          <ion-label position="floating">Email</ion-label>
+          <ion-input type="email" [(ngModel)]="email" autocomplete="on"></ion-input>
+        </ion-item>
 
-  <!-- Separador -->
-  <div class="separator">
-    <span>Ou entre com</span>
+        <ion-item lines="full" class="input-item ion-margin-top">
+          <ion-label position="floating">Senha</ion-label>
+          <ion-input type="password" [(ngModel)]="password" autocomplete="on"></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" class="login-btn ion-margin-top" (click)="login()">Entrar</ion-button>
+
+        <div class="separator ion-margin-vertical">
+          <div class="line"></div>
+          <span class="separator-text">Ou entre com</span>
+          <div class="line"></div>
+        </div>
+
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-button expand="block" class="social-btn google-btn" (click)="loginWithGoogle()">
+                <ion-icon slot="start" name="logo-google"></ion-icon>
+                Google
+              </ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button expand="block" class="social-btn facebook-btn" (click)="loginWithFacebook()">
+                <ion-icon slot="start" name="logo-facebook"></ion-icon>
+                Facebook
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
   </div>
-
-  <!-- Botões de Login Social -->
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-button expand="block" color="danger" (click)="loginWithGoogle()">
-          <ion-icon slot="start" name="logo-google"></ion-icon>
-          Google
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button expand="block" color="primary" (click)="loginWithFacebook()">
-          <ion-icon slot="start" name="logo-facebook"></ion-icon>
-          Facebook
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 </ion-content>

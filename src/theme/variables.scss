@@ -1,2 +1,94 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
+:root {
+  --primary-color: #1e999a;
+  --secondary-color: #157d7d;
+  --google-red: #db4437;
+  --facebook-blue: #3b5998;
+}
+
+#content {
+  --background: linear-gradient(
+    to bottom right,
+    #6b7280,
+    #10b981
+  ); /* Cinza para Verde */
+  height: 100%;
+  color: white;
+}
+
+#loginCard {
+  --background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.login-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.login-subtitle {
+  font-size: 1rem;
+  color: var(--secondary-color);
+}
+
+.input-item ion-label {
+  color: var(--secondary-color);
+}
+
+.input-item ion-input {
+  color: black;
+}
+
+.login-btn {
+  --background: var(--primary-color);
+  --color: white;
+  border-radius: 25px;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+
+.login-btn:hover {
+  transform: scale(1.05);
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.separator .line {
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+  margin: 0 10px;
+}
+
+.separator-text {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.social-btn {
+  --background: #f7f7f7;
+  --color: #333;
+  border-radius: 25px;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.social-btn:hover {
+  filter: brightness(0.95);
+}
+
+.google-btn {
+  --background: var(--google-red);
+  --color: white;
+}
+
+.facebook-btn {
+  --background: var(--facebook-blue);
+  --color: white;
+}
