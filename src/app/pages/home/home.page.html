@@ -1,15 +1,46 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Home</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content id="content">
   <ng-container *ngFor="let book of this.books">
-    <ion-list>
-      <ion-item [routerLink]="['/view-text', book.id]">
-        {{ book.conteudo }}
-      </ion-item>
-    </ion-list>
+    <ion-card class="custom-card" [routerLink]="['/view-text', book.id]">
+      <ion-card-header>
+        <ion-card-title>{{ book.conteudo }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div *ngFor="let titulo of book.titulos">
+          {{ titulo.conteudo }}
+        </div>
+      </ion-card-content>
+    </ion-card>
   </ng-container>
+
+  <div class="section-title">
+    <h2>Textos Jurídicos</h2>
+  </div>
+
+  <div class="textos-juridicos">
+    <ion-card class="custom-card" *ngFor="let texto of textos">
+      <ion-card-header>
+        <ion-card-title>{{ texto.title }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf="texto.link">
+          <a [href]="texto.link" target="_blank" class="custom-link">
+            Acesse o {{ texto.title }}
+          </a>
+        </div>
+        <div *ngIf="!texto.link">
+          <p>{{ texto.description || 'Descrição indisponível.' }}</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

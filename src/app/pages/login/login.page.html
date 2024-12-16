@@ -9,13 +9,13 @@
     <ion-card id="loginCard">
       <ion-card-content>
         <ion-item lines="full" class="input-item">
-          <ion-label position="floating">Email</ion-label>
-          <ion-input type="email" [(ngModel)]="email" autocomplete="on"></ion-input>
+          <ion-input type="email" label="Email" placeholder="Email" [(ngModel)]="email" label-placement="floating"
+            autocomplete="on"></ion-input>
         </ion-item>
 
         <ion-item lines="full" class="input-item ion-margin-top">
-          <ion-label position="floating">Senha</ion-label>
-          <ion-input type="password" [(ngModel)]="password" autocomplete="on"></ion-input>
+          <ion-input type="password" label="Senha" placeholder="Senha" [(ngModel)]="password" label-placement="floating"
+            autocomplete="on"></ion-input>
         </ion-item>
 
         <ion-button expand="block" class="login-btn ion-margin-top" (click)="login()">Entrar</ion-button>

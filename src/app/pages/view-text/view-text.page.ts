@@ -20,25 +20,23 @@ export class ViewTextPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Obtém o ID do livro a partir da rota
     this.bookId = this.route.snapshot.paramMap.get('id');
 
-    // Carrega os livros da API
     this.apiService
       .getAllBooks()
       .then((books: any) => {
         console.log('Livros carregados:', books.data);
+
         this.book = books.data.find(
           (b: any) => b.id === parseInt(this.bookId, 10)
         );
-        console.log('Livro carregado:', this.book);
+        console.log('Livro selecionado:', this.book);
       })
       .catch((error) => {
-        console.error('Erro ao carregar o livro:', error);
+        console.error('Erro ao carregar os livros:', error);
       });
   }
 
-  // Modal para mostrar mais detalhes
   async showModal(content: string) {
     const modal = await this.modalController.create({
       component: ModalPage,

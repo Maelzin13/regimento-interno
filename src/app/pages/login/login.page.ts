@@ -14,7 +14,7 @@ export class LoginPage {
   password: string = '';
 
   constructor(private platform: Platform, private router: Router) {
-    if (this.platform.is('capacitor')) {
+    if (!this.platform.is('capacitor')) {
       GoogleAuth.initialize(); // Inicializa apenas para Web
     }
   }
@@ -38,6 +38,11 @@ export class LoginPage {
 
   async loginWithFacebook() {
     try {
+      if (typeof FB === 'undefined') {
+        console.error('Facebook SDK não carregado.');
+        return;
+      }
+
       const result = await FacebookLogin.login({ permissions: ['email'] });
       if (result.accessToken) {
         console.log('Facebook Token:', result.accessToken.token);

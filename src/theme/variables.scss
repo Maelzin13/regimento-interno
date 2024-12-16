@@ -33,12 +33,8 @@
   color: var(--secondary-color);
 }
 
-.input-item ion-label {
-  color: var(--secondary-color);
-}
-
 .input-item ion-input {
-  color: black;
+  color: var(--secondary-color);
 }
 
 .login-btn {
