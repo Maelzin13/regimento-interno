@@ -3,23 +3,39 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Home</ion-title>
+    <ion-title> 📚 Livros</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content id="content">
   <ng-container *ngFor="let book of this.books">
+    <!-- Card Principal -->
     <ion-card class="custom-card" [routerLink]="['/view-text', book.id]">
       <ion-card-header>
-        <ion-card-title>{{ book.conteudo }}</ion-card-title>
+        <ion-card-title class="book-title">{{ book.conteudo }}</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-        <div *ngFor="let titulo of book.titulos">
+        <div *ngFor="let titulo of book.titulos" class="book-subtitle">
           {{ titulo.conteudo }}
         </div>
       </ion-card-content>
     </ion-card>
+
+    <!-- Rodapé com Botões -->
+    <ion-footer class="card-footer">
+      <ion-buttons>
+        <span class="action-link view-link" (click)="onView(book.id); $event.stopPropagation();">
+          Visualizar
+        </span>
+        <span class="action-link edit-link" (click)="onEdit(book.id); $event.stopPropagation();">
+          Editar
+        </span>
+        <span class="action-link delete-link" (click)="onDelete(book.id); $event.stopPropagation();">
+          Excluir
+        </span>
+      </ion-buttons>
+    </ion-footer>
   </ng-container>
 
   <div class="section-title">

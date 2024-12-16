@@ -1,57 +1,56 @@
-import { Component } from '@angular/core';
-import { Platform } from '@ionic/angular';
-import { GoogleAuth, User } from '@codetrix-studio/capacitor-google-auth';
-import { FacebookLogin } from '@capacitor-community/facebook-login';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Browser } from '@capacitor/browser';
+import config from 'capacitor.config';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
+  nameApp: any;
   email: string = '';
   password: string = '';
+  errorMessage: string = '';
 
-  constructor(private platform: Platform, private router: Router) {
-    if (!this.platform.is('capacitor')) {
-      GoogleAuth.initialize(); // Inicializa apenas para Web
-    }
+  constructor(private router: Router, private auth: AuthService) {}
+
+  ngOnInit() {
+    this.nameApp = config.appName;
   }
 
-  login() {
-    console.log('Email:', this.email);
-    console.log('Senha:', this.password);
-    this.router.navigate(['/home']);
-  }
-
-  async loginWithGoogle() {
+  async login() {
     try {
-      const user: User = await GoogleAuth.signIn();
+      console.log('Tentando login com:', this.email);
 
-      console.log('Google User:', user);
-      this.router.navigate(['/home']);
-    } catch (error) {
-      console.error('Erro ao logar com Google:', error);
-    }
-  }
+      const response = await this.auth.login(this.email, this.password);
 
-  async loginWithFacebook() {
-    try {
-      if (typeof FB === 'undefined') {
-        console.error('Facebook SDK não carregado.');
-        return;
-      }
-
-      const result = await FacebookLogin.login({ permissions: ['email'] });
-      if (result.accessToken) {
-        console.log('Facebook Token:', result.accessToken.token);
-        this.router.navigate(['/home']);
+      if (response) {
+        console.log('Token recebido:', response);
+        this.router.navigate(['/home']); // Redirecionar para a página principal
       } else {
-        console.log('Login com Facebook cancelado.');
+        this.errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
       }
     } catch (error) {
-      console.error('Erro ao logar com Facebook:', error);
+      console.error('Erro ao fazer login:', error);
+      this.errorMessage =
+        'Erro ao conectar ao servidor. Tente novamente mais tarde.';
+    }
+  }
+
+  async socialLogin(provider: string) {
+    try {
+      const loginUrl = `${this.auth.getBaseUrl()}/auth/${provider}`;
+
+      await Browser.open({ url: loginUrl });
+
+      Browser.addListener('browserFinished', () => {
+        console.log('Navegador fechado. Verifique a autenticação.');
+      });
+    } catch (error) {
+      console.error('Erro ao iniciar login social:', error);
     }
   }
 }

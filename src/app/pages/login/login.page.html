@@ -1,6 +1,6 @@
 <ion-header style="background-color: transparent;">
   <ion-toolbar>
-    <ion-title class="header-title">Regimento Interno</ion-title>
+    <ion-title class="header-title">{{this.nameApp}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,12 +10,14 @@
       <ion-card-content>
         <ion-item lines="full" class="input-item">
           <ion-input type="email" label="Email" placeholder="Email" [(ngModel)]="email" label-placement="floating"
-            autocomplete="on"></ion-input>
+            autocomplete="on">
+          </ion-input>
         </ion-item>
 
         <ion-item lines="full" class="input-item ion-margin-top">
           <ion-input type="password" label="Senha" placeholder="Senha" [(ngModel)]="password" label-placement="floating"
-            autocomplete="on"></ion-input>
+            autocomplete="on">
+          </ion-input>
         </ion-item>
 
         <ion-button expand="block" class="login-btn ion-margin-top" (click)="login()">Entrar</ion-button>
@@ -29,13 +31,13 @@
         <ion-grid>
           <ion-row>
             <ion-col>
-              <ion-button expand="block" class="social-btn google-btn" (click)="loginWithGoogle()">
+              <ion-button expand="block" class="social-btn google-btn" (click)="socialLogin('google')">
                 <ion-icon slot="start" name="logo-google"></ion-icon>
                 Google
               </ion-button>
             </ion-col>
             <ion-col>
-              <ion-button expand="block" class="social-btn facebook-btn" (click)="loginWithFacebook()">
+              <ion-button expand="block" class="social-btn facebook-btn" (click)="socialLogin('facebook')">
                 <ion-icon slot="start" name="logo-facebook"></ion-icon>
                 Facebook
               </ion-button>

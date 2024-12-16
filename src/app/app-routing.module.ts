@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -7,6 +8,7 @@ const routes: Routes = [
     path: 'titles',
     loadChildren: () =>
       import('./pages/titles/titles.module').then((m) => m.TitlesPageModule),
+    canActivate: [AuthGuard], // Protegido pelo AuthGuard
   },
   {
     path: 'chapters/:titleId',
@@ -14,6 +16,7 @@ const routes: Routes = [
       import('./pages/chapters/chapters.module').then(
         (m) => m.ChaptersPageModule
       ),
+    canActivate: [AuthGuard], // Protegido pelo AuthGuard
   },
   {
     path: 'sections/:chapterId',
@@ -21,6 +24,7 @@ const routes: Routes = [
       import('./pages/sections/sections.module').then(
         (m) => m.SectionsPageModule
       ),
+    canActivate: [AuthGuard], // Protegido pelo AuthGuard
   },
   {
     path: 'articles/:sectionId',
@@ -28,21 +32,19 @@ const routes: Routes = [
       import('./pages/articles/articles.module').then(
         (m) => m.ArticlesPageModule
       ),
+    canActivate: [AuthGuard], // Protegido pelo AuthGuard
   },
   {
     path: 'details/:articleId',
     loadChildren: () =>
       import('./pages/details/details.module').then((m) => m.DetailsPageModule),
-  },
-  {
-    path: 'login',
-    loadChildren: () =>
-      import('./pages/login/login.module').then((m) => m.LoginPageModule),
+    canActivate: [AuthGuard], // Protegido pelo AuthGuard
   },
   {
     path: 'home',
     loadChildren: () =>
       import('./pages/home/home.module').then((m) => m.HomePageModule),
+    canActivate: [AuthGuard], // Protegido pelo AuthGuard
   },
   {
     path: 'view-text/:id',
@@ -50,11 +52,18 @@ const routes: Routes = [
       import('./pages/view-text/view-text.module').then(
         (m) => m.ViewTextPageModule
       ),
+    canActivate: [AuthGuard], // Protegido pelo AuthGuard
   },
   {
     path: 'modal',
     loadChildren: () =>
       import('./pages/modal/modal.module').then((m) => m.ModalPageModule),
+    canActivate: [AuthGuard], // Protegido pelo AuthGuard
+  },
+  {
+    path: 'login',
+    loadChildren: () =>
+      import('./pages/login/login.module').then((m) => m.LoginPageModule),
   },
 ];
 

@@ -50,4 +50,16 @@ export class HomePage implements OnInit {
         console.error('Erro ao carregar os livros:', error);
       });
   }
+
+  onView(id: number) {
+    console.log('Visualizando o livro com ID:', id);
+  }
+
+  onEdit(id: number) {
+    console.log('Editando o livro com ID:', id);
+  }
+
+  onDelete(id: number) {
+    console.log('Excluindo o livro com ID:', id);
+  }
 }

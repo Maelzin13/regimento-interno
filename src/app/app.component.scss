@@ -1,5 +1,5 @@
 ion-avatar img {
-  border-radius: 50%;
+  --border-radius: 4px;
 }
 
 ion-list h2 {
@@ -8,11 +8,6 @@ ion-list h2 {
 
 ion-list p {
   color: gray;
-}
-
-ion-menu {
-  --background: #1e999a;
-  --color: white;
 }
 
 ion-toolbar {

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8000/api'; // URL do backend Laravel
+  private baseUrl = `${environment.baseUrl}/api`;
 
-  // Retorna todo o conteúdo (artigos, incisos, etc.)
   async getAllContent() {
     const response = await axios.get(`${this.baseUrl}/content`);
     return response.data;

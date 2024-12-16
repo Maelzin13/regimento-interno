@@ -40,3 +40,38 @@
     color: var(--primary-color);
   }
 }
+
+.card-footer {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  background-color: #1a1919c7;
+}
+
+ion-buttons {
+  display: flex;
+  gap: 20px; /* Adiciona espaçamento de 20px entre os botões */
+}
+
+.action-link {
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.view-link {
+  color: #2563eb; /* Azul */
+}
+
+.edit-link {
+  color: #00796b; /* Verde */
+}
+
+.delete-link {
+  color: #790000; /* Vermelho */
+}
+
+.action-link:hover {
+  text-decoration: underline;
+}
