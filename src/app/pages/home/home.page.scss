@@ -21,12 +21,12 @@
 
 .custom-card {
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px #131a28;
   transition: transform 0.3s, box-shadow 0.3s;
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 15px #131a28;
   }
 }
 
@@ -45,7 +45,7 @@
   display: flex;
   justify-content: center;
   padding: 10px 0;
-  background-color: #1a1919c7;
+  background-color: #131a28;
 }
 
 ion-buttons {
