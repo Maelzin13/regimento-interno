@@ -22,15 +22,12 @@ export class ViewTextPage implements OnInit {
   ngOnInit() {
     this.bookId = this.route.snapshot.paramMap.get('id');
 
-    this.apiService
-      .getAllBooks()
-      .then((books: any) => {
-        console.log('Livros carregados:', books.data);
+    console.log('ID do livro:', this.bookId);
 
-        this.book = books.data.find(
-          (b: any) => b.id === parseInt(this.bookId, 10)
-        );
-        console.log('Livro selecionado:', this.book);
+    this.apiService
+      .getBookById(this.bookId)
+      .then((books: any) => {
+        console.log('Livros carregados:', books);
       })
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);

@@ -17,4 +17,10 @@ export class ApiService {
     const response = await axios.get(`${this.baseUrl}/books`);
     return response.data;
   }
+
+  async getBookById(id: number) {
+    const response = await axios.get(`${this.baseUrl}/books/${id}`);
+
+    return response.data.data;
+  }
 }
