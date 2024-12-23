@@ -7,15 +7,11 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./articles.page.scss'],
 })
 export class ArticlesPage implements OnInit {
-  articles = [
-    { id: 1, title: 'Artigo 1' },
-    { id: 2, title: 'Artigo 2' },
-  ];
+  artigo: any;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    const sectionId = this.route.snapshot.paramMap.get('sectionId');
-    console.log('Sessão ID:', sectionId);
+    this.artigo = history.state.artigo || {};
   }
 }

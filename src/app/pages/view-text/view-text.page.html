@@ -10,28 +10,27 @@
 <ion-content id="content" class="ion-padding">
 
   <div *ngIf="book">
-    <ion-list>
-      <ion-item-divider color="primary" *ngFor="let titulo of book.titulos">
-        <ion-label>
-          <h2>{{ titulo.conteudo }}</h2>
-        </ion-label>
-      </ion-item-divider>
+    <ion-card *ngFor="let titulo of book.titulos" class="ion-text-center">
+      <ion-card-header>
+        <ion-card-title>{{ titulo.conteudo }}</ion-card-title>
+      </ion-card-header>
 
-      <ion-list *ngFor="let titulo of book.titulos">
-        <ion-item lines="full" *ngFor="let capitulo of titulo.capitulos">
-          <ion-label>
-            <h3>{{ capitulo.conteudo }}</h3>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-list>
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item *ngFor="let capitulo of titulo.capitulos" (click)="navigateToCapitulo(capitulo)">
+            <ion-label>
+              <h3>{{ capitulo.conteudo }}</h3>
+            </ion-label>
+            <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
   </div>
 
   <div *ngIf="!book">
-    <p class="text-center">Livro não encontrado ou ainda carregando...</p>
+    <ion-spinner class="ion-margin-top"></ion-spinner>
+    <p class="text-center">Carregando dados...</p>
   </div>
 
-  <ion-button expand="block" color="secondary" class="ion-margin-top" (click)="showModal(book?.conteudo)">
-    Ver Comentário Adicional
-  </ion-button>
 </ion-content>

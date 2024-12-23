@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content id="content" class="ion-padding">
   <ion-list>
     <ion-item *ngFor="let title of titles" [routerLink]="['/chapters', title.id]">
       {{ title.name }}

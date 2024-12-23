@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-chapters',
@@ -7,15 +7,17 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./chapters.page.scss'],
 })
 export class ChaptersPage implements OnInit {
-  chapters = [
-    { id: 1, name: 'Capítulo 1' },
-    { id: 2, name: 'Capítulo 2' },
-  ];
+  capitulo: any;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
-    const titleId = this.route.snapshot.paramMap.get('titleId');
-    console.log('Título ID:', titleId);
+    this.capitulo = history.state.capitulo || {};
+  }
+
+  navigateToArtigo(artigo: any) {
+    this.router.navigate(['/articles', artigo.id], {
+      state: { artigo },
+    });
   }
 }

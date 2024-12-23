@@ -1,13 +1,35 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Artigos</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/capitulo"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Artigo</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-list>
-    <ion-item *ngFor="let article of articles" [routerLink]="['/details', article.id]">
-      {{ article.title }}
-    </ion-item>
-  </ion-list>
+<ion-content id="content" class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Conteúdo do Artigo</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p [innerHTML]="artigo.conteudo"></p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="artigo.paragrafos?.length">
+    <ion-card-header>
+      <ion-card-title>Parágrafos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let paragrafo of artigo.paragrafos">
+          <ion-label>
+            <p>{{ paragrafo.conteudo }}</p>
+            <small *ngIf="paragrafo.tipo">Tipo: {{ paragrafo.tipo }}</small>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
