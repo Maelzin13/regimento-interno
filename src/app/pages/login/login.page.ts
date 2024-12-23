@@ -17,38 +17,54 @@ export class LoginPage implements OnInit {
 
   constructor(private router: Router, private auth: AuthService) {}
 
-  ngOnInit() {
-    this.nameApp = config.appName;
+  async ngOnInit() {
+    try {
+      this.nameApp = config.appName;
+      const user = await this.auth.fetchProfile();
+      console.log('Usuário autenticado:', user);
+      this.router.navigate(['/home']);
+    } catch (error) {
+      console.error('Usuário não autenticado ou erro ao buscar perfil.');
+    }
+    const user = localStorage.getItem('user');
+    if (user) {
+      this.router.navigate(['/home']);
+    }
   }
 
   async login() {
     try {
       console.log('Tentando login com:', this.email);
 
-      const response = await this.auth.login(this.email, this.password);
+      const token = await this.auth.login(this.email, this.password);
+      console.log('Token recebido:', token);
 
-      if (response) {
-        console.log('Token recebido:', response);
-        this.router.navigate(['/home']); // Redirecionar para a página principal
-      } else {
-        this.errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
-      }
-    } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      this.errorMessage =
-        'Erro ao conectar ao servidor. Tente novamente mais tarde.';
+      const user = await this.auth.fetchProfile();
+      console.log('Usuário logado:', user);
+
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      console.error('Erro ao fazer login:', error.message);
+      this.errorMessage = error.message;
     }
   }
 
   async socialLogin(provider: string) {
     try {
-      const loginUrl = `${this.auth.getBaseUrl()}/auth/${provider}`;
+      const response = await fetch(
+        `${this.auth.getBaseUrl()}/auth/${provider}`
+      );
+      const data = await response.json();
 
-      await Browser.open({ url: loginUrl });
+      if (response.ok && data.url) {
+        await Browser.open({ url: data.url });
 
-      Browser.addListener('browserFinished', () => {
-        console.log('Navegador fechado. Verifique a autenticação.');
-      });
+        Browser.addListener('browserFinished', () => {
+          console.log('Navegador fechado. Verifique a autenticação.');
+        });
+      } else {
+        console.error('Erro ao obter a URL do provedor:', data.error);
+      }
     } catch (error) {
       console.error('Erro ao iniciar login social:', error);
     }

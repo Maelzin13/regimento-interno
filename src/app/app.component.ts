@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { UserModel } from './models/userModel';
 import config from 'capacitor.config';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,18 +12,21 @@ export class AppComponent implements OnInit {
   user: UserModel | null = null;
   nameApp: any;
 
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.nameApp = config.appName;
-    const storedUser = UserModel.fromLocalStorage();
-    this.user = storedUser ? new UserModel(storedUser) : new UserModel({});
-    console.log('Usuário carregado:', this.user);
+    this.authService
+      .fetchProfile()
+      .then((user) => {
+        console.log('Usuário autenticado:', user);
+        this.user = user;
+      })
+      .catch(() => {
+        console.log('Nenhum usuário autenticado.');
+      });
   }
 
   logout() {
-    UserModel.clearLocalStorage();
-    this.user = null;
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

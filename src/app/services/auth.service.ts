@@ -1,16 +1,20 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
-import { environment } from 'src/environments/environment';
+import { CookieService } from 'ngx-cookie-service';
 import { UserModel } from '../models/userModel';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly TOKEN_KEY = 'authToken';
   private baseUrl = `${environment.baseUrl}/api`;
-
-  constructor() {}
+  constructor(private cookieService: CookieService) {
+    const token = this.cookieService.get('authToken');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+  }
 
   getBaseUrl(): string {
     return this.baseUrl;
@@ -22,44 +26,33 @@ export class AuthService {
         email,
         password,
       });
-
       const token = response.data.access_token;
-      this.saveToken(token);
-      const user = response.data.user;
-      this.saveUser(user);
+
+      // Salva o token nos cookies
+      this.cookieService.set('authToken', token);
+
+      // Configura o token nos cabeçalhos padrão
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       return token;
     } catch (error: any) {
-      console.error('Erro ao fazer login:', error);
-
-      // Exemplo de como exibir erros detalhados
-      if (error.response) {
-        console.error('Resposta do servidor:', error.response.data);
-      }
-
-      return '';
+      throw new Error(
+        'Erro ao conectar ao servidor. Verifique suas credenciais.'
+      );
     }
   }
 
-  saveToken(token: string): void {
-    localStorage.setItem('authToken', token);
-    // Configurar o token nos cabeçalhos padrão
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }
-
-  saveUser(user: { name: string; email: string; photo?: string }): void {
-    localStorage.setItem('authUser', JSON.stringify(user));
-  }
-
-  getUser(): UserModel | null {
-    return UserModel.fromLocalStorage();
-  }
-
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem(this.TOKEN_KEY);
+  async fetchProfile(): Promise<UserModel> {
+    try {
+      const response = await axios.get(`${this.baseUrl}/profile`);
+      return new UserModel(response.data.user);
+    } catch (error) {
+      throw new Error('Erro ao buscar perfil do usuário.');
+    }
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+    this.cookieService.delete('authToken');
+    delete axios.defaults.headers.common['Authorization'];
   }
 }
