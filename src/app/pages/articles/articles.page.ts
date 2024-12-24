@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ModalController } from '@ionic/angular';
+import { ModalPage } from '../modal/modal.page';
 
 @Component({
   selector: 'app-articles',
@@ -7,15 +8,19 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./articles.page.scss'],
 })
 export class ArticlesPage implements OnInit {
-  articles = [
-    { id: 1, title: 'Artigo 1' },
-    { id: 2, title: 'Artigo 2' },
-  ];
+  artigo: any = null;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private modalController: ModalController) {}
 
   ngOnInit() {
-    const sectionId = this.route.snapshot.paramMap.get('sectionId');
-    console.log('Sessão ID:', sectionId);
+    this.artigo = history.state.artigo || {};
+  }
+
+  async openModal(content: string) {
+    const modal = await this.modalController.create({
+      component: ModalPage,
+      componentProps: { content },
+    });
+    return await modal.present();
   }
 }

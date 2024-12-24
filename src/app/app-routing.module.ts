@@ -4,6 +4,7 @@ import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
+
   {
     path: 'titles',
     loadChildren: () =>
@@ -19,32 +20,18 @@ const routes: Routes = [
     canActivate: [AuthGuard], // Protegido pelo AuthGuard
   },
   {
-    path: 'sections/:chapterId',
-    loadChildren: () =>
-      import('./pages/sections/sections.module').then(
-        (m) => m.SectionsPageModule
-      ),
-    canActivate: [AuthGuard], // Protegido pelo AuthGuard
-  },
-  {
     path: 'articles/:sectionId',
     loadChildren: () =>
       import('./pages/articles/articles.module').then(
         (m) => m.ArticlesPageModule
       ),
-    canActivate: [AuthGuard], // Protegido pelo AuthGuard
-  },
-  {
-    path: 'details/:articleId',
-    loadChildren: () =>
-      import('./pages/details/details.module').then((m) => m.DetailsPageModule),
-    canActivate: [AuthGuard], // Protegido pelo AuthGuard
+    canActivate: [AuthGuard],
   },
   {
     path: 'home',
     loadChildren: () =>
       import('./pages/home/home.module').then((m) => m.HomePageModule),
-    canActivate: [AuthGuard], // Protegido pelo AuthGuard
+    canActivate: [AuthGuard],
   },
   {
     path: 'view-text/:id',
@@ -52,13 +39,13 @@ const routes: Routes = [
       import('./pages/view-text/view-text.module').then(
         (m) => m.ViewTextPageModule
       ),
-    canActivate: [AuthGuard], // Protegido pelo AuthGuard
+    canActivate: [AuthGuard],
   },
   {
     path: 'modal',
     loadChildren: () =>
       import('./pages/modal/modal.module').then((m) => m.ModalPageModule),
-    canActivate: [AuthGuard], // Protegido pelo AuthGuard
+    canActivate: [AuthGuard],
   },
   {
     path: 'login',

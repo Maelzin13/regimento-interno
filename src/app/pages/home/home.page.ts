@@ -44,7 +44,6 @@ export class HomePage implements OnInit {
       .getAllBooks()
       .then((data) => {
         this.books = data.data;
-        console.log(this.books);
       })
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);
@@ -52,7 +51,14 @@ export class HomePage implements OnInit {
   }
 
   onView(id: number) {
-    console.log('Visualizando o livro com ID:', id);
+    this.apiService
+      .getBookById(id)
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error('Erro ao carregar o livro:', error);
+      });
   }
 
   onEdit(id: number) {
