@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ModalController } from '@ionic/angular';
+import { ModalPage } from '../modal/modal.page';
 
 @Component({
   selector: 'app-articles',
@@ -7,11 +8,19 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./articles.page.scss'],
 })
 export class ArticlesPage implements OnInit {
-  artigo: any;
+  artigo: any = null;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private modalController: ModalController) {}
 
   ngOnInit() {
     this.artigo = history.state.artigo || {};
+  }
+
+  async openModal(content: string) {
+    const modal = await this.modalController.create({
+      component: ModalPage,
+      componentProps: { content },
+    });
+    return await modal.present();
   }
 }

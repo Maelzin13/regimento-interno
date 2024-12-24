@@ -1,35 +1,49 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/capitulo"></ion-back-button>
+      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Artigo</ion-title>
+    <ion-title>{{ artigo?.titulo || 'Artigo' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content id="content" class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Conteúdo do Artigo</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p [innerHTML]="artigo.conteudo"></p>
-    </ion-card-content>
-  </ion-card>
+  <div *ngIf="artigo">
+    <!-- Conteúdo do Artigo -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ artigo.titulo }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p [innerHTML]="artigo.conteudo"></p>
+      </ion-card-content>
+    </ion-card>
 
-  <ion-card *ngIf="artigo.paragrafos?.length">
-    <ion-card-header>
-      <ion-card-title>Parágrafos</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item *ngFor="let paragrafo of artigo.paragrafos">
-          <ion-label>
-            <p>{{ paragrafo.conteudo }}</p>
-            <small *ngIf="paragrafo.tipo">Tipo: {{ paragrafo.tipo }}</small>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
+    <!-- Lista de Parágrafos -->
+    <ion-card *ngIf="artigo.paragrafos?.length">
+      <ion-card-header>
+        <ion-card-title>Parágrafos</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let paragrafo of artigo.paragrafos">
+            <ion-label>
+              <!-- Exibe um preview do parágrafo -->
+              <p>{{ paragrafo.conteudo | slice: 0:100 }}...</p>
+              <small *ngIf="paragrafo.tipo">Tipo: {{ paragrafo.tipo }}</small>
+              <div style="margin-top: 10px;">
+                <ion-button size="small" fill="outline" color="primary" (click)="openModal(paragrafo.conteudo)">
+                  Ver mais
+                </ion-button>
+              </div>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div *ngIf="!artigo">
+    <p>Artigo não encontrado.</p>
+  </div>
 </ion-content>
