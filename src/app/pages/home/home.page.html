@@ -3,60 +3,83 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title> 📚 Livros</ion-title>
+    <ion-title>📚 Livros</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content id="content">
-  <ng-container *ngFor="let book of this.books">
-    <!-- Card Principal -->
-    <ion-card class="custom-card" [routerLink]="['/view-text', book.id]">
+
+  <!-- Skeleton Loading -->
+  <ng-container *ngIf="isLoading">
+    <ion-card class="custom-card" *ngFor="let i of [1, 2, 3, 4, 5]">
       <ion-card-header>
-        <ion-card-title class="book-title">{{ book.conteudo }}</ion-card-title>
+        <ion-card-title>
+          <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+        </ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-        <div *ngFor="let titulo of book.titulos" class="book-subtitle">
-          {{ titulo.conteudo }}
-        </div>
+        <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
       </ion-card-content>
     </ion-card>
-
-    <!-- Rodapé com Botões -->
-    <ion-footer class="card-footer">
-      <ion-buttons>
-        <span class="action-link view-link" (click)="onView(book.id); $event.stopPropagation();">
-          Visualizar
-        </span>
-        <span class="action-link edit-link" (click)="onEdit(book.id); $event.stopPropagation();">
-          Editar
-        </span>
-        <span class="action-link delete-link" (click)="onDelete(book.id); $event.stopPropagation();">
-          Excluir
-        </span>
-      </ion-buttons>
-    </ion-footer>
   </ng-container>
 
-  <div class="section-title">
-    <h2>Textos Jurídicos</h2>
-  </div>
+  <!-- Lista de Livros -->
+  <ng-container *ngIf="!isLoading">
+    <ng-container *ngFor="let book of books">
+      <ion-card class="custom-card">
+        <div [routerLink]="['/view-text', book.id]">
+          <ion-card-header>
+            <ion-card-title class="book-title">
+              {{ cleanHTML(book.conteudo) }}
+            </ion-card-title>
+          </ion-card-header>
 
-  <div class="textos-juridicos">
-    <ion-card class="custom-card" *ngFor="let texto of textos">
-      <ion-card-header>
-        <ion-card-title>{{ texto.title }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div *ngIf="texto.link">
-          <a [href]="texto.link" target="_blank" class="custom-link">
-            Acesse o {{ texto.title }}
-          </a>
+          <ion-card-content>
+            <div *ngIf="book.titulos.length > 0" class="book-subtitle">
+              {{ cleanHTML(book.titulos[0].conteudo) }}
+            </div>
+          </ion-card-content>
         </div>
-        <div *ngIf="!texto.link">
-          <p>{{ texto.description || 'Descrição indisponível.' }}</p>
-        </div>
-      </ion-card-content>
-    </ion-card>
+
+        <ion-footer class="card-footer">
+          <ion-buttons>
+            <span class="action-link view-link" (click)="onView(book.id); $event.stopPropagation();">
+              Visualizar
+            </span>
+            <span class="action-link edit-link" (click)="onEdit(book.id); $event.stopPropagation();">
+              Editar
+            </span>
+            <span class="action-link delete-link" (click)="onDelete(book.id); $event.stopPropagation();">
+              Excluir
+            </span>
+          </ion-buttons>
+        </ion-footer>
+      </ion-card>
+    </ng-container>
+  </ng-container>
+
+  <!-- Textos Jurídicos -->
+  <div *ngIf="!isLoading">
+    <div class="section-title">
+      <h2>Textos Jurídicos</h2>
+    </div>
+    <div class="textos-juridicos">
+      <ion-card class="custom-card" *ngFor="let texto of textos">
+        <ion-card-header>
+          <ion-card-title>{{ texto.title }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngIf="texto.link">
+            <a [href]="texto.link" target="_blank" class="custom-link" style="text-decoration: underline;">
+              Acesse o {{ texto.title }}
+            </a>
+          </div>
+          <div *ngIf="!texto.link">
+            <p>{{ texto.description || 'Descrição indisponível.' }}</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
   </div>
 </ion-content>

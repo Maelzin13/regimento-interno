@@ -42,6 +42,12 @@ export class ViewTextPage implements OnInit {
     });
   }
 
+  cleanHTML(content: string): string {
+    // Remover tags HTML
+    const doc = new DOMParser().parseFromString(content, 'text/html');
+    return doc.body.textContent || '';
+  }
+
   async showModal(content: string) {
     const modal = await this.modalController.create({
       component: ModalPage,

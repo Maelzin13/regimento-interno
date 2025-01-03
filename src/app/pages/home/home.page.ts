@@ -8,6 +8,7 @@ import { ApiService } from 'src/app/services/api.service';
 })
 export class HomePage implements OnInit {
   books: any;
+  isLoading: boolean = true;
 
   textos = [
     {
@@ -44,10 +45,18 @@ export class HomePage implements OnInit {
       .getAllBooks()
       .then((data) => {
         this.books = data.data;
+        this.isLoading = false;
       })
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);
+        this.isLoading = false;
       });
+  }
+
+  cleanHTML(content: string): string {
+    // Remover tags HTML
+    const doc = new DOMParser().parseFromString(content, 'text/html');
+    return doc.body.textContent || '';
   }
 
   onView(id: number) {

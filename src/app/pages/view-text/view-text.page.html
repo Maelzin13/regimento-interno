@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ book?.conteudo || 'Carregando...' }}</ion-title>
+    <ion-title>{{ cleanHTML(book?.conteudo) || 'Carregando...' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -12,14 +12,14 @@
   <div *ngIf="book">
     <ion-card *ngFor="let titulo of book.titulos" class="ion-text-center">
       <ion-card-header>
-        <ion-card-title>{{ titulo.conteudo }}</ion-card-title>
+        <ion-card-title>{{ cleanHTML(titulo.conteudo) }}</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
         <ion-list lines="none">
           <ion-item *ngFor="let capitulo of titulo.capitulos" (click)="navigateToCapitulo(capitulo)">
             <ion-label>
-              <h3>{{ capitulo.conteudo }}</h3>
+              <h3>{{ cleanHTML(capitulo.conteudo )}}</h3>
             </ion-label>
             <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
           </ion-item>
