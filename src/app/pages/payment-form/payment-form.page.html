@@ -1,0 +1,119 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Pagamento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" id="content">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Já é cliente? <a routerLink="/login">Faça login</a>
+      </ion-card-title>
+    </ion-card-header>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Preencha seus dados</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form (ngSubmit)="submitPayment()">
+        <!-- Dados do Cliente -->
+        <ion-item>
+          <ion-label position="stacked">Nome</ion-label>
+          <ion-input [(ngModel)]="paymentData.customer_name" name="customer_name" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">CPF</ion-label>
+          <ion-input [(ngModel)]="paymentData.customer_identity" name="customer_identity" required maxlength="14"
+            (ionChange)="applyCpfMask($event)"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Telefone</ion-label>
+          <ion-input [(ngModel)]="paymentData.customer_phone" name="customer_phone" required maxlength="15"
+            (ionChange)="applyPhoneMask($event)"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input [(ngModel)]="paymentData.customer_email" name="customer_email" type="email" required></ion-input>
+        </ion-item>
+
+        <!-- Endereço -->
+        <ion-item>
+          <ion-label position="stacked">CEP</ion-label>
+          <ion-input [(ngModel)]="paymentData.address_zipcode" name="address_zipcode" required maxlength="9"
+            (ionChange)="applyCepMask($event)"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Rua</ion-label>
+          <ion-input [(ngModel)]="paymentData.address_street" name="address_street" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Número</ion-label>
+          <ion-input [(ngModel)]="paymentData.address_number" name="address_number" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Bairro</ion-label>
+          <ion-input [(ngModel)]="paymentData.address_district" name="address_district" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Cidade</ion-label>
+          <ion-input [(ngModel)]="paymentData.address_city" name="address_city" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Estado</ion-label>
+          <ion-input [(ngModel)]="paymentData.address_state" name="address_state" maxlength="2" required></ion-input>
+        </ion-item>
+
+        <!-- Dados do Pagamento -->
+        <ion-item>
+          <ion-label position="stacked">Nome no Cartão</ion-label>
+          <ion-input [(ngModel)]="paymentData.card_holder" name="card_holder" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Número do Cartão</ion-label>
+          <ion-input [(ngModel)]="paymentData.card_number" name="card_number" maxlength="19" required
+            (ionChange)="applyCardMask($event)"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Validade (MM/YYYY)</ion-label>
+          <ion-input [(ngModel)]="paymentData.expiration_date" name="expiration_date" maxlength="7" required
+            (ionChange)="applyExpirationDateMask($event)"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">CVV</ion-label>
+          <ion-input [(ngModel)]="paymentData.security_code" name="security_code" maxlength="4" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Número de Parcelas</ion-label>
+          <ion-select [(ngModel)]="paymentData.installments" name="installments" required>
+            <ion-select-option *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="i">
+              {{ i }}x
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Valor</ion-label>
+          <ion-input [(ngModel)]="paymentData.amount" name="amount" type="number" required readonly></ion-input>
+        </ion-item>
+
+        <!-- Botão de Enviar -->
+        <ion-button expand="full" type="submit">Pagar</ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

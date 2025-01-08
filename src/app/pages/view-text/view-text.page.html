@@ -9,22 +9,39 @@
 
 <ion-content id="content" class="ion-padding">
 
-  <div *ngIf="book">
-    <ion-card *ngFor="let titulo of book.titulos" class="ion-text-center">
+  <!-- Mostrar Prefácios -->
+  <div *ngIf="book?.prefacios?.length">
+    <ion-card class="ion-text-center">
       <ion-card-header>
-        <ion-card-title>{{ cleanHTML(titulo.conteudo) }}</ion-card-title>
+        <ion-card-title>Prefácio</ion-card-title>
       </ion-card-header>
-
       <ion-card-content>
-        <ion-list lines="none">
-          <ion-item *ngFor="let capitulo of titulo.capitulos" (click)="navigateToCapitulo(capitulo)">
-            <ion-label>
-              <h3>{{ cleanHTML(capitulo.conteudo )}}</h3>
-            </ion-label>
-            <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
-          </ion-item>
-        </ion-list>
+        <p *ngFor="let prefacio of book.prefacios">
+          {{ cleanHTML(prefacio.conteudo) }}
+        </p>
       </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Mostrar Títulos e Capítulos -->
+  <div *ngIf="book?.titulos?.length">
+    <ion-card *ngFor="let titulo of book.titulos; let i = index" class="ion-text-center">
+      <ng-container *ngIf="i > 0">
+        <ion-card-header>
+          <ion-card-title>{{ cleanHTML(titulo.conteudo) }}</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <ion-list lines="none">
+            <ion-item *ngFor="let capitulo of titulo.capitulos" (click)="navigateToCapitulo(capitulo)">
+              <ion-label>
+                <h3>{{ cleanHTML(capitulo.conteudo) }}</h3>
+              </ion-label>
+              <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ng-container>
     </ion-card>
   </div>
 

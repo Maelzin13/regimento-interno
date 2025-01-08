@@ -22,15 +22,17 @@
     <!-- Lista de Parágrafos -->
     <ion-card *ngIf="artigo.paragrafos?.length">
       <ion-card-header>
-        <ion-card-title>Parágrafos</ion-card-title>
+        <ion-card-title></ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
           <ion-item *ngFor="let paragrafo of artigo.paragrafos">
             <ion-label>
               <!-- Exibe um preview do parágrafo -->
+              <h4 *ngIf="paragrafo.tipo === 'comentario'">Comentário(s)</h4>
+              <h4 *ngIf="paragrafo.tipo === 'informacao_adicional'">Informações Adicionais</h4>
               <p>{{ paragrafo.conteudo | slice: 0:100 }}...</p>
-              <small *ngIf="paragrafo.tipo">Tipo: {{ paragrafo.tipo }}</small>
+
               <div style="margin-top: 10px;">
                 <ion-button size="small" fill="outline" color="primary" (click)="openModal(paragrafo.conteudo)">
                   Ver mais

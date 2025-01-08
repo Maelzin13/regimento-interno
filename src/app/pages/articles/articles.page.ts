@@ -14,6 +14,7 @@ export class ArticlesPage implements OnInit {
 
   ngOnInit() {
     this.artigo = history.state.artigo || {};
+    console.log('artigos: ', this.artigo);
   }
 
   async openModal(content: string) {

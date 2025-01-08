@@ -3,7 +3,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'payment-form', pathMatch: 'full' },
 
   {
     path: 'titles',
@@ -51,6 +51,20 @@ const routes: Routes = [
     path: 'login',
     loadChildren: () =>
       import('./pages/login/login.module').then((m) => m.LoginPageModule),
+  },
+  {
+    path: 'payment-form',
+    loadChildren: () =>
+      import('./pages/payment-form/payment-form.module').then(
+        (m) => m.PaymentFormPageModule
+      ),
+  },
+  {
+    path: 'payment-success',
+    loadChildren: () =>
+      import('./pages/payment-success/payment-success.module').then(
+        (m) => m.PaymentSuccessPageModule
+      ),
   },
 ];
 

@@ -13,6 +13,7 @@ export class ChaptersPage implements OnInit {
 
   ngOnInit() {
     this.capitulo = history.state.capitulo || {};
+    console.log('capitulo: ', this.capitulo);
   }
 
   navigateToArtigo(artigo: any) {
