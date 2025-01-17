@@ -77,4 +77,27 @@ export class HomePage implements OnInit {
   onDelete(id: number) {
     console.log('Excluindo o livro com ID:', id);
   }
+
+  editorContent: string = '';
+
+  editorModules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'], // Basic text styles
+      [{ header: 1 }, { header: 2 }], // Headers
+      [{ list: 'ordered' }, { list: 'bullet' }], // Lists
+      [{ script: 'sub' }, { script: 'super' }], // Sub/Superscript
+      [{ indent: '-1' }, { indent: '+1' }], // Indent
+      [{ direction: 'rtl' }], // Text direction
+      [{ size: ['small', false, 'large', 'huge'] }], // Font sizes
+      [{ color: [] }, { background: [] }], // Colors
+      [{ font: [] }],
+      [{ align: [] }],
+      ['link', 'image', 'video'], // Media
+      ['table'],
+    ],
+  };
+
+  getEditorContent() {
+    console.log('Editor Content:', this.editorContent);
+  }
 }

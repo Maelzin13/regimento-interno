@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { PaymentService } from 'src/app/services/payment.service';
 import { Router } from '@angular/router';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-payment-form',
@@ -8,6 +9,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./payment-form.page.scss'],
 })
 export class PaymentFormPage {
+  planType = 'monthly';
+
   paymentData = {
     customer_name: '',
     customer_identity: '',
@@ -16,6 +19,7 @@ export class PaymentFormPage {
     address_zipcode: '',
     address_street: '',
     address_number: '',
+    address_complement: '',
     address_district: '',
     address_city: '',
     address_state: '',
@@ -24,12 +28,24 @@ export class PaymentFormPage {
     expiration_date: '',
     security_code: '',
     installments: 1,
-    amount: '100.00', // Valor fixo para exemplo
+    amount: this.planType === 'monthly' ? 19.99 : 190.0,
+    plan_type: this.planType === 'monthly' ? 'Plano Mensal' : 'Plano Anual',
   };
 
-  constructor(private paymentService: PaymentService, private router: Router) {}
+  constructor(
+    private paymentService: PaymentService,
+    private router: Router,
+    private loadingController: LoadingController
+  ) {}
 
   async submitPayment() {
+    const loading = await this.loadingController.create({
+      message: 'Processando pagamento...',
+      spinner: 'bubbles',
+      duration: 5000,
+      cssClass: 'custom-loading',
+    });
+    await loading.present();
     try {
       const response = await this.paymentService.processPayment(
         this.paymentData
@@ -41,6 +57,8 @@ export class PaymentFormPage {
       });
     } catch (error) {
       console.error('Erro ao processar o pagamento:', error);
+    } finally {
+      await loading.dismiss();
     }
   }
 
