@@ -23,4 +23,9 @@ export class ApiService {
 
     return response.data.data;
   }
+
+  async updateBook(id: number, book: any) {
+    const response = await axios.put(`${this.baseUrl}/books/${id}`, book);
+    return response.data;
+  }
 }

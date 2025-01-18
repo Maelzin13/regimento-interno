@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
+import { EditBookModalPage } from './edit-book-modal/edit-book-modal.page';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -38,7 +40,10 @@ export class HomePage implements OnInit {
     },
   ];
 
-  constructor(public apiService: ApiService) {}
+  constructor(
+    public apiService: ApiService,
+    private modalController: ModalController
+  ) {}
 
   ngOnInit() {
     this.apiService
@@ -59,45 +64,16 @@ export class HomePage implements OnInit {
     return doc.body.textContent || '';
   }
 
-  onView(id: number) {
-    this.apiService
-      .getBookById(id)
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error('Erro ao carregar o livro:', error);
-      });
-  }
+  async onEdit(id: number) {
+    const modal = await this.modalController.create({
+      component: EditBookModalPage,
+      componentProps: { bookId: id },
+    });
 
-  onEdit(id: number) {
-    console.log('Editando o livro com ID:', id);
+    await modal.present();
   }
 
   onDelete(id: number) {
     console.log('Excluindo o livro com ID:', id);
-  }
-
-  editorContent: string = '';
-
-  editorModules = {
-    toolbar: [
-      ['bold', 'italic', 'underline', 'strike'], // Basic text styles
-      [{ header: 1 }, { header: 2 }], // Headers
-      [{ list: 'ordered' }, { list: 'bullet' }], // Lists
-      [{ script: 'sub' }, { script: 'super' }], // Sub/Superscript
-      [{ indent: '-1' }, { indent: '+1' }], // Indent
-      [{ direction: 'rtl' }], // Text direction
-      [{ size: ['small', false, 'large', 'huge'] }], // Font sizes
-      [{ color: [] }, { background: [] }], // Colors
-      [{ font: [] }],
-      [{ align: [] }],
-      ['link', 'image', 'video'], // Media
-      ['table'],
-    ],
-  };
-
-  getEditorContent() {
-    console.log('Editor Content:', this.editorContent);
   }
 }

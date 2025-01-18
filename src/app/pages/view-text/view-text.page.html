@@ -5,6 +5,10 @@
     </ion-buttons>
     <ion-title>{{ cleanHTML(book?.conteudo) || 'Carregando...' }}</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar animated="true" show-clear-button="always" clear-icon="trash-bin" value=""
+      placeholder="Busca por Pal. ou Art."></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content id="content" class="ion-padding">

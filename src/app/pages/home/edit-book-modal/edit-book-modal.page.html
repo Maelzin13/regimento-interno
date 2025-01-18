@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Editar Livro</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="content">
+
+  <quill-editor [(ngModel)]="editorContent" [style]="{height: '300px'}"
+    placeholder="Write your text here..."></quill-editor>
+
+  <ion-button expand="full" (click)="getEditorContent()">Show Content</ion-button>
+</ion-content>

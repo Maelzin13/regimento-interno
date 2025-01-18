@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { HomePageRoutingModule } from './home-routing.module';
 
 import { HomePage } from './home.page';
+import { EditBookModalPage } from './edit-book-modal/edit-book-modal.page';
 import { QuillModule } from 'ngx-quill';
 
 @NgModule({
@@ -18,6 +19,6 @@ import { QuillModule } from 'ngx-quill';
     ReactiveFormsModule,
     QuillModule.forRoot(),
   ],
-  declarations: [HomePage],
+  declarations: [HomePage, EditBookModalPage],
 })
 export class HomePageModule {}
