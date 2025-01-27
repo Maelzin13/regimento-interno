@@ -1,16 +1,109 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Editar Livro</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="dismiss()">Fechar</ion-button>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
+    <ion-title>📖 Gerenciar Conteúdo do Livro</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="content">
+<ion-content id="content" class="ion-padding">
 
-  <quill-editor [(ngModel)]="editorContent" [style]="{height: '300px'}"
-    placeholder="Write your text here..."></quill-editor>
+  <!-- Tabs -->
+  <ion-segment [(ngModel)]="selectedTab">
+    <ion-segment-button value="prefacio">
+      <ion-icon name="document-text-outline"></ion-icon>
+      <ion-label>Prefácio</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="conteudo">
+      <ion-icon name="book-outline"></ion-icon>
+      <ion-label>Conteúdo</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="novo">
+      <ion-icon name="add-circle-outline"></ion-icon>
+      <ion-label>Novo Conteúdo</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 
-  <ion-button expand="full" (click)="getEditorContent()">Show Content</ion-button>
+  <!-- Prefácio Tab -->
+  <div *ngIf="selectedTab === 'prefacio'">
+    <ion-card *ngFor="let prefacio of prefacios; let i = index">
+      <ion-card-content>
+        <div *ngIf="!prefacio.isEditing">
+          <p>{{ prefacio.conteudo }}</p>
+          <ion-button size="small" (click)="prefacio.isEditing = true" color="medium">Editar</ion-button>
+        </div>
+        <div *ngIf="prefacio.isEditing">
+          <quill-editor [(ngModel)]="prefacio.conteudo" [style]="{height: '200px'}"></quill-editor>
+          <ion-button size="small" (click)="salvarPrefacios()" color="success">Salvar</ion-button>
+          <ion-button size="small" (click)="prefacio.isEditing = false" color="danger">Cancelar</ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Editar Conteúdo Tab -->
+  <div *ngIf="selectedTab === 'conteudo'">
+    <ion-card *ngFor="let titulo of livro.titulos">
+      <ion-card-header>
+        <ion-card-title>{{ titulo.conteudo }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list *ngFor="let capitulo of titulo.capitulos">
+          <ion-item>
+            <ion-label position="stacked">Capítulo</ion-label>
+            <p>{{ capitulo.conteudo }}</p>
+            <ion-button size="small" (click)="capitulo.isEditing = true" color="medium">Editar</ion-button>
+          </ion-item>
+          <div *ngIf="capitulo.isEditing">
+            <quill-editor [(ngModel)]="capitulo.conteudo" [style]="{height: '200px'}"></quill-editor>
+            <ion-button size="small" (click)="salvarConteudo()" color="success">Salvar</ion-button>
+            <ion-button size="small" (click)="capitulo.isEditing = false" color="danger">Cancelar</ion-button>
+          </div>
+          <ion-list *ngFor="let secao of capitulo.secoes">
+            <ion-item>
+              <ion-label position="stacked">Seção</ion-label>
+              <p>{{ secao.conteudo }}</p>
+              <ion-button size="small" (click)="secao.isEditing = true" color="medium">Editar</ion-button>
+            </ion-item>
+            <div *ngIf="secao.isEditing">
+              <quill-editor [(ngModel)]="secao.conteudo" [style]="{height: '200px'}"></quill-editor>
+              <ion-button size="small" (click)="salvarConteudo()" color="success">Salvar</ion-button>
+              <ion-button size="small" (click)="secao.isEditing = false" color="danger">Cancelar</ion-button>
+            </div>
+          </ion-list>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Adicionar Novo Conteúdo Tab -->
+  <div *ngIf="selectedTab === 'novo'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Adicionar Novo Conteúdo</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form (ngSubmit)="adicionarConteudo()" id="content">
+          <ion-item>
+            <ion-label position="stacked">Tipo de Conteúdo</ion-label>
+            <ion-select [(ngModel)]="novoConteudo.tipo" name="tipo" placeholder="Selecione o tipo">
+              <ion-select-option value="titulo">Título</ion-select-option>
+              <ion-select-option value="capitulo">Capítulo</ion-select-option>
+              <ion-select-option value="secao">Seção</ion-select-option>
+              <ion-select-option value="artigo">Artigo</ion-select-option>
+              <ion-select-option value="paragrafo">Parágrafo</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <br>
+
+          <ion-label position="stacked">Conteúdo</ion-label>
+          <quill-editor [(ngModel)]="novoConteudo.conteudo" [style]="{height: '300px'}"
+            name="conteudo_novo"></quill-editor>
+
+          <ion-button expand="block" color="tertiary" type="submit">Adicionar Novo Conteúdo</ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

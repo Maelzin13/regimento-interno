@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Usuários</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="content" class="ion-padding">
+  <div *ngIf="!loading && errorMessage">
+    <p class="text-red">{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="!loading && users.length > 0">
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let user of users" [value]="user.id" style="margin-bottom: 10px;">
+        <ion-item slot="header" lines="none">
+          <ion-label>
+            <h2>{{ user.name }}</h2>
+            <p>{{ user.email }}</p>
+          </ion-label>
+        </ion-item>
+
+        <div class="ion-padding" slot="content">
+          <p><strong>Plano:</strong>
+            {{ user.plan === 'monthly' ? 'Mensal' : (user.plan === 'yearly' ? 'Anual' : 'Não informado') }}
+          </p>
+          <p><strong>Status:</strong> <ion-chip [color]="user.subscriptionStatus === 'active' ? 'success' : 'danger'"
+              class="text-capitalize">
+              <ion-label>{{ user.subscriptionStatus }}</ion-label>
+            </ion-chip>
+          <p *ngIf="user.subscriptionStartDate">
+            <strong>Início da Assinatura:</strong> {{ user.subscriptionStartDate | date:'shortDate' }}
+          </p>
+          <p *ngIf="user.subscriptionEndDate">
+            <strong>Fim da Assinatura:</strong> {{ user.subscriptionEndDate | date:'shortDate' }}
+          </p>
+          <ion-button expand="block" color="primary" [routerLink]="['/user-edit', user.id]">
+            Editar Usuário
+          </ion-button>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+    <br>
+  </div>
+
+  <div *ngIf="!loading && users.length === 0">
+    <p class="text-center">Nenhum usuário encontrado.</p>
+  </div>
+</ion-content>

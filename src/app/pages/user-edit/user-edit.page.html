@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/user"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Editar Usuário</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Carregando...</p>
+  </div>
+
+  <form *ngIf="!loading && user" (ngSubmit)="saveChanges()">
+    <!-- Nome -->
+    <ion-item>
+      <ion-label position="floating">Nome</ion-label>
+      <ion-input [(ngModel)]="user.name" name="name" required></ion-input>
+    </ion-item>
+
+    <!-- Email -->
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="user.email" name="email" type="email" required></ion-input>
+    </ion-item>
+
+    <!-- Administrador -->
+    <ion-item *ngIf="isAdmin">
+      <ion-label>Administrador</ion-label>
+      <ion-select [(ngModel)]="user.isAdmin" name="is_admin">
+        <ion-select-option [value]="0">Não</ion-select-option>
+        <ion-select-option [value]="1">Sim</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Plano -->
+    <ion-item>
+      <ion-label>Plano</ion-label>
+      <ion-select [(ngModel)]="user.plan" name="plan">
+        <ion-select-option value="monthly">Plano Mensal</ion-select-option>
+        <ion-select-option value="yearly">Plano Anual</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Status da Assinatura -->
+    <ion-item>
+      <ion-label>Status da Assinatura</ion-label>
+      <ion-select [(ngModel)]="user.subscriptionStatus" name="subscription_status">
+        <ion-select-option value="inactive">Inativo</ion-select-option>
+        <ion-select-option value="active">Ativo</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Data de Início -->
+    <ion-item>
+      <ion-label position="floating">Data de Início</ion-label>
+      <ion-datetime [(ngModel)]="user.subscriptionStartDate" name="subscription_start_date"
+        display-format="YYYY-MM-DD"></ion-datetime>
+    </ion-item>
+
+    <!-- Data de Término -->
+    <ion-item>
+      <ion-label position="floating">Data de Término</ion-label>
+      <ion-datetime [(ngModel)]="user.subscriptionEndDate" name="subscription_end_date"
+        display-format="YYYY-MM-DD"></ion-datetime>
+    </ion-item>
+
+    <ion-button expand="block" type="submit" color="primary" [disabled]="loading">
+      Salvar Alterações
+    </ion-button>
+  </form>
+
+  <div *ngIf="successMessage" class="text-green">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="text-red">{{ errorMessage }}</div>
+</ion-content>

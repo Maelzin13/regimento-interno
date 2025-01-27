@@ -34,8 +34,6 @@ export class LoginPage implements OnInit {
 
   async login() {
     try {
-      console.log('Tentando login com:', this.email);
-
       const token = await this.auth.login(this.email, this.password);
       console.log('Token recebido:', token);
 

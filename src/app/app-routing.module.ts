@@ -66,6 +66,18 @@ const routes: Routes = [
         (m) => m.PaymentSuccessPageModule
       ),
   },
+  {
+    path: 'user',
+    loadChildren: () =>
+      import('./pages/user/user.module').then((m) => m.UserPageModule),
+  },
+  {
+    path: 'user-edit/:id',
+    loadChildren: () =>
+      import('./pages/user-edit/user-edit.module').then(
+        (m) => m.UserEditPageModule
+      ),
+  },
 ];
 
 @NgModule({

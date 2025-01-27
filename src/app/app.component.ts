@@ -15,6 +15,7 @@ export class AppComponent implements OnInit {
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
+    this.nameApp = config.appName;
     this.authService
       .fetchProfile()
       .then((user) => {
