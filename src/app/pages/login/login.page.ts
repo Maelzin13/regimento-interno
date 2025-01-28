@@ -1,8 +1,7 @@
-import { App } from '@capacitor/app';
-import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import config from 'capacitor.config';
+import { Router } from '@angular/router';
 import { Browser } from '@capacitor/browser';
+import config from 'capacitor.config';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -19,32 +18,17 @@ export class LoginPage implements OnInit {
   constructor(private router: Router, private auth: AuthService) {}
 
   async ngOnInit() {
-    this.nameApp = config.appName;
+    try {
+      this.nameApp = config.appName;
 
-    // Captura de deep links
-    App.addListener('appUrlOpen', async (data: any) => {
-      const url = data.url;
-
-      if (url.startsWith('myapp://auth-callback')) {
-        const queryParams = new URLSearchParams(url.split('?')[1]);
-        const token = queryParams.get('token');
-
-        if (token) {
-          this.auth.saveAuthToken(token);
-          const user = await this.auth.fetchProfile();
-          this.auth.setUser(user);
-          this.router.navigate(['/home']);
-        } else {
-          console.error('Token ausente no callback.');
-        }
+      const token = this.auth.getAuthToken();
+      if (token) {
+        const user = await this.auth.fetchProfile();
+        console.log('Usuário autenticado:', user);
+        this.router.navigate(['/home']);
       }
-    });
-
-    // Verifica se o usuário já está autenticado
-    const token = this.auth.getAuthToken();
-    if (token) {
-      const user = await this.auth.fetchProfile();
-      this.router.navigate(['/home']);
+    } catch (error) {
+      console.error('Usuário não autenticado ou erro ao buscar perfil:', error);
     }
   }
 
@@ -69,6 +53,23 @@ export class LoginPage implements OnInit {
 
       if (response.ok && data.url) {
         await Browser.open({ url: data.url });
+
+        Browser.addListener('browserFinished', async () => {
+          console.log('Navegador fechado. Verifique a autenticação.');
+
+          try {
+            const token = this.auth.getAuthToken(); // Recupera o token
+            if (token) {
+              const user = await this.auth.fetchProfile(); // Busca o perfil do usuário
+              this.auth.setUser(user);
+              this.router.navigate(['/home']); // Redireciona para a home
+            } else {
+              console.error('Token não encontrado após login social.');
+            }
+          } catch (error) {
+            console.error('Erro ao validar login social:', error);
+          }
+        });
       } else {
         console.error('Erro ao obter a URL do provedor:', data.error);
       }

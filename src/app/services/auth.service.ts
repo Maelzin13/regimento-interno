@@ -36,7 +36,8 @@ export class AuthService {
   }
 
   saveAuthToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.tokenKey, token); // Armazena no localStorage
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
 
   async login(email: string, password: string): Promise<string> {
