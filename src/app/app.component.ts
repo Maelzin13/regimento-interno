@@ -25,7 +25,6 @@ export class AppComponent implements OnInit {
       this.user = user;
     } else {
       this.user = null;
-      window.location.href = '/login';
     }
   }
 

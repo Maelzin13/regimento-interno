@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class AuthService {
   private baseUrl = `${environment.baseUrl}/api`;
+  private tokenKey = 'authToken';
 
   constructor(private cookieService: CookieService) {
     const token = this.cookieService.get('authToken');
@@ -32,6 +33,10 @@ export class AuthService {
 
   getAuthToken(): string | null {
     return this.cookieService.get('authToken');
+  }
+
+  saveAuthToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
   }
 
   async login(email: string, password: string): Promise<string> {

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { App } from '@capacitor/app';
 import { Router } from '@angular/router';
-import { Browser } from '@capacitor/browser';
+import { Component, OnInit } from '@angular/core';
 import config from 'capacitor.config';
+import { Browser } from '@capacitor/browser';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -18,17 +19,32 @@ export class LoginPage implements OnInit {
   constructor(private router: Router, private auth: AuthService) {}
 
   async ngOnInit() {
-    try {
-      this.nameApp = config.appName;
+    this.nameApp = config.appName;
 
-      const token = this.auth.getAuthToken();
-      if (token) {
-        const user = await this.auth.fetchProfile();
-        console.log('Usuário autenticado:', user);
-        this.router.navigate(['/home']);
+    // Captura de deep links
+    App.addListener('appUrlOpen', async (data: any) => {
+      const url = data.url;
+
+      if (url.startsWith('myapp://auth-callback')) {
+        const queryParams = new URLSearchParams(url.split('?')[1]);
+        const token = queryParams.get('token');
+
+        if (token) {
+          this.auth.saveAuthToken(token);
+          const user = await this.auth.fetchProfile();
+          this.auth.setUser(user);
+          this.router.navigate(['/home']);
+        } else {
+          console.error('Token ausente no callback.');
+        }
       }
-    } catch (error) {
-      console.error('Usuário não autenticado ou erro ao buscar perfil:', error);
+    });
+
+    // Verifica se o usuário já está autenticado
+    const token = this.auth.getAuthToken();
+    if (token) {
+      const user = await this.auth.fetchProfile();
+      this.router.navigate(['/home']);
     }
   }
 
@@ -53,10 +69,6 @@ export class LoginPage implements OnInit {
 
       if (response.ok && data.url) {
         await Browser.open({ url: data.url });
-
-        Browser.addListener('browserFinished', () => {
-          console.log('Navegador fechado. Verifique a autenticação.');
-        });
       } else {
         console.error('Erro ao obter a URL do provedor:', data.error);
       }
