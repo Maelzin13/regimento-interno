@@ -24,6 +24,16 @@ export class ApiService {
     return response.data.data;
   }
 
+  async searchBook(id: number, query: string, searchBy: string) {
+    const url = `${this.baseUrl}/books/${id}?query=${encodeURIComponent(
+      query
+    )}&search_by=${encodeURIComponent(searchBy)}`;
+
+    const response = await axios.get(url);
+
+    return response.data;
+  }
+
   async updateBook(id: number, book: any) {
     const response = await axios.put(`${this.baseUrl}/books/${id}`, book);
     return response.data;

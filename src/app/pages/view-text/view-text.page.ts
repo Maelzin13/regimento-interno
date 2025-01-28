@@ -11,6 +11,7 @@ import { ApiService } from 'src/app/services/api.service';
 })
 export class ViewTextPage implements OnInit {
   book: any;
+  prefacio: any;
   bookId: any;
 
   constructor(
@@ -23,13 +24,11 @@ export class ViewTextPage implements OnInit {
   ngOnInit() {
     this.bookId = this.route.snapshot.paramMap.get('id');
 
-    console.log('ID do livro:', this.bookId);
-
     this.apiService
       .getBookById(this.bookId)
       .then((books: any) => {
-        this.book = books;
-        console.log('Livros carregados:', books);
+        this.prefacio = books.prefacios;
+        this.book = books.livro;
       })
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);
@@ -43,7 +42,6 @@ export class ViewTextPage implements OnInit {
   }
 
   cleanHTML(content: string): string {
-    // Remover tags HTML
     const doc = new DOMParser().parseFromString(content, 'text/html');
     return doc.body.textContent || '';
   }

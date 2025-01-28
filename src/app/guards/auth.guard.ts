@@ -10,7 +10,14 @@ export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(): boolean {
-    // Verifica se o cabeçalho de autorização está configurado
-    return !!axios.defaults.headers.common['Authorization'];
+    const token = this.authService.getAuthToken();
+    const user = this.authService.getUser();
+
+    if (token && user) {
+      return true; // Permite acesso
+    } else {
+      this.router.navigate(['/login']); // Redireciona para o login
+      return false; // Bloqueia acesso
+    }
   }
 }

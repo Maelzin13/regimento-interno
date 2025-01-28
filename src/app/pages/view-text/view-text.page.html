@@ -14,14 +14,14 @@
 <ion-content id="content" class="ion-padding">
 
   <!-- Mostrar Prefácios -->
-  <div *ngIf="book?.prefacios?.length">
+  <div *ngIf="prefacio">
     <ion-card class="ion-text-center">
       <ion-card-header>
         <ion-card-title>Prefácio</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <p *ngFor="let prefacio of book.prefacios">
-          {{ cleanHTML(prefacio.conteudo) }}
+        <p *ngFor="let prefa of prefacio">
+          {{ cleanHTML(prefa.conteudo) }}
         </p>
       </ion-card-content>
     </ion-card>
@@ -29,20 +29,24 @@
 
   <!-- Mostrar Títulos e Capítulos -->
   <div *ngIf="book?.titulos?.length">
-    <ion-card *ngFor="let titulo of book.titulos; let i = index" class="ion-text-center">
-      <ng-container *ngIf="i > 0">
+    <ion-card *ngFor="let titulo of book.titulos; let tituloIndex = index" class="ion-text-center">
+      <ng-container *ngIf="tituloIndex > 0">
         <ion-card-header>
           <ion-card-title>{{ cleanHTML(titulo.conteudo) }}</ion-card-title>
         </ion-card-header>
 
         <ion-card-content>
           <ion-list lines="none">
-            <ion-item *ngFor="let capitulo of titulo.capitulos" (click)="navigateToCapitulo(capitulo)">
-              <ion-label>
-                <h3>{{ cleanHTML(capitulo.conteudo) }}</h3>
-              </ion-label>
-              <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
-            </ion-item>
+            <ng-container *ngFor="let capitulo of titulo.capitulos; let capituloIndex = index">
+              <ng-container *ngIf="capituloIndex > 0">
+                <ion-item (click)="navigateToCapitulo(capitulo)">
+                  <ion-label>
+                    <h3>{{ cleanHTML(capitulo.conteudo) }}</h3>
+                  </ion-label>
+                  <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+                </ion-item>
+              </ng-container>
+            </ng-container>
           </ion-list>
         </ion-card-content>
       </ng-container>

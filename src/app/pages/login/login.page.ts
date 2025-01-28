@@ -20,26 +20,23 @@ export class LoginPage implements OnInit {
   async ngOnInit() {
     try {
       this.nameApp = config.appName;
-      const user = await this.auth.fetchProfile();
-      console.log('Usuário autenticado:', user);
-      this.router.navigate(['/home']);
+
+      const token = this.auth.getAuthToken();
+      if (token) {
+        const user = await this.auth.fetchProfile();
+        console.log('Usuário autenticado:', user);
+        this.router.navigate(['/home']);
+      }
     } catch (error) {
-      console.error('Usuário não autenticado ou erro ao buscar perfil.');
-    }
-    const user = localStorage.getItem('user');
-    if (user) {
-      this.router.navigate(['/home']);
+      console.error('Usuário não autenticado ou erro ao buscar perfil:', error);
     }
   }
 
   async login() {
     try {
       const token = await this.auth.login(this.email, this.password);
-      console.log('Token recebido:', token);
-
       const user = await this.auth.fetchProfile();
-      console.log('Usuário logado:', user);
-
+      this.auth.setUser(user);
       this.router.navigate(['/home']);
     } catch (error: any) {
       console.error('Erro ao fazer login:', error.message);
