@@ -9,7 +9,7 @@ const routes: Routes = [
     path: 'titles',
     loadChildren: () =>
       import('./pages/titles/titles.module').then((m) => m.TitlesPageModule),
-    canActivate: [AuthGuard], // Protegido pelo AuthGuard
+    canActivate: [AuthGuard],
   },
   {
     path: 'chapters/:titleId',

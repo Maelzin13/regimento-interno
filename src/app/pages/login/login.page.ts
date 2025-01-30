@@ -46,8 +46,14 @@ export class LoginPage implements OnInit {
   async loginWithGoogle() {
     try {
       const user = await this.authService.googleLogin();
+      console.log('Usuário logado:', user);
+
       if (user) {
-        this.router.navigate(['/home']);
+        this.authService.setUser(user);
+        setTimeout(() => {
+          console.log('Redirecionando para /home...');
+          this.router.navigate(['/home']);
+        }, 500);
       } else {
         console.error('Login com Google falhou.');
       }
@@ -60,7 +66,10 @@ export class LoginPage implements OnInit {
     try {
       const user = await this.authService.facebookLogin();
       if (user) {
-        this.router.navigate(['/home']);
+        console.log('Redirecionando para home...');
+        setTimeout(() => {
+          this.router.navigate(['/home']);
+        }, 500);
       } else {
         console.error('Login com Facebook falhou.');
       }

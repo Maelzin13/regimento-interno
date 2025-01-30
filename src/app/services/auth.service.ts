@@ -4,7 +4,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { UserModel } from '../models/userModel';
 import { environment } from 'src/environments/environment';
 import {
-  getAuth,
   signInWithPopup,
   GoogleAuthProvider,
   FacebookAuthProvider,
@@ -18,7 +17,6 @@ import { auth } from '../firebase';
 export class AuthService {
   private baseUrl = `${environment.baseUrl}/api`;
   private tokenKey = 'authToken';
-  auth = getAuth();
 
   constructor(private cookieService: CookieService) {
     const token = this.cookieService.get('authToken');
@@ -31,17 +29,29 @@ export class AuthService {
     return this.baseUrl;
   }
 
-  setUser(user: UserModel): void {
-    localStorage.setItem('user', JSON.stringify(user)); // Armazena o usuário
+  setUser(user: any): void {
+    if (user) {
+      const userData = {
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+        token: user.stsTokenManager?.accessToken || '',
+      };
+
+      localStorage.setItem('authUser', JSON.stringify(userData));
+      localStorage.setItem('authToken', userData.token);
+
+      console.log('Usuário salvo:', userData);
+    }
   }
 
   getUser(): UserModel | null {
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem('authUser');
     return user ? JSON.parse(user) : null;
   }
 
   getAuthToken(): string | null {
-    return this.cookieService.get('authToken');
+    return localStorage.getItem('authToken');
   }
 
   saveAuthToken(token: string): void {

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import axios from 'axios';
 
 @Injectable({
   providedIn: 'root',
@@ -13,11 +12,14 @@ export class AuthGuard implements CanActivate {
     const token = this.authService.getAuthToken();
     const user = this.authService.getUser();
 
+    console.log('AuthGuard: Token:', token);
+    console.log('AuthGuard: Usuário:', user);
+
     if (token && user) {
-      return true; // Permite acesso
+      return true;
     } else {
-      this.router.navigate(['/login']); // Redireciona para o login
-      return false; // Bloqueia acesso
+      this.router.navigate(['/login']);
+      return false;
     }
   }
 }
