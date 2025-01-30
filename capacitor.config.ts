@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.example.app',
+  appId: 'com.regimento.app',
   appName: 'Regimento Interno',
   webDir: 'www',
   bundledWebRuntime: false,
@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
     GoogleAuth: {
       scopes: ['profile', 'email'],
       serverClientId:
-        '10593129361-i8585acjc0v8vje4jc2u27bl5pop9m3s.apps.googleusercontent.com',
+        '10593129361-sqku04f9hioan9jpd2g6irrlc6uugo1a.apps.googleusercontent.com',
       forceCodeForRefreshToken: true,
     },
 

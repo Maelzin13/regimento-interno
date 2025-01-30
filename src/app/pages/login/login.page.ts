@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Browser } from '@capacitor/browser';
 import config from 'capacitor.config';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -15,15 +14,15 @@ export class LoginPage implements OnInit {
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   async ngOnInit() {
     try {
       this.nameApp = config.appName;
 
-      const token = this.auth.getAuthToken();
+      const token = this.authService.getAuthToken();
       if (token) {
-        const user = await this.auth.fetchProfile();
+        const user = await this.authService.fetchProfile();
         console.log('Usuário autenticado:', user);
         this.router.navigate(['/home']);
       }
@@ -34,9 +33,9 @@ export class LoginPage implements OnInit {
 
   async login() {
     try {
-      const token = await this.auth.login(this.email, this.password);
-      const user = await this.auth.fetchProfile();
-      this.auth.setUser(user);
+      const token = await this.authService.login(this.email, this.password);
+      const user = await this.authService.fetchProfile();
+      this.authService.setUser(user);
       this.router.navigate(['/home']);
     } catch (error: any) {
       console.error('Erro ao fazer login:', error.message);
@@ -44,37 +43,29 @@ export class LoginPage implements OnInit {
     }
   }
 
-  async socialLogin(provider: string) {
+  async loginWithGoogle() {
     try {
-      const response = await fetch(
-        `${this.auth.getBaseUrl()}/auth/${provider}`
-      );
-      const data = await response.json();
-
-      if (response.ok && data.url) {
-        await Browser.open({ url: data.url });
-
-        Browser.addListener('browserFinished', async () => {
-          console.log('Navegador fechado. Verifique a autenticação.');
-
-          try {
-            const token = this.auth.getAuthToken(); // Recupera o token
-            if (token) {
-              const user = await this.auth.fetchProfile(); // Busca o perfil do usuário
-              this.auth.setUser(user);
-              this.router.navigate(['/home']); // Redireciona para a home
-            } else {
-              console.error('Token não encontrado após login social.');
-            }
-          } catch (error) {
-            console.error('Erro ao validar login social:', error);
-          }
-        });
+      const user = await this.authService.googleLogin();
+      if (user) {
+        this.router.navigate(['/home']);
       } else {
-        console.error('Erro ao obter a URL do provedor:', data.error);
+        console.error('Login com Google falhou.');
       }
     } catch (error) {
-      console.error('Erro ao iniciar login social:', error);
+      console.error('Erro no login com Google:', error);
+    }
+  }
+
+  async loginWithFacebook() {
+    try {
+      const user = await this.authService.facebookLogin();
+      if (user) {
+        this.router.navigate(['/home']);
+      } else {
+        console.error('Login com Facebook falhou.');
+      }
+    } catch (error) {
+      console.error('Erro no login com Facebook:', error);
     }
   }
 }

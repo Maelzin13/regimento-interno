@@ -3,6 +3,14 @@ import axios from 'axios';
 import { CookieService } from 'ngx-cookie-service';
 import { UserModel } from '../models/userModel';
 import { environment } from 'src/environments/environment';
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  signOut,
+} from 'firebase/auth';
+import { auth } from '../firebase';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +18,7 @@ import { environment } from 'src/environments/environment';
 export class AuthService {
   private baseUrl = `${environment.baseUrl}/api`;
   private tokenKey = 'authToken';
+  auth = getAuth();
 
   constructor(private cookieService: CookieService) {
     const token = this.cookieService.get('authToken');
@@ -76,9 +85,40 @@ export class AuthService {
     }
   }
 
-  logout(): void {
-    this.cookieService.delete('authToken');
-    delete axios.defaults.headers.common['Authorization'];
-    localStorage.removeItem('user');
+  async googleLogin() {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      console.log('Usuário logado:', result.user);
+      return result.user;
+    } catch (error) {
+      console.error('Erro no login com Google:', error);
+      return null;
+    }
+  }
+
+  async facebookLogin() {
+    try {
+      const provider = new FacebookAuthProvider();
+      provider.addScope('email');
+      const result = await signInWithPopup(auth, provider);
+      console.log('Usuário logado:', result.user);
+      return result.user;
+    } catch (error) {
+      console.error('Erro no login com Facebook:', error);
+      return null;
+    }
+  }
+
+  async logout(): Promise<void> {
+    try {
+      await signOut(auth);
+      this.cookieService.delete('authToken');
+      delete axios.defaults.headers.common['Authorization'];
+      localStorage.removeItem('user');
+      console.log('Usuário deslogado');
+    } catch (error) {
+      console.error('Erro ao deslogar:', error);
+    }
   }
 }
