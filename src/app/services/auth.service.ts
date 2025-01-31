@@ -10,6 +10,8 @@ import {
   signOut,
 } from 'firebase/auth';
 import { auth } from '../firebase';
+import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -18,10 +20,21 @@ export class AuthService {
   private baseUrl = `${environment.baseUrl}/api`;
   private tokenKey = 'authToken';
 
-  constructor(private cookieService: CookieService) {
+  userChanged = new BehaviorSubject<UserModel | null>(null);
+
+  constructor(private cookieService: CookieService, private router: Router) {
     const token = this.cookieService.get('authToken');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+
+    this.loadUserFromStorage();
+  }
+
+  loadUserFromStorage() {
+    const user = UserModel.fromLocalStorage();
+    if (user) {
+      this.userChanged.next(user);
     }
   }
 
@@ -29,22 +42,22 @@ export class AuthService {
     return this.baseUrl;
   }
 
-  setUser(user: any): void {
-    if (user) {
-      const userData = {
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL,
-        token: user.stsTokenManager?.accessToken || '',
-      };
+  setUser(user: any, token: string): void {
+    if (user && token) {
+      const userData = new UserModel({
+        id: user.id,
+        name: user.name || user.displayName || '',
+        email: user.email || '',
+        photo: user.avatar || user.photoURL || '',
+        provider: user.provider || '',
+        token: token,
+      });
 
-      localStorage.setItem('authUser', JSON.stringify(userData));
-      localStorage.setItem('authToken', userData.token);
-
-      console.log('Usuário salvo:', userData);
+      userData.saveToLocalStorage();
+      localStorage.setItem('authToken', token);
+      this.userChanged.next(userData);
     }
   }
-
   getUser(): UserModel | null {
     const user = localStorage.getItem('authUser');
     return user ? JSON.parse(user) : null;
@@ -55,7 +68,7 @@ export class AuthService {
   }
 
   saveAuthToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token); // Armazena no localStorage
+    localStorage.setItem(this.tokenKey, token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
 
@@ -67,11 +80,11 @@ export class AuthService {
       });
       const token = response.data.access_token;
 
-      this.cookieService.set('authToken', token); // Armazena o token no cookie
+      this.cookieService.set('authToken', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       const user = await this.fetchProfile();
-      this.setUser(user); // Armazena o usuário no localStorage
+      this.setUser(user, token);
 
       return token;
     } catch (error: any) {
@@ -98,9 +111,25 @@ export class AuthService {
   async googleLogin() {
     try {
       const provider = new GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
+
       const result = await signInWithPopup(auth, provider);
-      console.log('Usuário logado:', result.user);
-      return result.user;
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const accessToken = credential?.accessToken;
+
+      if (!accessToken) {
+        throw new Error('Falha ao obter accessToken do Google.');
+      }
+
+      const response = await axios.post(`${this.baseUrl}/social-login/google`, {
+        token: accessToken,
+      });
+
+      this.setUser(response.data.user, response.data.token);
+      this.saveAuthToken(response.data.token);
+
+      return response.data;
     } catch (error) {
       console.error('Erro no login com Google:', error);
       return null;
@@ -111,9 +140,27 @@ export class AuthService {
     try {
       const provider = new FacebookAuthProvider();
       provider.addScope('email');
+      provider.addScope('public_profile');
+
       const result = await signInWithPopup(auth, provider);
-      console.log('Usuário logado:', result.user);
-      return result.user;
+      const credential = FacebookAuthProvider.credentialFromResult(result);
+      const accessToken = credential?.accessToken;
+
+      if (!accessToken) {
+        throw new Error('Falha ao obter accessToken do Facebook.');
+      }
+
+      const response = await axios.post(
+        `${this.baseUrl}/social-login/facebook`,
+        {
+          token: accessToken,
+        }
+      );
+
+      this.setUser(response.data.user, response.data.token);
+      this.saveAuthToken(response.data.token);
+
+      return response.data;
     } catch (error) {
       console.error('Erro no login com Facebook:', error);
       return null;
@@ -123,10 +170,15 @@ export class AuthService {
   async logout(): Promise<void> {
     try {
       await signOut(auth);
+      UserModel.clearLocalStorage();
       this.cookieService.delete('authToken');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
       delete axios.defaults.headers.common['Authorization'];
-      localStorage.removeItem('user');
-      console.log('Usuário deslogado');
+      this.userChanged.next(null);
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 300);
     } catch (error) {
       console.error('Erro ao deslogar:', error);
     }

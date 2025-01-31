@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import config from 'capacitor.config';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserModel } from 'src/app/models/userModel';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ export class LoginPage implements OnInit {
       if (token) {
         const user = await this.authService.fetchProfile();
         console.log('Usuário autenticado:', user);
+        this.authService.setUser(user, token);
         this.router.navigate(['/home']);
       }
     } catch (error) {
@@ -35,7 +37,7 @@ export class LoginPage implements OnInit {
     try {
       const token = await this.authService.login(this.email, this.password);
       const user = await this.authService.fetchProfile();
-      this.authService.setUser(user);
+      this.authService.setUser(user, token);
       this.router.navigate(['/home']);
     } catch (error: any) {
       console.error('Erro ao fazer login:', error.message);
@@ -45,35 +47,44 @@ export class LoginPage implements OnInit {
 
   async loginWithGoogle() {
     try {
-      const user = await this.authService.googleLogin();
-      console.log('Usuário logado:', user);
+      const response = await this.authService.googleLogin();
 
-      if (user) {
-        this.authService.setUser(user);
+      if (response && response.user && response.token) {
+        console.log('Usuário logado com Google:', response.user);
+        this.authService.setUser(response.user, response.token);
+
         setTimeout(() => {
           console.log('Redirecionando para /home...');
           this.router.navigate(['/home']);
         }, 500);
       } else {
+        this.errorMessage = 'Login com Google falhou.';
         console.error('Login com Google falhou.');
       }
     } catch (error) {
+      this.errorMessage = 'Erro no login com Google.';
       console.error('Erro no login com Google:', error);
     }
   }
 
   async loginWithFacebook() {
     try {
-      const user = await this.authService.facebookLogin();
-      if (user) {
-        console.log('Redirecionando para home...');
+      const response = await this.authService.facebookLogin();
+
+      if (response && response.user && response.token) {
+        console.log('Usuário logado com Facebook:', response.user);
+        this.authService.setUser(response.user, response.token);
+
         setTimeout(() => {
+          console.log('Redirecionando para /home...');
           this.router.navigate(['/home']);
         }, 500);
       } else {
+        this.errorMessage = 'Login com Facebook falhou.';
         console.error('Login com Facebook falhou.');
       }
     } catch (error) {
+      this.errorMessage = 'Erro no login com Facebook.';
       console.error('Erro no login com Facebook:', error);
     }
   }
