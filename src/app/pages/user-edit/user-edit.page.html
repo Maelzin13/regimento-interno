@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/user"></ion-back-button>
     </ion-buttons>
@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" id="content">
   <div *ngIf="loading">
     <ion-spinner name="crescent"></ion-spinner>
     <p>Carregando...</p>
@@ -53,18 +53,30 @@
       </ion-select>
     </ion-item>
 
-    <!-- Data de Início -->
+    <ion-label style="margin-left: 19px;">Data de Início</ion-label>
     <ion-item>
-      <ion-label position="floating">Data de Início</ion-label>
-      <ion-datetime [(ngModel)]="user.subscriptionStartDate" name="subscription_start_date"
-        display-format="YYYY-MM-DD"></ion-datetime>
+      <ion-col size="12" style="margin-bottom: 2px;">
+        <ion-datetime-button datetime="dateStartProjeto"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true" class="ion-modal-color">
+          <ng-template>
+            <ion-datetime id="dateStartProjeto" presentation="date"
+              [(ngModel)]="user.subscriptionStartDate"></ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-col>
     </ion-item>
 
-    <!-- Data de Término -->
+    <ion-label style="margin-left: 19px;">Data de Término </ion-label>
     <ion-item>
-      <ion-label position="floating">Data de Término</ion-label>
-      <ion-datetime [(ngModel)]="user.subscriptionEndDate" name="subscription_end_date"
-        display-format="YYYY-MM-DD"></ion-datetime>
+      <ion-col size="12" style="margin-bottom: 2px;">
+        <ion-datetime-button datetime="dateStartProjeto"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true" class="ion-modal-color">
+          <ng-template>
+            <ion-datetime id="dateStartProjeto" presentation="date"
+              [(ngModel)]="user.subscriptionEndDate"></ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-col>
     </ion-item>
 
     <ion-button expand="block" type="submit" color="primary" [disabled]="loading">

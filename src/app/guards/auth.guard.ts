@@ -11,10 +11,6 @@ export class AuthGuard implements CanActivate {
   canActivate(): boolean {
     const token = this.authService.getAuthToken();
     const user = this.authService.getUser();
-
-    console.log('AuthGuard: Token:', token);
-    console.log('AuthGuard: Usuário:', user);
-
     if (token && user) {
       return true;
     } else {

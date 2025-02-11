@@ -1,9 +1,8 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Usuários</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -14,7 +13,7 @@
 
   <div *ngIf="!loading && users.length > 0">
     <ion-accordion-group>
-      <ion-accordion *ngFor="let user of users" [value]="user.id" style="margin-bottom: 10px;">
+      <ion-accordion *ngFor="let user of users" [value]="user.id" style="margin-bottom: 10px; background-color: white;">
         <ion-item slot="header" lines="none">
           <ion-label>
             <h2>{{ user.name }}</h2>
@@ -23,17 +22,17 @@
         </ion-item>
 
         <div class="ion-padding" slot="content">
-          <p><strong>Plano:</strong>
+          <p class="blackColor"><strong>Plano:</strong>
             {{ user.plan === 'monthly' ? 'Mensal' : (user.plan === 'yearly' ? 'Anual' : 'Não informado') }}
           </p>
-          <p><strong>Status:</strong> <ion-chip [color]="user.subscriptionStatus === 'active' ? 'success' : 'danger'"
-              class="text-capitalize">
+          <p class="blackColor"><strong>Status:</strong> <ion-chip
+              [color]="user.subscriptionStatus === 'active' ? 'success' : 'danger'" class="text-capitalize">
               <ion-label>{{ user.subscriptionStatus }}</ion-label>
             </ion-chip>
-          <p *ngIf="user.subscriptionStartDate">
+          <p *ngIf="user.subscriptionStartDate" class="blackColor">
             <strong>Início da Assinatura:</strong> {{ user.subscriptionStartDate | date:'shortDate' }}
           </p>
-          <p *ngIf="user.subscriptionEndDate">
+          <p *ngIf="user.subscriptionEndDate" class="blackColor">
             <strong>Fim da Assinatura:</strong> {{ user.subscriptionEndDate | date:'shortDate' }}
           </p>
           <ion-button expand="block" color="primary" [routerLink]="['/user-edit', user.id]">

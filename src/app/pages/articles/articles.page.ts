@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { ModalPage } from '../modal/modal.page';
+import { ModalController } from '@ionic/angular';
+import { Component, OnInit } from '@angular/core';
+import { SearchPage } from '../search/search.page';
 
 @Component({
   selector: 'app-articles',
@@ -23,5 +24,14 @@ export class ArticlesPage implements OnInit {
       componentProps: { content },
     });
     return await modal.present();
+  }
+
+  async search() {
+    const modal = await this.modalController.create({
+      component: SearchPage,
+      // componentProps: ,
+    });
+
+    await modal.present();
   }
 }

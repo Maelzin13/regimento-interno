@@ -6,12 +6,6 @@ const routes: Routes = [
   { path: '', redirectTo: 'payment-form', pathMatch: 'full' },
 
   {
-    path: 'titles',
-    loadChildren: () =>
-      import('./pages/titles/titles.module').then((m) => m.TitlesPageModule),
-    canActivate: [AuthGuard],
-  },
-  {
     path: 'chapters/:titleId',
     loadChildren: () =>
       import('./pages/chapters/chapters.module').then(
@@ -77,6 +71,11 @@ const routes: Routes = [
       import('./pages/user-edit/user-edit.module').then(
         (m) => m.UserEditPageModule
       ),
+  },
+  {
+    path: 'search',
+    loadChildren: () =>
+      import('./pages/search/search.module').then((m) => m.SearchPageModule),
   },
 ];
 

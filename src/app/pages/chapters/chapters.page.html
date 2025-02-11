@@ -1,9 +1,12 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/view-text"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ capitulo?.conteudo || 'Capítulo' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="search()"> <ion-icon name="search-outline"></ion-icon></ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

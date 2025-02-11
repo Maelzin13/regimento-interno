@@ -1,5 +1,7 @@
+import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { SearchPage } from '../search/search.page';
 
 @Component({
   selector: 'app-chapters',
@@ -9,7 +11,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class ChaptersPage implements OnInit {
   capitulo: any;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private router: Router,
+    private modalController: ModalController
+  ) {}
 
   ngOnInit() {
     this.capitulo = history.state.capitulo || {};
@@ -20,5 +25,14 @@ export class ChaptersPage implements OnInit {
     this.router.navigate(['/articles', artigo.id], {
       state: { artigo },
     });
+  }
+
+  async search() {
+    const modal = await this.modalController.create({
+      component: SearchPage,
+      // componentProps: ,
+    });
+
+    await modal.present();
   }
 }

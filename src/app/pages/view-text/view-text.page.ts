@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { ModalPage } from '../modal/modal.page';
+import { ModalController } from '@ionic/angular';
+import { Component, OnInit } from '@angular/core';
+import { SearchPage } from '../search/search.page';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -11,14 +12,14 @@ import { ApiService } from 'src/app/services/api.service';
 })
 export class ViewTextPage implements OnInit {
   book: any;
-  prefacio: any;
   bookId: any;
+  prefacio: any;
 
   constructor(
-    private modalController: ModalController,
+    private router: Router,
     private route: ActivatedRoute,
     private apiService: ApiService,
-    private router: Router
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -44,6 +45,15 @@ export class ViewTextPage implements OnInit {
   cleanHTML(content: string): string {
     const doc = new DOMParser().parseFromString(content, 'text/html');
     return doc.body.textContent || '';
+  }
+
+  async search() {
+    const modal = await this.modalController.create({
+      component: SearchPage,
+      // componentProps: ,
+    });
+
+    await modal.present();
   }
 
   async showModal(content: string) {

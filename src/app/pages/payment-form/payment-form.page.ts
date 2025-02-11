@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-import { PaymentService } from 'src/app/services/payment.service';
 import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
+import { PaymentService } from 'src/app/services/payment.service';
 
 @Component({
   selector: 'app-payment-form',

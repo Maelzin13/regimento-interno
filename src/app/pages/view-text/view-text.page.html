@@ -1,20 +1,21 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ cleanHTML(book?.conteudo) || 'Carregando...' }}</ion-title>
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-searchbar animated="true" show-clear-button="always" clear-icon="trash-bin" value=""
-      placeholder="Busca por Pal. ou Art."></ion-searchbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="search()">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content id="content" class="ion-padding">
 
   <!-- Mostrar Prefácios -->
-  <div *ngIf="prefacio">
+  <!-- <div *ngIf="prefacio">
     <ion-card class="ion-text-center">
       <ion-card-header>
         <ion-card-title>Prefácio</ion-card-title>
@@ -25,7 +26,7 @@
         </p>
       </ion-card-content>
     </ion-card>
-  </div>
+  </div> -->
 
   <!-- Mostrar Títulos e Capítulos -->
   <div *ngIf="book?.titulos?.length">

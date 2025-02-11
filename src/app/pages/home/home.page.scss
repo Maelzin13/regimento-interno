@@ -12,6 +12,10 @@
   font-weight: bold;
 }
 
+.color {
+  color: var(--primary-color);
+}
+
 .textos-juridicos {
   display: flex;
   flex-direction: column;
@@ -20,6 +24,7 @@
 }
 
 .custom-card {
+  background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 10px #131a28;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -41,32 +46,8 @@
   }
 }
 
-.card-footer {
-  display: flex;
-  justify-content: center;
-  padding: 10px 0;
-}
-
-ion-buttons {
-  display: flex;
-  gap: 20px; /* Adiciona espaçamento de 20px entre os botões */
-}
-
-.action-link {
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.edit-link {
-  color: #00796b; /* Verde */
-}
-
-.delete-link {
-  color: #790000; /* Vermelho */
-}
-
-.action-link:hover {
-  text-decoration: underline;
+ion-skeleton-text {
+  --border-radius: 9999px;
+  --background: #333333;
+  --background-rgb: 51, 51, 51;
 }

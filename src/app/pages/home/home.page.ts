@@ -1,7 +1,7 @@
+import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 import { EditBookModalPage } from './edit-book-modal/edit-book-modal.page';
-import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -26,11 +26,15 @@ export class HomePage implements OnInit {
       link: 'https://www25.senado.leg.br/documents/59501/97171143/RCCN.pdf',
     },
     {
-      title: 'Resolução n. 1/2002',
+      title: 'Resolução n. 1/2002 do Congresso Nacional',
+      subTitle:
+        '(Regulamenta a tramitação de medidas provisórias no Congresso Nacional)',
       link: 'https://legis.senado.leg.br/norma/561120/publicacao/27423643',
     },
     {
       title: 'Lei Complementar 95/1998',
+      subTitle:
+        '(Dispõe sobre a elaboração, a redação, a alteração e a consolidação das leis)',
       link: 'https://www.planalto.gov.br/ccivil_03/leis/lcp/Lcp95compilado.htm',
     },
     {

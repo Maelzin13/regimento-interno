@@ -1,9 +1,8 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>📚 Livros</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -28,7 +27,7 @@
       <ion-card class="custom-card">
         <div [routerLink]="['/view-text', book.id]">
           <ion-card-header>
-            <ion-card-title class="book-title">
+            <ion-card-title class="book-title" class="color">
               {{ cleanHTML(book.conteudo) }}
             </ion-card-title>
           </ion-card-header>
@@ -39,17 +38,6 @@
             </div>
           </ion-card-content>
         </div>
-
-        <ion-footer class="card-footer">
-          <ion-buttons>
-            <span class="action-link edit-link" (click)="onEdit(book.id); $event.stopPropagation();">
-              Editar
-            </span>
-            <span class="action-link delete-link" (click)="onDelete(book.id); $event.stopPropagation();">
-              Excluir
-            </span>
-          </ion-buttons>
-        </ion-footer>
       </ion-card>
     </ng-container>
   </ng-container>
@@ -57,12 +45,13 @@
   <!-- Textos Jurídicos -->
   <div *ngIf="!isLoading">
     <div class="section-title">
-      <h2>Textos Jurídicos</h2>
+      <h2 class="color">Textos Jurídicos</h2>
     </div>
     <div class="textos-juridicos">
       <ion-card class="custom-card" *ngFor="let texto of textos">
         <ion-card-header>
-          <ion-card-title>{{ texto.title }}</ion-card-title>
+          <ion-card-title class="color">{{ texto.title }}</ion-card-title>
+          <ion-card-subtitle class="color">{{ texto.subTitle }}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
           <div *ngIf="texto.link">

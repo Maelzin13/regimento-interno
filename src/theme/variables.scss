@@ -6,12 +6,11 @@
 }
 
 #content {
-  --background: linear-gradient(
-    to bottom right,
-    #6b7280,
-    #10b981
-  ); /* Cinza para Verde */
-  height: 100%;
+  --background: #141c2a !important;
+}
+
+#toolbar {
+  --background: linear-gradient(to bottom right, #6b7280, #10b981);
   color: white;
 }
 

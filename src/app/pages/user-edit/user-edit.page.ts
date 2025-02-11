@@ -9,11 +9,11 @@ import { DetailedUserModel } from 'src/app/models/detailedUserModel';
   styleUrls: ['./user-edit.page.scss'],
 })
 export class UserEditPage implements OnInit {
-  user: DetailedUserModel | null = null;
   loading = false;
+  isAdmin = false;
   errorMessage = '';
   successMessage = '';
-  isAdmin = false;
+  user: DetailedUserModel | null = null;
 
   constructor(
     private route: ActivatedRoute,
