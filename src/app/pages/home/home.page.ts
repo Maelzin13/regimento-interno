@@ -1,6 +1,6 @@
 import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from 'src/app/services/api.service';
+import { BookService } from 'src/app/services/book.service';
 import { EditBookModalPage } from './edit-book-modal/edit-book-modal.page';
 
 @Component({
@@ -45,12 +45,12 @@ export class HomePage implements OnInit {
   ];
 
   constructor(
-    public apiService: ApiService,
+    public bookService: BookService,
     private modalController: ModalController
   ) {}
 
   ngOnInit() {
-    this.apiService
+    this.bookService
       .getAllBooks()
       .then((data) => {
         this.books = data.data;

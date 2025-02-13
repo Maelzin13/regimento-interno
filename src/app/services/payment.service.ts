@@ -1,18 +1,16 @@
-import { Injectable } from '@angular/core';
 import axios from 'axios';
-import { Observable } from 'rxjs';
-
-import { environment } from 'src/environments/environment';
+import { Injectable } from '@angular/core';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PaymentService {
-  private baseUrl = `${environment.baseUrl}/api`;
+  constructor(private apiservice: ApiService) {}
 
   async processPayment(paymentData: any) {
     const response = await axios.post(
-      `${this.baseUrl}/payment/process`,
+      `${this.apiservice.baseUrl}/payment/process`,
       paymentData
     );
 

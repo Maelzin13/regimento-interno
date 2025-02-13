@@ -3,7 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { SearchPage } from '../search/search.page';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiService } from 'src/app/services/api.service';
+import { BookService } from 'src/app/services/book.service';
 
 @Component({
   selector: 'app-view-text',
@@ -18,14 +18,14 @@ export class ViewTextPage implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private apiService: ApiService,
+    private bookService: BookService,
     private modalController: ModalController
   ) {}
 
   ngOnInit() {
     this.bookId = this.route.snapshot.paramMap.get('id');
 
-    this.apiService
+    this.bookService
       .getBookById(this.bookId)
       .then((books: any) => {
         this.prefacio = books.prefacios;

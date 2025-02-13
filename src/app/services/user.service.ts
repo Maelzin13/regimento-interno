@@ -1,20 +1,20 @@
-import { Injectable } from '@angular/core';
 import axios from 'axios';
-import { environment } from 'src/environments/environment';
+import { Injectable } from '@angular/core';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private baseUrl = `${environment.baseUrl}/api`;
+  constructor(private apiservice: ApiService) {}
 
   async getAllUsers() {
-    const response = await axios.get(`${this.baseUrl}/users`);
+    const response = await axios.get(`${this.apiservice.baseUrl}/users`);
     return response.data.data;
   }
 
   async getUsersById(id: number) {
-    const response = await axios.get(`${this.baseUrl}/users/${id}`);
+    const response = await axios.get(`${this.apiservice.baseUrl}/users/${id}`);
 
     return response.data.data;
   }

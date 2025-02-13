@@ -1,28 +1,30 @@
-import { Injectable } from '@angular/core';
-import axios from 'axios';
-import { CookieService } from 'ngx-cookie-service';
-import { UserModel } from '../models/userModel';
-import { environment } from 'src/environments/environment';
 import {
   signInWithPopup,
   GoogleAuthProvider,
   FacebookAuthProvider,
   signOut,
 } from 'firebase/auth';
+import axios from 'axios';
 import { auth } from '../firebase';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { ApiService } from './api.service';
+import { UserModel } from '../models/userModel';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = `${environment.baseUrl}/api`;
   private tokenKey = 'authToken';
-
   userChanged = new BehaviorSubject<UserModel | null>(null);
 
-  constructor(private cookieService: CookieService, private router: Router) {
+  constructor(
+    private cookieService: CookieService,
+    private router: Router,
+    private apiservice: ApiService
+  ) {
     const token = this.cookieService.get('authToken');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -39,7 +41,7 @@ export class AuthService {
   }
 
   getBaseUrl(): string {
-    return this.baseUrl;
+    return this.apiservice.baseUrl;
   }
 
   setUser(user: any, token: string): void {
@@ -74,7 +76,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<string> {
     try {
-      const response = await axios.post(`${this.baseUrl}/login`, {
+      const response = await axios.post(`${this.apiservice.baseUrl}/login`, {
         email,
         password,
       });
@@ -96,7 +98,7 @@ export class AuthService {
 
   async fetchProfile(): Promise<UserModel> {
     try {
-      const response = await axios.get(`${this.baseUrl}/profile`);
+      const response = await axios.get(`${this.apiservice.baseUrl}/profile`);
       return new UserModel(response.data.user);
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
@@ -122,9 +124,12 @@ export class AuthService {
         throw new Error('Falha ao obter accessToken do Google.');
       }
 
-      const response = await axios.post(`${this.baseUrl}/social-login/google`, {
-        token: accessToken,
-      });
+      const response = await axios.post(
+        `${this.apiservice.baseUrl}/social-login/google`,
+        {
+          token: accessToken,
+        }
+      );
 
       this.setUser(response.data.user, response.data.token);
       this.saveAuthToken(response.data.token);
@@ -151,7 +156,7 @@ export class AuthService {
       }
 
       const response = await axios.post(
-        `${this.baseUrl}/social-login/facebook`,
+        `${this.apiservice.baseUrl}/social-login/facebook`,
         {
           token: accessToken,
         }

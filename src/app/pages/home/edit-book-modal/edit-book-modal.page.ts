@@ -1,10 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
 import {
   ModalController,
   ToastController,
   LoadingController,
 } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { BookService } from 'src/app/services/book.service';
 
 @Component({
   selector: 'app-edit-book-modal',
@@ -22,8 +22,8 @@ export class EditBookModalPage implements OnInit {
   isEditingContent: boolean = false;
 
   constructor(
+    private bookService: BookService,
     private modalController: ModalController,
-    private apiService: ApiService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {}
@@ -39,7 +39,7 @@ export class EditBookModalPage implements OnInit {
     });
     await loading.present();
 
-    this.apiService
+    this.bookService
       .getBookById(this.bookId)
       .then((data) => {
         this.livro = data;
@@ -108,7 +108,7 @@ export class EditBookModalPage implements OnInit {
       this.presentToast('O conteúdo não pode estar vazio.');
       return;
     }
-    this.apiService
+    this.bookService
       .updateBook(this.bookId, { conteudo: this.editorContent })
       .then(() => {
         this.presentToast('Alterações salvas com sucesso.');
