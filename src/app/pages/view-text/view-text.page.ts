@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { SearchPage } from '../search/search.page';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
+import { EditBookModalPage } from '../home/edit-book-modal/edit-book-modal.page';
 
 @Component({
   selector: 'app-view-text',
@@ -61,6 +62,18 @@ export class ViewTextPage implements OnInit {
       component: ModalPage,
       componentProps: { content },
     });
+    return await modal.present();
+  }
+
+  async abrirEditor(itemId: number, itemType: string) {
+    const modal = await this.modalController.create({
+      component: EditBookModalPage,
+      componentProps: {
+        itemId: itemId,
+        itemType: itemType,
+      },
+    });
+
     return await modal.present();
   }
 }

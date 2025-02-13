@@ -43,4 +43,37 @@ export class BookService {
 
     return response.data;
   }
+
+  async getTituloById(id: number) {
+    const response = await axios.get(
+      `${this.apiservice.baseUrl}/titulos/${id}`
+    );
+    return response.data.data;
+  }
+
+  async getCapituloById(id: number) {
+    const response = await axios.get(
+      `${this.apiservice.baseUrl}/capitulos/${id}`
+    );
+    return response.data.data;
+  }
+
+  async getSecaoById(id: number) {
+    const response = await axios.get(`${this.apiservice.baseUrl}/secaos/${id}`);
+    return response.data.data;
+  }
+
+  async getArtigoById(id: number) {
+    const response = await axios.get(
+      `${this.apiservice.baseUrl}/artigos/${id}`
+    );
+    return response.data.data;
+  }
+
+  async getParagrafos(id: number) {
+    const response = await axios.get(
+      `${this.apiservice.baseUrl}/paragrafos/${id}`
+    );
+    return response.data.data;
+  }
 }

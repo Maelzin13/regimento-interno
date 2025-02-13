@@ -2,6 +2,7 @@ import { ModalPage } from '../modal/modal.page';
 import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { SearchPage } from '../search/search.page';
+import { EditBookModalPage } from '../home/edit-book-modal/edit-book-modal.page';
 
 @Component({
   selector: 'app-articles',
@@ -23,6 +24,18 @@ export class ArticlesPage implements OnInit {
       component: ModalPage,
       componentProps: { content },
     });
+    return await modal.present();
+  }
+
+  async abrirEditor(itemId: number, itemType: string) {
+    const modal = await this.modalController.create({
+      component: EditBookModalPage,
+      componentProps: {
+        itemId: itemId,
+        itemType: itemType,
+      },
+    });
+
     return await modal.present();
   }
 

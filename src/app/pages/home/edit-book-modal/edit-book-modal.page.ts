@@ -12,13 +12,12 @@ import { BookService } from 'src/app/services/book.service';
   styleUrls: ['./edit-book-modal.page.scss'],
 })
 export class EditBookModalPage implements OnInit {
-  @Input() bookId!: number;
-  livro: any = {};
+  @Input() itemId!: number;
+  @Input() itemType!: string;
+
+  item: any = {};
   editorContent: string = '';
   isLoading: boolean = false;
-  selectedTab: string = 'prefacio';
-  prefacios: any[] = [];
-  novoConteudo: any = { tipo: '', conteudo: '' };
   isEditingContent: boolean = false;
 
   constructor(
@@ -29,53 +28,50 @@ export class EditBookModalPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadBook();
+    this.loadItem();
   }
 
-  async loadBook() {
+  async loadItem() {
     this.isLoading = true;
     const loading = await this.loadingController.create({
-      message: 'Carregando livro...',
+      message: 'Carregando...',
     });
     await loading.present();
 
-    this.bookService
-      .getBookById(this.bookId)
-      .then((data) => {
-        this.livro = data;
-        this.prefacios = data.prefacios.map((p: any) => ({
-          ...p,
-          isEditing: false,
-        }));
-        this.editorContent = this.livro.conteudo || '';
+    try {
+      let data;
+      switch (this.itemType) {
+        case 'titulo':
+          data = await this.bookService.getTituloById(this.itemId);
+          console.log(data);
+          break;
+        case 'capitulo':
+          data = await this.bookService.getCapituloById(this.itemId);
+          break;
+        case 'secao':
+          data = await this.bookService.getSecaoById(this.itemId);
+          break;
+        case 'artigo':
+          data = await this.bookService.getArtigoById(this.itemId);
+          break;
+        case 'paragrafo':
+          data = await this.bookService.getParagrafos(this.itemId);
+          break;
+        default:
+          throw new Error('Tipo inválido');
+      }
 
-        // Garantindo que títulos, capítulos e seções sejam carregados
-        if (this.livro.titulos) {
-          this.livro.titulos = this.livro.titulos.map((titulo: any) => ({
-            ...titulo,
-            isEditing: false,
-            capitulos:
-              titulo.capitulos?.map((capitulo: any) => ({
-                ...capitulo,
-                isEditing: false,
-                secoes:
-                  capitulo.secoes?.map((secao: any) => ({
-                    ...secao,
-                    isEditing: false,
-                  })) || [],
-              })) || [],
-          }));
-        }
-
-        loading.dismiss();
-        this.isLoading = false;
-      })
-      .catch((error) => {
-        console.error('Erro ao carregar o livro:', error);
-        loading.dismiss();
-        this.presentToast('Erro ao carregar o livro.');
-        this.isLoading = false;
-      });
+      this.item = data;
+      console.log(this.item);
+      this.editorContent = this.item.conteudo || '';
+      console.log(this.editorContent);
+    } catch (error) {
+      console.error('Erro ao carregar o item:', error);
+      this.presentToast('Erro ao carregar o conteúdo.');
+    } finally {
+      loading.dismiss();
+      this.isLoading = false;
+    }
   }
 
   dismiss() {
@@ -91,47 +87,34 @@ export class EditBookModalPage implements OnInit {
     await toast.present();
   }
 
-  salvarPrefacios() {
-    // this.apiService
-    //   .updatePrefacios(this.bookId, this.prefacios)
-    //   .then(() => {
-    //     this.presentToast('Prefácios salvos com sucesso.');
-    //     this.prefacios.forEach((p) => (p.isEditing = false));
-    //   })
-    //   .catch(() => {
-    //     this.presentToast('Erro ao salvar os prefácios.');
-    //   });
-  }
-
-  salvarConteudo() {
-    if (!this.livro || !this.editorContent.trim()) {
+  async salvarConteudo() {
+    if (!this.editorContent.trim()) {
       this.presentToast('O conteúdo não pode estar vazio.');
       return;
     }
-    this.bookService
-      .updateBook(this.bookId, { conteudo: this.editorContent })
-      .then(() => {
-        this.presentToast('Alterações salvas com sucesso.');
-        this.isEditingContent = false;
-      })
-      .catch(() => {
-        this.presentToast('Erro ao salvar alterações.');
-      });
-  }
 
-  adicionarConteudo() {
-    if (!this.novoConteudo.tipo || !this.novoConteudo.conteudo.trim()) {
-      this.presentToast('Preencha todos os campos para adicionar conteúdo.');
-      return;
+    try {
+      let updateData = { conteudo: this.editorContent };
+
+      // switch (this.itemType) {
+      //   case 'titulo':
+      //     await this.bookService.updateTitulo(this.itemId, updateData);
+      //     break;
+      //   case 'capitulo':
+      //     await this.bookService.updateCapitulo(this.itemId, updateData);
+      //     break;
+      //   case 'secao':
+      //     await this.bookService.updateSecao(this.itemId, updateData);
+      //     break;
+      //   case 'artigo':
+      //     await this.bookService.updateArtigo(this.itemId, updateData);
+      //     break;
+      // }
+
+      this.presentToast('Alterações salvas com sucesso.');
+      this.dismiss();
+    } catch (error) {
+      this.presentToast('Erro ao salvar alterações.');
     }
-    // this.apiService
-    //   .addContent(this.bookId, this.novoConteudo)
-    //   .then(() => {
-    //     this.presentToast('Conteúdo adicionado com sucesso.');
-    //     this.dismiss();
-    //   })
-    //   .catch(() => {
-    //     this.presentToast('Erro ao adicionar conteúdo.');
-    //   });
   }
 }

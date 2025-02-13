@@ -4,47 +4,40 @@
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ cleanHTML(book?.conteudo) || 'Carregando...' }}</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="secondary">
       <ion-button (click)="search()">
-        <ion-icon name="search-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="search"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content id="content" class="ion-padding">
-
-  <!-- Mostrar Prefácios -->
-  <!-- <div *ngIf="prefacio">
-    <ion-card class="ion-text-center">
-      <ion-card-header>
-        <ion-card-title>Prefácio</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p *ngFor="let prefa of prefacio">
-          {{ cleanHTML(prefa.conteudo) }}
-        </p>
-      </ion-card-content>
-    </ion-card>
-  </div> -->
-
   <!-- Mostrar Títulos e Capítulos -->
   <div *ngIf="book?.titulos?.length">
     <ion-card *ngFor="let titulo of book.titulos; let tituloIndex = index" class="ion-text-center">
       <ng-container *ngIf="tituloIndex > 0">
         <ion-card-header>
-          <ion-card-title>{{ cleanHTML(titulo.conteudo) }}</ion-card-title>
+          <ion-card-title style="display: flex; align-items: center; justify-content: space-between;">
+            <span>{{ cleanHTML(titulo.conteudo) }}</span>
+            <ion-button fill="clear" (click)="abrirEditor(titulo.id, 'titulo')">
+              <ion-icon name="pencil-outline"></ion-icon>
+            </ion-button>
+          </ion-card-title>
         </ion-card-header>
 
         <ion-card-content>
           <ion-list lines="none">
             <ng-container *ngFor="let capitulo of titulo.capitulos; let capituloIndex = index">
               <ng-container *ngIf="capituloIndex > 0">
-                <ion-item (click)="navigateToCapitulo(capitulo)">
+                <ion-item>
                   <ion-label>
                     <h3>{{ cleanHTML(capitulo.conteudo) }}</h3>
                   </ion-label>
-                  <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+                  <ion-button size="small" fill="clear" (click)="abrirEditor(capitulo.id, 'capitulo')">
+                    <ion-icon name="pencil-outline"></ion-icon>
+                  </ion-button>
+                  <ion-icon slot="end" name="chevron-forward-outline" (click)="navigateToCapitulo(capitulo)"></ion-icon>
                 </ion-item>
               </ng-container>
             </ng-container>
