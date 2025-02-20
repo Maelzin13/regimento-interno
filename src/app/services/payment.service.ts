@@ -8,6 +8,11 @@ import { ApiService } from './api.service';
 export class PaymentService {
   constructor(private apiservice: ApiService) {}
 
+  async getPayments() {
+    const response = await axios.get(`${this.apiservice.baseUrl}/pagamentos`);
+    return response.data.data;
+  }
+
   async processPayment(paymentData: any) {
     const response = await axios.post(
       `${this.apiservice.baseUrl}/payment/process`,

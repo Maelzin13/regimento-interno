@@ -2,17 +2,17 @@ export class UserModel {
   id?: number;
   name: string;
   email: string;
-  photo?: string;
-  provider?: string;
   token?: string;
+  provider?: string;
+  is_admin?: boolean;
 
   constructor(data: Partial<UserModel>) {
     this.id = data.id || 0;
     this.name = data.name || '';
     this.email = data.email || '';
-    this.photo = data.photo || '';
-    this.provider = data.provider || '';
     this.token = data.token || '';
+    this.provider = data.provider || '';
+    this.is_admin = data.is_admin || false;
   }
 
   static fromLocalStorage(): UserModel | null {

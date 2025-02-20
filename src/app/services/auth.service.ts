@@ -48,11 +48,11 @@ export class AuthService {
     if (user && token) {
       const userData = new UserModel({
         id: user.id,
-        name: user.name || user.displayName || '',
         email: user.email || '',
-        photo: user.avatar || user.photoURL || '',
-        provider: user.provider || '',
         token: token,
+        provider: user.provider || '',
+        is_admin: user.is_admin || false,
+        name: user.name || user.displayName || '',
       });
 
       userData.saveToLocalStorage();

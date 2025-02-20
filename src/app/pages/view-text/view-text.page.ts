@@ -2,8 +2,10 @@ import { ModalPage } from '../modal/modal.page';
 import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { SearchPage } from '../search/search.page';
+import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { EditBookModalPage } from '../home/edit-book-modal/edit-book-modal.page';
 
 @Component({
@@ -15,15 +17,19 @@ export class ViewTextPage implements OnInit {
   book: any;
   bookId: any;
   prefacio: any;
+  user: UserModel | null = null;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private bookService: BookService,
+    private authService: AuthService,
     private modalController: ModalController
   ) {}
 
   ngOnInit() {
+    const user = this.authService.getUser();
+    this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
 
     this.bookService

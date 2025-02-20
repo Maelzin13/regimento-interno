@@ -20,7 +20,7 @@
         <ion-card-header>
           <ion-card-title style="display: flex; align-items: center; justify-content: space-between;">
             <span>{{ cleanHTML(titulo.conteudo) }}</span>
-            <ion-button fill="clear" (click)="abrirEditor(titulo.id, 'titulo')">
+            <ion-button *ngIf="user?.is_admin" fill="clear" (click)="abrirEditor(titulo.id, 'titulo')">
               <ion-icon name="pencil-outline"></ion-icon>
             </ion-button>
           </ion-card-title>

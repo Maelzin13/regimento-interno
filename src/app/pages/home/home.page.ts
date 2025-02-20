@@ -63,7 +63,6 @@ export class HomePage implements OnInit {
   }
 
   cleanHTML(content: string): string {
-    // Remover tags HTML
     const doc = new DOMParser().parseFromString(content, 'text/html');
     return doc.body.textContent || '';
   }
