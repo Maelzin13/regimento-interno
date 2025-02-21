@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar id="toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="content" class="ion-padding">
+  <div>
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let pagamento of pagamentos" style="margin-bottom: 10px; background-color: white;">
+        <ion-item slot="header" lines="none">
+          <ion-label>
+            <h2>{{ pagamento.user_id }}</h2>
+          </ion-label>
+        </ion-item>
+
+        <div class="ion-padding" slot="content">
+          <p class="blackColor"><strong>Valor:</strong> R$ {{ pagamento.valor }}</p>
+          <p class="blackColor"><strong>Status:</strong> {{ pagamento.status }}</p>
+          <p class="blackColor"><strong>Data:</strong> {{ pagamento.created_at | date: 'dd/MM/yyyy' }}</p>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div>
+</ion-content>
