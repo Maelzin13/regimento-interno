@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.regimento.app',
-  appName: 'Regimento Interno',
+  appName: 'Regimento Interno Comentado',
   webDir: 'www',
   bundledWebRuntime: false,
   plugins: {

@@ -11,7 +11,7 @@ const routes: Routes = [
       import('./pages/chapters/chapters.module').then(
         (m) => m.ChaptersPageModule
       ),
-    canActivate: [AuthGuard], // Protegido pelo AuthGuard
+    canActivate: [AuthGuard],
   },
   {
     path: 'articles/:sectionId',
@@ -76,13 +76,21 @@ const routes: Routes = [
     path: 'search',
     loadChildren: () =>
       import('./pages/search/search.module').then((m) => m.SearchPageModule),
-  },  {
-    path: 'pagamento',
-    loadChildren: () => import('./pages/pagamento/pagamento.module').then( m => m.PagamentoPageModule)
   },
-
-
-
+  {
+    path: 'pagamentos',
+    loadChildren: () =>
+      import('./pages/pagamento/pagamento.module').then(
+        (m) => m.PagamentoPageModule
+      ),
+  },
+  {
+    path: 'change-password',
+    loadChildren: () =>
+      import('./pages/change-password/change-password.module').then(
+        (m) => m.ChangePasswordPageModule
+      ),
+  },
 ];
 
 @NgModule({

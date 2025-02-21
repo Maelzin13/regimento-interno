@@ -20,7 +20,7 @@
         <ion-card-header>
           <ion-card-title style="display: flex; align-items: center; justify-content: space-between;">
             <span>{{ cleanHTML(titulo.conteudo) }}</span>
-            <ion-button *ngIf="user?.is_admin" fill="clear" (click)="abrirEditor(titulo.id, 'titulo')">
+            <ion-button *ngIf="user?.is_admin === true" fill="clear" (click)="abrirEditor(titulo.id, 'titulo')">
               <ion-icon name="pencil-outline"></ion-icon>
             </ion-button>
           </ion-card-title>
@@ -34,7 +34,8 @@
                   <ion-label>
                     <h3>{{ cleanHTML(capitulo.conteudo) }}</h3>
                   </ion-label>
-                  <ion-button size="small" fill="clear" (click)="abrirEditor(capitulo.id, 'capitulo')">
+                  <ion-button *ngIf="user?.is_admin === true" size="small" fill="clear"
+                    (click)="abrirEditor(capitulo.id, 'capitulo')">
                     <ion-icon name="pencil-outline"></ion-icon>
                   </ion-button>
                   <ion-icon slot="end" name="chevron-forward-outline" (click)="navigateToCapitulo(capitulo)"></ion-icon>

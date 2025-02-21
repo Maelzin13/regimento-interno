@@ -2,6 +2,8 @@ import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { SearchPage } from '../search/search.page';
+import { UserModel } from 'src/app/models/userModel';
+import { AuthService } from 'src/app/services/auth.service';
 import { EditBookModalPage } from '../home/edit-book-modal/edit-book-modal.page';
 
 @Component({
@@ -11,13 +13,17 @@ import { EditBookModalPage } from '../home/edit-book-modal/edit-book-modal.page'
 })
 export class ChaptersPage implements OnInit {
   capitulo: any;
+  user: UserModel | null = null;
 
   constructor(
     private router: Router,
+    private authService: AuthService,
     private modalController: ModalController
   ) {}
 
   ngOnInit() {
+    const user = this.authService.getUser();
+    this.user = user;
     this.capitulo = history.state.capitulo || {};
     console.log('capitulo: ', this.capitulo);
   }

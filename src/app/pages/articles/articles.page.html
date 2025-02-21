@@ -14,38 +14,32 @@
 
 <ion-content id="content" class="ion-padding">
   <div *ngIf="artigo">
-    <!-- Conteúdo do Artigo -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>{{ artigo.titulo }}</ion-card-title>
+        <ion-card-title style="display: flex; align-items: center; justify-content: space-between;">{{
+          cleanHTML(artigo.conteudo)}}
+          <ion-button *ngIf="user?.is_admin === true" size="small" fill="clear"
+            (click)="abrirEditor(artigo.id, 'artigo')">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </ion-button>
+        </ion-card-title>
       </ion-card-header>
-      <ion-card-content>
-        <p [innerHTML]="artigo.conteudo"></p>
-        <ion-button size="small" fill="clear" (click)="abrirEditor(artigo.id, 'artigo')">
-          <ion-icon name="pencil-outline"></ion-icon>
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card *ngIf="artigo.paragrafos?.length">
-      <ion-card-header>
-        <ion-card-title></ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
+      <ion-card-content *ngIf="artigo.paragrafos?.length">
         <ion-list>
           <ion-item *ngFor="let paragrafo of artigo.paragrafos">
             <ion-label>
               <h4 *ngIf="paragrafo.tipo === 'comentario'">Comentário(s)</h4>
               <h4 *ngIf="paragrafo.tipo === 'informacao_adicional'">Informações Adicionais</h4>
-              <p>{{ paragrafo.conteudo | slice: 0:100 }}...</p>
+              <p>{{ cleanHTML(paragrafo.conteudo) | slice: 0:100 }}...</p>
 
               <div style="margin-top: 10px;">
-
-                <ion-button size="small" fill="clear" (click)="abrirEditor(paragrafo.id, 'paragrafo')">
+                <ion-button *ngIf="user?.is_admin === true" size="small" fill="clear"
+                  (click)="abrirEditor(paragrafo.id, 'paragrafo')">
                   <ion-icon name="pencil-outline"></ion-icon>
                 </ion-button>
 
-                <ion-button size="small" fill="outline" color="primary" (click)="openModal(paragrafo.conteudo)">
+                <ion-button size="small" fill="outline" color="primary"
+                  (click)="openModal(cleanHTML(paragrafo.conteudo))">
                   Ver mais
                 </ion-button>
               </div>
