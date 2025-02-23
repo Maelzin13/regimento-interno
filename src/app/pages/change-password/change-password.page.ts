@@ -8,7 +8,15 @@ import { ChangePasswordService } from 'src/app/services/change-password.service'
   styleUrls: ['./change-password.page.scss'],
 })
 export class ChangePasswordPage implements OnInit {
-  passwordForm: any;
+  passwordForm: {
+    current_password: any;
+    new_password: any;
+    new_password_confirmation: any;
+  } = {
+    current_password: '',
+    new_password: '',
+    new_password_confirmation: '',
+  };
 
   constructor(
     private toastController: ToastController,
@@ -29,7 +37,13 @@ export class ChangePasswordPage implements OnInit {
   }
 
   async changePassword() {
-    if (this.passwordForm.invalid) {
+    if (
+      !this.passwordForm.current_password ||
+      !this.passwordForm.new_password ||
+      !this.passwordForm.new_password_confirmation ||
+      this.passwordForm.new_password !==
+        this.passwordForm.new_password_confirmation
+    ) {
       this.presentToast(
         'Por favor, preencha todos os campos corretamente.',
         'danger'
@@ -38,7 +52,7 @@ export class ChangePasswordPage implements OnInit {
     }
 
     const { current_password, new_password, new_password_confirmation } =
-      this.passwordForm.value;
+      this.passwordForm;
 
     try {
       await this.changePasswordService.changePassword(
@@ -47,7 +61,9 @@ export class ChangePasswordPage implements OnInit {
         new_password_confirmation
       );
       this.presentToast('Senha alterada com sucesso!', 'success');
-      this.passwordForm.reset();
+      this.passwordForm.current_password = '';
+      this.passwordForm.new_password = '';
+      this.passwordForm.new_password_confirmation = '';
     } catch (error: any) {
       this.presentToast(error.message, 'danger');
     }

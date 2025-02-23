@@ -35,13 +35,17 @@ export class BookService {
   async searchBook(id: number, query: string, searchBy: string) {
     const url = `${
       this.apiservice.baseUrl
-    }/books/${id}?query=${encodeURIComponent(
+    }/livros/${id}/search?query=${encodeURIComponent(
       query
-    )}&search_by=${encodeURIComponent(searchBy)}`;
+    )}&searchBy=${encodeURIComponent(searchBy)}`;
 
-    const response = await axios.get(url);
-
-    return response.data;
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar o livro:', error);
+      throw error;
+    }
   }
 
   async getTituloById(id: number) {

@@ -6,37 +6,35 @@ import { ApiService } from './api.service';
   providedIn: 'root',
 })
 export class ChangePasswordService {
-  constructor(private apiservice: ApiService) {}
+  constructor(private apiService: ApiService) {}
 
   async changePassword(
     currentPassword: string,
     newPassword: string,
     newPasswordConfirmation: string
   ): Promise<any> {
+    const payload = {
+      current_password: currentPassword,
+      new_password: newPassword,
+      new_password_confirmation: newPasswordConfirmation,
+    };
+
+    const token = localStorage.getItem('token');
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
     try {
-      const payload = {
-        current_password: currentPassword,
-        new_password: newPassword,
-        new_password_confirmation: newPasswordConfirmation,
-      };
-
-      const token = localStorage.getItem('token');
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
-
       const response = await axios.post(
-        `${this.apiservice.baseUrl}/`,
+        `${this.apiService.baseUrl}/change-password`,
         payload,
-        {
-          headers,
-        }
+        { headers }
       );
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        // Retorna o erro recebido da API
         throw new Error(
           error.response.data.message || 'Erro ao alterar a senha.'
         );

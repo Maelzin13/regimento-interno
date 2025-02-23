@@ -21,9 +21,9 @@ export class AuthService {
   userChanged = new BehaviorSubject<UserModel | null>(null);
 
   constructor(
-    private cookieService: CookieService,
     private router: Router,
-    private apiservice: ApiService
+    private apiservice: ApiService,
+    private cookieService: CookieService
   ) {
     const token = this.cookieService.get('authToken');
     if (token) {

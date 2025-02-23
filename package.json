@@ -1,7 +1,7 @@
 {
   "name": "regimento-interno",
   "version": "0.0.1",
-  "author": "Ionic Framework",
+  "author": "Ismael Dos Santos Dias",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
@@ -77,6 +77,5 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.4.0"
-  },
-  "description": "An Ionic project"
+  }
 }

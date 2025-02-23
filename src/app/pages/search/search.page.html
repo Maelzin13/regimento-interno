@@ -1,13 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="dismiss()"> <ion-icon name="arrow-back-outline"></ion-icon></ion-button>
+      <ion-button (click)="dismiss()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>Pesquisa</ion-title>
   </ion-toolbar>
   <ion-toolbar>
-    <ion-searchbar color="light" animated="true" placeholder="Digitar" show-clear-button="always"
-      clear-icon="trash-bin"></ion-searchbar>
+    <ion-searchbar color="light" animated="true" placeholder="Digitar" show-clear-button="always" clear-icon="trash-bin"
+      [(ngModel)]="query">
+    </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
@@ -21,21 +24,35 @@
   <ion-card class="ion-text-center">
     <ion-card-content>
       <ion-list>
-        <ion-radio-group value="palavra-chave">
+        <ion-radio-group [(ngModel)]="searchBy">
           <ion-item>
-            <ion-radio value="palavra-chave" aria-label="Palavra Chave">Palavra Chave</ion-radio>
+            <ion-radio value="keyword" aria-label="Palavra Chave"></ion-radio>
+            <ion-label>Palavra Chave</ion-label>
           </ion-item>
           <ion-item>
-            <ion-radio value="artigo" aria-label="Artigo">Artigo</ion-radio>
+            <ion-radio value="artigo" aria-label="Artigo"></ion-radio>
+            <ion-label>Artigo</ion-label>
           </ion-item>
         </ion-radio-group>
         <br>
-
-        <ion-button expand="block">
+        <ion-button expand="block" (click)="search()">
           <ion-icon name="search-outline" slot="start"></ion-icon>
           Buscar
         </ion-button>
       </ion-list>
     </ion-card-content>
   </ion-card>
+
+
+  <ion-list *ngIf="searchResults && searchResults.length">
+    <ion-list-header>
+      Resultados ({{ searchResults.length }})
+    </ion-list-header>
+    <ion-item *ngFor="let item of searchResults">
+      <ion-label>
+        <h2>{{ item.tipo | titlecase }} - ID: {{ item.id }}</h2>
+        <p>{{ item.conteudo }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
