@@ -17,7 +17,7 @@
     <ion-card-header>
       <ion-card-title style="display: flex; align-items: center; justify-content: space-between;">
         {{ secao.conteudo }}
-        <ion-button *ngIf="user?.is_admin === true" size="small" fill="clear" (click)="abrirEditor(secao.id, 'secao')">
+        <ion-button *ngIf="user?.is_admin" size="small" fill="clear" (click)="abrirEditor(secao.id, 'secao')">
           <ion-icon name="pencil-outline"></ion-icon>
         </ion-button>
       </ion-card-title>
@@ -28,8 +28,7 @@
           <ion-label>
             <h3 [innerHTML]="artigo.conteudo"></h3>
           </ion-label>
-          <ion-button *ngIf="user?.is_admin === true" size="small" fill="clear"
-            (click)="abrirEditor(artigo.id, 'artigo')">
+          <ion-button *ngIf="user?.is_admin" size="small" fill="clear" (click)="abrirEditor(artigo.id, 'artigo')">
             <ion-icon name="pencil-outline"></ion-icon>
           </ion-button>
           <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>

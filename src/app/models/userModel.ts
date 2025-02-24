@@ -12,7 +12,7 @@ export class UserModel {
     this.email = data.email || '';
     this.token = data.token || '';
     this.provider = data.provider || '';
-    this.is_admin = data.is_admin || false;
+    this.is_admin = !!data.is_admin;
   }
 
   static fromLocalStorage(): UserModel | null {

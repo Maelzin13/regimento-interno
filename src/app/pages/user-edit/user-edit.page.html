@@ -36,7 +36,7 @@
     </ion-item>
 
     <!-- Plano -->
-    <ion-item>
+    <ion-item *ngIf="user.plan === 'monthly' || user.plan === 'yearly'">
       <ion-label>Plano</ion-label>
       <ion-select [(ngModel)]="user.plan" name="plan">
         <ion-select-option value="monthly">Plano Mensal</ion-select-option>
@@ -52,38 +52,47 @@
         <ion-select-option value="active">Ativo</ion-select-option>
       </ion-select>
     </ion-item>
+    <br>
 
-    <ion-label style="margin-left: 19px;">Data de Início</ion-label>
-    <ion-item>
+    <!-- Data de Início
+    <div *ngIf="user.subscriptionStatus === 'active'">
+      <ion-label style="margin-left: 19px;">Data de Início</ion-label>
+
       <ion-col size="12" style="margin-bottom: 2px;">
-        <ion-datetime-button datetime="dateStartProjeto"></ion-datetime-button>
+        <ion-datetime-button datetime="dateStart"></ion-datetime-button>
         <ion-modal [keepContentsMounted]="true" class="ion-modal-color">
           <ng-template>
-            <ion-datetime id="dateStartProjeto" presentation="date"
-              [(ngModel)]="user.subscriptionStartDate"></ion-datetime>
+            <ion-datetime id="dateStart" presentation="date" displayFormat="DD/MM/YYYY"
+              [(ngModel)]="user.subscriptionStartDate">
+            </ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-col>
-    </ion-item>
 
-    <ion-label style="margin-left: 19px;">Data de Término </ion-label>
-    <ion-item>
+    </div>
+
+    <!-- Data de Término 
+    <div *ngIf="user.subscriptionStatus === 'active'">
+      <ion-label style="margin-left: 19px;">Data de Término</ion-label>
+
       <ion-col size="12" style="margin-bottom: 2px;">
-        <ion-datetime-button datetime="dateStartProjeto"></ion-datetime-button>
+        <ion-datetime-button datetime="dateEnd"></ion-datetime-button>
         <ion-modal [keepContentsMounted]="true" class="ion-modal-color">
           <ng-template>
-            <ion-datetime id="dateStartProjeto" presentation="date"
-              [(ngModel)]="user.subscriptionEndDate"></ion-datetime>
+            <ion-datetime id="dateEnd" presentation="date" displayFormat="DD/MM/YYYY"
+              [(ngModel)]="user.subscriptionEndDate">
+            </ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-col>
-    </ion-item>
+    </div> -->
+    <br>
 
     <ion-button expand="block" type="submit" color="primary" [disabled]="loading">
       Salvar Alterações
     </ion-button>
   </form>
 
-  <div *ngIf="successMessage" class="text-green">{{ successMessage }}</div>
-  <div *ngIf="errorMessage" class="text-red">{{ errorMessage }}</div>
+  <!-- <div *ngIf="successMessage" class="text-green">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="text-red">{{ errorMessage }}</div> -->
 </ion-content>

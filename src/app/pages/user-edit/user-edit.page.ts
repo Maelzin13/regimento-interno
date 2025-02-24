@@ -29,7 +29,16 @@ export class UserEditPage implements OnInit {
       const userData = await this.userService.getUsersById(userId);
       this.user = DetailedUserModel.fromJSON(userData);
 
-      // Verifique se o usuário atual tem permissões administrativas
+      console.log(this.user);
+
+      if (this.user.subscriptionStartDate) {
+        this.user.subscriptionStartDate = new Date(
+          this.user.subscriptionStartDate * 1000
+        ).toISOString();
+      } else {
+        this.user.subscriptionStartDate = new Date().toISOString();
+      }
+
       this.isAdmin = this.user.isAdmin;
     } catch (error) {
       console.error(error);
@@ -37,6 +46,13 @@ export class UserEditPage implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  private formatDate(dateStr: string): string {
+    const [datePart, timePart] = dateStr.split(' ');
+
+    const timeFormatted = timePart ? timePart.split('.')[0] : '';
+    return `${datePart}T${timeFormatted}`;
   }
 
   async saveChanges() {

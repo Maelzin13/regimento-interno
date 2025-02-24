@@ -182,7 +182,8 @@ export class AuthService {
       delete axios.defaults.headers.common['Authorization'];
       this.userChanged.next(null);
       setTimeout(() => {
-        this.router.navigate(['/login']);
+        window.location.reload();
+        this.router.navigateByUrl('/login', { replaceUrl: true });
       }, 300);
     } catch (error) {
       console.error('Erro ao deslogar:', error);

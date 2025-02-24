@@ -30,10 +30,12 @@
               <ion-label>{{ user.subscriptionStatus }}</ion-label>
             </ion-chip>
           <p *ngIf="user.subscriptionStartDate" class="blackColor">
-            <strong>Início da Assinatura:</strong> {{ user.subscriptionStartDate | date:'shortDate' }}
+            <strong>Início da Assinatura:</strong> {{ (user.subscriptionStartDate | date:'yyyy-MM-dd':'UTC') |
+            date:'dd/MM/yyyy' }}
           </p>
           <p *ngIf="user.subscriptionEndDate" class="blackColor">
-            <strong>Fim da Assinatura:</strong> {{ user.subscriptionEndDate | date:'shortDate' }}
+            <strong>Fim da Assinatura:</strong> {{ (user.subscriptionEndDate | date:'yyyy-MM-dd':'UTC') |
+            date:'dd/MM/yyyy' }}
           </p>
           <ion-button expand="block" color="primary" [routerLink]="['/user-edit', user.id]">
             Editar Usuário
