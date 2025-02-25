@@ -1,12 +1,11 @@
 import { ModalPage } from '../modal/modal.page';
 import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { SearchPage } from '../search/search.page';
 import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { EditBookModalPage } from '../home/edit-book-modal/edit-book-modal.page';
+import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
@@ -58,15 +57,6 @@ export class ViewTextPage implements OnInit {
   cleanHTML(content: string): string {
     const doc = new DOMParser().parseFromString(content, 'text/html');
     return doc.body.textContent || '';
-  }
-
-  async search() {
-    const modal = await this.modalController.create({
-      component: SearchPage,
-      // componentProps: ,
-    });
-
-    await modal.present();
   }
 
   async showModal(content: string) {

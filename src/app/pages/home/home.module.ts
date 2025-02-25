@@ -1,14 +1,15 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-import { IonicModule } from '@ionic/angular';
-
-import { HomePageRoutingModule } from './home-routing.module';
-
 import { HomePage } from './home.page';
-import { EditBookModalPage } from './edit-book-modal/edit-book-modal.page';
 import { QuillModule } from 'ngx-quill';
+import { NgModule } from '@angular/core';
+import { MenuPage } from './menu/menu.page';
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { LivroPage } from './livro/livro.page';
+import { SearchPage } from './search/search.page';
+import { PerfilPage } from './perfil/perfil.page';
+import { HomePageRoutingModule } from './home-routing.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 
 @NgModule({
   imports: [
@@ -19,6 +20,13 @@ import { QuillModule } from 'ngx-quill';
     ReactiveFormsModule,
     QuillModule.forRoot(),
   ],
-  declarations: [HomePage, EditBookModalPage],
+  declarations: [
+    HomePage,
+    PerfilPage,
+    MenuPage,
+    SearchPage,
+    LivroPage,
+    EditBookModalPage,
+  ],
 })
 export class HomePageModule {}

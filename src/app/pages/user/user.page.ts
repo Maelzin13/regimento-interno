@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular';
 import { UserService } from 'src/app/services/user.service';
 import { DetailedUserModel } from 'src/app/models/detailedUserModel';
 
@@ -14,6 +14,7 @@ export class UserPage implements OnInit {
   errorMessage = '';
 
   constructor(
+    private navCtrl: NavController,
     private userService: UserService,
     private loadingController: LoadingController
   ) {}
@@ -39,5 +40,9 @@ export class UserPage implements OnInit {
       await loading.dismiss();
       this.loading = false;
     }
+  }
+
+  async fecharModal() {
+    this.navCtrl.navigateRoot(['/home/menu']);
   }
 }

@@ -1,69 +1,20 @@
-<ion-header>
-  <ion-toolbar id="toolbar">
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content id="content">
-  <ng-container *ngIf="isLoading">
-    <ion-card class="custom-card" *ngFor="let i of [1, 2, 3, 4, 5]">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
-        </ion-card-title>
-      </ion-card-header>
-
-      <ion-card-content>
-        <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
-      </ion-card-content>
-    </ion-card>
-  </ng-container>
-
-
-  <ng-container *ngIf="!isLoading">
-    <ng-container *ngFor="let book of books">
-      <ion-card class="custom-card">
-        <div [routerLink]="['/view-text', book.id]">
-          <ion-card-header>
-            <ion-card-title class="book-title" class="color">
-              {{ cleanHTML(book.conteudo) }}
-            </ion-card-title>
-          </ion-card-header>
-
-          <ion-card-content>
-            <div *ngIf="book.titulos.length > 0" class="book-subtitle">
-              {{ cleanHTML(book.titulos[1].conteudo) }}
-            </div>
-          </ion-card-content>
-        </div>
-      </ion-card>
-    </ng-container>
-  </ng-container>
-
-  <!-- Textos Jurídicos -->
-  <div *ngIf="!isLoading">
-    <div class="section-title">
-      <h2 class="color">Textos Jurídicos</h2>
-    </div>
-    <div class="textos-juridicos">
-      <ion-card class="custom-card" *ngFor="let texto of textos">
-        <ion-card-header>
-          <ion-card-title class="color">{{ texto.title }}</ion-card-title>
-          <ion-card-subtitle class="color">{{ texto.subTitle }}</ion-card-subtitle>
-        </ion-card-header>
-        <ion-card-content>
-          <div *ngIf="texto.link">
-            <a [href]="texto.link" target="_blank" class="custom-link" style="text-decoration: underline;">
-              Acesse o {{ texto.title }}
-            </a>
-          </div>
-          <div *ngIf="!texto.link">
-            <p>{{ texto.description || 'Descrição indisponível.' }}</p>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    </div>
-  </div>
-</ion-content>
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="book">
+      <ion-icon name="book"></ion-icon>
+      <ion-label>Livro</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="search">
+      <ion-icon name="search"></ion-icon>
+      Search
+    </ion-tab-button>
+    <ion-tab-button tab="perfil">
+      <ion-icon name="person"></ion-icon>
+      <ion-label>Perfil</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="menu">
+      <ion-icon name="apps"></ion-icon>
+      <ion-label>Menu</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

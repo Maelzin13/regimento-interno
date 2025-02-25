@@ -1,0 +1,25 @@
+ion-grid {
+  margin-top: 25px;
+}
+
+ion-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+ion-fab-button.custom-button {
+  --border-radius: 15px;
+  --color: white;
+}
+
+.button-text {
+  color: #ffffff;
+  font-size: 14px;
+  margin-top: 65px;
+  font-weight: bold;
+}

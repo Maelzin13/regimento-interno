@@ -73,19 +73,14 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'search',
-    loadChildren: () =>
-      import('./pages/search/search.module').then((m) => m.SearchPageModule),
-  },
-  {
-    path: 'pagamentos',
+    path: 'pagamento',
     loadChildren: () =>
       import('./pages/pagamento/pagamento.module').then(
         (m) => m.PagamentoPageModule
       ),
   },
   {
-    path: 'change-password',
+    path: 'change',
     loadChildren: () =>
       import('./pages/change-password/change-password.module').then(
         (m) => m.ChangePasswordPageModule

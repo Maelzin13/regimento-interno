@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { ChangePasswordService } from 'src/app/services/change-password.service';
 
 @Component({
@@ -19,6 +19,7 @@ export class ChangePasswordPage implements OnInit {
   };
 
   constructor(
+    private navCtrl: NavController,
     private toastController: ToastController,
     private changePasswordService: ChangePasswordService
   ) {}
@@ -67,5 +68,9 @@ export class ChangePasswordPage implements OnInit {
     } catch (error: any) {
       this.presentToast(error.message, 'danger');
     }
+  }
+
+  async fecharModal() {
+    this.navCtrl.navigateRoot(['/home/menu']);
   }
 }

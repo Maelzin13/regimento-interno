@@ -1,10 +1,9 @@
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { SearchPage } from '../search/search.page';
 import { UserModel } from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
-import { EditBookModalPage } from '../home/edit-book-modal/edit-book-modal.page';
+import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 
 @Component({
   selector: 'app-chapters',
@@ -44,14 +43,5 @@ export class ChaptersPage implements OnInit {
     });
 
     return await modal.present();
-  }
-
-  async search() {
-    const modal = await this.modalController.create({
-      component: SearchPage,
-      // componentProps: ,
-    });
-
-    await modal.present();
   }
 }

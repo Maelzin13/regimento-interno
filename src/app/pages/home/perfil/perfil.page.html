@@ -1,0 +1,20 @@
+<ion-content id="content" class="ion-padding">
+  <div class="profile-container" *ngIf="user">
+    <ion-card>
+      <ion-card-header>
+        <div class="profile-header">
+          <ion-avatar>
+            <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar">
+          </ion-avatar>
+          <div class="profile-info">
+            <h2>{{ user.name || 'Usuário Anônimo' }}</h2>
+            <p>{{ user.email || 'Não informado' }}</p>
+          </div>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button expand="full">Editar Perfil</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

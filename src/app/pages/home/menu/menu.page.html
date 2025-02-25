@@ -1,0 +1,43 @@
+<ion-content id="content">
+  <ion-grid>
+    <ion-row>
+      <ion-col class="button-container">
+        <ion-fab [routerLink]="['/home/menu/users']">
+          <ion-fab-button class="custom-button">
+            <ion-icon name="people"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <span class="button-text">Usuários</span>
+      </ion-col>
+
+      <ion-col class="button-container">
+        <ion-fab [routerLink]="['/home/menu/pagamentos']">
+          <ion-fab-button class="custom-button">
+            <ion-icon name="stats-chart"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <span class="button-text">Pagamentos</span>
+      </ion-col>
+
+      <ion-col class="button-container">
+        <ion-fab [routerLink]="['/home/menu/change-password']">
+          <ion-fab-button class="custom-button">
+            <ion-icon name="file-tray-full"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <span class="button-text">Alterar Senha</span>
+      </ion-col>
+    </ion-row>
+    <br>
+    <ion-row>
+      <ion-col class="button-container">
+        <ion-fab (click)="logout()">
+          <ion-fab-button class="custom-button">
+            <ion-icon name="log-out"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <span class="button-text">Sair</span>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

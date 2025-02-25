@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { BookService } from 'src/app/services/book.service';
 
 @Component({
@@ -14,8 +14,9 @@ export class SearchPage implements OnInit {
   bookId: number = 1;
 
   constructor(
-    private modalController: ModalController,
-    private bookService: BookService
+    private navCtrl: NavController,
+    private bookService: BookService,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
