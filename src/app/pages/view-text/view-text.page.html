@@ -13,7 +13,6 @@
 </ion-header>
 
 <ion-content id="content" class="ion-padding">
-  <!-- Mostrar Títulos e Capítulos -->
   <div *ngIf="book?.titulos?.length">
     <ion-card *ngFor="let titulo of book.titulos; let tituloIndex = index" class="ion-text-center">
       <ng-container *ngIf="tituloIndex > 0">
@@ -32,7 +31,7 @@
               <ng-container *ngIf="capituloIndex > 0">
                 <ion-item>
                   <ion-label>
-                    <h3>{{ cleanHTML(capitulo.conteudo) }}</h3>
+                    <h3 [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
                   </ion-label>
                   <ion-button *ngIf="user?.is_admin" size="small" fill="clear"
                     (click)="abrirEditor(capitulo.id, 'capitulo')">

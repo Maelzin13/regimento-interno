@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { EditBookModalPage } from '../home/edit-book-modal/edit-book-modal.page';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-view-text',
@@ -24,6 +25,7 @@ export class ViewTextPage implements OnInit {
     private route: ActivatedRoute,
     private bookService: BookService,
     private authService: AuthService,
+    private sanitizer: DomSanitizer,
     private modalController: ModalController
   ) {}
 
@@ -47,6 +49,10 @@ export class ViewTextPage implements OnInit {
     this.router.navigate(['/chapters', capitulo.id], {
       state: { capitulo },
     });
+  }
+
+  safeHTML(content: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(content);
   }
 
   cleanHTML(content: string): string {
