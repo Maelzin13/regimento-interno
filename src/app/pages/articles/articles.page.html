@@ -16,7 +16,7 @@
           <ion-button *ngIf="user?.is_admin" size="small" fill="clear" (click)="abrirEditor(artigo.id, 'artigo')">
             <ion-icon name="pencil-outline"></ion-icon>
           </ion-button>
-            <ion-button fill="clear">
+            <ion-button fill="clear" color="danger">
               <ion-icon name="trash-outline"></ion-icon>
             </ion-button>
         </ion-card-title>
@@ -34,7 +34,7 @@
                   (click)="abrirEditor(paragrafo.id, 'paragrafo')">
                   <ion-icon name="pencil-outline"></ion-icon>
                 </ion-button>
-                  <ion-button fill="clear">
+                  <ion-button fill="clear" color="danger">
                     <ion-icon name="trash-outline"></ion-icon>
                   </ion-button>
 
