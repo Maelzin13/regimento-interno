@@ -86,6 +86,11 @@ const routes: Routes = [
         (m) => m.ChangePasswordPageModule
       ),
   },
+  {
+    path: 'modal-notas',
+    loadChildren: () => import('./pages/modal-notas/modal-notas.module').then( m => m.ModalNotasPageModule)
+  },
+
 ];
 
 @NgModule({

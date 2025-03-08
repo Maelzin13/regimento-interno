@@ -17,6 +17,9 @@
             <ion-button *ngIf="user?.is_admin" fill="clear" (click)="abrirEditor(titulo.id, 'titulo')">
               <ion-icon name="pencil-outline"></ion-icon>
             </ion-button>
+            <ion-button fill="clear">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
           </ion-card-title>
         </ion-card-header>
 
@@ -32,6 +35,9 @@
                     (click)="abrirEditor(capitulo.id, 'capitulo')">
                     <ion-icon name="pencil-outline"></ion-icon>
                   </ion-button>
+                    <ion-button fill="clear">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </ion-button>
                   <ion-icon slot="end" name="chevron-forward-outline" (click)="navigateToCapitulo(capitulo)"></ion-icon>
                 </ion-item>
               </ng-container>

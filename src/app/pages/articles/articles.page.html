@@ -16,6 +16,9 @@
           <ion-button *ngIf="user?.is_admin" size="small" fill="clear" (click)="abrirEditor(artigo.id, 'artigo')">
             <ion-icon name="pencil-outline"></ion-icon>
           </ion-button>
+            <ion-button fill="clear">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
         </ion-card-title>
       </ion-card-header>
       <ion-card-content *ngIf="artigo.paragrafos?.length">
@@ -31,6 +34,9 @@
                   (click)="abrirEditor(paragrafo.id, 'paragrafo')">
                   <ion-icon name="pencil-outline"></ion-icon>
                 </ion-button>
+                  <ion-button fill="clear">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
 
                 <ion-button size="small" fill="outline" color="primary"
                   (click)="openModal(cleanHTML(paragrafo.conteudo))">

@@ -1,5 +1,6 @@
 import { ModalPage } from '../modal/modal.page';
 import { ModalController } from '@ionic/angular';
+import { ModalNotasPage } from '../modal-notas/modal-notas.page';
 import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -63,6 +64,13 @@ export class ViewTextPage implements OnInit {
     const modal = await this.modalController.create({
       component: ModalPage,
       componentProps: { content },
+    });
+    return await modal.present();
+  }
+
+   async openModal() {
+    const modal = await this.modalController.create({
+      component: ModalNotasPage  
     });
     return await modal.present();
   }
