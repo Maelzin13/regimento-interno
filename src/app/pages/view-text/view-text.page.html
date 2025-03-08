@@ -1,79 +1,104 @@
 <ion-header>
-  <ion-toolbar id="toolbar">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ cleanHTML(book?.conteudo) || 'Carregando...' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="content" class="ion-padding">
-  <div *ngIf="book?.titulos?.length">
-    <ion-card
-      *ngFor="let titulo of book.titulos; let tituloIndex = index"
-      class="ion-text-center"
-    >
-      <ng-container *ngIf="tituloIndex > 0">
-        <ion-card-header>
-          <ion-card-title
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-            "
-          >
-            <span>{{ cleanHTML(titulo.conteudo) }}</span>
-            <ion-button
-              *ngIf="user?.is_admin"
-              fill="clear"
-              (click)="abrirEditor(titulo.id, 'titulo')"
-            >
-              <ion-icon name="pencil-outline"></ion-icon>
-            </ion-button>
-            <ion-button fill="clear" color="danger">
-              <ion-icon name="trash-outline"></ion-icon>
-            </ion-button>
-          </ion-card-title>
-        </ion-card-header>
+<ion-segment>
+  <ion-segment-button value="corrido" content-id="corrido">
+    <ion-label>Texto Corrido</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="formatado" content-id="formatado">
+    <ion-label>Texto Formatado</ion-label>
+  </ion-segment-button>
+</ion-segment>
 
-        <ion-card-content>
-          <ion-list lines="none">
-            <ng-container
-              *ngFor="let capitulo of titulo.capitulos; let capituloIndex = index"
-            >
-              <ng-container *ngIf="capituloIndex > 0">
-                <ion-item>
-                  <ion-label>
-                    <h3 [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
-                  </ion-label>
-                  <ion-button
-                    *ngIf="user?.is_admin"
-                    size="small"
-                    fill="clear"
-                    (click)="abrirEditor(capitulo.id, 'capitulo')"
-                  >
-                    <ion-icon name="pencil-outline"></ion-icon>
-                  </ion-button>
-                  <ion-button fill="clear" color="danger">
-                    <ion-icon name="trash-outline"></ion-icon>
-                  </ion-button>
+<ion-segment-view>
+  <ion-segment-content id="corrido">
+    <ion-content [fullscreen]="true" class="ion-padding">
+      <h1>{{ cleanHTML(book?.conteudo) || 'Carregando...' }}</h1>
 
-                  <ion-icon
-                    slot="end"
-                    name="chevron-forward-outline"
-                    (click)="navigateToCapitulo(capitulo)"
-                  ></ion-icon>
-                </ion-item>
+      <ng-container *ngIf="book?.titulos?.length; else loading">
+        <ng-container *ngFor="let titulo of book.titulos">
+          <h2 [innerHTML]="safeHTML(titulo.conteudo)"></h2>
+          <ng-container *ngFor="let capitulo of titulo.capitulos">
+            <h3 [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
+            <ng-container *ngFor="let secao of capitulo.secaos">
+              <h4 [innerHTML]="safeHTML(secao.conteudo)"></h4>
+              <ng-container *ngFor="let artigo of secao.artigos">
+                <h5 [innerHTML]="safeHTML(artigo.conteudo)"></h5>
+                <ng-container *ngFor="let paragrafo of artigo.paragrafos">
+                  <p [innerHTML]="safeHTML(paragrafo.conteudo)"></p>
+                </ng-container>
               </ng-container>
             </ng-container>
-          </ion-list>
-        </ion-card-content>
+          </ng-container>
+        </ng-container>
       </ng-container>
-    </ion-card>
-  </div>
 
-  <div *ngIf="!book" class="ion-text-center">
-    <ion-spinner class="ion-margin-top"></ion-spinner>
-    <p class="text-center">Carregando dados...</p>
-  </div>
-</ion-content>
+      <ng-template #loading>
+        <div class="ion-text-center">
+          <ion-spinner class="ion-margin-top"></ion-spinner>
+          <p class="text-center">Carregando dados...</p>
+        </div>
+      </ng-template>
+    </ion-content>
+  </ion-segment-content>
+  <ion-segment-content id="formatado">
+    <ion-content [fullscreen]="true" class="ion-padding">
+      <div *ngIf="book?.titulos?.length">
+        <ion-card *ngFor="let titulo of book.titulos; let tituloIndex = index" class="ion-text-center">
+          <ng-container *ngIf="tituloIndex > 0">
+            <ion-card-header>
+              <ion-card-title style="display: flex; align-items: center; justify-content: space-between;">
+                <span>{{ cleanHTML(titulo.conteudo) }}</span>
+                <ion-button *ngIf="user?.is_admin" fill="clear" (click)="abrirEditor(titulo.id, 'titulo')">
+                  <ion-icon name="pencil-outline"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" color="danger">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-list lines="none">
+                <ng-container *ngFor="let capitulo of titulo.capitulos; let capituloIndex = index">
+                  <ng-container *ngIf="capituloIndex > 0">
+                    <ion-item>
+                      <ion-label>
+                        <h3 [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
+                      </ion-label>
+                      <ion-button *ngIf="user?.is_admin" size="small" fill="clear"
+                        (click)="abrirEditor(capitulo.id, 'capitulo')">
+                        <ion-icon name="pencil-outline"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" color="danger">
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </ion-button>
+                      <ion-icon slot="end" name="chevron-forward-outline"
+                        (click)="navigateToCapitulo(capitulo)"></ion-icon>
+                    </ion-item>
+                  </ng-container>
+                </ng-container>
+              </ion-list>
+            </ion-card-content>
+          </ng-container>
+        </ion-card>
+      </div>
+
+      <div *ngIf="!book" class="ion-text-center">
+        <ion-spinner class="ion-margin-top"></ion-spinner>
+        <p class="text-center">Carregando dados...</p>
+      </div>
+    </ion-content></ion-segment-content>
+</ion-segment-view>
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="scrollToTop()">Voltar pro topo</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

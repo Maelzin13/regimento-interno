@@ -1,7 +1,7 @@
 import { ModalPage } from '../modal/modal.page';
-import { ModalController } from '@ionic/angular';
+import { IonContent, ModalController } from '@ionic/angular';
 import { ModalNotasPage } from '../modal-notas/modal-notas.page';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
@@ -19,6 +19,7 @@ export class ViewTextPage implements OnInit {
   bookId: any;
   prefacio: any;
   user: UserModel | null = null;
+  @ViewChild(IonContent) content!: IonContent;
 
   constructor(
     private router: Router,
@@ -68,9 +69,9 @@ export class ViewTextPage implements OnInit {
     return await modal.present();
   }
 
-   async openModal() {
+  async openModal() {
     const modal = await this.modalController.create({
-      component: ModalNotasPage  
+      component: ModalNotasPage,
     });
     return await modal.present();
   }
@@ -85,5 +86,9 @@ export class ViewTextPage implements OnInit {
     });
 
     return await modal.present();
+  }
+
+  scrollToTop() {
+    this.content.scrollToTop(500);
   }
 }

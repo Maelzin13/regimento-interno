@@ -29,15 +29,9 @@
       </ion-col>
     </ion-row>
     <br>
-    <ion-row>
-      <ion-col class="button-container">
-        <ion-fab (click)="logout()">
-          <ion-fab-button class="custom-button">
-            <ion-icon name="log-out"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-        <span class="button-text">Sair</span>
-      </ion-col>
-    </ion-row>
   </ion-grid>
+  <ion-button class="logout-button" expand="full" color="danger" (click)="logout()">
+    <ion-icon name="log-out"></ion-icon>
+    <span>Sair</span>
+  </ion-button>
 </ion-content>
