@@ -5,6 +5,7 @@ export class UserModel {
   token?: string;
   provider?: string;
   is_admin?: boolean;
+  password?: boolean;
 
   constructor(data: Partial<UserModel>) {
     this.id = data.id || 0;

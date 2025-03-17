@@ -76,16 +76,41 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<string> {
     try {
-      const response = await axios.post(`${this.apiservice.baseUrl}/login`, {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        `${this.apiservice.baseUrl}/auth/login `,
+        {
+          email,
+          password,
+        }
+      );
       const token = response.data.access_token;
 
       this.cookieService.set('authToken', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       const user = await this.fetchProfile();
+      this.setUser(user, token);
+
+      return token;
+    } catch (error: any) {
+      throw new Error(
+        'Erro ao conectar ao servidor. Verifique suas credenciais.'
+      );
+    }
+  }
+
+  async register(user: UserModel): Promise<string> {
+    try {
+      const response = await axios.post(`${this.apiservice.baseUrl}/register`, {
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      });
+
+      const token = response.data.access_token;
+      this.cookieService.set('authToken', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
       this.setUser(user, token);
 
       return token;
