@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
-
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
-  { path: '', redirectTo: 'payment-form', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   {
     path: 'chapters/:titleId',
@@ -47,20 +46,6 @@ const routes: Routes = [
       import('./pages/login/login.module').then((m) => m.LoginPageModule),
   },
   {
-    path: 'payment-form',
-    loadChildren: () =>
-      import('./pages/payment-form/payment-form.module').then(
-        (m) => m.PaymentFormPageModule
-      ),
-  },
-  {
-    path: 'payment-success',
-    loadChildren: () =>
-      import('./pages/payment-success/payment-success.module').then(
-        (m) => m.PaymentSuccessPageModule
-      ),
-  },
-  {
     path: 'user',
     loadChildren: () =>
       import('./pages/user/user.module').then((m) => m.UserPageModule),
@@ -88,9 +73,11 @@ const routes: Routes = [
   },
   {
     path: 'modal-notas',
-    loadChildren: () => import('./pages/modal-notas/modal-notas.module').then( m => m.ModalNotasPageModule)
+    loadChildren: () =>
+      import('./pages/modal-notas/modal-notas.module').then(
+        (m) => m.ModalNotasPageModule
+      ),
   },
-
 ];
 
 @NgModule({
