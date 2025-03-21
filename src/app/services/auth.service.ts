@@ -22,17 +22,19 @@ export class AuthService {
 
   constructor(
     private router: Router,
-    private apiservice: ApiService,
+    private apiService: ApiService,
     private cookieService: CookieService
   ) {
     const token = this.cookieService.get('authToken');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
-
     this.loadUserFromStorage();
   }
 
+  /**
+   * Carrega o usuário armazenado localmente e emite o valor para subscribers.
+   */
   loadUserFromStorage() {
     const user = UserModel.fromLocalStorage();
     if (user) {
@@ -40,10 +42,16 @@ export class AuthService {
     }
   }
 
+  /**
+   * Retorna a URL base da API.
+   */
   getBaseUrl(): string {
-    return this.apiservice.baseUrl;
+    return this.apiService.baseUrl;
   }
 
+  /**
+   * Salva o usuário e token no localStorage e atualiza o header de Authorization do axios.
+   */
   setUser(user: any, token: string): void {
     if (user && token) {
       const userData = new UserModel({
@@ -60,28 +68,38 @@ export class AuthService {
       this.userChanged.next(userData);
     }
   }
+
+  /**
+   * Retorna o usuário armazenado.
+   */
   getUser(): UserModel | null {
     const user = localStorage.getItem('authUser');
     return user ? JSON.parse(user) : null;
   }
 
+  /**
+   * Obtém o token de autenticação armazenado.
+   */
   getAuthToken(): string | null {
     return localStorage.getItem('authToken');
   }
 
+  /**
+   * Salva o token de autenticação e atualiza o header de axios.
+   */
   saveAuthToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
 
+  /**
+   * Efetua o login via e-mail e senha.
+   */
   async login(email: string, password: string): Promise<string> {
     try {
       const response = await axios.post(
-        `${this.apiservice.baseUrl}/auth/login `,
-        {
-          email,
-          password,
-        }
+        `${this.apiService.baseUrl}/auth/login`,
+        { email, password }
       );
       const token = response.data.access_token;
 
@@ -99,14 +117,16 @@ export class AuthService {
     }
   }
 
+  /**
+   * Efetua o registro de um novo usuário.
+   */
   async register(user: UserModel): Promise<string> {
     try {
-      const response = await axios.post(`${this.apiservice.baseUrl}/register`, {
+      const response = await axios.post(`${this.apiService.baseUrl}/register`, {
         name: user.name,
         email: user.email,
         password: user.password,
       });
-
       const token = response.data.access_token;
       this.cookieService.set('authToken', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -121,9 +141,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * Busca o perfil do usuário autenticado.
+   */
   async fetchProfile(): Promise<UserModel> {
     try {
-      const response = await axios.get(`${this.apiservice.baseUrl}/profile`);
+      const response = await axios.get(`${this.apiService.baseUrl}/profile`);
       return new UserModel(response.data.user);
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
@@ -135,6 +158,9 @@ export class AuthService {
     }
   }
 
+  /**
+   * Realiza o login com o Google utilizando Firebase Authentication.
+   */
   async googleLogin() {
     try {
       const provider = new GoogleAuthProvider();
@@ -150,10 +176,8 @@ export class AuthService {
       }
 
       const response = await axios.post(
-        `${this.apiservice.baseUrl}/social-login/google`,
-        {
-          token: accessToken,
-        }
+        `${this.apiService.baseUrl}/social-login/google`,
+        { token: accessToken }
       );
 
       this.setUser(response.data.user, response.data.token);
@@ -166,6 +190,9 @@ export class AuthService {
     }
   }
 
+  /**
+   * Realiza o login com o Facebook utilizando Firebase Authentication.
+   */
   async facebookLogin() {
     try {
       const provider = new FacebookAuthProvider();
@@ -181,10 +208,8 @@ export class AuthService {
       }
 
       const response = await axios.post(
-        `${this.apiservice.baseUrl}/social-login/facebook`,
-        {
-          token: accessToken,
-        }
+        `${this.apiService.baseUrl}/social-login/facebook`,
+        { token: accessToken }
       );
 
       this.setUser(response.data.user, response.data.token);
@@ -197,6 +222,9 @@ export class AuthService {
     }
   }
 
+  /**
+   * Efetua o logout do usuário.
+   */
   async logout(): Promise<void> {
     try {
       await signOut(auth);
