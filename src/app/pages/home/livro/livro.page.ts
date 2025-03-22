@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { BookService } from 'src/app/services/book.service';
 
 @Component({
@@ -43,10 +42,7 @@ export class LivroPage implements OnInit {
     },
   ];
 
-  constructor(
-    public bookService: BookService,
-    private modalController: ModalController
-  ) {}
+  constructor(public bookService: BookService) {}
 
   ngOnInit() {
     this.bookService
