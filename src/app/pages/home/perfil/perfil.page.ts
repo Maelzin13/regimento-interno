@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
+import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -28,5 +29,9 @@ export class PerfilPage implements OnInit {
     } else {
       this.user = null;
     }
+  }
+
+  subscribe() {
+    window.open(`${environment.baseUrl}/login`, '_blank');
   }
 }

@@ -1,28 +1,37 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>plans</ion-title>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="roolBack()">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Planos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">plans</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <ng-container *ngFor="let plan of planos">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>{{plan.nome}}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p>{{plan.id}}</p>
-        <p>{{plan.ativo}}</p>
-        <p>{{plan.preco}}</p>
-        <p>{{plan.intervalo}}</p>
-        <p>{{plan.atualizavel}}</p>
-      </ion-card-content>
-    </ion-card>
-  </ng-container>
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ng-container *ngFor="let plan of planos">
+        <ion-col size="12" size-md="6" size-lg="4">
+          <ion-card class="plan-card" [class.active]="plan.ativo">
+            <ion-card-header>
+              <ion-card-title>{{ plan.nome }}</ion-card-title>
+              <ion-card-subtitle>{{ plan.intervalo }}</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <p class="price">{{ plan.preco }}</p>
+              <p *ngIf="plan.ativo" class="active-label">Plano Ativo</p>
+              <p *ngIf="!plan.ativo" class="inactive-label">Não Ativo</p>
+            </ion-card-content>
+            <ion-item lines="none" *ngIf="!plan.ativo">
+              <ion-button expand="block" (click)="subscribe()">
+                Assinar
+              </ion-button>
+            </ion-item>
+          </ion-card>
+        </ion-col>
+      </ng-container>
+    </ion-row>
+  </ion-grid>
 </ion-content>
