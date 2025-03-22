@@ -19,7 +19,7 @@
         <div class="ion-padding" slot="content">
           <p class="blackColor"><strong>Valor:</strong> R$ {{ pagamento.valor }}</p>
           <p class="blackColor"><strong>Status:</strong>
-            <ion-chip [color]="pagamento.status === 'paid' ? 'success' : 'danger'" class="text-capitalize">
+            <ion-chip [color]="pagamento.status === 'pago' ? 'success' : 'danger'" class="text-capitalize">
               <ion-label>{{ pagamento.status }}</ion-label>
             </ion-chip>
           </p>

@@ -1,0 +1,28 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>plans</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">plans</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ng-container *ngFor="let plan of planos">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{plan.nome}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>{{plan.id}}</p>
+        <p>{{plan.ativo}}</p>
+        <p>{{plan.preco}}</p>
+        <p>{{plan.intervalo}}</p>
+        <p>{{plan.atualizavel}}</p>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+</ion-content>

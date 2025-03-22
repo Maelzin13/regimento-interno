@@ -40,6 +40,7 @@ export class ViewTextPage implements OnInit {
       .then((books: any) => {
         this.prefacio = books.prefacios;
         this.book = books.livro;
+        console.log('this.book', this.book);
       })
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);

@@ -16,9 +16,28 @@
             <ion-icon name="stats-chart"></ion-icon>
           </ion-fab-button>
         </ion-fab>
-        <span class="button-text">Pagamentos</span>
+        <span class="button-text">Faturamento</span>
       </ion-col>
 
+      <ion-col class="button-container">
+        <ion-fab [routerLink]="['/home/menu/planos']">
+          <ion-fab-button class="custom-button">
+            <ion-icon name="card-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <span class="button-text">Assinaturas</span>
+      </ion-col>
+    </ion-row>
+    <br>
+    <ion-row>
+      <ion-col class="button-container">
+        <ion-fab [routerLink]="['/home/menu/change-password']">
+          <ion-fab-button class="custom-button">
+            <ion-icon name="settings-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <span class="button-text">Painel Adiministrativo</span>
+      </ion-col>
       <ion-col class="button-container">
         <ion-fab [routerLink]="['/home/menu/change-password']">
           <ion-fab-button class="custom-button">
@@ -28,7 +47,6 @@
         <span class="button-text">Alterar Senha</span>
       </ion-col>
     </ion-row>
-    <br>
   </ion-grid>
   <ion-button class="logout-button" expand="full" color="danger" (click)="logout()">
     <ion-icon name="log-out"></ion-icon>

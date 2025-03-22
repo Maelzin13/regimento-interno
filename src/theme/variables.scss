@@ -3,6 +3,7 @@
   --secondary-color: #157d7d;
   --google-red: #db4437;
   --facebook-blue: #3b5998;
+  --color-plan: #eab308;
 }
 
 #content {
@@ -85,5 +86,10 @@
 
 .facebook-btn {
   --background: var(--facebook-blue);
+  --color: white;
+}
+
+.corPlano-btn {
+  --background: var(--color-plan);
   --color: white;
 }

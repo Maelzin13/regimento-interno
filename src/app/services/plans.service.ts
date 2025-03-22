@@ -22,7 +22,7 @@ export class PlansService {
           Authorization: `Bearer ${this.authService.getAuthToken()}`,
         },
       });
-      return response.data.plans;
+      return response.data;
     } catch (error: any) {
       console.error('Erro ao obter planos:', error);
       throw new Error('Não foi possível carregar os planos.');

@@ -77,7 +77,11 @@ const routes: Routes = [
       import('./pages/modal-notas/modal-notas.module').then(
         (m) => m.ModalNotasPageModule
       ),
+  },  {
+    path: 'plans',
+    loadChildren: () => import('./pages/plans/plans.module').then( m => m.PlansPageModule)
   },
+
 ];
 
 @NgModule({
