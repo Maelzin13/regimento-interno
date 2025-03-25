@@ -1,8 +1,9 @@
+import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/services/auth.service';
-import { NavController } from '@ionic/angular';
+import { UserEditPage } from '../../user-edit/user-edit.page';
 
 @Component({
   selector: 'app-perfil',
@@ -13,30 +14,31 @@ export class PerfilPage implements OnInit {
   user: UserModel | null = null;
 
   constructor(
-    private navCtrl: NavController,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
     this.loadUser();
-    this.authService.userChanged.subscribe((user) => {
-      this.user = user;
-    });
   }
 
-  loadUser() {
-    const user = this.authService.getUser();
-    const token = this.authService.getAuthToken();
-
-    if (token && user) {
-      this.user = user;
-    } else {
-      this.user = null;
+  async loadUser() {
+    try {
+      const userData = await this.authService.fetchProfile();
+      this.user = userData;
+    } catch (error) {
+      console.error(error);
     }
   }
-
   async editProfile(id: number) {
-    this.navCtrl.navigateForward(['/user/edit', id]);
+    const modal = await this.modalController.create({
+      component: UserEditPage,
+      componentProps: { id },
+    });
+    modal.present();
+    modal.onDidDismiss().then(async () => {
+      await this.loadUser();
+    });
   }
 
   subscribe() {

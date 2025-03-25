@@ -18,4 +18,8 @@ export class UserService {
 
     return response.data.data;
   }
+
+  async updateUser(user: any) {
+    await axios.put(`${this.apiservice.baseUrl}/users/${user.id}`, user);
+  }
 }

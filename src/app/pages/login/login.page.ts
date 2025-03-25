@@ -24,7 +24,6 @@ export class LoginPage implements OnInit {
       if (token) {
         const user = await this.authService.fetchProfile();
         console.log('Usuário autenticado:', user);
-        this.authService.setUser(user, token);
         this.router.navigate(['/home']);
       }
     } catch (error) {
@@ -34,9 +33,7 @@ export class LoginPage implements OnInit {
 
   async login() {
     try {
-      const token = await this.authService.login(this.email, this.password);
-      const user = await this.authService.fetchProfile();
-      this.authService.setUser(user, token);
+      await this.authService.login(this.email, this.password);
       this.router.navigate(['/home']);
     } catch (error: any) {
       console.error('Erro ao fazer login:', error.message);
@@ -50,7 +47,6 @@ export class LoginPage implements OnInit {
 
       if (response && response.user && response.token) {
         console.log('Usuário logado com Google:', response.user);
-        this.authService.setUser(response.user, response.token);
 
         setTimeout(() => {
           console.log('Redirecionando para /home...');
@@ -71,9 +67,6 @@ export class LoginPage implements OnInit {
       const response = await this.authService.facebookLogin();
 
       if (response && response.user && response.token) {
-        console.log('Usuário logado com Facebook:', response.user);
-        this.authService.setUser(response.user, response.token);
-
         setTimeout(() => {
           console.log('Redirecionando para /home...');
           this.router.navigate(['/home']);

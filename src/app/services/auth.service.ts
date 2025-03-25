@@ -29,44 +29,10 @@ export class AuthService {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
-    this.loadUserFromStorage();
   }
 
-  /**
-   * Carrega o usuário armazenado localmente e emite o valor para subscribers.
-   */
-  loadUserFromStorage() {
-    const user = UserModel.fromLocalStorage();
-    if (user) {
-      this.userChanged.next(user);
-    }
-  }
-
-  /**
-   * Retorna a URL base da API.
-   */
   getBaseUrl(): string {
     return this.apiService.baseUrl;
-  }
-
-  /**
-   * Salva o usuário e token no localStorage e atualiza o header de Authorization do axios.
-   */
-  setUser(user: any, token: string): void {
-    if (user && token) {
-      const userData = new UserModel({
-        id: user.id,
-        email: user.email || '',
-        token: token,
-        provider: user.provider || '',
-        is_admin: user.is_admin || false,
-        name: user.name || user.displayName || '',
-      });
-
-      userData.saveToLocalStorage();
-      localStorage.setItem('authToken', token);
-      this.userChanged.next(userData);
-    }
   }
 
   /**
@@ -106,9 +72,6 @@ export class AuthService {
       this.cookieService.set('authToken', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      const user = await this.fetchProfile();
-      this.setUser(user, token);
-
       return token;
     } catch (error: any) {
       throw new Error(
@@ -131,8 +94,6 @@ export class AuthService {
       this.cookieService.set('authToken', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      this.setUser(user, token);
-
       return token;
     } catch (error: any) {
       throw new Error(
@@ -144,10 +105,11 @@ export class AuthService {
   /**
    * Busca o perfil do usuário autenticado.
    */
-  async fetchProfile(): Promise<UserModel> {
+  async fetchProfile(): Promise<any> {
     try {
       const response = await axios.get(`${this.apiService.baseUrl}/profile`);
-      return new UserModel(response.data.user);
+      console.log('response', response.data);
+      return response.data;
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
         this.logout();
@@ -180,7 +142,6 @@ export class AuthService {
         { token: accessToken }
       );
 
-      this.setUser(response.data.user, response.data.token);
       this.saveAuthToken(response.data.token);
 
       return response.data;
@@ -212,7 +173,6 @@ export class AuthService {
         { token: accessToken }
       );
 
-      this.setUser(response.data.user, response.data.token);
       this.saveAuthToken(response.data.token);
 
       return response.data;
@@ -228,7 +188,6 @@ export class AuthService {
   async logout(): Promise<void> {
     try {
       await signOut(auth);
-      UserModel.clearLocalStorage();
       this.cookieService.delete('authToken');
       localStorage.removeItem('authToken');
       localStorage.removeItem('authUser');
