@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
@@ -30,7 +30,10 @@
               <ng-container *ngFor="let artigo of secao.artigos">
                 <h5 [innerHTML]="safeHTML(artigo.conteudo)"></h5>
                 <ng-container *ngFor="let paragrafo of artigo.paragrafos">
-                  <p [innerHTML]="safeHTML(paragrafo.conteudo)"></p>
+                  <h5 [innerHTML]="safeHTML(paragrafo.conteudo)"></h5>
+                  <ng-container *ngFor="let comentario of paragrafo.comentarios">
+                    <p [innerHTML]="safeHTML(comentario.conteudo)"></p>
+                  </ng-container>
                 </ng-container>
               </ng-container>
             </ng-container>

@@ -1,12 +1,16 @@
 import axios from 'axios';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChangePasswordService {
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private authService: AuthService
+  ) {}
 
   async changePassword(
     currentPassword: string,
@@ -19,10 +23,8 @@ export class ChangePasswordService {
       new_password_confirmation: newPasswordConfirmation,
     };
 
-    const token = localStorage.getItem('token');
-
     const headers = {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${this.authService.getAuthToken()}`,
       'Content-Type': 'application/json',
     };
 

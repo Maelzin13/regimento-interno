@@ -6,19 +6,17 @@ import { ApiService } from './api.service';
   providedIn: 'root',
 })
 export class PaymentService {
-  constructor(private apiservice: ApiService) {}
+  constructor(
+    private apiservice: ApiService,
+  ) {}
 
   async getPayments() {
-    const response = await axios.get(`${this.apiservice.baseUrl}/pagamentos`);
-    return response.data.data;
-  }
-
-  async processPayment(paymentData: any) {
-    const response = await axios.post(
-      `${this.apiservice.baseUrl}/payment/process`,
-      paymentData
-    );
-
-    return response.data;
+    try {
+      const response = await axios.get(`${this.apiservice.baseUrl}/pagamentos`);
+      return response.data.data;
+    } catch (error) {
+      console.error('Erro ao buscar pagamentos', error);
+      throw error;
+    }
   }
 }

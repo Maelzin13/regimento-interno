@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/services/auth.service';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-perfil',
@@ -11,7 +12,10 @@ import { AuthService } from 'src/app/services/auth.service';
 export class PerfilPage implements OnInit {
   user: UserModel | null = null;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private navCtrl: NavController,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.loadUser();
@@ -29,6 +33,10 @@ export class PerfilPage implements OnInit {
     } else {
       this.user = null;
     }
+  }
+
+  async editProfile(id: number) {
+    this.navCtrl.navigateForward(['/user/edit', id]);
   }
 
   subscribe() {

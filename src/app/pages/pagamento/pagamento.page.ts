@@ -1,6 +1,6 @@
 import { NavController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { PagamentosService } from 'src/app/services/pagamentos.service';
+import { PaymentService } from 'src/app/services/payment.service';
 
 @Component({
   selector: 'app-pagamento',
@@ -11,12 +11,12 @@ export class PagamentoPage implements OnInit {
   pagamentos: any[] = [];
   constructor(
     private navCtrl: NavController,
-    private pagamentosService: PagamentosService
+    private pagamentosService: PaymentService
   ) {}
 
   ngOnInit() {
     this.pagamentosService
-      .getPagamentos()
+      .getPayments()
       .then((data) => {
         this.pagamentos = data;
       })
