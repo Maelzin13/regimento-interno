@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
-import { DetailedUserModel } from 'src/app/models/detailedUserModel';
 import { ModalController, NavParams } from '@ionic/angular';
+import { DetailedUserModel } from 'src/app/models/detailedUserModel';
 
 @Component({
   selector: 'app-user-edit',
@@ -11,7 +11,6 @@ import { ModalController, NavParams } from '@ionic/angular';
 })
 export class UserEditPage implements OnInit {
   loading = false;
-  isAdmin = false;
   errorMessage = '';
   successMessage = '';
   user: DetailedUserModel | null = null;
@@ -29,19 +28,7 @@ export class UserEditPage implements OnInit {
 
     try {
       const userData = await this.userService.getUsersById(userId);
-      this.user = DetailedUserModel.fromJSON(userData);
-
-      console.log(this.user);
-
-      if (this.user.subscriptionStartDate) {
-        this.user.subscriptionStartDate = new Date(
-          this.user.subscriptionStartDate * 1000
-        ).toISOString();
-      } else {
-        this.user.subscriptionStartDate = new Date().toISOString();
-      }
-
-      this.isAdmin = this.user.isAdmin;
+      this.user = userData;
     } catch (error) {
       console.error(error);
       this.errorMessage = 'Erro ao carregar informações do usuário.';
@@ -56,8 +43,7 @@ export class UserEditPage implements OnInit {
     this.successMessage = '';
     this.errorMessage = '';
     try {
-      const userJSON = this.user.toJSON();
-      await this.userService.updateUser(userJSON);
+      await this.userService.updateUser(this.user);
       this.successMessage = 'Usuário atualizado com sucesso!';
       setTimeout(() => {
         this.fecharModal();

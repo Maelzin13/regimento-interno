@@ -24,7 +24,6 @@ export class ChaptersPage implements OnInit {
     const user = this.authService.getUser();
     this.user = user;
     this.capitulo = history.state.capitulo || {};
-    console.log('capitulo: ', this.capitulo);
   }
 
   navigateToArtigo(artigo: any) {

@@ -23,7 +23,8 @@ export class LoginPage implements OnInit {
       const token = this.authService.getAuthToken();
       if (token) {
         const user = await this.authService.fetchProfile();
-        console.log('Usuário autenticado:', user);
+        localStorage.setItem('authUser', JSON.stringify(user));
+        this.authService.userChanged.next(user);
         this.router.navigate(['/home']);
       }
     } catch (error) {
@@ -33,7 +34,13 @@ export class LoginPage implements OnInit {
 
   async login() {
     try {
-      await this.authService.login(this.email, this.password);
+      const token = await this.authService.login(this.email, this.password);
+      this.authService.saveAuthToken(token);
+
+      const userProfile = await this.authService.fetchProfile();
+      localStorage.setItem('authUser', JSON.stringify(userProfile));
+      this.authService.userChanged.next(userProfile);
+
       this.router.navigate(['/home']);
     } catch (error: any) {
       console.error('Erro ao fazer login:', error.message);
@@ -46,10 +53,7 @@ export class LoginPage implements OnInit {
       const response = await this.authService.googleLogin();
 
       if (response && response.user && response.token) {
-        console.log('Usuário logado com Google:', response.user);
-
         setTimeout(() => {
-          console.log('Redirecionando para /home...');
           this.router.navigate(['/home']);
         }, 500);
       } else {
@@ -68,7 +72,6 @@ export class LoginPage implements OnInit {
 
       if (response && response.user && response.token) {
         setTimeout(() => {
-          console.log('Redirecionando para /home...');
           this.router.navigate(['/home']);
         }, 500);
       } else {

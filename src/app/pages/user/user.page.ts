@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController, NavController } from '@ionic/angular';
 import { UserService } from 'src/app/services/user.service';
+import { LoadingController, NavController } from '@ionic/angular';
 import { DetailedUserModel } from 'src/app/models/detailedUserModel';
 
 @Component({
@@ -9,9 +9,9 @@ import { DetailedUserModel } from 'src/app/models/detailedUserModel';
   styleUrls: ['./user.page.scss'],
 })
 export class UserPage implements OnInit {
-  users: DetailedUserModel[] = [];
   loading = false;
   errorMessage = '';
+  users: DetailedUserModel[] = [];
 
   constructor(
     private navCtrl: NavController,
@@ -31,7 +31,7 @@ export class UserPage implements OnInit {
       const userData = await this.userService.getAllUsers();
 
       this.users = userData.map((user: any) =>
-        DetailedUserModel.fromJSON(user)
+        Object.assign(new DetailedUserModel(), user)
       );
     } catch (error) {
       console.error(error);

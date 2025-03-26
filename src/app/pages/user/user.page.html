@@ -29,16 +29,9 @@
             {{ user.plan === 'monthly' ? 'Mensal' : (user.plan === 'yearly' ? 'Anual' : 'Não informado') }}
           </p>
           <p class="blackColor"><strong>Status:</strong> <ion-chip
-              [color]="user.subscriptionStatus === 'active' ? 'success' : 'danger'" class="text-capitalize">
-              <ion-label>{{ user.subscriptionStatus }}</ion-label>
+              [color]="user.subscription_status === 'active' ? 'success' : 'danger'" class="text-capitalize">
+              <ion-label>{{ user.subscription_status }}</ion-label>
             </ion-chip>
-          <p *ngIf="user.subscriptionStartDate" class="blackColor">
-            <strong>Início da Assinatura:</strong> {{ (user.subscriptionStartDate | date:'yyyy-MM-dd':'UTC') |
-            date:'dd/MM/yyyy' }}
-          </p>
-          <p *ngIf="user.subscriptionEndDate" class="blackColor">
-            <strong>Fim da Assinatura:</strong> {{ (user.subscriptionEndDate | date:'yyyy-MM-dd':'UTC') |
-            date:'dd/MM/yyyy' }}
           </p>
         </div>
       </ion-accordion>

@@ -43,7 +43,6 @@ export class EditBookModalPage implements OnInit {
       switch (this.itemType) {
         case 'titulo':
           data = await this.bookService.getTituloById(this.itemId);
-          console.log(data);
           break;
         case 'capitulo':
           data = await this.bookService.getCapituloById(this.itemId);
@@ -62,9 +61,7 @@ export class EditBookModalPage implements OnInit {
       }
 
       this.item = data;
-      console.log(this.item);
       this.editorContent = this.item.conteudo || '';
-      console.log(this.editorContent);
     } catch (error) {
       console.error('Erro ao carregar o item:', error);
       this.presentToast('Erro ao carregar o conteúdo.');

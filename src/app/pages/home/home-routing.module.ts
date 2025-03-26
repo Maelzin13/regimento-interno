@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomePage } from 'src/app/pages/home/home.page';
 import { UserPage } from 'src/app/pages/user/user.page';
 import { PlansPage } from 'src/app/pages/plans/plans.page';
+import { DashboardPage } from '../dashboard/dashboard.page';
 import { MenuPage } from 'src/app/pages/home/menu/menu.page';
 import { LivroPage } from 'src/app/pages/home/livro/livro.page';
 import { SearchPage } from 'src/app/pages/home/search/search.page';
@@ -42,6 +43,10 @@ const routes: Routes = [
       {
         path: 'menu/change-password',
         component: ChangePasswordPage,
+      },
+      {
+        path: 'menu/dashboards',
+        component: DashboardPage,
       },
       {
         path: 'menu/planos',

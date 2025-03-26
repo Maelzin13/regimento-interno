@@ -22,7 +22,6 @@ export class ArticlesPage implements OnInit {
     const user = this.authService.getUser();
     this.user = user;
     this.artigo = history.state.artigo || {};
-    console.log('artigos: ', this.artigo);
   }
 
   cleanHTML(content: string): string {

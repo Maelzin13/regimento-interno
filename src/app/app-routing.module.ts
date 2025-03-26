@@ -83,6 +83,13 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/plans/plans.module').then((m) => m.PlansPageModule),
   },
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./pages/dashboard/dashboard.module').then(
+        (m) => m.DashboardPageModule
+      ),
+  },
 ];
 
 @NgModule({

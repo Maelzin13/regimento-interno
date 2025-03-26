@@ -108,7 +108,6 @@ export class AuthService {
   async fetchProfile(): Promise<any> {
     try {
       const response = await axios.get(`${this.apiService.baseUrl}/profile`);
-      console.log('response', response.data);
       return response.data;
     } catch (error: any) {
       if (error.response && error.response.status === 401) {

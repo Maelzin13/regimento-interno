@@ -1,14 +1,16 @@
 <ion-header>
   <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/user"></ion-back-button>
+      <ion-button (click)="fecharModal()">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>Editar Usuário</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" id="content">
-  <div *ngIf="loading">
+<ion-content class="ion-padding">
+  <div *ngIf="loading" class="centered">
     <ion-spinner name="crescent"></ion-spinner>
     <p>Carregando...</p>
   </div>
@@ -27,72 +29,38 @@
     </ion-item>
 
     <!-- Administrador -->
-    <ion-item *ngIf="isAdmin">
+    <ion-item *ngIf="user.is_admin !== undefined">
       <ion-label>Administrador</ion-label>
-      <ion-select [(ngModel)]="user.isAdmin" name="is_admin">
-        <ion-select-option [value]="0">Não</ion-select-option>
-        <ion-select-option [value]="1">Sim</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <!-- Plano -->
-    <ion-item *ngIf="user.plan === 'monthly' || user.plan === 'yearly'">
-      <ion-label>Plano</ion-label>
-      <ion-select [(ngModel)]="user.plan" name="plan">
-        <ion-select-option value="monthly">Plano Mensal</ion-select-option>
-        <ion-select-option value="yearly">Plano Anual</ion-select-option>
+      <ion-select [(ngModel)]="user.is_admin" name="is_admin">
+        <ion-select-option [value]="false">Não</ion-select-option>
+        <ion-select-option [value]="true">Sim</ion-select-option>
       </ion-select>
     </ion-item>
 
     <!-- Status da Assinatura -->
-    <ion-item>
+    <ion-item lines="none">
       <ion-label>Status da Assinatura</ion-label>
-      <ion-select [(ngModel)]="user.subscriptionStatus" name="subscription_status">
-        <ion-select-option value="inactive">Inativo</ion-select-option>
-        <ion-select-option value="active">Ativo</ion-select-option>
-      </ion-select>
+      <ion-badge [color]="user.subscription_status === 'active' ? 'success' : 'medium'" slot="end">
+        {{ user.subscription_status === 'active' ? 'Ativo' : 'Inativo' }}
+      </ion-badge>
     </ion-item>
-    <br>
 
-    <!-- Data de Início
-    <div *ngIf="user.subscriptionStatus === 'active'">
-      <ion-label style="margin-left: 19px;">Data de Início</ion-label>
+    <!-- Plano -->
+    <ion-item lines="none">
+      <ion-label>Plano</ion-label>
+      <ion-text color="dark" slot="end">
+        {{ user.plan || '—' }}
+      </ion-text>
+    </ion-item>
 
-      <ion-col size="12" style="margin-bottom: 2px;">
-        <ion-datetime-button datetime="dateStart"></ion-datetime-button>
-        <ion-modal [keepContentsMounted]="true" class="ion-modal-color">
-          <ng-template>
-            <ion-datetime id="dateStart" presentation="date" displayFormat="DD/MM/YYYY"
-              [(ngModel)]="user.subscriptionStartDate">
-            </ion-datetime>
-          </ng-template>
-        </ion-modal>
-      </ion-col>
-
-    </div>
-
-    <!-- Data de Término 
-    <div *ngIf="user.subscriptionStatus === 'active'">
-      <ion-label style="margin-left: 19px;">Data de Término</ion-label>
-
-      <ion-col size="12" style="margin-bottom: 2px;">
-        <ion-datetime-button datetime="dateEnd"></ion-datetime-button>
-        <ion-modal [keepContentsMounted]="true" class="ion-modal-color">
-          <ng-template>
-            <ion-datetime id="dateEnd" presentation="date" displayFormat="DD/MM/YYYY"
-              [(ngModel)]="user.subscriptionEndDate">
-            </ion-datetime>
-          </ng-template>
-        </ion-modal>
-      </ion-col>
-    </div> -->
-    <br>
-
-    <ion-button expand="block" type="submit" color="primary" [disabled]="loading" (click)="saveChanges()">
+    <!-- Botão -->
+    <ion-button expand="block" type="submit" color="primary" [disabled]="loading">
       Salvar Alterações
     </ion-button>
+
+    <!-- Feedback -->
+    <ion-text color="success" *ngIf="successMessage">{{ successMessage }}</ion-text>
+    <ion-text color="danger" *ngIf="errorMessage">{{ errorMessage }}</ion-text>
   </form>
 
-  <!-- <div *ngIf="successMessage" class="text-green">{{ successMessage }}</div>
-  <div *ngIf="errorMessage" class="text-red">{{ errorMessage }}</div> -->
 </ion-content>
