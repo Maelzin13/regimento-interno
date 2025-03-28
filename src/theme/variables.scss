@@ -1,13 +1,19 @@
 :root {
+  --google-red: #db4437;
+  --color-plan: #eab308;
+  --link-color: #2563eb;
+  --facebook-blue: #3b5998;
   --primary-color: #1e999a;
   --secondary-color: #157d7d;
-  --google-red: #db4437;
-  --facebook-blue: #3b5998;
-  --color-plan: #eab308;
+  --comentario-color: #16a34a;
 }
 
 #content {
   --background: #141c2a !important;
+}
+
+.icons {
+  color: #fff;
 }
 
 #toolbar {
@@ -92,4 +98,29 @@
 .corPlano-btn {
   --background: var(--color-plan);
   --color: white;
+}
+
+.titulo {
+  color: var(--primary-color);
+}
+.capitulo {
+  color: var(--secondary-color);
+}
+.secao {
+  color: var(--secondary-color);
+}
+
+.nota-link {
+  color: var(--link-color);
+}
+
+.comentario {
+  color: var(--comentario-color);
+}
+
+.comentario-tipo {
+  font-weight: bold;
+  font-style: italic;
+  display: inline-block;
+  color: var(--comentario-color);
 }

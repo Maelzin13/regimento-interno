@@ -10,28 +10,3 @@
 ion-toolbar {
   --opacity: 0.5;
 }
-
-$titulo-color: #1e999a;
-$capitulo-color: #157d7d;
-$artigo-color: #333333;
-$link-color: #2563eb;
-$comentario-color: #16a34a;
-
-.titulo {
-  color: $titulo-color;
-}
-.capitulo {
-  color: $capitulo-color;
-}
-.secao {
-  color: $capitulo-color;
-}
-.artigo {
-  color: $artigo-color;
-}
-.nota-link {
-  color: $link-color;
-}
-.comentario {
-  color: $comentario-color;
-}

@@ -28,11 +28,14 @@
             <ng-container *ngFor="let secao of capitulo.secaos">
               <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
               <ng-container *ngFor="let artigo of secao.artigos">
-                <h5 class="artigo" [innerHTML]="safeHTML(artigo.conteudo)"></h5>
+                <h5 [innerHTML]="safeHTML(artigo.conteudo)"></h5>
                 <ng-container *ngFor="let paragrafo of artigo.paragrafos">
                   <h5 [innerHTML]="safeHTML(paragrafo.conteudo)"></h5>
                   <ng-container *ngFor="let comentario of paragrafo.comentarios">
-                    <p class="comentario" [innerHTML]="safeHTML(comentario.conteudo)"></p>
+                    <p class="comentario">
+                      <span class="comentario-tipo">{{ comentario.tipo | titlecase }}</span><br>
+                      <span [innerHTML]="safeHTML(comentario.conteudo)"></span>
+                    </p>
                   </ng-container>
                 </ng-container>
               </ng-container>
@@ -55,12 +58,12 @@
         <ion-card *ngFor="let titulo of book.titulos; let tituloIndex = index" class="ion-text-center">
           <ion-card-header>
             <ion-card-title style="display: flex; align-items: center; justify-content: space-between;">
-              <span>{{ cleanHTML(titulo.conteudo) }}</span>
-              <ion-button *ngIf="user?.is_admin" fill="clear" (click)="abrirEditor(titulo.id, 'titulo')">
-                <ion-icon name="pencil-outline"></ion-icon>
+              <span class="titulo">{{ cleanHTML(titulo.conteudo) }}</span>
+              <ion-button *ngIf="user?.is_admin" fill="clear" class="icons" (click)="abrirEditor(titulo.id, 'titulo')">
+                <ion-icon name="pencil-outline" class="icons"></ion-icon>
               </ion-button>
-              <ion-button fill="clear" color="danger">
-                <ion-icon name="trash-outline"></ion-icon>
+              <ion-button fill="clear">
+                <ion-icon name="trash-outline" class="icons"></ion-icon>
               </ion-button>
             </ion-card-title>
           </ion-card-header>
@@ -70,14 +73,14 @@
               <ng-container *ngFor="let capitulo of titulo.capitulos; let capituloIndex = index">
                 <ion-item>
                   <ion-label>
-                    <h3 [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
+                    <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
                   </ion-label>
                   <ion-button *ngIf="user?.is_admin" size="small" fill="clear"
                     (click)="abrirEditor(capitulo.id, 'capitulo')">
-                    <ion-icon name="pencil-outline"></ion-icon>
+                    <ion-icon name="pencil-outline" class="icons"></ion-icon>
                   </ion-button>
-                  <ion-button fill="clear" color="danger">
-                    <ion-icon name="trash-outline"></ion-icon>
+                  <ion-button fill="clear" class="icons">
+                    <ion-icon name="trash-outline" class="icons"></ion-icon>
                   </ion-button>
                   <ion-icon slot="end" name="chevron-forward-outline" (click)="navigateToCapitulo(capitulo)"></ion-icon>
                 </ion-item>
