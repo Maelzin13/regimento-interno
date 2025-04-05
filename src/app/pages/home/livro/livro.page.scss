@@ -18,8 +18,8 @@
 .textos-juridicos {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
+  gap: 12px;
+  padding: 12px;
 }
 
 .custom-card {
@@ -31,17 +31,6 @@
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 15px #131a28;
-  }
-}
-
-.custom-link {
-  color: var(--hover-color);
-  text-decoration: none;
-  font-weight: 500;
-
-  &:hover {
-    text-decoration: underline;
-    color: var(--primary-color);
   }
 }
 

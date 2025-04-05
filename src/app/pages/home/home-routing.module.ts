@@ -6,7 +6,6 @@ import { PlansPage } from 'src/app/pages/plans/plans.page';
 import { DashboardPage } from '../dashboard/dashboard.page';
 import { MenuPage } from 'src/app/pages/home/menu/menu.page';
 import { LivroPage } from 'src/app/pages/home/livro/livro.page';
-import { SearchPage } from 'src/app/pages/home/search/search.page';
 import { PerfilPage } from 'src/app/pages/home/perfil/perfil.page';
 import { PagamentoPage } from 'src/app/pages/pagamento/pagamento.page';
 import { ChangePasswordPage } from 'src/app/pages/change-password/change-password.page';
@@ -23,10 +22,6 @@ const routes: Routes = [
       {
         path: 'perfil',
         component: PerfilPage,
-      },
-      {
-        path: 'search',
-        component: SearchPage,
       },
       {
         path: 'menu',

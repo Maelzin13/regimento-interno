@@ -1,3 +1,4 @@
 export const environment = {
-  production: true,
+  production: TextTrackCueList,
+  baseUrl: 'https://regimentocd.com.br',
 };

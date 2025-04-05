@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" id="content" class="ion-padding">
+<ion-content id="content" class="ion-padding">
   <ion-content id="content">
     <ng-container *ngIf="isLoading">
       <ion-card class="custom-card" *ngFor="let i of [1, 2, 3, 4, 5]">
@@ -36,19 +36,18 @@
       <div class="textos-juridicos">
         <ion-card class="custom-card" *ngFor="let texto of textos">
           <ion-card-header>
-            <ion-card-title class="color">{{ texto.title }}</ion-card-title>
-            <ion-card-subtitle class="color">{{ texto.subTitle }}</ion-card-subtitle>
+            <ion-card-title class="color">
+              <div *ngIf="texto.link">
+                <a [href]="texto.link" class="color" target="_blank" style="text-decoration: underline;">
+                  {{ texto.title }}
+                </a>
+              </div>
+              <div *ngIf="!texto.link">
+                <h3 class="color">{{ texto.title }}</h3>
+                <p>{{ texto.description || 'Descrição indisponível.' }}</p>
+              </div>
+            </ion-card-title>
           </ion-card-header>
-          <ion-card-content>
-            <div *ngIf="texto.link">
-              <a [href]="texto.link" target="_blank" class="custom-link" style="text-decoration: underline;">
-                Acesse o {{ texto.title }}
-              </a>
-            </div>
-            <div *ngIf="!texto.link">
-              <p>{{ texto.description || 'Descrição indisponível.' }}</p>
-            </div>
-          </ion-card-content>
         </ion-card>
       </div>
     </div>

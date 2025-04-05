@@ -13,7 +13,7 @@
   </div>
 
   <div *ngIf="!isLoading">
-    <quill-editor [(ngModel)]="editorContent" [style]="{ height: '200px' }"></quill-editor>
+    <ion-textarea [(ngModel)]="editorContent" [style]="{ height: '200px' }"></ion-textarea>
 
     <ion-button expand="block" (click)="salvarConteudo()">Salvar</ion-button>
   </div>

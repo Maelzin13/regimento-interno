@@ -1,13 +1,13 @@
 import { ModalPage } from '../modal/modal.page';
-import { IonContent, ModalController } from '@ionic/angular';
-import { ModalNotasPage } from '../modal-notas/modal-notas.page';
-import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
+import { IonContent, ModalController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ModalNotasPage } from '../modal-notas/modal-notas.page';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 
 @Component({
   selector: 'app-view-text',
@@ -18,7 +18,10 @@ export class ViewTextPage implements OnInit {
   book: any;
   bookId: any;
   prefacio: any;
+  query: string = '';
+  filteredBook: any = null;
   user: UserModel | null = null;
+  searchBy: 'keyword' | 'artigo' = 'keyword';
   @ViewChild(IonContent) content!: IonContent;
 
   constructor(
@@ -45,6 +48,60 @@ export class ViewTextPage implements OnInit {
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);
       });
+  }
+
+  search() {
+    if (!this.query || !this.book) {
+      this.filteredBook = null; // limpa o filtro
+      return;
+    }
+
+    const queryLower = this.query.toLowerCase();
+    const searchBy = this.searchBy;
+
+    const clone = JSON.parse(JSON.stringify(this.book)); // faz uma cópia profunda
+
+    clone.titulos = clone.titulos
+      .map((titulo: any) => {
+        const capitulosFiltrados = titulo.capitulos
+          .map((capitulo: any) => {
+            const secoesFiltradas = capitulo.secaos
+              .map((secao: any) => {
+                const artigosFiltrados = secao.artigos.filter((artigo: any) => {
+                  if (searchBy === 'keyword') {
+                    return (
+                      artigo.conteudo?.toLowerCase().includes(queryLower) ||
+                      artigo.paragrafos?.some((p: any) =>
+                        p.conteudo?.toLowerCase().includes(queryLower)
+                      )
+                    );
+                  } else if (searchBy === 'artigo') {
+                    return artigo.conteudo
+                      ?.toLowerCase()
+                      .includes(`art. ${queryLower}`);
+                  }
+                  return false;
+                });
+
+                return artigosFiltrados.length
+                  ? { ...secao, artigos: artigosFiltrados }
+                  : null;
+              })
+              .filter(Boolean);
+
+            return secoesFiltradas.length
+              ? { ...capitulo, secaos: secoesFiltradas }
+              : null;
+          })
+          .filter(Boolean);
+
+        return capitulosFiltrados.length
+          ? { ...titulo, capitulos: capitulosFiltrados }
+          : null;
+      })
+      .filter(Boolean);
+
+    this.filteredBook = clone;
   }
 
   navigateToCapitulo(capitulo: any) {
