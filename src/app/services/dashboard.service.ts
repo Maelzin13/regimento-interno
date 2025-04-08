@@ -1,15 +1,17 @@
-import axios from 'axios';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardService {
-  constructor(private apiservice: ApiService) {}
+  constructor(private http: HttpClient, private apiservice: ApiService) {}
 
   async getDashboardData() {
-    const response = await axios.get(`${this.apiservice.baseUrl}/dashboard`);
-    return response.data;
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/dashboard`)
+      .toPromise();
+    return response;
   }
 }

@@ -89,7 +89,7 @@
               <!-- <ion-button *ngIf="user?.is_admin" fill="clear" class="icons" (click)="abrirEditor(titulo.id, 'titulo')">
                 <ion-icon name="pencil-outline" class="icons"></ion-icon>
               </ion-button>
-              <ion-button fill="clear">
+              <ion-button *ngIf="user?.is_admin" fill="clear">
                 <ion-icon name="trash-outline" class="icons"></ion-icon>
               </ion-button> -->
             </ion-card-title>
@@ -106,7 +106,7 @@
                     (click)="abrirEditor(capitulo.id, 'capitulo')">
                     <ion-icon name="pencil-outline" class="icons"></ion-icon>
                   </ion-button>
-                  <ion-button fill="clear" class="icons">
+                  <ion-button *ngIf="user?.is_admin" fill="clear" class="icons">
                     <ion-icon name="trash-outline" class="icons"></ion-icon>
                   </ion-button>
                   <ion-icon slot="end" name="chevron-forward-outline" (click)="navigateToCapitulo(capitulo)"></ion-icon>

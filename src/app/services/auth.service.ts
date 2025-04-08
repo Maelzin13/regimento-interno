@@ -1,10 +1,9 @@
 import {
+  signOut,
   signInWithPopup,
   GoogleAuthProvider,
   FacebookAuthProvider,
-  signOut,
 } from 'firebase/auth';
-import axios from 'axios';
 import { auth } from '../firebase';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
@@ -12,6 +11,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { UserModel } from '../models/userModel';
 import { CookieService } from 'ngx-cookie-service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -21,96 +21,80 @@ export class AuthService {
   userChanged = new BehaviorSubject<UserModel | null>(null);
 
   constructor(
+    private http: HttpClient,
     private router: Router,
     private apiService: ApiService,
     private cookieService: CookieService
-  ) {
-    const token = this.cookieService.get('authToken');
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
-  }
+  ) {}
 
   getBaseUrl(): string {
     return this.apiService.baseUrl;
   }
 
-  /**
-   * Retorna o usuário armazenado.
-   */
   getUser(): UserModel | null {
     const user = localStorage.getItem('authUser');
     return user ? JSON.parse(user) : null;
   }
 
-  /**
-   * Obtém o token de autenticação armazenado.
-   */
   getAuthToken(): string | null {
     return localStorage.getItem('authToken');
   }
 
-  /**
-   * Salva o token de autenticação e atualiza o header de axios.
-   */
   saveAuthToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    this.cookieService.set(this.tokenKey, token);
   }
 
-  /**
-   * Efetua o login via e-mail e senha.
-   */
   async login(email: string, password: string): Promise<string> {
     try {
-      const response = await axios.post(
-        `${this.apiService.baseUrl}/auth/login`,
-        { email, password }
-      );
-      const token = response.data.access_token;
+      const response: any = await this.http
+        .post(`${this.apiService.baseUrl}/auth/login`, { email, password })
+        .toPromise();
 
-      this.cookieService.set('authToken', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const token = response.access_token;
+      this.saveAuthToken(token);
 
       return token;
-    } catch (error: any) {
-      throw new Error(
-        'Erro ao conectar ao servidor. Verifique suas credenciais.'
-      );
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Erro desconhecido ao fazer login.';
+      throw new Error(message);
     }
   }
 
-  /**
-   * Efetua o registro de um novo usuário.
-   */
   async register(user: UserModel): Promise<string> {
     try {
-      const response = await axios.post(`${this.apiService.baseUrl}/register`, {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-      });
-      const token = response.data.access_token;
-      this.cookieService.set('authToken', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const response: any = await this.http
+        .post(`${this.apiService.baseUrl}/register`, {
+          name: user.name,
+          email: user.email,
+          password: user.password,
+        })
+        .toPromise();
+
+      const token = response.access_token;
+      this.saveAuthToken(token);
 
       return token;
-    } catch (error: any) {
-      throw new Error(
-        'Erro ao conectar ao servidor. Verifique suas credenciais.'
-      );
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Erro desconhecido ao registrar usuário.';
+      throw new Error(message);
     }
   }
 
-  /**
-   * Busca o perfil do usuário autenticado.
-   */
   async fetchProfile(): Promise<any> {
     try {
-      const response = await axios.get(`${this.apiService.baseUrl}/profile`);
-      return response.data;
+      const response = await this.http
+        .get(`${this.apiService.baseUrl}/profile`)
+        .toPromise();
+      return response;
     } catch (error: any) {
-      if (error.response && error.response.status === 401) {
+      if (error.status === 401) {
         this.logout();
       }
       throw new Error(
@@ -119,9 +103,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Realiza o login com o Google utilizando Firebase Authentication.
-   */
   async googleLogin() {
     try {
       const provider = new GoogleAuthProvider();
@@ -136,23 +117,19 @@ export class AuthService {
         throw new Error('Falha ao obter accessToken do Google.');
       }
 
-      const response = await axios.post(
-        `${this.apiService.baseUrl}/social-login/google`,
-        { token: accessToken }
-      );
+      const response: any = await this.http
+        .post(`${this.apiService.baseUrl}/social-login/google`, {
+          token: accessToken,
+        })
+        .toPromise();
 
-      this.saveAuthToken(response.data.token);
-
-      return response.data;
-    } catch (error) {
-      console.error('Erro no login com Google:', error);
-      return null;
+      this.saveAuthToken(response.token);
+      return response;
+    } catch (error: any) {
+      throw new Error('Erro ao fazer login com Google: ' + error.message);
     }
   }
 
-  /**
-   * Realiza o login com o Facebook utilizando Firebase Authentication.
-   */
   async facebookLogin() {
     try {
       const provider = new FacebookAuthProvider();
@@ -167,33 +144,28 @@ export class AuthService {
         throw new Error('Falha ao obter accessToken do Facebook.');
       }
 
-      const response = await axios.post(
-        `${this.apiService.baseUrl}/social-login/facebook`,
-        { token: accessToken }
-      );
+      const response: any = await this.http
+        .post(`${this.apiService.baseUrl}/social-login/facebook`, {
+          token: accessToken,
+        })
+        .toPromise();
 
-      this.saveAuthToken(response.data.token);
-
-      return response.data;
-    } catch (error) {
-      console.error('Erro no login com Facebook:', error);
-      return null;
+      this.saveAuthToken(response.token);
+      return response;
+    } catch (error: any) {
+      throw new Error('Erro ao fazer login com Facebook: ' + error.message);
     }
   }
 
-  /**
-   * Efetua o logout do usuário.
-   */
   async logout(): Promise<void> {
     try {
       await signOut(auth);
-      this.cookieService.delete('authToken');
-      localStorage.removeItem('authToken');
+      this.cookieService.delete(this.tokenKey);
+      localStorage.removeItem(this.tokenKey);
       localStorage.removeItem('authUser');
-      delete axios.defaults.headers.common['Authorization'];
       this.userChanged.next(null);
+
       setTimeout(() => {
-        window.location.reload();
         this.router.navigateByUrl('/login', { replaceUrl: true });
       }, 300);
     } catch (error) {

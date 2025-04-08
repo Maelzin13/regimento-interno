@@ -35,6 +35,7 @@ export class ViewTextPage implements OnInit {
 
   ngOnInit() {
     const user = this.authService.getUser();
+    console.log('user', user);
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
 

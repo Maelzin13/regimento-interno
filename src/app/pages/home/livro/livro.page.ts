@@ -48,6 +48,7 @@ export class LivroPage implements OnInit {
     this.bookService
       .getAllBooks()
       .then((data) => {
+        console.log('Livros:', data.data);
         this.books = data.data;
         this.isLoading = false;
       })

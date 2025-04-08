@@ -1,83 +1,73 @@
-import axios from 'axios';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BookService {
-  constructor(private apiservice: ApiService) {}
+  constructor(private http: HttpClient, private apiservice: ApiService) {}
 
   async getAllBooks() {
-    const response = await axios.get(`${this.apiservice.baseUrl}/books`);
-    return response.data;
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/books`)
+      .toPromise();
+    return response;
   }
 
   async getBookById(id: number) {
-    const response = await axios.get(`${this.apiservice.baseUrl}/books/${id}`);
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/books/${id}`)
+      .toPromise();
 
-    return response.data.data;
+    return response.data;
   }
 
   async updateBook(id: number, book: any) {
-    const response = await axios.put(
-      `${this.apiservice.baseUrl}/books/${id}`,
-      book
-    );
-    return response.data;
+    return this.http
+      .put(`${this.apiservice.baseUrl}/books/${id}`, book)
+      .toPromise();
   }
 
   async getAllContent() {
-    const response = await axios.get(`${this.apiservice.baseUrl}/content`);
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/content`)
+      .toPromise();
     return response.data;
   }
 
-  async searchBook(id: number, query: string, searchBy: string) {
-    const url = `${
-      this.apiservice.baseUrl
-    }/livros/${id}/search?query=${encodeURIComponent(
-      query
-    )}&searchBy=${encodeURIComponent(searchBy)}`;
-
-    try {
-      const response = await axios.get(url);
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao buscar o livro:', error);
-      throw error;
-    }
-  }
-
   async getTituloById(id: number) {
-    const response = await axios.get(
-      `${this.apiservice.baseUrl}/titulos/${id}`
-    );
-    return response.data.data;
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/titulos/${id}`)
+      .toPromise();
+    return response.data;
   }
 
   async getCapituloById(id: number) {
-    const response = await axios.get(
-      `${this.apiservice.baseUrl}/capitulos/${id}`
-    );
-    return response.data.data;
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/capitulos/${id}`)
+      .toPromise();
+    return response.data;
   }
 
   async getSecaoById(id: number) {
-    const response = await axios.get(`${this.apiservice.baseUrl}/secaos/${id}`);
-    return response.data.data;
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/secaos/${id}`)
+      .toPromise();
+    return response.data;
   }
 
   async getArtigoById(id: number) {
-    const response = await axios.get(
-      `${this.apiservice.baseUrl}/artigos/${id}`
-    );
-    return response.data.data;
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/artigos/${id}`)
+      .toPromise();
+    return response.data;
   }
 
   async getParagrafos(id: number) {
-    const response = await axios.get(
-      `${this.apiservice.baseUrl}/paragrafos/${id}`
-    );
-    return response.data.data;
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/paragrafos/${id}`)
+      .toPromise();
+    return response.data;
   }
 }

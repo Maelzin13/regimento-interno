@@ -1,19 +1,19 @@
-import axios from 'axios';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PaymentService {
-  constructor(
-    private apiservice: ApiService,
-  ) {}
+  constructor(private http: HttpClient, private apiservice: ApiService) {}
 
   async getPayments() {
     try {
-      const response = await axios.get(`${this.apiservice.baseUrl}/pagamentos`);
-      return response.data.data;
+      const response: any = await this.http
+        .get(`${this.apiservice.baseUrl}/pagamentos`)
+        .toPromise();
+      return response.data;
     } catch (error) {
       console.error('Erro ao buscar pagamentos', error);
       throw error;
