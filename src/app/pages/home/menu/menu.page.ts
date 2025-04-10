@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserModel } from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -7,10 +8,13 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./menu.page.scss'],
 })
 export class MenuPage implements OnInit {
+  user: UserModel | null = null;
+
   constructor(private authService: AuthService) {}
 
   async ngOnInit() {
-    console.log('');
+    const user = this.authService.getUser();
+    this.user = user;
   }
 
   async logout() {

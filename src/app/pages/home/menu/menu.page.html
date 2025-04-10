@@ -38,7 +38,7 @@
         </ion-fab>
         <span class="button-text">Painel Adiministrativo</span>
       </ion-col>
-      <ion-col class="button-container">
+      <ion-col class="button-container" *ngIf="!user?.provider">
         <ion-fab [routerLink]="['/home/menu/change-password']">
           <ion-fab-button class="custom-button">
             <ion-icon name="file-tray-full"></ion-icon>

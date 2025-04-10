@@ -9,9 +9,12 @@ import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { Capacitor } from '@capacitor/core';
 import { UserModel } from '../models/userModel';
-import { CookieService } from 'ngx-cookie-service';
 import { HttpClient } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { FacebookLogin } from '@capacitor-community/facebook-login';
 
 @Injectable({
   providedIn: 'root',
@@ -105,21 +108,24 @@ export class AuthService {
 
   async googleLogin() {
     try {
-      const provider = new GoogleAuthProvider();
-      provider.addScope('email');
-      provider.addScope('profile');
+      let idToken: string;
 
-      const result = await signInWithPopup(auth, provider);
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const accessToken = credential?.accessToken;
+      if (Capacitor.getPlatform() === 'web') {
+        const result = await signInWithPopup(auth, new GoogleAuthProvider());
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        idToken = credential?.accessToken ?? '';
+      } else {
+        const result = await GoogleAuth.signIn();
+        idToken = result.authentication.idToken;
+      }
 
-      if (!accessToken) {
-        throw new Error('Falha ao obter accessToken do Google.');
+      if (!idToken) {
+        throw new Error('Falha ao obter o token do Google.');
       }
 
       const response: any = await this.http
-        .post(`${this.apiService.baseUrl}/social-login/google`, {
-          token: accessToken,
+        .post(`${this.apiService.baseUrl}/auth/social-login/google`, {
+          token: idToken,
         })
         .toPromise();
 
@@ -132,20 +138,26 @@ export class AuthService {
 
   async facebookLogin() {
     try {
-      const provider = new FacebookAuthProvider();
-      provider.addScope('email');
-      provider.addScope('public_profile');
+      let accessToken: string;
 
-      const result = await signInWithPopup(auth, provider);
-      const credential = FacebookAuthProvider.credentialFromResult(result);
-      const accessToken = credential?.accessToken;
+      if (Capacitor.getPlatform() === 'web') {
+        const provider = new FacebookAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        const credential = FacebookAuthProvider.credentialFromResult(result);
+        accessToken = credential?.accessToken ?? '';
+      } else {
+        const result = await FacebookLogin.login({
+          permissions: ['email', 'public_profile'],
+        });
+        accessToken = result?.accessToken?.token ?? '';
+      }
 
       if (!accessToken) {
-        throw new Error('Falha ao obter accessToken do Facebook.');
+        throw new Error('Falha ao obter token do Facebook.');
       }
 
       const response: any = await this.http
-        .post(`${this.apiService.baseUrl}/social-login/facebook`, {
+        .post(`${this.apiService.baseUrl}/auth/social-login/facebook`, {
           token: accessToken,
         })
         .toPromise();

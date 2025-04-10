@@ -60,51 +60,37 @@ export class LoginPage implements OnInit {
     }
   }
 
-  async loginWithGoogle() {
-    const loading = await this.presentLoading('Conectando com Google...');
-    try {
-      const response = await this.authService.googleLogin();
+  async socialLogin(provider: 'google' | 'facebook') {
+    const loading = await this.presentLoading(
+      `Conectando com ${provider === 'google' ? 'Google' : 'Facebook'}...`
+    );
 
-      if (response && response.user && response.token) {
+    try {
+      const response =
+        provider === 'google'
+          ? await this.authService.googleLogin()
+          : await this.authService.facebookLogin();
+
+      if (response?.user && response?.token) {
+        this.authService.saveAuthToken(response.token);
+        localStorage.setItem('authUser', JSON.stringify(response.user));
+        this.authService.userChanged.next(response.user);
+
         await loading.dismiss();
-        setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 500);
+        this.router.navigate(['/home']);
       } else {
-        await loading.dismiss();
-        this.presentToast('Login com Google falhou.');
+        throw new Error(`Login com ${provider} falhou.`);
       }
     } catch (error: any) {
       await loading.dismiss();
-      this.presentToast('Erro no login com Google: ' + error.message);
-    }
-  }
-
-  async loginWithFacebook() {
-    const loading = await this.presentLoading('Conectando com Facebook...');
-    try {
-      const response = await this.authService.facebookLogin();
-
-      if (response && response.user && response.token) {
-        await loading.dismiss();
-        setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 500);
-      } else {
-        await loading.dismiss();
-        this.presentToast('Login com Facebook falhou.');
-      }
-    } catch (error: any) {
-      await loading.dismiss();
-      this.presentToast('Erro no login com Facebook.');
+      this.presentToast(error.message || `Erro ao conectar com ${provider}`);
     }
   }
 
   async presentLoading(message: string = 'Carregando...') {
     const loading = await this.loadingController.create({
       message,
-      spinner: 'crescent',
-      duration: 10000,
+      spinner: 'bubbles',
       translucent: true,
       backdropDismiss: false,
     });

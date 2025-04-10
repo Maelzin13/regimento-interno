@@ -1,14 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Platform } from '@ionic/angular';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
-  constructor() {}
+export class AppComponent {
+  constructor(private platform: Platform) {
+    this.initializeApp();
+  }
 
-  ngOnInit() {
-    console.log('Hello World');
+  initializeApp() {
+    this.platform.ready().then(() => {
+      GoogleAuth.initialize();
+    });
   }
 }

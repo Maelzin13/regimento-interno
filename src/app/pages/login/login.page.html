@@ -29,19 +29,17 @@
         </div>
 
         <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-button expand="block" class="social-btn google-btn" (click)="loginWithGoogle()">
-                <ion-icon slot="start" name="logo-google"></ion-icon>
-                Google
-              </ion-button>
-            </ion-col>
-            <ion-col>
-              <ion-button expand="block" class="social-btn facebook-btn" (click)="loginWithFacebook()" disabled="true">
-                <ion-icon slot="start" name="logo-facebook"></ion-icon>
-                Facebook
-              </ion-button>
-            </ion-col>
+          <ion-row class="ion-justify-content-center">
+
+            <ion-button expand="block" class="social-btn google-btn" (click)="socialLogin('google')">
+              <ion-icon slot="start" name="logo-google"></ion-icon>
+              Continuar com Google
+            </ion-button>
+
+            <ion-button expand="block" class="social-btn facebook-btn" (click)="socialLogin('facebook')">
+              <ion-icon slot="start" name="logo-facebook"></ion-icon>
+              Continuar com Facebook
+            </ion-button>
           </ion-row>
         </ion-grid>
       </ion-card-content>
