@@ -51,6 +51,12 @@ export class ViewTextPage implements OnInit {
       });
   }
 
+  onSearchInput(event: any) {
+    const value = event.target.value;
+    this.query = value;
+    this.search();
+  }
+
   search() {
     if (!this.query || !this.book) {
       this.filteredBook = null; // limpa o filtro

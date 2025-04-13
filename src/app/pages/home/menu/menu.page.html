@@ -1,7 +1,7 @@
 <ion-content id="content">
   <ion-grid>
     <ion-row>
-      <ion-col class="button-container">
+      <ion-col class="button-container" *ngIf="user?.is_admin">
         <ion-fab [routerLink]="['/home/menu/users']">
           <ion-fab-button class="custom-button">
             <ion-icon name="people"></ion-icon>
@@ -10,7 +10,7 @@
         <span class="button-text">Usuários</span>
       </ion-col>
 
-      <ion-col class="button-container">
+      <ion-col class="button-container" *ngIf="user?.is_admin">
         <ion-fab [routerLink]="['/home/menu/pagamentos']">
           <ion-fab-button class="custom-button">
             <ion-icon name="stats-chart"></ion-icon>
@@ -30,7 +30,7 @@
     </ion-row>
     <br>
     <ion-row>
-      <ion-col class="button-container">
+      <ion-col class="button-container" *ngIf="user?.is_admin">
         <ion-fab [routerLink]="['/home/menu/dashboards']">
           <ion-fab-button class="custom-button">
             <ion-icon name="settings-outline"></ion-icon>

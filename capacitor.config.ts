@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: 'com.regimento.app',
   appName: 'Regimento Interno Comentado',
   webDir: 'www',
-  bundledWebRuntime: false,
   plugins: {
     GoogleAuth: {
       scopes: ['profile', 'email'],

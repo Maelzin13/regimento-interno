@@ -5,34 +5,8 @@
     </ion-buttons>
     <ion-title>{{ book?.conteudo || 'Carregando...' }}</ion-title>
   </ion-toolbar>
-  <ion-searchbar color="light" animated="true" placeholder="Digitar" show-clear-button="always" clear-icon="trash-bin"
-    [(ngModel)]="query">
-  </ion-searchbar>
-  <ion-button expand="block" (click)="search()">
-    <ion-icon name="search-outline" slot="start"></ion-icon>
-    Buscar
-  </ion-button>
+
 </ion-header>
-
-
-<!-- <ion-card class="ion-text-center">
-  <ion-card-content>
-    <ion-list>
-      <ion-radio-group [(ngModel)]="searchBy">
-        <ion-item>
-          <ion-radio value="keyword" aria-label="Palavra Chave"></ion-radio>
-          <ion-label>Palavra Chave</ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-radio value="artigo" aria-label="Artigo"></ion-radio>
-          <ion-label>Artigo</ion-label>
-        </ion-item>
-      </ion-radio-group>
-      <br>
-   
-    </ion-list>
-  </ion-card-content>
-</ion-card> -->
 
 <ion-segment>
   <ion-segment-button value="corrido" content-id="corrido">
@@ -46,6 +20,10 @@
 <ion-segment-view>
   <ion-segment-content id="corrido">
     <ion-content [fullscreen]="true" class="ion-padding">
+      <ion-searchbar color="light" animated="true" placeholder="Buscar por palavra ou artigo..."
+        show-clear-button="always" clear-icon="trash-bin" [(ngModel)]="query" (ionInput)="onSearchInput($event)"
+        debounce="300">
+      </ion-searchbar>
       <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
         <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
           <h2 class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></h2>
@@ -80,6 +58,10 @@
   </ion-segment-content>
   <ion-segment-content id="formatado">
     <ion-content [fullscreen]="true" class="ion-padding">
+      <ion-searchbar color="light" animated="true" placeholder="Buscar por palavra ou artigo..."
+        show-clear-button="always" clear-icon="trash-bin" [(ngModel)]="query" (ionInput)="onSearchInput($event)"
+        debounce="300">
+      </ion-searchbar>
       <div *ngIf="(filteredBook || book)?.titulos?.length">
         <ion-card *ngFor="let titulo  of (filteredBook || book).titulos; let tituloIndex = index"
           class="ion-text-center">
@@ -102,13 +84,13 @@
                   <ion-label>
                     <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
                   </ion-label>
-                  <ion-button *ngIf="user?.is_admin" size="small" fill="clear"
+                  <!-- <ion-button *ngIf="user?.is_admin" size="small" fill="clear"
                     (click)="abrirEditor(capitulo.id, 'capitulo')">
                     <ion-icon name="pencil-outline" class="icons"></ion-icon>
                   </ion-button>
                   <ion-button *ngIf="user?.is_admin" fill="clear" class="icons">
                     <ion-icon name="trash-outline" class="icons"></ion-icon>
-                  </ion-button>
+                  </ion-button> -->
                   <ion-icon slot="end" name="chevron-forward-outline" (click)="navigateToCapitulo(capitulo)"></ion-icon>
                 </ion-item>
               </ng-container>
