@@ -17,7 +17,7 @@
 
     <ng-container *ngIf="!isLoading">
       <ng-container *ngFor="let book of books">
-        <ion-card class="custom-card">
+        <ion-card class="custom-card" [class.disabled]="!user?.is_admin || user?.subscription_status !== 'active'">
           <div [routerLink]="['/view-text', book.id]">
             <ion-card-header>
               <ion-card-title class="book-title" class="color">

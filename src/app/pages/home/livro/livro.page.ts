@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { UserModel } from 'src/app/models/userModel';
+import { AuthService } from 'src/app/services/auth.service';
 import { BookService } from 'src/app/services/book.service';
 
 @Component({
@@ -7,6 +9,7 @@ import { BookService } from 'src/app/services/book.service';
   styleUrls: ['./livro.page.scss'],
 })
 export class LivroPage implements OnInit {
+  user: UserModel | null = null;
   books: any;
   isLoading: boolean = true;
 
@@ -42,13 +45,17 @@ export class LivroPage implements OnInit {
     },
   ];
 
-  constructor(public bookService: BookService) {}
+  constructor(
+    public bookService: BookService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
+    const user = this.authService.getUser();
+    this.user = user;
     this.bookService
       .getAllBooks()
       .then((data) => {
-        console.log('Livros:', data.data);
         this.books = data.data;
         this.isLoading = false;
       })

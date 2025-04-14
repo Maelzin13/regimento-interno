@@ -10,13 +10,13 @@
         <span class="button-text">Usuários</span>
       </ion-col>
 
-      <ion-col class="button-container" *ngIf="user?.is_admin">
-        <ion-fab [routerLink]="['/home/menu/pagamentos']">
+      <ion-col class="button-container" *ngIf="!user?.provider">
+        <ion-fab [routerLink]="['/home/menu/change-password']">
           <ion-fab-button class="custom-button">
-            <ion-icon name="stats-chart"></ion-icon>
+            <ion-icon name="file-tray-full"></ion-icon>
           </ion-fab-button>
         </ion-fab>
-        <span class="button-text">Faturamento</span>
+        <span class="button-text">Alterar Senha</span>
       </ion-col>
 
       <ion-col class="button-container">
@@ -38,13 +38,13 @@
         </ion-fab>
         <span class="button-text">Painel Adiministrativo</span>
       </ion-col>
-      <ion-col class="button-container" *ngIf="!user?.provider">
-        <ion-fab [routerLink]="['/home/menu/change-password']">
+      <ion-col class="button-container" *ngIf="user?.is_admin">
+        <ion-fab [routerLink]="['/home/menu/pagamentos']">
           <ion-fab-button class="custom-button">
-            <ion-icon name="file-tray-full"></ion-icon>
+            <ion-icon name="stats-chart"></ion-icon>
           </ion-fab-button>
         </ion-fab>
-        <span class="button-text">Alterar Senha</span>
+        <span class="button-text">Faturamento</span>
       </ion-col>
     </ion-row>
   </ion-grid>

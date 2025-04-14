@@ -6,4 +6,5 @@ export class UserModel {
   provider: string = '';
   password: string = '';
   is_admin: boolean = false;
+  subscription_status: string = '';
 }

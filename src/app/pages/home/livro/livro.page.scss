@@ -3,6 +3,12 @@
   --hover-color: #157d7d;
 }
 
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 .section-title {
   text-align: center;
   color: #ffffff;

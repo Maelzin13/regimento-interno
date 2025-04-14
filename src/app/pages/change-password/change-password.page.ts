@@ -24,9 +24,7 @@ export class ChangePasswordPage implements OnInit {
     private changePasswordService: ChangePasswordService
   ) {}
 
-  ngOnInit() {
-    console.log('ChangePasswordPage');
-  }
+  ngOnInit() {}
 
   async presentToast(message: string, color: string) {
     const toast = await this.toastController.create({

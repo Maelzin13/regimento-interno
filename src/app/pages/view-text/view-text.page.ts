@@ -17,7 +17,6 @@ import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 export class ViewTextPage implements OnInit {
   book: any;
   bookId: any;
-  prefacio: any;
   query: string = '';
   filteredBook: any = null;
   user: UserModel | null = null;
@@ -35,16 +34,13 @@ export class ViewTextPage implements OnInit {
 
   ngOnInit() {
     const user = this.authService.getUser();
-    console.log('user', user);
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
 
     this.bookService
       .getBookById(this.bookId)
       .then((books: any) => {
-        this.prefacio = books.prefacios;
         this.book = books.livro;
-        console.log('this.book', this.book);
       })
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);
