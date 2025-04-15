@@ -28,14 +28,10 @@ export class LivroPage implements OnInit {
     },
     {
       title: 'Resolução n. 1/2002 do Congresso Nacional',
-      subTitle:
-        '(Regulamenta a tramitação de medidas provisórias no Congresso Nacional)',
       link: 'https://legis.senado.leg.br/norma/561120/publicacao/27423643',
     },
     {
       title: 'Lei Complementar 95/1998',
-      subTitle:
-        '(Dispõe sobre a elaboração, a redação, a alteração e a consolidação das leis)',
       link: 'https://www.planalto.gov.br/ccivil_03/leis/lcp/Lcp95compilado.htm',
     },
     {

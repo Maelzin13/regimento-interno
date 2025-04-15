@@ -6,6 +6,17 @@
   --primary-color: #1e999a;
   --secondary-color: #157d7d;
   --comentario-color: #16a34a;
+
+  --ion-color-primary: #1e999a;
+  --ion-color-primary-rgb: 30, 153, 154;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1a8a8b;
+  --ion-color-primary-tint: #36a5a6;
+}
+
+ion-accordion::part(header) ion-icon {
+  color: var(--ion-color-primary) !important;
 }
 
 #content {

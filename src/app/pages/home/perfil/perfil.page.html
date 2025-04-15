@@ -1,22 +1,27 @@
-<ion-content id="content" class="ion-padding">
+<ion-content class="perfil-content">
   <div class="profile-container" *ngIf="user">
-    <ion-card>
+    <ion-card class="profile-card">
       <ion-card-header>
         <div class="profile-header">
-          <ion-avatar>
-            <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar">
-          </ion-avatar>
+          <div class="default-avatar">
+            <ion-icon name="person-circle-outline"></ion-icon>
+          </div>
           <div class="profile-info">
             <h2>{{ user.name || 'Usuário Anônimo' }}</h2>
-            <p>{{ user.email || 'Não informado' }}</p>
+            <p>{{ user.email || 'Email não informado' }}</p>
           </div>
         </div>
       </ion-card-header>
-      <ion-card-content>
-        <ion-button expand="full" style="color: white" (click)='editProfile(user.id)'>Editar Perfil</ion-button>
-      </ion-card-content>
-      <ion-card-content>
-        <ion-button expand="full" class="corPlano-btn" (click)="subscribe()">Alterar plano</ion-button>
+
+      <ion-card-content class="btn-group">
+        <ion-button expand="block" class="primary-btn">
+          <ion-icon slot="start" name="create-outline"></ion-icon>
+          Editar Perfil
+        </ion-button>
+
+        <ion-button expand="block" class="secondary-btn" (click)="subscribe()">
+          Alterar Plano
+        </ion-button>
       </ion-card-content>
     </ion-card>
   </div>

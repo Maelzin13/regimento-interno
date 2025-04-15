@@ -1,32 +1,58 @@
-ion-grid {
-  margin-top: 25px;
+:root {
+  --bg-color: #f8f9fa;
 }
 
-ion-row {
+.menu-content {
+  --background: var(--bg-color);
+  padding: 1.5rem 1rem;
+}
+
+.menu-item {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.button-container {
+.menu-box {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 140px;
+  height: 120px;
   display: flex;
-  justify-content: space-around;
-}
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 
-ion-fab-button.custom-button {
-  --border-radius: 15px;
-  --color: white;
-}
+  ion-icon {
+    font-size: 2.4rem;
+    margin-bottom: 8px;
+    color: var(--ion-color-primary); // Usa a cor definida no variables.scss
+  }
 
-.button-text {
-  color: #ffffff;
-  font-size: 14px;
-  margin-top: 65px;
-  font-weight: bold;
+  span {
+    color: var(--ion-color-primary);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  }
 }
 
 .logout-button {
+  margin-top: 2rem;
+  margin-inline: auto;
+  font-weight: 600;
   position: absolute;
-  bottom: 20px;
+  bottom: 30px;
   left: 0;
   right: 0;
   margin: 0 auto;

@@ -5,38 +5,40 @@
         <ion-icon name="arrow-back" color="light"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Lista de Usúarios</ion-title>
+    <ion-title>Lista de Usuários</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="content" class="ion-padding">
+<ion-content class="ion-padding">
   <div *ngIf="!loading && errorMessage">
     <p class="text-red">{{ errorMessage }}</p>
   </div>
 
   <div *ngIf="!loading && users.length > 0">
-    <ion-accordion-group>
-      <ion-accordion *ngFor="let user of users" [value]="user.id" style="margin-bottom: 10px; background-color: white;">
-        <ion-item slot="header" lines="none">
+    <ion-list class="user-list">
+      <ion-card class="user-card" *ngFor="let user of users">
+        <ion-item lines="none">
+          <ion-icon name="person-circle-outline" slot="start" color="primary"></ion-icon>
           <ion-label>
             <h2>{{ user.name }}</h2>
             <p>{{ user.email }}</p>
           </ion-label>
         </ion-item>
 
-        <div class="ion-padding" slot="content">
-          <p class="blackColor"><strong>Plano:</strong>
+        <ion-card-content class="user-details">
+          <p>
+            <strong>Plano:</strong>
             {{ user.plan === 'monthly' ? 'Mensal' : (user.plan === 'yearly' ? 'Anual' : 'Não informado') }}
           </p>
-          <p class="blackColor"><strong>Status:</strong> <ion-chip
-              [color]="user.subscription_status === 'active' ? 'success' : 'danger'" class="text-capitalize">
+          <p>
+            <strong>Status:</strong>
+            <ion-chip [color]="user.subscription_status === 'active' ? 'success' : 'danger'" class="text-capitalize">
               <ion-label>{{ user.subscription_status }}</ion-label>
             </ion-chip>
           </p>
-        </div>
-      </ion-accordion>
-    </ion-accordion-group>
-    <br>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
   </div>
 
   <div *ngIf="!loading && users.length === 0">

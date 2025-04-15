@@ -1,55 +1,45 @@
-<ion-content id="content">
+<ion-content class="menu-content">
   <ion-grid>
     <ion-row>
-      <ion-col class="button-container" *ngIf="user?.is_admin">
-        <ion-fab [routerLink]="['/home/menu/users']">
-          <ion-fab-button class="custom-button">
-            <ion-icon name="people"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-        <span class="button-text">Usuários</span>
+      <ion-col size="6" class="menu-item" *ngIf="user?.is_admin">
+        <div class="menu-box" routerLink="/home/menu/users">
+          <ion-icon name="people-outline" color="primary"></ion-icon>
+          <span>Usuários</span>
+        </div>
       </ion-col>
 
-      <ion-col class="button-container" *ngIf="!user?.provider">
-        <ion-fab [routerLink]="['/home/menu/change-password']">
-          <ion-fab-button class="custom-button">
-            <ion-icon name="file-tray-full"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-        <span class="button-text">Alterar Senha</span>
+      <ion-col size="6" class="menu-item" *ngIf="!user?.provider">
+        <div class="menu-box" routerLink="/home/menu/change-password">
+          <ion-icon name="lock-closed-outline" color="primary"></ion-icon>
+          <span>Alterar Senha</span>
+        </div>
       </ion-col>
 
-      <ion-col class="button-container">
-        <ion-fab [routerLink]="['/home/menu/planos']">
-          <ion-fab-button class="custom-button">
-            <ion-icon name="card-outline"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-        <span class="button-text">Assinaturas</span>
+      <ion-col size="6" class="menu-item">
+        <div class="menu-box" routerLink="/home/menu/planos">
+          <ion-icon name="card-outline" color="primary"></ion-icon>
+          <span>Assinaturas</span>
+        </div>
       </ion-col>
-    </ion-row>
-    <br>
-    <ion-row>
-      <ion-col class="button-container" *ngIf="user?.is_admin">
-        <ion-fab [routerLink]="['/home/menu/dashboards']">
-          <ion-fab-button class="custom-button">
-            <ion-icon name="settings-outline"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-        <span class="button-text">Painel Adiministrativo</span>
+
+      <ion-col size="6" class="menu-item" *ngIf="user?.is_admin">
+        <div class="menu-box" routerLink="/home/menu/dashboards">
+          <ion-icon name="settings-outline" color="primary"></ion-icon>
+          <span>Painel</span>
+        </div>
       </ion-col>
-      <ion-col class="button-container" *ngIf="user?.is_admin">
-        <ion-fab [routerLink]="['/home/menu/pagamentos']">
-          <ion-fab-button class="custom-button">
-            <ion-icon name="stats-chart"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-        <span class="button-text">Faturamento</span>
+
+      <ion-col size="6" class="menu-item" *ngIf="user?.is_admin">
+        <div class="menu-box" routerLink="/home/menu/pagamentos">
+          <ion-icon name="stats-chart-outline" color="primary"></ion-icon>
+          <span>Faturamento</span>
+        </div>
       </ion-col>
     </ion-row>
   </ion-grid>
-  <ion-button class="logout-button" expand="full" color="danger" (click)="logout()">
-    <ion-icon name="log-out"></ion-icon>
-    <span>Sair</span>
+
+  <ion-button class="logout-button" expand="block" color="danger" (click)="logout()">
+    <ion-icon slot="start" name="log-out-outline"></ion-icon>
+    Sair
   </ion-button>
 </ion-content>

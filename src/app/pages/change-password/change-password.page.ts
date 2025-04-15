@@ -18,6 +18,20 @@ export class ChangePasswordPage implements OnInit {
     new_password_confirmation: '',
   };
 
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
+
+  togglePasswordVisibility(field: 'current' | 'new' | 'confirm') {
+    if (field === 'current') {
+      this.showCurrentPassword = !this.showCurrentPassword;
+    } else if (field === 'new') {
+      this.showNewPassword = !this.showNewPassword;
+    } else if (field === 'confirm') {
+      this.showConfirmPassword = !this.showConfirmPassword;
+    }
+  }
+
   constructor(
     private navCtrl: NavController,
     private toastController: ToastController,

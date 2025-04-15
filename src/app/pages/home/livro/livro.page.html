@@ -1,54 +1,39 @@
-<ion-content id="content" class="ion-padding">
-  <ion-content id="content">
-    <ng-container *ngIf="isLoading">
-      <ion-card class="custom-card" *ngFor="let i of [1, 2, 3, 4, 5]">
-        <ion-card-header>
-          <ion-card-title>
-            <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
-          </ion-card-title>
-        </ion-card-header>
+<ion-content class="dashboard-content">
+  <ion-card class="dashboard-wrapper">
+    <ion-card-header>
+      <ion-card-title class="dashboard-title">
+        <ion-icon name="library-outline"></ion-icon>
+        Biblioteca Jurídica
+      </ion-card-title>
+    </ion-card-header>
 
-        <ion-card-content>
-          <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
-        </ion-card-content>
-      </ion-card>
-    </ng-container>
+    <ion-card-content>
 
-
-    <ng-container *ngIf="!isLoading">
-      <ng-container *ngFor="let book of books">
-        <ion-card class="custom-card" [class.disabled]="!user?.is_admin || user?.subscription_status !== 'active'">
-          <div [routerLink]="['/view-text', book.id]">
-            <ion-card-header>
-              <ion-card-title class="book-title" class="color">
-                {{ cleanHTML(book.conteudo) }}
-              </ion-card-title>
-            </ion-card-header>
-          </div>
-        </ion-card>
+      <ng-container *ngIf="!isLoading && books?.length">
+        <h2 class="section-label">Meus Livros</h2>
+        <ion-list lines="none">
+          <ion-item *ngFor="let book of books" [routerLink]="['/view-text', book.id]">
+            <ion-icon slot="start" name="book-outline" color="primary"></ion-icon>
+            <ion-label>{{ cleanHTML(book.conteudo) }}</ion-label>
+          </ion-item>
+        </ion-list>
       </ng-container>
-    </ng-container>
 
-    <div *ngIf="!isLoading">
-      <div class="section-title">
-        <h2 class="color">Textos Jurídicos</h2>
-      </div>
-      <div class="textos-juridicos">
-        <ion-card class="custom-card" *ngFor="let texto of textos">
-          <ion-card-header>
-            <ion-card-title class="color">
-              <div *ngIf="texto.link">
-                <a [href]="texto.link" class="color" target="_blank" style="text-decoration: underline;">
-                  {{ texto.title }}
-                </a>
-              </div>
-              <div *ngIf="!texto.link">
-                <h3 class="color">{{ texto.title }}</h3>
-                <p>{{ texto.description || 'Descrição indisponível.' }}</p>
-              </div>
-            </ion-card-title>
-          </ion-card-header>
-        </ion-card>
-      </div>
-    </div>
-  </ion-content>
+      <h2 class="section-label">Textos Jurídicos</h2>
+      <ion-list lines="none">
+        <ion-item *ngFor="let texto of textos">
+          <ion-icon slot="start" name="document-text-outline" color="primary"></ion-icon>
+          <ion-label>
+            <a *ngIf="texto.link" [href]="texto.link" target="_blank">{{ texto.title }}</a>
+            <div *ngIf="!texto.link">
+              {{ texto.title }}
+              <br>
+              <small class="muted">{{ texto.description || 'Descrição indisponível.' }}</small>
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>

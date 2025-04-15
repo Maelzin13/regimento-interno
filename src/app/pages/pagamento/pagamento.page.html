@@ -9,27 +9,30 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="content" class="ion-padding">
-  <div>
-    <ion-accordion-group>
-      <ion-accordion *ngFor="let pagamento of pagamentos" style="margin-bottom: 10px; background-color: white;">
-        <ion-item slot="header" lines="none">
-          <ion-label>
+<ion-content class="faturamento-content">
+  <div *ngIf="pagamentos?.length">
+    <div class="faturamento-wrapper">
+      <ion-card class="faturamento-card" *ngFor="let pagamento of pagamentos">
+        <div class="card-header">
+          <ion-icon name="person-outline" class="user-icon"></ion-icon>
+          <div class="user-info">
             <h2>{{ pagamento.user.name }}</h2>
-          </ion-label>
-        </ion-item>
-
-        <div class="ion-padding" slot="content">
-          <p class="blackColor"><strong>Valor:</strong> R$ {{ pagamento.valor }}</p>
-          <p class="blackColor"><strong>Status:</strong>
-            <ion-chip [color]="pagamento.status === 'pago' ? 'success' : 'danger'" class="text-capitalize">
-              <ion-label>{{ pagamento.status }}</ion-label>
-            </ion-chip>
-          </p>
-          <p class="blackColor"><strong>Data:</strong> {{ (pagamento.created_at | date:'yyyy-MM-dd':'UTC' ) |
-            date:'dd/MM/yyyy'}}</p>
+            <p class="user-email">{{ pagamento.user.email }}</p>
+          </div>
+          <ion-chip [color]="pagamento.status === 'pago' ? 'success' : 'danger'" class="status-chip">
+            <ion-label>{{ pagamento.status }}</ion-label>
+          </ion-chip>
         </div>
-      </ion-accordion>
-    </ion-accordion-group>
+
+        <ion-card-content class="card-body">
+          <p><strong>Valor:</strong> R$ {{ pagamento.valor }}</p>
+          <p><strong>Data:</strong> {{ pagamento.created_at | date:'dd/MM/yyyy' }}</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <div *ngIf="!pagamentos?.length">
+    <p class="text-center">Nenhum pagamento encontrado.</p>
   </div>
 </ion-content>
