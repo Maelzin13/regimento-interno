@@ -8,7 +8,7 @@
 
 </ion-header>
 
-<ion-segment>
+<ion-segment [(ngModel)]="selectedSegment">
   <ion-segment-button value="corrido" content-id="corrido">
     <ion-label>Texto Corrido</ion-label>
   </ion-segment-button>
@@ -17,13 +17,13 @@
   </ion-segment-button>
 </ion-segment>
 
+<ion-searchbar color="light" animated="true" placeholder="Buscar por palavra ou artigo..." show-clear-button="always"
+  clear-icon="trash-bin" [(ngModel)]="query" (ionInput)="onSearchInput($event)" debounce="300">
+</ion-searchbar>
+
 <ion-segment-view>
   <ion-segment-content id="corrido">
     <ion-content [fullscreen]="true" class="ion-padding">
-      <ion-searchbar color="light" animated="true" placeholder="Buscar por palavra ou artigo..."
-        show-clear-button="always" clear-icon="trash-bin" [(ngModel)]="query" (ionInput)="onSearchInput($event)"
-        debounce="300">
-      </ion-searchbar>
       <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
         <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
           <h2 class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></h2>
@@ -56,12 +56,9 @@
       </ng-template>
     </ion-content>
   </ion-segment-content>
+
   <ion-segment-content id="formatado">
     <ion-content [fullscreen]="true" class="ion-padding">
-      <ion-searchbar color="light" animated="true" placeholder="Buscar por palavra ou artigo..."
-        show-clear-button="always" clear-icon="trash-bin" [(ngModel)]="query" (ionInput)="onSearchInput($event)"
-        debounce="300">
-      </ion-searchbar>
       <div *ngIf="(filteredBook || book)?.titulos?.length">
         <ion-card *ngFor="let titulo  of (filteredBook || book).titulos; let tituloIndex = index"
           class="ion-text-center">
@@ -106,7 +103,7 @@
     </ion-content>
   </ion-segment-content>
 </ion-segment-view>
-<ion-footer>
+<ion-footer *ngIf="selectedSegment !== 'formatado'">
   <ion-toolbar>
     <ion-buttons slot="end">
       <ion-button (click)="scrollToTop()">Voltar pro topo</ion-button>

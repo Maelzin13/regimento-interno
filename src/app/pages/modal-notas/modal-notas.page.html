@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar id="toolbar">
-    <ion-title>Modal Notas</ion-title>
+    <ion-title>Nota</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()">Fechar</ion-button>
     </ion-buttons>
@@ -8,5 +8,5 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
+  <div [innerHTML]="content"></div>
 </ion-content>

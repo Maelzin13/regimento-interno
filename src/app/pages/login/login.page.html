@@ -1,28 +1,30 @@
-<ion-header style="background-color: transparent;">
+<ion-header class="ion-no-border transparent">
   <ion-toolbar id="toolbar">
-    <ion-title class="header-title">{{this.nameApp}}</ion-title>
+    <ion-title class="header-title" style="text-align: center;">{{ nameApp }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content id="content">
   <div class="scrollable-content center-container">
-    <ion-card id="loginCard">
+    <ion-card class="login-card">
       <ion-card-content>
-        <ion-item lines="full" class="input-item">
-          <ion-input type="email" label="Email" placeholder="Email" [(ngModel)]="email" label-placement="floating"
-            autocomplete="on">
-          </ion-input>
+        <ion-item lines="inset">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-input type="email" placeholder="Email" [(ngModel)]="email" label="Email" label-placement="floating"
+            autocomplete="on"></ion-input>
         </ion-item>
 
-        <ion-item lines="full" class="input-item ion-margin-top">
-          <ion-input type="password" label="Senha" placeholder="Senha" [(ngModel)]="password" label-placement="floating"
-            autocomplete="on">
-          </ion-input>
+        <ion-item lines="inset" class="ion-margin-top">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-input type="password" placeholder="Senha" [(ngModel)]="password" label="Senha"
+            label-placement="floating"></ion-input>
         </ion-item>
 
-        <ion-button expand="block" class="login-btn ion-margin-top" (click)="login()">Entrar</ion-button>
+        <ion-button expand="block" class="login-btn ion-margin-top" (click)="login()">
+          Entrar
+        </ion-button>
 
-        <div class="separator ion-margin-vertical">
+        <div class="separator">
           <div class="line"></div>
           <span class="separator-text">Ou entre com</span>
           <div class="line"></div>
@@ -30,16 +32,18 @@
 
         <ion-grid>
           <ion-row class="ion-justify-content-center">
-
-            <ion-button expand="block" class="social-btn google-btn" (click)="socialLogin('google')">
-              <ion-icon slot="start" name="logo-google"></ion-icon>
-              Continuar com Google
-            </ion-button>
-
-            <ion-button expand="block" class="social-btn facebook-btn" (click)="socialLogin('facebook')">
-              <ion-icon slot="start" name="logo-facebook"></ion-icon>
-              Continuar com Facebook
-            </ion-button>
+            <ion-col size="12" class="ion-margin-bottom">
+              <ion-button expand="block" class="social-btn google-btn" (click)="socialLogin('google')">
+                <ion-icon slot="start" name="logo-google"></ion-icon>
+                Google
+              </ion-button>
+            </ion-col>
+            <ion-col size="12">
+              <ion-button expand="block" class="social-btn facebook-btn" (click)="socialLogin('facebook')">
+                <ion-icon slot="start" name="logo-facebook"></ion-icon>
+                Facebook
+              </ion-button>
+            </ion-col>
           </ion-row>
         </ion-grid>
       </ion-card-content>

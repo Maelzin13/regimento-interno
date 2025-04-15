@@ -53,6 +53,8 @@ export class LoginPage implements OnInit {
       this.authService.userChanged.next(userProfile);
 
       await loading.dismiss();
+      this.email = '';
+      this.password = '';
       this.router.navigate(['/home']);
     } catch (error: any) {
       await loading.dismiss();

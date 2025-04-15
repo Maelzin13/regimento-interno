@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { IonContent, ModalController } from '@ionic/angular';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ModalNotasPage } from '../modal-notas/modal-notas.page';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
@@ -14,11 +14,13 @@ import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
   templateUrl: './view-text.page.html',
   styleUrls: ['./view-text.page.scss'],
 })
-export class ViewTextPage implements OnInit {
+export class ViewTextPage implements OnInit, AfterViewInit {
   book: any;
   bookId: any;
   query: string = '';
   filteredBook: any = null;
+  selectedSegment = 'corrido';
+  notaListenerAttached = false;
   user: UserModel | null = null;
   searchBy: 'keyword' | 'artigo' = 'keyword';
   @ViewChild(IonContent) content!: IonContent;
@@ -113,8 +115,65 @@ export class ViewTextPage implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    if (!this.notaListenerAttached) {
+      this.listenNotaClicks();
+      this.notaListenerAttached = true;
+    }
+  }
+
+  private listenNotaClicks() {
+    document.addEventListener('click', async (event: any) => {
+      const target = event.target;
+      if (target.classList.contains('nota-ref')) {
+        const notaId = target.getAttribute('data-nota-id');
+        if (notaId) {
+          const nota = await this.bookService.getNotesById(notaId);
+          console.log('Nota:', nota);
+          this.openModalWithContent(nota.conteudo);
+        }
+      }
+    });
+  }
+
+  private formatNotas(content: string): string {
+    const notaRegex = /###nota (\d+)###/g;
+    return content.replace(notaRegex, (_, num) => {
+      return `
+        <div 
+          class="nota-ref-container" 
+          style="display: inline-block; vertical-align: baseline; margin-left: 3px; margin-top: 6px;"
+        >
+          <sup 
+        class="nota-ref" 
+        data-nota-id="${num}" 
+        role="link" 
+        tabindex="0"
+        style="
+          color: #007bff;
+          cursor: pointer;
+          font-size: 0.75em;
+          user-select: none;
+          text-decoration: underline;
+        "
+          >
+        ${num}
+          </sup>
+        </div>`;
+    });
+  }
+
+  async openModalWithContent(content: string) {
+    const modal = await this.modalController.create({
+      component: ModalNotasPage,
+      componentProps: { content },
+    });
+    return await modal.present();
+  }
+
   safeHTML(content: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(content);
+    const formatted = this.formatNotas(content);
+    return this.sanitizer.bypassSecurityTrustHtml(formatted);
   }
 
   cleanHTML(content: string): string {
@@ -126,13 +185,6 @@ export class ViewTextPage implements OnInit {
     const modal = await this.modalController.create({
       component: ModalPage,
       componentProps: { content },
-    });
-    return await modal.present();
-  }
-
-  async openModal() {
-    const modal = await this.modalController.create({
-      component: ModalNotasPage,
     });
     return await modal.present();
   }

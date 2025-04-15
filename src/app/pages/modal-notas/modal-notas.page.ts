@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -6,15 +6,11 @@ import { ModalController } from '@ionic/angular';
   templateUrl: './modal-notas.page.html',
   styleUrls: ['./modal-notas.page.scss'],
 })
-export class ModalNotasPage implements OnInit {
+export class ModalNotasPage {
+  @Input() content!: string;
+  constructor(private modalController: ModalController) {}
 
- constructor(private modalController: ModalController) {}
-
-  ngOnInit() {
-  }
-
-   dismiss() {
+  dismiss() {
     this.modalController.dismiss();
   }
-
 }

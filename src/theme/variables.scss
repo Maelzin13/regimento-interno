@@ -21,28 +21,6 @@
   color: white;
 }
 
-#loginCard {
-  --background: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-
-.login-title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: var(--primary-color);
-}
-
-.login-subtitle {
-  font-size: 1rem;
-  color: var(--secondary-color);
-}
-
-.input-item ion-input {
-  color: var(--secondary-color);
-}
-
 .login-btn {
   --background: var(--primary-color);
   --color: white;

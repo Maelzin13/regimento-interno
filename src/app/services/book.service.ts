@@ -70,4 +70,12 @@ export class BookService {
       .toPromise();
     return response.data;
   }
+
+  async getNotesById(id: number) {
+    console.log('id', id);
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/notas/${id}`)
+      .toPromise();
+    return response;
+  }
 }
