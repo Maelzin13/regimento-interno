@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { UserModel } from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
 import { BookService } from 'src/app/services/book.service';
+import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
 
 @Component({
   selector: 'app-livro',
@@ -43,7 +45,8 @@ export class LivroPage implements OnInit {
 
   constructor(
     public bookService: BookService,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalCtrl: ModalController
   ) {}
 
   ngOnInit() {
@@ -59,6 +62,18 @@ export class LivroPage implements OnInit {
         console.error('Erro ao carregar os livros:', error);
         this.isLoading = false;
       });
+  }
+
+  async openDescricaoModal(texto: any) {
+    const modal = await this.modalCtrl.create({
+      component: DescricaoModalComponent,
+      componentProps: {
+        titulo: texto.title,
+        descricao: texto.description,
+      },
+    });
+
+    await modal.present();
   }
 
   cleanHTML(content: string): string {

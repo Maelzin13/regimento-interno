@@ -8,6 +8,7 @@ import { PerfilPage } from './perfil/perfil.page';
 import { HomePageRoutingModule } from './home-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
+import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
 
 @NgModule({
   imports: [
@@ -17,6 +18,13 @@ import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
     ReactiveFormsModule,
     HomePageRoutingModule,
   ],
-  declarations: [HomePage, MenuPage, LivroPage, PerfilPage, EditBookModalPage],
+  declarations: [
+    HomePage,
+    MenuPage,
+    LivroPage,
+    PerfilPage,
+    EditBookModalPage,
+    DescricaoModalComponent,
+  ],
 })
 export class HomePageModule {}

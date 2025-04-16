@@ -9,31 +9,44 @@
 
     <ion-card-content>
 
+      <!-- Lista de Livros -->
       <ng-container *ngIf="!isLoading && books?.length">
-        <h2 class="section-label">Meus Livros</h2>
-        <ion-list lines="none">
-          <ion-item *ngFor="let book of books" [routerLink]="['/view-text', book.id]">
-            <ion-icon slot="start" name="book-outline" color="primary"></ion-icon>
-            <ion-label>{{ cleanHTML(book.conteudo) }}</ion-label>
-          </ion-item>
-        </ion-list>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" *ngFor="let book of books" class="menu-item">
+              <div class="menu-box" [routerLink]="['/view-text', book.id]">
+                <ion-icon slot="start" name="book-outline" color="primary"></ion-icon>
+                <span>{{ cleanHTML(book.conteudo) }}</span>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </ng-container>
 
-      <h2 class="section-label">Textos Auxiliares</h2>
-      <ion-list lines="none">
-        <ion-item *ngFor="let texto of textos">
-          <ion-icon slot="start" name="document-text-outline" color="primary"></ion-icon>
-          <ion-label>
-            <a *ngIf="texto.link" [href]="texto.link" target="_blank">{{ texto.title }}</a>
-            <div *ngIf="!texto.link">
-              {{ texto.title }}
-              <br>
-              <small class="muted">{{ texto.description || 'Descrição indisponível.' }}</small>
-            </div>
-          </ion-label>
-        </ion-item>
-      </ion-list>
+      <!-- Textos Auxiliares -->
+      <ion-card-header>
+        <ion-card-title class="dashboard-title">
+          <ion-icon name="library-outline"></ion-icon>
+          <h2 class="section-label">Textos Auxiliares</h2>
+        </ion-card-title>
+      </ion-card-header>
 
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" *ngFor="let texto of textos" class="menu-item">
+            <div class="menu-box" (click)="openDescricaoModal(texto)" *ngIf="!texto.link; else externalLink">
+              <ion-icon slot="start" name="document-text-outline" color="primary"></ion-icon>
+              <span class="muted">{{ cleanHTML(texto.title) }}</span>
+            </div>
+            <ng-template #externalLink>
+              <a class="menu-box" [href]="texto.link" target="_blank" style="text-decoration: none;">
+                <ion-icon slot="start" name="document-text-outline" color="primary"></ion-icon>
+                <span class="muted">{{ cleanHTML(texto.title) }}</span>
+              </a>
+            </ng-template>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-card-content>
   </ion-card>
 </ion-content>
