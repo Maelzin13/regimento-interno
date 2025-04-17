@@ -1,28 +1,9 @@
 :root {
-  --accent-color: #1e999a;
-  --background-color: #f8f9fa;
-  --card-color: #ffffff;
   --text-color: #2e2e2e;
   --text-muted: #6c757d;
 }
 
-.perfil-content {
-  --background: var(--background-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  padding: 0;
-}
-
-.profile-container {
-  width: 100%;
-  max-width: 500px;
-  padding: 1rem;
-}
-
 .profile-card {
-  background: var(--card-color);
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
   padding: 1.2rem;
@@ -45,7 +26,7 @@
 
   ion-icon {
     font-size: 3.4rem;
-    color: var(--accent-color);
+    color: var(--ion-color-primary);
   }
 }
 
@@ -69,13 +50,13 @@
 }
 
 .primary-btn {
-  --background: #1e999a;
-  --color: #ffffff;
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
   font-weight: 500;
 }
 
 .secondary-btn {
   --background: #e9ecef;
-  --color: #1e999a;
+  --color: var(--ion-color-primary);
   font-weight: 500;
 }

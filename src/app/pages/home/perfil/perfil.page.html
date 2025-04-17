@@ -1,28 +1,26 @@
-<ion-content class="perfil-content">
-  <div class="profile-container" *ngIf="user">
-    <ion-card class="profile-card">
-      <ion-card-header>
-        <div class="profile-header">
-          <div class="default-avatar">
-            <ion-icon name="person-circle-outline"></ion-icon>
-          </div>
-          <div class="profile-info">
-            <h2>{{ user.name || 'Usuário Anônimo' }}</h2>
-            <p>{{ user.email || 'Email não informado' }}</p>
-          </div>
+<ion-content>
+  <ion-card class="profile-card" *ngIf="user">
+    <ion-card-header>
+      <div class="profile-header">
+        <div class="default-avatar">
+          <ion-icon name="person-circle-outline"></ion-icon>
         </div>
-      </ion-card-header>
+        <div class="profile-info">
+          <h2>{{ user.name || 'Usuário Anônimo' }}</h2>
+          <p>{{ user.email || 'Email não informado' }}</p>
+        </div>
+      </div>
+    </ion-card-header>
 
-      <ion-card-content class="btn-group">
-        <ion-button expand="block" class="primary-btn" (click)='editProfile(user.id)'>
-          <ion-icon slot="start" name="create-outline"></ion-icon>
-          Editar Perfil
-        </ion-button>
+    <ion-card-content class="btn-group">
+      <ion-button expand="block" class="primary-btn" (click)='editProfile(user.id)'>
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        Editar Perfil
+      </ion-button>
 
-        <ion-button expand="block" class="secondary-btn" (click)="subscribe()">
-          Alterar Plano
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-  </div>
+      <ion-button expand="block" class="secondary-btn" (click)="subscribe()">
+        Alterar Plano
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

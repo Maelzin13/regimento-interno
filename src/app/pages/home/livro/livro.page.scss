@@ -6,51 +6,6 @@
   --background-color: #f8f9fa;
 }
 
-.menu-content {
-  --background: var(--background-color);
-  padding: 1.5rem 1rem;
-}
-
-.menu-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.menu-box {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  width: 100%;
-  max-width: 140px;
-  height: 120px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-weight: 500;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-
-  ion-icon {
-    font-size: 2.4rem;
-    margin-bottom: 8px;
-    color: var(--ion-color-primary);
-  }
-
-  span {
-    color: var(--ion-color-primary);
-  }
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-  }
-}
-
 .dashboard-wrapper {
   width: 97%;
   max-width: 500px;

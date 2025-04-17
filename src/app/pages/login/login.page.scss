@@ -7,6 +7,14 @@
   }
 }
 
+.scrollable-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
 .login-content {
   --background: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);
 }
@@ -41,5 +49,14 @@
   .separator-text {
     font-size: 0.85rem;
     color: #666;
+  }
+}
+
+.login-card {
+  max-width: 400px;
+  margin: 0 auto;
+
+  @media (max-width: 320px) {
+    padding: 10px;
   }
 }
