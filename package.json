@@ -36,7 +36,6 @@
     "@typescript-eslint/utils": "^8.20.0",
     "axios": "^1.7.8",
     "bootstrap": "^5.3.3",
-    "capacitor-google-auth": "^0.1.8",
     "firebase": "^11.2.0",
     "ionicons": "^7.0.0",
     "ngx-cookie-service": "18.0.0",
