@@ -23,6 +23,7 @@ export class LoginPage implements OnInit {
 
   async ngOnInit() {
     const loading = await this.presentLoading('Verificando sessão...');
+    this.authService.handleRedirectCallback();
     try {
       this.nameApp = config.appName;
 

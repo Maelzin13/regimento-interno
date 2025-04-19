@@ -1,6 +1,8 @@
 import {
   signOut,
   signInWithPopup,
+  getRedirectResult,
+  signInWithRedirect,
   GoogleAuthProvider,
   FacebookAuthProvider,
 } from 'firebase/auth';
@@ -13,7 +15,6 @@ import { Capacitor } from '@capacitor/core';
 import { UserModel } from '../models/userModel';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { FacebookLogin } from '@capacitor-community/facebook-login';
 
 @Injectable({
@@ -108,31 +109,59 @@ export class AuthService {
 
   async googleLogin() {
     try {
-      let idToken: string;
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({
+        prompt: 'select_account',
+      });
 
       if (Capacitor.getPlatform() === 'web') {
-        const result = await signInWithPopup(auth, new GoogleAuthProvider());
+        const result = await signInWithPopup(auth, provider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
-        idToken = credential?.accessToken ?? '';
-      } else {
-        const result = await GoogleAuth.signIn();
-        idToken = result.authentication.idToken;
-      }
+        const accessToken = credential?.accessToken;
 
-      if (!idToken) {
-        throw new Error('Falha ao obter o token do Google.');
+        if (!accessToken) throw new Error('AccessToken não encontrado');
+
+        const response: any = await this.http
+          .post(`${this.apiService.baseUrl}/auth/social-login/google`, {
+            token: accessToken,
+          })
+          .toPromise();
+
+        this.saveAuthToken(response.token);
+        localStorage.setItem('authUser', JSON.stringify(response.user));
+        this.userChanged.next(response.user);
+
+        return response;
+      } else {
+        await signInWithRedirect(auth, provider);
+        return null;
       }
+    } catch (error: any) {
+      throw new Error('Erro ao fazer login com Google: ' + error.message);
+    }
+  }
+
+  async handleRedirectCallback(): Promise<void> {
+    try {
+      const result = await getRedirectResult(auth);
+      if (!result || !result.user) return;
+
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const accessToken = credential?.accessToken;
+      if (!accessToken) throw new Error('AccessToken não encontrado');
 
       const response: any = await this.http
         .post(`${this.apiService.baseUrl}/auth/social-login/google`, {
-          token: idToken,
+          token: accessToken,
         })
         .toPromise();
 
       this.saveAuthToken(response.token);
-      return response;
+      localStorage.setItem('authUser', JSON.stringify(response.user));
+      this.userChanged.next(response.user);
+      this.router.navigate(['/home']);
     } catch (error: any) {
-      throw new Error('Erro ao fazer login com Google: ' + error.message);
+      console.error('Erro ao retornar do Google:', error.message);
     }
   }
 
@@ -163,6 +192,9 @@ export class AuthService {
         .toPromise();
 
       this.saveAuthToken(response.token);
+      localStorage.setItem('authUser', JSON.stringify(response.user));
+      this.userChanged.next(response.user);
+
       return response;
     } catch (error: any) {
       throw new Error('Erro ao fazer login com Facebook: ' + error.message);
