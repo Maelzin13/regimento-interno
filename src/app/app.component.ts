@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 @Component({
   selector: 'app-root',

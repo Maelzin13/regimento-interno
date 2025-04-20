@@ -6,15 +6,13 @@
   --background-color: #f8f9fa;
 }
 
-.dashboard-wrapper {
-  width: 97%;
-  max-width: 500px;
-  display: contents;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
-  color: var(--text-color);
+ion-card-content {
+  padding: 1rem;
+  background-color: var(--card-bg);
 }
 
 .dashboard-title {
+  margin-top: 10px;
   font-size: 1.4rem;
   font-weight: bold;
   color: var(--accent-color);

@@ -5,6 +5,12 @@ const config: CapacitorConfig = {
   appName: 'Regimento Interno Comentado',
   webDir: 'www',
   plugins: {
+    SplashScreen: {
+      launchShowDuration: 0,
+    },
+    Keyboard: {
+      resize: 'body',
+    },
     GoogleAuth: {
       scopes: ['profile', 'email'],
       serverClientId:
