@@ -24,6 +24,8 @@ PODS:
     - Capacitor
   - CapacitorKeyboard (7.0.1):
     - Capacitor
+  - CapacitorNetwork (7.0.1):
+    - Capacitor
   - CapacitorStatusBar (7.0.1):
     - Capacitor
   - FBAEMKit (17.4.0):
@@ -88,6 +90,7 @@ DEPENDENCIES:
   - "CapacitorFirebaseAuthentication (from `../../node_modules/@capacitor-firebase/authentication`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
+  - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
 
 SPEC REPOS:
@@ -126,6 +129,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/haptics"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
+  CapacitorNetwork:
+    :path: "../../node_modules/@capacitor/network"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
 
@@ -139,6 +144,7 @@ SPEC CHECKSUMS:
   CapacitorFirebaseAuthentication: 9aa0fcf60b1c98e173e13f22a2fcc2cab42c7377
   CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
   CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
+  CapacitorNetwork: 07ec4c69c1bb696f41c23e00d31bda1bbb221bba
   CapacitorStatusBar: 275cbf2f4dfc00388f519ef80c7ec22edda342c9
   FBAEMKit: 58cb5f302cdd715a56d4c1d0dfdd2e423ac1421a
   FBSDKCoreKit: 94d7461d0cecf441b1ba7c41acfff41daa8ccd41
@@ -155,6 +161,6 @@ SPEC CHECKSUMS:
   OAuthSwift: 75efbb5bd9a4b2b71a37bd7e986bf3f55ddd54c6
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
 
-PODFILE CHECKSUM: eb25407f8f3ae2ab1d59f797b84c1eb12d21e526
+PODFILE CHECKSUM: 596d7903ab46e2655a83479580069dac24601462
 
 COCOAPODS: 1.16.2

@@ -17,6 +17,14 @@ const config: CapacitorConfig = {
         '10593129361-sqku04f9hioan9jpd2g6irrlc6uugo1a.apps.googleusercontent.com',
       forceCodeForRefreshToken: true,
     },
+    GenericOauth2: {
+      android: {
+        scheme: 'com.regimento.app',
+      },
+      ios: {
+        scheme: 'com.regimento.app',
+      },
+    },
   },
 };
 
