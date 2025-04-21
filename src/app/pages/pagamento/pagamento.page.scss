@@ -1,12 +1,10 @@
-:root {
-  --ion-color-primary: #1e999a;
-  --text-light: #f3f4f6;
-  --text-muted: #94a3b8;
+ion-content {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .faturamento-content {
   padding: 1rem;
-  color: var(--text-light);
 }
 
 .faturamento-wrapper {
@@ -78,5 +76,20 @@
       font-weight: 600;
       color: var(--ion-color-primary);
     }
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

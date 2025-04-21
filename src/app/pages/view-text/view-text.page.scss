@@ -7,6 +7,35 @@
   cursor: pointer;
 }
 
-ion-toolbar {
-  --opacity: 0.5;
+ion-content {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.titulo {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.capitulo {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.secao {
+  font-size: 1rem;
+  font-style: italic;
+}
+
+.comentario {
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-left: 4px solid var(--comentario-color);
+  margin-bottom: 12px;
+  border-radius: 5px;
+}
+
+.comentario-tipo {
+  font-weight: bold;
+  color: var(--comentario-color);
 }

@@ -9,14 +9,20 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="lines"
+      pullingText="Puxe para atualizar" refreshingText="Atualizando usuários...">
+    </ion-refresher-content>
+  </ion-refresher>
+
   <div *ngIf="!loading && errorMessage">
     <p class="text-red">{{ errorMessage }}</p>
   </div>
 
   <div *ngIf="!loading && users.length > 0">
     <ion-list class="user-list">
-      <ion-card class="user-card" *ngFor="let user of users">
+      <ion-card class="user-card fade-in-up" *ngFor="let user of users">
         <ion-item lines="none">
           <ion-icon name="person-circle-outline" slot="start" color="primary"></ion-icon>
           <ion-label>
@@ -44,4 +50,11 @@
   <div *ngIf="!loading && users.length === 0">
     <p class="text-center">Nenhum usuário encontrado.</p>
   </div>
+
+  <ng-container *ngIf="loading">
+    <div class="ion-text-center ion-margin-top">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Carregando usuários...</p>
+    </div>
+  </ng-container>
 </ion-content>

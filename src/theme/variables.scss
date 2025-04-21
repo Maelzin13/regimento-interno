@@ -31,6 +31,10 @@
   --card-max-width-lg: 600px;
 }
 
+ion-refresher {
+  background: var(--ion-color-primary-contrast);
+}
+
 ion-accordion::part(header) ion-icon {
   color: var(--ion-color-primary) !important;
 }

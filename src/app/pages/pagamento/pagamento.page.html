@@ -9,10 +9,23 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="faturamento-content">
-  <div *ngIf="pagamentos?.length">
-    <div class="faturamento-wrapper">
-      <ion-card class="faturamento-card" *ngFor="let pagamento of pagamentos">
+<ion-content [fullscreen]="true" class="faturamento-content">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="lines"
+      pullingText="Puxe para atualizar" refreshingText="Atualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ng-container *ngIf="isLoading">
+    <div class="ion-text-center ion-margin-top">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Carregando pagamentos...</p>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading">
+    <div *ngIf="pagamentos?.length; else semPagamentos" class="faturamento-wrapper">
+      <ion-card class="faturamento-card fade-in-up" *ngFor="let pagamento of pagamentos">
         <div class="card-header">
           <ion-icon name="person-outline" class="user-icon"></ion-icon>
           <div class="user-info">
@@ -30,9 +43,11 @@
         </ion-card-content>
       </ion-card>
     </div>
-  </div>
 
-  <div *ngIf="!pagamentos?.length">
-    <p class="text-center">Nenhum pagamento encontrado.</p>
-  </div>
+    <ng-template #semPagamentos>
+      <ion-text color="medium" class="ion-text-center ion-padding">
+        Nenhum pagamento encontrado.
+      </ion-text>
+    </ng-template>
+  </ng-container>
 </ion-content>

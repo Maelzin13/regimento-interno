@@ -1,3 +1,8 @@
+ion-content {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 ion-card {
   margin-bottom: 20px;
   border-radius: 12px;
@@ -9,20 +14,13 @@ ion-card-title {
   font-weight: 600;
 }
 
-ion-item {
-  --padding-start: 10px;
-  --inner-padding-end: 10px;
-  --min-height: 60px;
-}
-
 ion-label p {
-  margin: 2px 0;
+  margin: 1px 0;
   font-size: 0.9rem;
   color: #666;
 }
 
-ion-label h2,
-ion-label h4 {
+ion-label h2 {
   margin: 4px 0;
   font-size: 1rem;
   font-weight: 500;
@@ -43,19 +41,60 @@ ion-avatar {
   height: 40px;
 }
 
-ion-item + ion-item {
-  margin-top: 4px;
-  border-top: 1px solid #f0f0f0;
+.summary-card {
+  ion-card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
 }
 
-.section-title {
-  margin-top: 10px;
-  margin-bottom: 4px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #f0f0f0;
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
 }
 
-ion-text {
-  font-size: 0.95rem;
+.summary-item ion-icon {
+  font-size: 1.5rem;
+}
+
+.summary-label p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.summary-label strong {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: block;
+  color: #000;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.fade-delay-1 {
+  animation-delay: 0.1s;
+}
+.fade-delay-2 {
+  animation-delay: 0.3s;
+}
+.fade-delay-3 {
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

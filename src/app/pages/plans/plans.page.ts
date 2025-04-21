@@ -1,7 +1,7 @@
-import { NavController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { PlansService } from 'src/app/services/plans.service';
+import { environment } from 'src/environments/environment';
+import { NavController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-plans',
@@ -10,12 +10,12 @@ import { PlansService } from 'src/app/services/plans.service';
 })
 export class PlansPage implements OnInit {
   planos: any[] = [];
-  planoAtivo: any = null;
-  assinaturaAtiva: any = null;
+  isLoading = true;
 
   constructor(
+    private plansService: PlansService,
     private navCtrl: NavController,
-    private plansService: PlansService
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
@@ -23,21 +23,44 @@ export class PlansPage implements OnInit {
   }
 
   async loadPlans() {
+    this.isLoading = true;
     try {
       const response: any = await this.plansService.getPlans();
       this.planos = response.planos;
-      this.planoAtivo = response.planoAtivo;
-      this.assinaturaAtiva = response.assinaturaAtiva;
     } catch (error) {
       console.error('Erro ao carregar planos', error);
+    } finally {
+      this.isLoading = false;
     }
+  }
+
+  async doRefresh(event: any) {
+    try {
+      await this.loadPlans();
+      this.showSuccessToast();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      event.target.complete();
+    }
+  }
+
+  async showSuccessToast() {
+    const toast = await this.toastController.create({
+      message: 'Planos atualizados com sucesso!',
+      duration: 2000,
+      color: 'success',
+      position: 'middle',
+      icon: 'checkmark-circle-outline',
+    });
+    await toast.present();
   }
 
   subscribe() {
     window.open(`${environment.baseUrl}/login`, '_blank');
   }
 
-  async roolBack() {
+  roolBack() {
     this.navCtrl.navigateRoot(['/home/menu']);
   }
 }

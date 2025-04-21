@@ -1,7 +1,9 @@
 <ion-header>
   <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-button routerLink="/home">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>{{ artigo?.titulo || 'Artigo' }}</ion-title>
   </ion-toolbar>
