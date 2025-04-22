@@ -2,15 +2,15 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBYhYMY3FCrLpetZmyH1R3dvCAHuT9ASZo',
-  authDomain: 'regimento-interno-987c2.firebaseapp.com',
-  projectId: 'regimento-interno-987c2',
-  storageBucket: 'regimento-interno-987c2.firebasestorage.app',
-  messagingSenderId: '10593129361',
-  appId: '1:10593129361:web:fb377197a8bbed0c0dc030',
+  apiKey: 'AIzaSyA76-1Beau7Zc1HATQXPwS0Z1zWgrEIw4c',
+  authDomain: 'regimento-interno-comentado.firebaseapp.com',
+  projectId: 'regimento-interno-comentado',
+  storageBucket: 'regimento-interno-comentado.firebasestorage.app',
+  messagingSenderId: '202495948548',
+  appId: '1:202495948548:web:0182a0168649faec970251',
+  measurementId: 'G-2SSKFE05MP',
 };
 
-// Inicializa o Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
 export const auth = getAuth(firebaseApp);

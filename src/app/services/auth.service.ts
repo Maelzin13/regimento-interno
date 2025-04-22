@@ -15,7 +15,6 @@ import { Capacitor } from '@capacitor/core';
 import { UserModel } from '../models/userModel';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
-import { GenericOAuth2 } from '@capacitor-community/generic-oauth2';
 import { FacebookLogin } from '@capacitor-community/facebook-login';
 
 @Injectable({
@@ -110,52 +109,12 @@ export class AuthService {
 
   async googleLogin() {
     try {
-      const platform = Capacitor.getPlatform();
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({
+        prompt: 'select_account',
+      });
 
-      if (platform === 'ios') {
-        const config = {
-          appId:
-            '10593129361-sqku04f9hioan9jpd2g6irrlc6uugo1a.apps.googleusercontent.com',
-          authorizationBaseUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
-          accessTokenEndpoint: 'https://www.googleapis.com/oauth2/v4/token',
-          scope: 'email profile',
-          redirectUrl:
-            'com.googleusercontent.apps.10593129361-rc9g93mjnml7u8abkk7tr71682gplbgm:/oauth2redirect',
-          pkceEnabled: true,
-          logsEnabled: true,
-          ios: {
-            appId:
-              '10593129361-rc9g93mjnml7u8abkk7tr71682gplbgm.apps.googleusercontent.com',
-            redirectUrl:
-              'com.googleusercontent.apps.10593129361-rc9g93mjnml7u8abkk7tr71682gplbgm:/oauth2redirect',
-            responseType: 'code',
-            pkceEnabled: true,
-          },
-        };
-
-        const result = await GenericOAuth2.authenticate(config);
-
-        if (!result?.accessToken) {
-          throw new Error('Não foi possível obter o accessToken');
-        }
-
-        const response: any = await this.http
-          .post(`${this.apiService.baseUrl}/auth/social-login/google`, {
-            token: result.accessToken,
-          })
-          .toPromise();
-
-        this.saveAuthToken(response.token);
-        localStorage.setItem('authUser', JSON.stringify(response.user));
-        this.userChanged.next(response.user);
-
-        return response;
-      }
-
-      if (platform === 'web') {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-
+      if (Capacitor.getPlatform() === 'web') {
         const result = await signInWithPopup(auth, provider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const accessToken = credential?.accessToken;
@@ -173,13 +132,10 @@ export class AuthService {
         this.userChanged.next(response.user);
 
         return response;
+      } else {
+        await signInWithRedirect(auth, provider);
+        return null;
       }
-
-      // Android
-      const provider = new GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: 'select_account' });
-      await signInWithRedirect(auth, provider);
-      return null;
     } catch (error: any) {
       throw new Error('Erro ao fazer login com Google: ' + error.message);
     }
@@ -203,10 +159,9 @@ export class AuthService {
       this.saveAuthToken(response.token);
       localStorage.setItem('authUser', JSON.stringify(response.user));
       this.userChanged.next(response.user);
-
       this.router.navigate(['/home']);
     } catch (error: any) {
-      console.error('Erro no retorno do login Google:', error.message);
+      console.error('Erro ao retornar do Google:', error.message);
     }
   }
 
