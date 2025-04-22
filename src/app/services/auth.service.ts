@@ -115,21 +115,19 @@ export class AuthService {
       if (platform === 'ios') {
         const config = {
           appId:
-            '10593129361-sqku04f9hioan9jpd2g6irrlc6uugo1a.apps.googleusercontent.com',
+            '202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com',
           authorizationBaseUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
           accessTokenEndpoint: 'https://www.googleapis.com/oauth2/v4/token',
-          scope: 'email profile',
+          resourceUrl: 'https://www.googleapis.com/userinfo/v2/me',
+          scope: 'email profile openid',
           redirectUrl:
-            'com.googleusercontent.apps.10593129361-rc9g93mjnml7u8abkk7tr71682gplbgm:/oauth2redirect',
+            'com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q:/oauth2redirect',
+          responseType: 'code',
           pkceEnabled: true,
           logsEnabled: true,
-          ios: {
-            appId:
-              '10593129361-rc9g93mjnml7u8abkk7tr71682gplbgm.apps.googleusercontent.com',
-            redirectUrl:
-              'com.googleusercontent.apps.10593129361-rc9g93mjnml7u8abkk7tr71682gplbgm:/oauth2redirect',
-            responseType: 'code',
-            pkceEnabled: true,
+          additionalParameters: {
+            prompt: 'select_account',
+            access_type: 'offline',
           },
         };
 

@@ -23,9 +23,10 @@
 	<dict>
 		<key>CFBundleURLSchemes</key>
 		<array>
-		<string>com.googleusercontent.apps.10593129361-rc9g93mjnml7u8abkk7tr71682gplbgm</string>
+		<string>com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q</string>
 		</array>
 	</dict>
+	</array>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
