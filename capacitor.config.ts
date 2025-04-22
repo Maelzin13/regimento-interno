@@ -22,7 +22,8 @@ const config: CapacitorConfig = {
         scheme: 'com.regimento.app',
       },
       ios: {
-        scheme: 'com.regimento.app',
+        scheme:
+          'com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q',
       },
     },
   },

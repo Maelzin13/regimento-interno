@@ -133,13 +133,15 @@ export class AuthService {
 
         const result = await GenericOAuth2.authenticate(config);
 
-        if (!result?.accessToken) {
+        const accessToken = result?.access_token || result?.accessToken;
+
+        if (!accessToken) {
           throw new Error('Não foi possível obter o accessToken');
         }
 
         const response: any = await this.http
           .post(`${this.apiService.baseUrl}/auth/social-login/google`, {
-            token: result.accessToken,
+            token: accessToken,
           })
           .toPromise();
 
