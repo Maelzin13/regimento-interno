@@ -29,6 +29,7 @@ export class UserEditPage implements OnInit {
     try {
       const userData = await this.userService.getUsersById(userId);
       this.user = userData;
+      console.log(this.user);
     } catch (error) {
       console.error(error);
       this.errorMessage = 'Erro ao carregar informações do usuário.';

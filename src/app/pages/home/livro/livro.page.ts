@@ -4,6 +4,7 @@ import { UserModel } from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
 import { BookService } from 'src/app/services/book.service';
 import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-livro',
@@ -46,7 +47,8 @@ export class LivroPage implements OnInit {
   constructor(
     public bookService: BookService,
     private authService: AuthService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
@@ -74,6 +76,16 @@ export class LivroPage implements OnInit {
     });
 
     await modal.present();
+  }
+
+  async showSubscriptionMessage() {
+    const toast = await this.toastCtrl.create({
+      message: 'É necessário ter uma assinatura ativa para acessar este conteúdo',
+      duration: 3000,
+      position: 'middle',
+      color: 'warning'
+    });
+    await toast.present();
   }
 
   cleanHTML(content: string): string {

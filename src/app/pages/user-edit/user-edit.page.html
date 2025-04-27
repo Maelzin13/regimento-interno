@@ -29,7 +29,7 @@
     </ion-item>
 
     <!-- Administrador -->
-    <ion-item *ngIf="user.is_admin !== undefined">
+    <ion-item *ngIf="user.is_admin === true">
       <ion-label>Administrador</ion-label>
       <ion-select [(ngModel)]="user.is_admin" name="is_admin">
         <ion-select-option [value]="false">Não</ion-select-option>

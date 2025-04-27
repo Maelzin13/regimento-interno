@@ -33,3 +33,58 @@ ion-card-content {
   margin: 1.2rem 0 0.6rem;
   font-size: 1rem;
 }
+
+.menu-box {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  ion-icon {
+    font-size: 1.4rem;
+    margin-right: 12px;
+  }
+}
+
+.locked-item {
+  opacity: 0.8;
+  background-color: #f0f0f0;
+  border: 1px dashed #ccc;
+  position: relative;
+  
+  &:hover {
+    background-color: #e6e6e6;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.locked-text {
+  color: #999;
+}
+
+.lock-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lock-icon {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  font-size: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
