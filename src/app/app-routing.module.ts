@@ -70,14 +70,7 @@ const routes: Routes = [
       import('./pages/change-password/change-password.module').then(
         (m) => m.ChangePasswordPageModule
       ),
-  },
-  {
-    path: 'modal-notas',
-    loadChildren: () =>
-      import('./pages/modal-notas/modal-notas.module').then(
-        (m) => m.ModalNotasPageModule
-      ),
-  },
+  }, 
   {
     path: 'plans',
     loadChildren: () =>

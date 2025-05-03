@@ -3,11 +3,10 @@ import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { IonContent, ModalController } from '@ionic/angular';
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { ModalNotasPage } from '../modal-notas/modal-notas.page';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { IonContent, ModalController,  AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-view-text',
@@ -28,9 +27,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private sanitizer: DomSanitizer,
     private bookService: BookService,
     private authService: AuthService,
-    private sanitizer: DomSanitizer,
+    private alertController: AlertController,
     private modalController: ModalController
   ) {}
 
@@ -130,7 +130,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         if (notaId) {
           const nota = await this.bookService.getNotesById(notaId);
           console.log('Nota:', nota);
-          this.openModalWithContent(nota.conteudo);
+          this.openAlertWithContent(nota, notaId);
         }
       }
     });
@@ -163,12 +163,22 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     });
   }
 
-  async openModalWithContent(content: string) {
-    const modal = await this.modalController.create({
-      component: ModalNotasPage,
-      componentProps: { content },
+  // async openModalWithContent(content: string) {
+  //   const modal = await this.modalController.create({
+  //     component: ModalNotasPage,
+  //     componentProps: { content },
+  //   });
+  //   return await modal.present();
+  // }
+
+  async openAlertWithContent(content: any, notaId: any) {
+      const alert = await this.alertController.create({
+      header: `Nota ${notaId}`,
+      message: `${content.conteudo}`,
+      buttons: ['Fechar'],
     });
-    return await modal.present();
+  
+    await alert.present();
   }
 
   safeHTML(content: string): SafeHtml {

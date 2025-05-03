@@ -6,53 +6,85 @@
   --background-color: #f8f9fa;
 }
 
-ion-card-content {
-  padding: 1rem;
-  background-color: var(--card-bg);
+ion-content {
+  height: 100vh;
+  overflow: hidden !important;
+  --overflow: hidden;
+  --padding-top: 0;
+}
+
+ion-card-content{
+    padding-inline-start: 20px;
+    padding-inline-end: 20px;
+    padding-top: 48px;
+    padding-bottom: 20px;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+
+.section-label {
+  color: var(--accent-color);
+  font-weight: 600;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+
+  ion-icon {
+    margin-right: 8px;
+    font-size: 1.4rem;
+  }
 }
 
 .dashboard-title {
-  margin-top: 10px;
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: var(--accent-color);
-  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--accent-color);
+  margin: 1.2rem 0;
 
   ion-icon {
     margin-right: 8px;
     font-size: 1.6rem;
   }
-}
 
-.section-label {
-  color: var(--accent-color);
-  font-weight: 600;
-  margin: 1.2rem 0 0.6rem;
-  font-size: 1rem;
+  span {
+    font-size: 1.1rem;
+  }
 }
 
 .menu-box {
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #f8f9fa;
+  padding: 16px 12px;
+  border-radius: 12px;
+  background-color: var(--background-color);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 10px;
-  cursor: pointer;
+  justify-content: flex-start;
+  min-height: 120px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
-  
+  height: 100%;
+
   &:hover {
     background-color: #e9ecef;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   }
-  
+
   ion-icon {
-    font-size: 1.4rem;
-    margin-right: 12px;
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  span {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    word-break: break-word;
+    line-height: 1.2;
   }
 }
 
@@ -60,8 +92,7 @@ ion-card-content {
   opacity: 0.8;
   background-color: #f0f0f0;
   border: 1px dashed #ccc;
-  position: relative;
-  
+
   &:hover {
     background-color: #e6e6e6;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);

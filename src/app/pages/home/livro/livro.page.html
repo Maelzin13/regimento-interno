@@ -1,15 +1,16 @@
-<ion-content [fullscreen]="true" class="ion-padding">
-
-  <ion-card-header>
-    <ion-card-title class="dashboard-title">
+<ion-header [translucent]="true">
+  <ion-toolbar id="toolbar">
+    <ion-title class="section-label">
       <ion-icon name="library-outline"></ion-icon>
       Biblioteca Jurídica
-    </ion-card-title>
-  </ion-card-header>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-card-content>
-    <ng-container *ngIf="!isLoading && books?.length">
-      <ion-grid>
+    <ng-container *ngIf="!isLoading && books?.length" style="margin-top: 10px">
+      <ion-grid >
         <ion-row>
           <ion-col size="12" *ngFor="let book of books" class="menu-item">
             <div class="menu-box" [routerLink]="['/view-text', book.id]" *ngIf="user?.is_admin || user?.subscription_status === 'active'">
@@ -21,19 +22,17 @@
                 <ion-icon slot="start" name="book-outline" color="medium"></ion-icon>
                 <ion-icon name="lock-closed" class="lock-icon" color="warning"></ion-icon>
               </div>
-              <span class="locked-text">{{ cleanHTML(book.conteudo) }}</span>
+                <span class="locked-text">{{ cleanHTML(book.conteudo) | slice:0:100  }}</span>
             </div>
           </ion-col>
         </ion-row>
       </ion-grid>
-    </ng-container>
+    </ng-container>  
 
-    <ion-card-header>
-      <ion-card-title class="dashboard-title">
-        <ion-icon name="library-outline"></ion-icon>
-        <h2 class="section-label">Textos Auxiliares</h2>
-      </ion-card-title>
-    </ion-card-header>
+    <div class="dashboard-title">
+      <ion-icon name="library-outline"></ion-icon>
+      <span>Textos Auxiliares</span>
+    </div>
 
     <ion-grid>
       <ion-row>
