@@ -1,16 +1,26 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/view-text"></ion-back-button>
+      <ion-button routerLink="/view-text/1">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>{{ capitulo?.conteudo || 'Capítulo' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="content" class="ion-padding">
+<ion-content class="ion-padding">
   <ion-card *ngFor="let secao of capitulo.secaos">
     <ion-card-header>
-      <ion-card-title>{{ secao.conteudo }}</ion-card-title>
+      <ion-card-title style="display: flex; align-items: center; justify-content: space-between;">
+        <h3 class="secao" [innerHTML]="secao.conteudo"></h3>
+        <!-- <ion-button *ngIf="user?.is_admin" size="small" fill="clear" (click)="abrirEditor(secao.id, 'secao')">
+          <ion-icon name="pencil-outline" class="icons"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear">
+          <ion-icon name="trash-outline" class="icons"></ion-icon>
+        </ion-button> -->
+      </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-list>
@@ -18,7 +28,13 @@
           <ion-label>
             <h3 [innerHTML]="artigo.conteudo"></h3>
           </ion-label>
-          <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+          <!-- <ion-button *ngIf="user?.is_admin" size="small" fill="clear" (click)="abrirEditor(artigo.id, 'artigo')">
+            <ion-icon name="pencil-outline" class="icons"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear">
+            <ion-icon name="trash-outline" class="icons"></ion-icon>
+          </ion-button> -->
+          <ion-icon slot="end" name="chevron-forward-outline" class="icons"></ion-icon>
         </ion-item>
       </ion-list>
     </ion-card-content>

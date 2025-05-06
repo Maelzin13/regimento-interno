@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "202495948548",
+    "project_id": "regimento-interno-comentado",
+    "storage_bucket": "regimento-interno-comentado.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202495948548:android:96124bfc20b0bc76970251",
+        "android_client_info": {
+          "package_name": "com.regimento.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIYa2DT8ZBa-nMJC7zWuNiX1LhgvjRnJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "202495948548-4aqp78neosutm4dflj9hfa814dnfv9ev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

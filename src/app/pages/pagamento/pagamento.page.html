@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar id="toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="roolBack()">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Faturamento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="faturamento-content">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="lines"
+      pullingText="Puxe para atualizar" refreshingText="Atualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ng-container *ngIf="isLoading">
+    <div class="ion-text-center ion-margin-top">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Carregando pagamentos...</p>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading">
+    <div *ngIf="pagamentos?.length; else semPagamentos" class="faturamento-wrapper">
+      <ion-card class="faturamento-card fade-in-up" *ngFor="let pagamento of pagamentos">
+        <div class="card-header">
+          <ion-icon name="person-outline" class="user-icon"></ion-icon>
+          <div class="user-info">
+            <h2>{{ pagamento.user.name }}</h2>
+            <p class="user-email">{{ pagamento.user.email }}</p>
+          </div>
+          <ion-chip [color]="pagamento.status === 'pago' ? 'success' : 'danger'" class="status-chip">
+            <ion-label>{{ pagamento.status }}</ion-label>
+          </ion-chip>
+        </div>
+
+        <ion-card-content class="card-body">
+          <p><strong>Valor:</strong> R$ {{ pagamento.valor }}</p>
+          <p><strong>Data:</strong> {{ pagamento.created_at | date:'dd/MM/yyyy' }}</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <ng-template #semPagamentos>
+      <ion-text color="medium" class="ion-text-center ion-padding">
+        Nenhum pagamento encontrado.
+      </ion-text>
+    </ng-template>
+  </ng-container>
+</ion-content>

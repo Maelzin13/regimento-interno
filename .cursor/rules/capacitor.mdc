@@ -1,0 +1,499 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+TITLE: Initializing Capacitor Project Using CLI (Bash)
+DESCRIPTION: This snippet demonstrates how to initialize a new Capacitor configuration using the CLI command 'npx cap init <appName> <appID>'. It requires Node.js and npm to be installed. The <appName> specifies the application's display name, and <appID> should be a reverse-domain identifier. An optional '--web-dir <value>' can set a custom web directory. The command prepares your project to use Capacitor across platforms, generating the necessary configuration files. Limitations include the need for appropriate permissions and an existing web app directory if '--web-dir' is used.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/cli/commands/init.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npx cap init <appName> <appID>
+```
+
+----------------------------------------
+
+TITLE: Creating a Basic Capacitor Configuration File in TypeScript
+DESCRIPTION: This example demonstrates how to create a basic Capacitor configuration file using TypeScript. The configuration sets essential properties including the application ID, name, and the web directory that contains the built web assets.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/main/reference/config.md#2025-04-23_snippet_0
+
+LANGUAGE: typescript
+CODE:
+```
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.company.appname',
+  appName: 'My Capacitor App',
+  webDir: 'www',
+};
+
+export default config;
+```
+
+----------------------------------------
+
+TITLE: Importing Capacitor Core Object in TypeScript
+DESCRIPTION: Shows how to import the global Capacitor object from the core package.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v5/main/basics/utilities.md#2025-04-23_snippet_0
+
+LANGUAGE: typescript
+CODE:
+```
+import { Capacitor } from '@capacitor/core';
+```
+
+----------------------------------------
+
+TITLE: Installing Capacitor Core and CLI Dependencies
+DESCRIPTION: These commands install the main Capacitor npm dependencies: the core JavaScript runtime and the command line interface (CLI).
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v5/main/getting-started/installation.md#2025-04-23_snippet_1
+
+LANGUAGE: bash
+CODE:
+```
+npm i @capacitor/core
+npm i -D @capacitor/cli
+```
+
+----------------------------------------
+
+TITLE: Complete AppDelegate Implementation for Firebase Push Notifications
+DESCRIPTION: Full implementation of AppDelegate.swift with Firebase initialization and push notification handling
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/main/guides/push-notifications-firebase.md#2025-04-23_snippet_17
+
+LANGUAGE: swift
+CODE:
+```
+import UIKit
+import Capacitor
+import FirebaseCore
+import FirebaseMessaging
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+  var window: UIWindow?
+
+
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    // Override point for customization after application launch.
+    FirebaseApp.configure()
+    return true
+  }
+
+  func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    Messaging.messaging().apnsToken = deviceToken
+    Messaging.messaging().token(completion: { (token, error) in
+      if let error = error {
+          NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+      } else if let token = token {
+          NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: token)
+      }
+    })
+  }
+
+  func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+  }
+```
+
+----------------------------------------
+
+TITLE: Installing the @capacitor/keyboard Plugin in a Capacitor Project (Bash)
+DESCRIPTION: Commands to install the @capacitor/keyboard plugin and sync dependencies in a Capacitor application. Requires an existing Capacitor project setup. The first command installs the plugin with npm, and the second synchronizes native plugins with the project. Both commands should be run in the project root using a shell terminal.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/apis/keyboard.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npm install @capacitor/keyboard
+npx cap sync
+```
+
+----------------------------------------
+
+TITLE: Installing Capacitor Clipboard Plugin
+DESCRIPTION: Commands to install the @capacitor/clipboard plugin and synchronize the native project files.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v4/apis/clipboard.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npm install @capacitor/clipboard
+npx cap sync
+```
+
+----------------------------------------
+
+TITLE: Creating a New Capacitor App using NPM
+DESCRIPTION: This command uses the @capacitor/create-app package to scaffold a new Capacitor application in an empty directory.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v5/main/getting-started/installation.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npm init @capacitor/app
+```
+
+----------------------------------------
+
+TITLE: Requesting Motion Permissions and Handling Events in TypeScript
+DESCRIPTION: Demonstrates requesting permission for `DeviceMotionEvent` upon a user action (button click) as required by browsers. After permission is granted, it shows how to add an accelerometer ('accel') listener using `Motion.addListener`. It also includes helper functions to stop a specific listener using its handle (`accelHandler.remove()`) and to remove all listeners attached to the Motion plugin (`Motion.removeAllListeners()`). Requires importing `PluginListenerHandle` from `@capacitor/core` and `Motion` from `@capacitor/motion`.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v4/apis/motion.md#2025-04-23_snippet_1
+
+LANGUAGE: typescript
+CODE:
+```
+import { PluginListenerHandle } from '@capacitor/core';
+import { Motion } from '@capacitor/motion';
+
+
+let accelHandler: PluginListenerHandle;
+
+myButton.addEventListener('click', async () => {
+  try {
+    await DeviceMotionEvent.requestPermission();
+  } catch (e) {
+    // Handle error
+    return;
+  }
+
+  // Once the user approves, can start listening:
+  accelHandler = await Motion.addListener('accel', event => {
+    console.log('Device motion event:', event);
+  });
+});
+
+// Stop the acceleration listener
+const stopAcceleration = () => {
+  if (accelHandler) {
+    accelHandler.remove();
+  }
+};
+
+// Remove all listeners
+const removeListeners = () => {
+  Motion.removeAllListeners();
+};
+
+```
+
+----------------------------------------
+
+TITLE: Checking Plugin Availability with Capacitor.isPluginAvailable in TypeScript
+DESCRIPTION: Demonstrates using `Capacitor.isPluginAvailable(pluginName)` to verify if a specific Capacitor plugin (e.g., 'Camera') is available on the current platform before attempting to use it. This allows for graceful fallback mechanisms if a plugin is not present. The example shows conditionally calling `Camera.getPhoto` based on availability, assuming `Camera` and `CameraResultType` are imported from the relevant Capacitor plugin package.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/main/basics/utilities.md#2025-04-23_snippet_4
+
+LANGUAGE: typescript
+CODE:
+```
+const isAvailable = Capacitor.isPluginAvailable('Camera');
+
+if (!isAvailable) {
+  // Have the user upload a file instead
+} else {
+  // Otherwise, make the call:
+  const image = await Camera.getPhoto({
+    resultType: CameraResultType.Uri,
+  });
+}
+```
+
+----------------------------------------
+
+TITLE: Syncing Web Code to Capacitor Project
+DESCRIPTION: This command copies the built web bundle to both Android and iOS projects and updates the native dependencies that Capacitor uses. It requires the web code to be already built for distribution.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/docs/main/basics/workflow.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npx cap sync
+```
+
+----------------------------------------
+
+TITLE: Using the Capacitor CLI Command Structure
+DESCRIPTION: The basic command structure for the Capacitor CLI. It shows how to invoke the CLI using npx, along with optional version and help flags. This is the fundamental syntax used for all Capacitor CLI operations.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/docs/cli/index.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npx cap [-V] [-h] [<command>]
+```
+
+----------------------------------------
+
+TITLE: Synchronizing Capacitor Plugins with CLI - Bash
+DESCRIPTION: This snippet demonstrates how to use the 'npx cap sync' command to synchronize Capacitor plugins and project assets for specified native platforms. It accepts options such as '--deployment' for iOS and an optional platform parameter (android or ios). No dependencies beyond Node.js, Capacitor CLI, and platform SDKs are required. Outputs include updated native project files and installed dependencies for the selected platform(s).
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v3/cli/commands/sync.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npx cap sync [options] [<platform>]
+```
+
+----------------------------------------
+
+TITLE: Implementing Push Notification Handling in Angular Component (TypeScript)
+DESCRIPTION: Demonstrates initializing push notifications within the `ngOnInit` lifecycle hook of an Angular component. It requests user permission, registers the device with APNS/FCM, and sets up listeners to handle registration success (`registration`), errors (`registrationError`), incoming notifications while the app is open (`pushNotificationReceived`), and notification tap events (`pushNotificationActionPerformed`), using `alert` for demonstration.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/main/guides/push-notifications-firebase.md#2025-04-23_snippet_9
+
+LANGUAGE: typescript
+CODE:
+```
+export class HomePage implements OnInit {
+  ngOnInit() {
+    console.log('Initializing HomePage');
+
+    // Request permission to use push notifications
+    // iOS will prompt user and return if they granted permission or not
+    // Android will just grant without prompting
+    PushNotifications.requestPermissions().then((result) => {
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register();
+      } else {
+        // Show some error
+      }
+    });
+
+    // On success, we should be able to receive notifications
+    PushNotifications.addListener('registration', (token: Token) => {
+      alert('Push registration success, token: ' + token.value);
+    });
+
+    // Some issue with our setup and push will not work
+    PushNotifications.addListener('registrationError', (error: any) => {
+      alert('Error on registration: ' + JSON.stringify(error));
+    });
+
+    // Show us the notification payload if the app is open on our device
+    PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
+      alert('Push received: ' + JSON.stringify(notification));
+    });
+
+    // Method called when tapping on a notification
+    PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
+      alert('Push action performed: ' + JSON.stringify(notification));
+    });
+  }
+}
+```
+
+----------------------------------------
+
+TITLE: Installing Capacitor iOS Package
+DESCRIPTION: Installs the @capacitor/ios package using npm. This is the first step in adding iOS support to a Capacitor project.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/docs/main/ios/index.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npm install @capacitor/ios
+```
+
+----------------------------------------
+
+TITLE: Running the Capacitor Sync Command
+DESCRIPTION: Command to synchronize web app with native platforms by running 'copy' and 'update' commands. Accepts an optional platform parameter and supports options for deployment and inline JavaScript source maps.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/docs/cli/commands/sync.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npx cap sync [options] [<platform>]
+```
+
+----------------------------------------
+
+TITLE: Adding Permission Methods to a Capacitor iOS Plugin
+DESCRIPTION: Shows how to add the checkPermissions() and requestPermissions() methods to a Swift plugin class to implement the permissions pattern for iOS functionality that requires user consent.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v4/plugins/creating-plugins/ios-guide.md#2025-04-23_snippet_6
+
+LANGUAGE: swift
+CODE:
+```
+import Capacitor
+
+@objc(EchoPlugin)
+public class EchoPlugin: CAPPlugin {
+    ...
+
+    @objc override public func checkPermissions(_ call: CAPPluginCall) {
+        // TODO
+    }
+
+    @objc override public func requestPermissions(_ call: CAPPluginCall) {
+        // TODO
+    }
+}
+```
+
+----------------------------------------
+
+TITLE: Initializing Capacitor Configuration using CLI
+DESCRIPTION: This command initializes Capacitor configuration for a project. It requires an app name and app ID as inputs. An optional web directory can be specified for an existing web app. The command sets up the necessary configuration files for Capacitor in the project.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v5/cli/commands/init.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npx cap init <appName> <appID>
+```
+
+----------------------------------------
+
+TITLE: Creating a Manual Mock for Capacitor Storage Plugin in TypeScript
+DESCRIPTION: Defines a basic TypeScript object `Storage` mimicking the interface of the actual `@capacitor/storage` plugin. This mock provides stub implementations for `get`, `set`, and `clear` methods, returning default values (like `undefined` for `get`) and resolving promises. It's designed to be used in testing environments to replace the real plugin functionality and avoid issues with proxying native calls.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/main/guides/mocking-plugins.md#2025-04-23_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+```
+export const Storage = {
+  async get(data: { key: string }): Promise<{ value: string | undefined }> {
+    return { value: undefined };
+  },
+
+  async set(data: { key: string; value: string }): Promise<void> {},
+  async clear(): Promise<void> {},
+};
+```
+
+----------------------------------------
+
+TITLE: Initializing Capacitor Configuration with cap init Command
+DESCRIPTION: This command initializes Capacitor configuration by setting up the app with a specified name and app ID. The app ID should follow reverse domain notation format (e.g., com.example.appname). An optional --web-dir parameter can be provided to specify an existing web application directory.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/docs/cli/commands/init.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npx cap init <appName> <appID>
+```
+
+----------------------------------------
+
+TITLE: Scaffolding a New Capacitor App using npm init
+DESCRIPTION: This command uses npm's initializer feature to run the `@capacitor/app` package, which scaffolds a new Capacitor project structure in the current empty directory. It simplifies the initial setup process.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/main/getting-started/installation.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npm init @capacitor/app
+```
+
+----------------------------------------
+
+TITLE: Importing Capacitor Core in TypeScript
+DESCRIPTION: Shows how to import the Capacitor object from the core package for use in modern JavaScript applications.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v4/main/reference/core-apis/web.md#2025-04-23_snippet_0
+
+LANGUAGE: typescript
+CODE:
+```
+import { Capacitor } from '@capacitor/core';
+```
+
+----------------------------------------
+
+TITLE: Using Preferences API in TypeScript
+DESCRIPTION: Example demonstrating how to set, get, and remove values using the Preferences API. This shows the basic operations of storing a name value, retrieving it, and removing it.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v5/apis/preferences.md#2025-04-23_snippet_1
+
+LANGUAGE: typescript
+CODE:
+```
+import { Preferences } from '@capacitor/preferences';
+
+const setName = async () => {
+  await Preferences.set({
+    key: 'name',
+    value: 'Max',
+  });
+};
+
+const checkName = async () => {
+  const { value } = await Preferences.get({ key: 'name' });
+
+  console.log(`Hello ${value}!`);
+};
+
+const removeName = async () => {
+  await Preferences.remove({ key: 'name' });
+};
+```
+
+----------------------------------------
+
+TITLE: Running Capacitor App on iOS Device with CLI in Bash
+DESCRIPTION: This Bash snippet executes the Capacitor CLI command to build and run a debug build of a Capacitor application on a connected iOS device or simulator. It streamlines the process of testing the app on iOS hardware by automating the build and deploy steps. The prerequisite is that you have already synced your web code and set up your Capacitor iOS project. Expected output is your app running on the device; errors may occur if the device isn\'t connected or properly configured.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/main/basics/workflow.md#2025-04-23_snippet_1
+
+LANGUAGE: bash
+CODE:
+```
+npx cap run ios
+
+```
+
+----------------------------------------
+
+TITLE: Handling Push Notifications in App - Capacitor Plugin - TypeScript
+DESCRIPTION: This comprehensive example demonstrates integrating PushNotifications from @capacitor/push-notifications in a TypeScript application. It shows registering event listeners for registration, error, reception, and action events, and includes routines for checking and requesting permissions, registering for push, and retrieving delivered notifications. Requires plugin installation and proper platform configuration. Inputs are user interactions and system events; outputs are logs and potential error handling. Limitations include platform-specific behaviors such as permission prompts and notification delivery differences.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v4/apis/push-notifications.md#2025-04-23_snippet_5
+
+LANGUAGE: typescript
+CODE:
+```
+import { PushNotifications } from '@capacitor/push-notifications';\n\nconst addListeners = async () => {\n  await PushNotifications.addListener('registration', token => {\n    console.info('Registration token: ', token.value);\n  });\n\n  await PushNotifications.addListener('registrationError', err => {\n    console.error('Registration error: ', err.error);\n  });\n\n  await PushNotifications.addListener('pushNotificationReceived', notification => {\n    console.log('Push notification received: ', notification);\n  });\n\n  await PushNotifications.addListener('pushNotificationActionPerformed', notification => {\n    console.log('Push notification action performed', notification.actionId, notification.inputValue);\n  });\n}\n\nconst registerNotifications = async () => {\n  let permStatus = await PushNotifications.checkPermissions();\n\n  if (permStatus.receive === 'prompt') {\n    permStatus = await PushNotifications.requestPermissions();\n  }\n\n  if (permStatus.receive !== 'granted') {\n    throw new Error('User denied permissions!');\n  }\n\n  await PushNotifications.register();\n}\n\nconst getDeliveredNotifications = async () => {\n  const notificationList = await PushNotifications.getDeliveredNotifications();\n  console.log('delivered notifications', notificationList);\n}
+```
+
+----------------------------------------
+
+TITLE: Syncing Web Assets and Updating Native Dependencies with Capacitor CLI in Bash
+DESCRIPTION: This Bash snippet uses the Capacitor CLI command to synchronize the built web code with both the Android and iOS projects and update native dependencies. This step is necessary after building your web assets and before running or testing your app on devices. It requires a properly set up Capacitor project and a web build already present in the specified web assets directory. The command takes no arguments, and outputs the result of syncing to the connected native projects. If your configuration is incorrect (e.g., wrong webDir), errors will be produced.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/main/basics/workflow.md#2025-04-23_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+npx cap sync
+
+```
+
+----------------------------------------
+
+TITLE: Configuring iOS Privacy Manifest for Device Plugin
+DESCRIPTION: Example `PrivacyInfo.xcprivacy` file structure required for iOS apps using the Device plugin. This specifies the reason '85F4.1' for accessing the 'NSPrivacyAccessedAPICategoryDiskSpace' API, which is mandated by Apple starting May 1st, 2024.
+SOURCE: https://github.com/ionic-team/capacitor-docs/blob/main/versioned_docs/version-v6/apis/device.md#2025-04-23_snippet_1
+
+LANGUAGE: xml
+CODE:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+      <!-- Add this dict entry to the array if the PrivacyInfo file already exists -->
+      <dict>
+        <key>NSPrivacyAccessedAPIType</key>
+        <string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+        <key>NSPrivacyAccessedAPITypeReasons</key>
+        <array>
+          <string>85F4.1</string>
+        </array>
+      </dict>
+    </array>
+  </dict>
+</plist>
+```

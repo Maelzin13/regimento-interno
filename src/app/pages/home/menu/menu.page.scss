@@ -1,0 +1,17 @@
+:root {
+  --bg-color: #f8f9fa;
+}
+
+.logout-button {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 16px) + 72px);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 90%;
+  max-width: 300px;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}

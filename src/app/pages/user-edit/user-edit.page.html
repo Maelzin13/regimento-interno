@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar id="toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="fecharModal()">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Editar Usuário</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="loading" class="centered">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Carregando...</p>
+  </div>
+
+  <form *ngIf="!loading && user" (ngSubmit)="saveChanges()">
+    <!-- Nome -->
+    <ion-item>
+      <ion-label position="floating">Nome</ion-label>
+      <ion-input [(ngModel)]="user.name" name="name" required></ion-input>
+    </ion-item>
+
+    <!-- Email -->
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="user.email" name="email" type="email" required></ion-input>
+    </ion-item>
+
+    <!-- Administrador -->
+    <ion-item *ngIf="user.is_admin === true">
+      <ion-label>Administrador</ion-label>
+      <ion-select [(ngModel)]="user.is_admin" name="is_admin">
+        <ion-select-option [value]="false">Não</ion-select-option>
+        <ion-select-option [value]="true">Sim</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Status da Assinatura -->
+    <ion-item lines="none">
+      <ion-label>Status da Assinatura</ion-label>
+      <ion-badge [color]="user.subscription_status === 'active' ? 'success' : 'medium'" slot="end">
+        {{ user.subscription_status === 'active' ? 'Ativo' : 'Inativo' }}
+      </ion-badge>
+    </ion-item>
+
+    <!-- Plano -->
+    <ion-item lines="none">
+      <ion-label>Plano</ion-label>
+      <ion-text color="dark" slot="end">
+        {{ user.plan || '—' }}
+      </ion-text>
+    </ion-item>
+
+    <!-- Botão -->
+    <ion-button expand="block" type="submit" color="primary" [disabled]="loading">
+      Salvar Alterações
+    </ion-button>
+
+    <!-- Feedback -->
+    <ion-text color="success" *ngIf="successMessage">{{ successMessage }}</ion-text>
+    <ion-text color="danger" *ngIf="errorMessage">{{ errorMessage }}</ion-text>
+  </form>
+
+</ion-content>

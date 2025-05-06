@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar id="toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()"><ion-icon name="arrow-back-outline"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>Editar {{ itemType | titlecase }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" id="content">
+  <div *ngIf="isLoading">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <ion-textarea [(ngModel)]="editorContent" [style]="{ height: '200px' }"></ion-textarea>
+
+    <ion-button expand="block" (click)="salvarConteudo()">Salvar</ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,39 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="lines"
+      pullingText="Puxe para atualizar" refreshingText="Atualizando perfil...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-card class="profile-card fade-in-up" *ngIf="user">
+    <ion-card-header>
+      <div class="profile-header">
+        <div class="default-avatar">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </div>
+        <div class="profile-info">
+          <h2>{{ user.name || 'Usuário Anônimo' }}</h2>
+          <p>{{ user.email || 'Email não informado' }}</p>
+        </div>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content class="btn-group">
+      <ion-button expand="block" class="primary-btn" (click)="editProfile(user.id)">
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        Editar Perfil
+      </ion-button>
+
+      <ion-button expand="block" class="secondary-btn" (click)="subscribe()">
+        Alterar Plano
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ng-container *ngIf="!user">
+    <div class="ion-text-center ion-margin-top">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Carregando perfil...</p>
+    </div>
+  </ng-container>
+</ion-content>

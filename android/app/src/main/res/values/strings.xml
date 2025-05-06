@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Regimento Interno Comentado</string>
+    <string name="title_activity_main">Regimento Interno Comentado</string>
+    <string name="package_name">com.regimento.app</string>
+    <string name="custom_url_scheme">com.regimento.app</string>
+    <string name="facebook_app_id">9233731516671511</string>
+    <string name="server_client_id">10593129361-sqku04f9hioan9jpd2g6irrlc6uugo1a.apps.googleusercontent.com</string>
+</resources>

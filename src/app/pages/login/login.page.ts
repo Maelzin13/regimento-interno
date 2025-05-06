@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Browser } from '@capacitor/browser';
 import config from 'capacitor.config';
+import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { ToastController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -13,44 +13,101 @@ export class LoginPage implements OnInit {
   nameApp: any;
   email: string = '';
   password: string = '';
-  errorMessage: string = '';
 
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private toastController: ToastController,
+    private loadingController: LoadingController
+  ) {}
 
-  ngOnInit() {
-    this.nameApp = config.appName;
+  async ngOnInit() {
+    const loading = await this.presentLoading('Verificando sessão...');
+    this.authService.handleRedirectCallback();
+    try {
+      this.nameApp = config.appName;
+
+      const token = this.authService.getAuthToken();
+      if (token) {
+        const user = await this.authService.fetchProfile();
+        localStorage.setItem('authUser', JSON.stringify(user));
+        this.authService.userChanged.next(user);
+        await loading.dismiss();
+        this.router.navigate(['/home']);
+      } else {
+        await loading.dismiss();
+      }
+    } catch (error: any) {
+      await loading.dismiss();
+      this.presentToast('Erro ao buscar sessão: ' + error.message);
+    }
   }
 
   async login() {
+    const loading = await this.presentLoading('Entrando...');
     try {
-      console.log('Tentando login com:', this.email);
+      const token = await this.authService.login(this.email, this.password);
+      this.authService.saveAuthToken(token);
 
-      const response = await this.auth.login(this.email, this.password);
+      const userProfile = await this.authService.fetchProfile();
+      localStorage.setItem('authUser', JSON.stringify(userProfile));
+      this.authService.userChanged.next(userProfile);
 
-      if (response) {
-        console.log('Token recebido:', response);
-        this.router.navigate(['/home']); // Redirecionar para a página principal
-      } else {
-        this.errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
-      }
-    } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      this.errorMessage =
-        'Erro ao conectar ao servidor. Tente novamente mais tarde.';
+      await loading.dismiss();
+      this.email = '';
+      this.password = '';
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      await loading.dismiss();
+      this.presentToast(error.message);
     }
   }
 
-  async socialLogin(provider: string) {
+  async socialLogin(provider: 'google' | 'facebook') {
+    const loading = await this.presentLoading(
+      `Conectando com ${provider === 'google' ? 'Google' : 'Facebook'}...`
+    );
+
     try {
-      const loginUrl = `${this.auth.getBaseUrl()}/auth/${provider}`;
+      const response =
+        provider === 'google'
+          ? await this.authService.googleLogin()
+          : await this.authService.facebookLogin();
 
-      await Browser.open({ url: loginUrl });
+      if (response?.user && response?.token) {
+        this.authService.saveAuthToken(response.token);
+        localStorage.setItem('authUser', JSON.stringify(response.user));
+        this.authService.userChanged.next(response.user);
 
-      Browser.addListener('browserFinished', () => {
-        console.log('Navegador fechado. Verifique a autenticação.');
-      });
-    } catch (error) {
-      console.error('Erro ao iniciar login social:', error);
+        await loading.dismiss();
+        this.router.navigate(['/home']);
+      } else {
+        throw new Error(`Login com ${provider} falhou.`);
+      }
+    } catch (error: any) {
+      await loading.dismiss();
+      this.presentToast(error.message || `Erro ao conectar com ${provider}`);
     }
+  }
+
+  async presentLoading(message: string = 'Carregando...') {
+    const loading = await this.loadingController.create({
+      message,
+      spinner: 'bubbles',
+      translucent: true,
+      backdropDismiss: false,
+    });
+    await loading.present();
+    return loading;
+  }
+
+  async presentToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color: 'danger',
+      position: 'middle',
+    });
+    toast.present();
   }
 }
