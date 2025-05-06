@@ -20,10 +20,52 @@
     </ion-segment-button>
   </ion-segment>
 
-  <ion-searchbar color="light" animated="true" placeholder="Buscar por palavra ou artigo..." show-clear-button="always"
-    clear-icon="trash-bin" [(ngModel)]="query" (ionInput)="onSearchInput($event)" debounce="300">
-  </ion-searchbar>
+  <!-- Sistema de busca aprimorado -->
+  <div class="search-container">
+    <ion-searchbar #searchInput color="light" animated="true" placeholder="Buscar por palavra ou artigo..." 
+      show-clear-button="always" clear-icon="trash-bin" [(ngModel)]="query" 
+      (ionInput)="onSearchInput($event)" debounce="300">
+    </ion-searchbar>
+    
+    <ion-button size="small" fill="clear" (click)="showSearchOptions()">
+      <ion-icon name="options-outline"></ion-icon>
+    </ion-button>
+  </div>
 
+  <!-- Indicadores de busca e navegação entre resultados -->
+  <div class="search-controls" *ngIf="totalResults > 0">
+    <div class="result-info">
+      <span>{{ currentResultIndex + 1 }} de {{ totalResults }} resultados</span>
+    </div>
+    <div class="result-navigation">
+      <ion-button size="small" fill="clear" (click)="navigateToPreviousResult()" [disabled]="currentResultIndex <= 0">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      <ion-button size="small" fill="clear" (click)="navigateToNextResult()" [disabled]="currentResultIndex >= totalResults - 1">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+      <ion-button size="small" fill="clear" (click)="restoreLastPosition()" *ngIf="lastScrollPosition > 0">
+        <ion-icon name="return-up-back-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Histórico de pesquisa -->
+  <div class="search-history" *ngIf="searchHistory.length > 0 && query.length === 0">
+    <h5>Pesquisas recentes</h5>
+    <ion-chip *ngFor="let item of searchHistory" (click)="useHistoryItem(item)">
+      {{ item }}
+    </ion-chip>
+    <ion-button size="small" fill="clear" (click)="clearSearchHistory()">Limpar histórico</ion-button>
+  </div>
+
+  <!-- Loader de pesquisa -->
+  <div class="search-loader" *ngIf="isSearching">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Buscando...</p>
+  </div>
+
+  <!-- Conteúdo no formato corrido -->
   <ng-container *ngIf="selectedSegment === 'corrido'">
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
       <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
@@ -33,9 +75,9 @@
           <ng-container *ngFor="let secao of capitulo.secaos">
             <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
             <ng-container *ngFor="let artigo of secao.artigos">
-              <h5 [innerHTML]="safeHTML(artigo.conteudo)"></h5>
+              <h5 [id]="'artigo-' + artigo.id" [innerHTML]="safeHTML(artigo.conteudo)"></h5>
               <ng-container *ngFor="let paragrafo of artigo.paragrafos">
-                <h5 [innerHTML]="safeHTML(paragrafo.conteudo)"></h5>
+                <h5 [id]="'paragrafo-' + paragrafo.id" [innerHTML]="safeHTML(paragrafo.conteudo)"></h5>
                 <ng-container *ngFor="let comentario of paragrafo.comentarios">
                   <p class="comentario">
                     <span class="comentario-tipo">{{ comentario.tipo | titlecase }}</span><br>
@@ -50,6 +92,7 @@
     </ng-container>
   </ng-container>
 
+  <!-- Conteúdo no formato formatado -->
   <ng-container *ngIf="selectedSegment === 'formatado'">
     <div *ngIf="(filteredBook || book)?.titulos?.length">
       <ion-card *ngFor="let titulo of (filteredBook || book).titulos" class="ion-text-center">
