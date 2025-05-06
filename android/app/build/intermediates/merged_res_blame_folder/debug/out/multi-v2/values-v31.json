@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.regimento.app-mergeDebugResources-3:/values-v31/values-v31.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Ismael\\.gradle\\caches\\transforms-3\\3222d46641c66ea4bb8b7a2bfdee4818\\transformed\\core-splashscreen-1.0.1\\res\\values-v31\\values-v31.xml",
+                    "from": {
+                        "startLines": "2,9",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,473",
+                        "endLines": "8,13",
+                        "endColumns": "12,12",
+                        "endOffsets": "468,697"
+                    }
+                }
+            ]
+        }
+    ]
+}

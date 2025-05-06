@@ -1,0 +1,56 @@
+com.regimento.app-pngs-0 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\generated\res\pngs\release
+com.regimento.app-res-1 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\generated\res\processReleaseGoogleServices
+com.regimento.app-resValues-2 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\generated\res\resValues\release
+com.regimento.app-packageReleaseResources-3 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
+com.regimento.app-packageReleaseResources-4 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
+com.regimento.app-merged_res-5 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\intermediates\merged_res\release
+com.regimento.app-main-6 C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\res
+com.regimento.app-release-7 C:\Projetos\Projeto E-book\regimento-interno\android\app\src\release\res
+com.regimento.app-packaged_res-8 C:\Projetos\Projeto E-book\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-9 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-10 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-11 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-12 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-13 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-14 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-15 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-16 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-17 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\packaged_res\release
+com.regimento.app-packaged_res-18 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\packaged_res\release
+com.regimento.app-annotation-experimental-1.4.0-19 C:\Users\Ismael\.gradle\caches\transforms-3\01555f55e70a0723b6ed04af4d832fb4\transformed\annotation-experimental-1.4.0\res
+com.regimento.app-play-services-base-18.5.0-20 C:\Users\Ismael\.gradle\caches\transforms-3\04b73d0b9badaf6484db65c1c039fa9d\transformed\play-services-base-18.5.0\res
+com.regimento.app-emoji2-views-helper-1.2.0-21 C:\Users\Ismael\.gradle\caches\transforms-3\1ea53787ff48bb4bd699ccd63a0880ea\transformed\emoji2-views-helper-1.2.0\res
+com.regimento.app-activity-1.8.0-22 C:\Users\Ismael\.gradle\caches\transforms-3\23c33a6520cf85836220539353c44a87\transformed\activity-1.8.0\res
+com.regimento.app-core-splashscreen-1.0.1-23 C:\Users\Ismael\.gradle\caches\transforms-3\3222d46641c66ea4bb8b7a2bfdee4818\transformed\core-splashscreen-1.0.1\res
+com.regimento.app-play-services-basement-18.5.0-24 C:\Users\Ismael\.gradle\caches\transforms-3\32804ce976399431261bc3943272c4a5\transformed\play-services-basement-18.5.0\res
+com.regimento.app-facebook-login-17.0.0-25 C:\Users\Ismael\.gradle\caches\transforms-3\32aac9dd66ad640366a67b6b0b038665\transformed\facebook-login-17.0.0\res
+com.regimento.app-webkit-1.9.0-26 C:\Users\Ismael\.gradle\caches\transforms-3\34c6aaf9b1aaa8c559c21f54bc82f9ab\transformed\webkit-1.9.0\res
+com.regimento.app-lifecycle-viewmodel-savedstate-2.6.1-27 C:\Users\Ismael\.gradle\caches\transforms-3\3e54199b0a0009b135420dac2b7f7621\transformed\lifecycle-viewmodel-savedstate-2.6.1\res
+com.regimento.app-profileinstaller-1.3.0-28 C:\Users\Ismael\.gradle\caches\transforms-3\5389c3262c8b9802d97153c06478db0f\transformed\profileinstaller-1.3.0\res
+com.regimento.app-cardview-1.0.0-29 C:\Users\Ismael\.gradle\caches\transforms-3\56daf28e6eb1101745f9b241d5b6c135\transformed\cardview-1.0.0\res
+com.regimento.app-core-common-2.0.3-30 C:\Users\Ismael\.gradle\caches\transforms-3\583088643a7416961155728876b60551\transformed\core-common-2.0.3\res
+com.regimento.app-media-1.0.0-31 C:\Users\Ismael\.gradle\caches\transforms-3\597222c8b4c54119fd0c978792afbdfa\transformed\media-1.0.0\res
+com.regimento.app-appcompat-1.6.1-32 C:\Users\Ismael\.gradle\caches\transforms-3\5ab5a976858504390a1af3458f9d8eb9\transformed\appcompat-1.6.1\res
+com.regimento.app-credentials-play-services-auth-1.2.0-rc01-33 C:\Users\Ismael\.gradle\caches\transforms-3\6efac092daabe44317e5122c7b9291a4\transformed\credentials-play-services-auth-1.2.0-rc01\res
+com.regimento.app-play-services-auth-20.7.0-34 C:\Users\Ismael\.gradle\caches\transforms-3\702f128af217a4c7de1a23887e80db65\transformed\play-services-auth-20.7.0\res
+com.regimento.app-appauth-0.9.1-35 C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\res
+com.regimento.app-emoji2-1.2.0-36 C:\Users\Ismael\.gradle\caches\transforms-3\88ec1b3b87d2fbd37f0f9b0c2045cc04\transformed\emoji2-1.2.0\res
+com.regimento.app-appcompat-resources-1.6.1-37 C:\Users\Ismael\.gradle\caches\transforms-3\8d27239342a1fb80adaa1de5055db6bc\transformed\appcompat-resources-1.6.1\res
+com.regimento.app-ads-adservices-java-1.1.0-beta11-38 C:\Users\Ismael\.gradle\caches\transforms-3\8d46b3d8248779edf1caa6930cf4db6f\transformed\ads-adservices-java-1.1.0-beta11\res
+com.regimento.app-ads-adservices-1.1.0-beta11-39 C:\Users\Ismael\.gradle\caches\transforms-3\917faf1980717df7a6c293f2b05ad252\transformed\ads-adservices-1.1.0-beta11\res
+com.regimento.app-core-1.12.0-40 C:\Users\Ismael\.gradle\caches\transforms-3\91f00a5b7e289b40ec4337c5400b4c58\transformed\core-1.12.0\res
+com.regimento.app-lifecycle-runtime-2.6.1-41 C:\Users\Ismael\.gradle\caches\transforms-3\9d276f56505464502a5a8815f77593c8\transformed\lifecycle-runtime-2.6.1\res
+com.regimento.app-lifecycle-livedata-2.6.1-42 C:\Users\Ismael\.gradle\caches\transforms-3\ae9cdcb53ba75c00be8a900619bae085\transformed\lifecycle-livedata-2.6.1\res
+com.regimento.app-savedstate-1.2.1-43 C:\Users\Ismael\.gradle\caches\transforms-3\aefe9cf7018d2d28181ac8e44766c803\transformed\savedstate-1.2.1\res
+com.regimento.app-core-runtime-2.2.0-44 C:\Users\Ismael\.gradle\caches\transforms-3\b44db73290c839e7dd52dec8f9933f9c\transformed\core-runtime-2.2.0\res
+com.regimento.app-browser-1.8.0-45 C:\Users\Ismael\.gradle\caches\transforms-3\b46311db57989a48bad29b29a90435b0\transformed\browser-1.8.0\res
+com.regimento.app-credentials-1.2.0-rc01-46 C:\Users\Ismael\.gradle\caches\transforms-3\b9523dae288abeb7656df634e743d811\transformed\credentials-1.2.0-rc01\res
+com.regimento.app-fragment-1.6.2-47 C:\Users\Ismael\.gradle\caches\transforms-3\bb4546245b2ea2d0fb7cd28bd4dc68f6\transformed\fragment-1.6.2\res
+com.regimento.app-core-ktx-1.12.0-48 C:\Users\Ismael\.gradle\caches\transforms-3\c0ce829824ffef73a93ccad16e44d4b1\transformed\core-ktx-1.12.0\res
+com.regimento.app-firebase-common-21.0.0-49 C:\Users\Ismael\.gradle\caches\transforms-3\c5ffa2eab168525d932b759c5a522f56\transformed\firebase-common-21.0.0\res
+com.regimento.app-coordinatorlayout-1.2.0-50 C:\Users\Ismael\.gradle\caches\transforms-3\d34d574afc3fb401d20e589e5dfef23b\transformed\coordinatorlayout-1.2.0\res
+com.regimento.app-lifecycle-viewmodel-2.6.1-51 C:\Users\Ismael\.gradle\caches\transforms-3\eefe3e499915fb30812d34419306e407\transformed\lifecycle-viewmodel-2.6.1\res
+com.regimento.app-lifecycle-process-2.6.1-52 C:\Users\Ismael\.gradle\caches\transforms-3\f01de1da8fb2970ce2cb302552c592f0\transformed\lifecycle-process-2.6.1\res
+com.regimento.app-facebook-common-17.0.0-53 C:\Users\Ismael\.gradle\caches\transforms-3\f74a76d24f5251cf140be5d4f0a519e1\transformed\facebook-common-17.0.0\res
+com.regimento.app-lifecycle-livedata-core-2.6.1-54 C:\Users\Ismael\.gradle\caches\transforms-3\fd26533d60097d193519ce996ed44e46\transformed\lifecycle-livedata-core-2.6.1\res
+com.regimento.app-startup-runtime-1.1.1-55 C:\Users\Ismael\.gradle\caches\transforms-3\fea291e31467e3b688896df78e3e6248\transformed\startup-runtime-1.1.1\res
