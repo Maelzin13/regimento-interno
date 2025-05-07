@@ -1,35 +1,36 @@
-.law-text {
-  color: black;
+// Variáveis
+:root {
+  --search-highlight: rgba(255, 230, 0, 0.6);
+  --search-flash: rgba(56, 128, 255, 0.1);
+  --search-shadow: rgba(0, 0, 0, 0.2);
+  --search-border: rgba(200, 200, 200, 0.5);
+  --search-radius: 8px;
+  --search-padding: 10px;
+  --search-gap: 4px;
 }
 
-.comment-text {
-  color: green;
-  cursor: pointer;
+// Estilos base
+.law-text { color: black; }
+.comment-text { 
+  color: green; 
+  cursor: pointer; 
 }
 
+// Layout
 ion-content {
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.titulo {
-  font-size: 1.4rem;
-  font-weight: bold;
-}
+// Tipografia
+.titulo { font-size: 1.4rem; font-weight: bold; }
+.capitulo { font-size: 1.2rem; font-weight: 500; }
+.secao { font-size: 1rem; font-style: italic; }
 
-.capitulo {
-  font-size: 1.2rem;
-  font-weight: 500;
-}
-
-.secao {
-  font-size: 1rem;
-  font-style: italic;
-}
-
+// Comentários
 .comentario {
   background-color: #f1f1f1;
-  padding: 10px;
+  padding: var(--search-padding);
   border-left: 4px solid var(--comentario-color);
   margin-bottom: 12px;
   border-radius: 5px;
@@ -40,37 +41,33 @@ ion-content {
   color: var(--comentario-color);
 }
 
-/* Estilos para o sistema de busca */
+// Sistema de busca
 .search-container {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-bottom: 10px;
+  gap: var(--search-gap);
+  margin-bottom: var(--search-padding);
   
-  ion-searchbar {
-    flex: 1;
-  }
+  ion-searchbar { flex: 1; }
   
   ion-button {
     --padding-start: 8px;
     --padding-end: 8px;
     margin: 0;
     
-    ion-icon {
-      font-size: 1.2em;
-    }
+    ion-icon { font-size: 1.2em; }
   }
 }
 
-/* Estilos para o controle de navegação fixo */
+// Controles de navegação
 .search-controls-fixed {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
+  padding: var(--search-padding) 15px;
   background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: var(--search-radius);
+  box-shadow: 0 2px 10px var(--search-shadow);
   position: fixed;
   bottom: 70px;
   left: 10px;
@@ -78,11 +75,10 @@ ion-content {
   z-index: 1000;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(200, 200, 200, 0.5);
+  border: 1px solid var(--search-border);
   transition: all 0.3s ease;
 }
 
-/* Para dispositivos iOS que respeitam o safe-area */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .search-controls-fixed {
     bottom: calc(70px + env(safe-area-inset-bottom));
@@ -107,19 +103,16 @@ ion-content {
   margin: 0;
 }
 
-.search-controls {
-  display: none; /* Ocultamos o antigo que não é mais utilizado */
-}
 
 .search-history {
-  margin: 10px 0;
-  padding: 0 10px;
-}
-
-.search-history ion-chip {
-  margin-right: 5px;
-  margin-bottom: 5px;
-  cursor: pointer;
+  margin: var(--search-padding) 0;
+  padding: 0 var(--search-padding);
+  
+  ion-chip {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+  }
 }
 
 .search-loader {
@@ -130,12 +123,11 @@ ion-content {
   margin: 20px 0;
 }
 
-/* Estilos para destaque de texto */
 .highlight-search {
   background-color: rgba(255, 230, 0, 0.6) !important;
   padding: 2px !important;
   border-radius: 2px !important;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 0 2px var(--search-shadow) !important;
   transition: background-color 0.3s ease !important;
   display: inline-block !important;
   position: relative !important;
@@ -166,32 +158,7 @@ ion-content {
   }
 }
 
-/* Responsividade para dispositivos móveis */
-@media (max-width: 576px) {
-  .search-container ion-button {
-    --padding-start: 8px;
-    --padding-end: 8px;
-  }
-  
-  .search-controls {
-    font-size: 0.8em;
-    padding: 6px 10px;
-  }
-  
-  .search-history h5 {
-    font-size: 1em;
-    margin-bottom: 5px;
-  }
-  
-  .nav-button {
-    --padding-start: 6px;
-    --padding-end: 6px;
-    --min-height: 32px;
-    font-size: 0.9em;
-  }
-}
-
-/* Estilos para os alertas de busca */
+// Alertas
 .search-options-alert {
   --backdrop-opacity: 0.7;
   --max-width: 90%;
@@ -221,93 +188,38 @@ ion-content {
   }
 }
 
-/* Otimizações de performance e acessibilidade */
+// Performance e acessibilidade
 ion-alert {
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
   
-  .alert-wrapper {
-    border-radius: 13px;
-  }
+  .alert-wrapper { border-radius: 13px; }
   
   .alert-radio-label {
     white-space: normal;
     line-height: 1.4;
   }
   
-  .alert-radio-icon {
-    margin-right: 12px;
-  }
+  .alert-radio-icon { margin-right: 12px; }
   
-  .alert-radio-inner {
-    border-color: var(--ion-color-primary);
-  }
+  .alert-radio-inner { border-color: var(--ion-color-primary); }
   
-  .alert-radio-checked {
-    background-color: var(--ion-color-primary);
-  }
+  .alert-radio-checked { background-color: var(--ion-color-primary); }
 }
 
-/* Melhorias de acessibilidade para botões */
-ion-button {
-  &:focus {
-    outline: 2px solid var(--ion-color-primary);
-    outline-offset: 2px;
+// Responsividade
+@media (max-width: 576px) {
+  .search-container ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
   }
   
-  &.alert-button {
-    --padding-start: 16px;
-    --padding-end: 16px;
-    --padding-top: 12px;
-    --padding-bottom: 12px;
-  }
-}
-
-/* Estilos para o modal de histórico de pesquisa */
-.search-history-alert {
-  --max-width: 90%;
-  --width: 90%;
-  
-  .alert-wrapper {
-    max-height: 80vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .alert-radio-group {
-    max-height: 50vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .alert-radio-label {
-    white-space: normal;
-    line-height: 1.4;
-    padding: 8px 0;
-    color: var(--ion-color-dark);
-  }
-  
-  .alert-radio-icon {
-    margin-right: 12px;
-  }
-  
-  .alert-radio-inner {
-    border-color: var(--ion-color-primary);
-  }
-  
-  .alert-radio-checked {
-    background-color: var(--ion-color-primary);
-  }
-  
-  .alert-button {
-    min-height: 44px;
-    font-size: 16px;
-    font-weight: 500;
-    
-    &[role="destructive"] {
-      color: var(--ion-color-danger);
-    }
+  .nav-button {
+    --padding-start: 6px;
+    --padding-end: 6px;
+    --min-height: 32px;
+    font-size: 0.9em;
   }
 }

@@ -433,7 +433,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   useHistoryItem(query: string) {
     this.query = query;
-    this.searchInput.nativeElement.value = query;
+    if (this.searchInput && this.searchInput.nativeElement) {
+      this.searchInput.nativeElement.value = query;
+    }
     this.search();
   }
 

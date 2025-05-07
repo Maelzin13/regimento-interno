@@ -14,7 +14,7 @@
 				"profile",
 				"email"
 			],
-			"serverClientId": "10593129361-sqku04f9hioan9jpd2g6irrlc6uugo1a.apps.googleusercontent.com",
+			"serverClientId": "202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com",
 			"forceCodeForRefreshToken": true
 		},
 		"GenericOauth2": {
@@ -22,7 +22,7 @@
 				"scheme": "com.regimento.app"
 			},
 			"ios": {
-				"scheme": "com.regimento.app"
+				"scheme": "com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q"
 			}
 		}
 	},
