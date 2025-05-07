@@ -32,24 +32,6 @@
     </ion-button>
   </div>
 
-  <!-- Indicadores de busca e navegação entre resultados -->
-  <div class="search-controls" *ngIf="totalResults > 0">
-    <div class="result-info">
-      <span>{{ currentResultIndex + 1 }} de {{ totalResults }} resultados</span>
-    </div>
-    <div class="result-navigation">
-      <ion-button size="small" fill="clear" (click)="navigateToPreviousResult()" [disabled]="currentResultIndex <= 0">
-        <ion-icon name="chevron-back-outline"></ion-icon>
-      </ion-button>
-      <ion-button size="small" fill="clear" (click)="navigateToNextResult()" [disabled]="currentResultIndex >= totalResults - 1">
-        <ion-icon name="chevron-forward-outline"></ion-icon>
-      </ion-button>
-      <ion-button size="small" fill="clear" (click)="restoreLastPosition()" *ngIf="lastScrollPosition > 0">
-        <ion-icon name="return-up-back-outline"></ion-icon>
-      </ion-button>
-    </div>
-  </div>
-
   <!-- Histórico de pesquisa -->
   <div class="search-history" *ngIf="searchHistory.length > 0 && query.length === 0">
     <h5>Pesquisas recentes</h5>
@@ -115,7 +97,7 @@
       </ion-card>
     </div>
   </ng-container>
-
+  
   <ng-template #loading>
     <div class="ion-text-center ion-margin-top">
       <ion-spinner></ion-spinner>
@@ -123,6 +105,25 @@
     </div>
   </ng-template>
 </ion-content>
+
+<!-- Indicadores de busca e navegação entre resultados - FIXO -->
+<div class="search-controls-fixed" *ngIf="totalResults > 0">
+  <div class="result-info">
+    <span>{{ currentResultIndex + 1 }} de {{ totalResults }} resultados</span>
+  </div>
+  <div class="result-navigation">
+    <ion-button class="nav-button" size="small" fill="solid" color="primary" (click)="navigateToPreviousResult()" [disabled]="currentResultIndex <= 0">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </ion-button>
+    <ion-button class="nav-button" size="small" fill="solid" color="primary" (click)="navigateToNextResult()" [disabled]="currentResultIndex >= totalResults - 1">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+    <ion-button class="nav-button" size="small" fill="solid" color="secondary" (click)="restoreLastPosition()" *ngIf="lastScrollPosition > 0">
+      <ion-icon name="return-up-back-outline"></ion-icon>
+    </ion-button>
+  </div>
+</div>
+
 <ion-footer *ngIf="selectedSegment !== 'formatado'">
   <ion-toolbar>
     <ion-buttons slot="end">

@@ -31,6 +31,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   currentResultIndex: number = -1;
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild('searchInput') searchInput!: ElementRef;
+  
+  // Propriedade para o debounce da rolagem
+  private scrollDebounceTimeout: any;
 
   constructor(
     private router: Router,
@@ -103,7 +106,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       const textLower = text.toLowerCase();
       
       if (searchType === 'exact') {
-        const regex = new RegExp(`\\b${queryLower}\\b`, 'i');
+        const regex = new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'i');
         return regex.test(textLower);
       } else {
         return textLower.includes(queryLower);
@@ -204,6 +207,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.currentResultIndex = 0;
       this.navigateToResult(0);
       this.presentToast(`Encontrados ${this.totalResults} resultados para "${this.query}"`);
+      
+      // Garantir que os destaques sejam aplicados após o DOM ser atualizado
+      setTimeout(() => {
+        this.forceHighlightsRefresh();
+      }, 500);
     } else {
       this.presentToast(`Nenhum resultado encontrado para "${this.query}"`);
     }
@@ -220,6 +228,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.listenNotaClicks();
       this.notaListenerAttached = true;
     }
+    
+    // Adicionar listener para manter destaques durante a rolagem
+    this.setupScrollListener();
   }
 
   private listenNotaClicks() {
@@ -279,14 +290,23 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     let formatted = this.formatNotas(content);
     
     // Destaca os termos de busca se estiver buscando
-    if (this.query && this.filteredBook && this.searchBy === 'keyword') {
-      const regex = new RegExp(this.query, 'gi');
+    if (this.query && this.searchBy === 'keyword') {
+      const queryLower = this.query.toLowerCase();
+      const regex = this.searchType === 'exact' ? 
+        new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'gi') : 
+        new RegExp(this.escapeRegExp(queryLower), 'gi');
+      
       formatted = formatted.replace(regex, match => 
         `<span class="highlight-search">${match}</span>`
       );
     }
     
     return this.sanitizer.bypassSecurityTrustHtml(formatted);
+  }
+
+  // Método para escapar caracteres especiais em expressões regulares
+  escapeRegExp(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
   cleanHTML(content: string): string {
@@ -326,22 +346,44 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.currentResultIndex = index;
     const result = this.searchResults[index];
     
+    // Remover destaques flash anteriores
+    const previousHighlights = document.querySelectorAll('.flash-highlight');
+    previousHighlights.forEach(el => {
+      el.classList.remove('flash-highlight');
+    });
+    
     // Encontrar o elemento correspondente ao resultado
     setTimeout(() => {
       const elementId = `${result.type}-${result.id}`;
       const element = document.getElementById(elementId);
       
       if (element) {
-        // Rolar para o elemento
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Rolar para o elemento com maior suavidade
+        this.content.scrollToPoint(0, element.offsetTop - 120, 500);
         
         // Adicionar efeito de destaque temporário
         element.classList.add('flash-highlight');
-        setTimeout(() => {
-          element.classList.remove('flash-highlight');
-        }, 2000);
+        
+        // Forçar a atualização dos destaques das palavras
+        this.forceHighlightsRefresh();
       }
     }, 100);
+  }
+
+  // Força a atualização dos destaques
+  forceHighlightsRefresh() {
+    if (!this.query) return;
+    
+    setTimeout(() => {
+      // Encontra todos os destaques existentes
+      const highlights = document.querySelectorAll('.highlight-search');
+      
+      // Certifica-se que todos estão com a classe correta e visíveis
+      highlights.forEach(el => {
+        el.classList.add('highlight-search');
+        (el as HTMLElement).style.backgroundColor = 'rgba(255, 230, 0, 0.4)';
+      });
+    }, 200);
   }
 
   navigateToNextResult() {
@@ -403,34 +445,21 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   async showSearchOptions() {
     const alert = await this.alertController.create({
       header: 'Opções de Busca',
+      subHeader: 'Escolha o tipo de busca',
       inputs: [
         {
-          name: 'searchBy',
+          name: 'searchOption',
           type: 'radio',
           label: 'Buscar por Palavra-chave',
           value: 'keyword',
           checked: this.searchBy === 'keyword'
         },
         {
-          name: 'searchBy',
+          name: 'searchOption',
           type: 'radio',
           label: 'Buscar por Artigo',
           value: 'artigo',
           checked: this.searchBy === 'artigo'
-        },
-        {
-          name: 'searchType',
-          type: 'radio',
-          label: 'Conteúdo que contém o termo',
-          value: 'contains',
-          checked: this.searchType === 'contains'
-        },
-        {
-          name: 'searchType',
-          type: 'radio',
-          label: 'Termo exato',
-          value: 'exact',
-          checked: this.searchType === 'exact'
         }
       ],
       buttons: [
@@ -439,16 +468,56 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           role: 'cancel'
         },
         {
+          text: 'Próximo',
+          handler: (data) => {
+            if (data) {
+              this.searchBy = data;
+              this.showSearchTypeOptions();
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async showSearchTypeOptions() {
+    const alert = await this.alertController.create({
+      header: 'Opções de Busca',
+      subHeader: 'Escolha como buscar o termo',
+      inputs: [
+        {
+          name: 'searchOption',
+          type: 'radio',
+          label: 'Conteúdo que contém o termo',
+          value: 'contains',
+          checked: this.searchType === 'contains'
+        },
+        {
+          name: 'searchOption',
+          type: 'radio',
+          label: 'Termo exato',
+          value: 'exact',
+          checked: this.searchType === 'exact'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Voltar',
+          handler: () => {
+            this.showSearchOptions();
+          }
+        },
+        {
           text: 'Confirmar',
           handler: (data) => {
-            if (data === 'keyword' || data === 'artigo') {
-              this.searchBy = data;
-            } else if (data === 'contains' || data === 'exact') {
+            if (data) {
               this.searchType = data;
-            }
-            
-            if (this.query) {
-              this.search();
+              
+              if (this.query) {
+                this.search();
+              }
             }
           }
         }
@@ -465,5 +534,21 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       position: 'bottom'
     });
     toast.present();
+  }
+
+  // Configura o listener de rolagem
+  setupScrollListener() {
+    this.content.ionScroll.subscribe(() => {
+      if (this.query && this.searchResults.length > 0) {
+        // Usando debounce para não sobrecarregar durante a rolagem
+        if (this.scrollDebounceTimeout) {
+          clearTimeout(this.scrollDebounceTimeout);
+        }
+        
+        this.scrollDebounceTimeout = setTimeout(() => {
+          this.forceHighlightsRefresh();
+        }, 200);
+      }
+    });
   }
 }
