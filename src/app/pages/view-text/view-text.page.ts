@@ -551,4 +551,41 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       }
     });
   }
+
+  async showSearchHistory() {
+    const alert = await this.alertController.create({
+      header: 'Histórico de Pesquisas',
+      message: 'Selecione uma pesquisa anterior ou limpe o histórico',
+      inputs: this.searchHistory.map(item => ({
+        name: 'history',
+        type: 'radio',
+        label: item,
+        value: item
+      })),
+      buttons: [
+        {
+          text: 'Limpar Histórico',
+          role: 'destructive',
+          handler: () => {
+            this.clearSearchHistory();
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Selecionar',
+          handler: (data) => {
+            if (data) {
+              this.useHistoryItem(data);
+            }
+          }
+        }
+      ],
+      cssClass: 'search-history-alert'
+    });
+
+    await alert.present();
+  }
 }

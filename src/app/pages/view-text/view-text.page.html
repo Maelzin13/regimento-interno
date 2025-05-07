@@ -30,15 +30,10 @@
     <ion-button size="small" fill="clear" (click)="showSearchOptions()">
       <ion-icon name="options-outline"></ion-icon>
     </ion-button>
-  </div>
 
-  <!-- Histórico de pesquisa -->
-  <div class="search-history" *ngIf="searchHistory.length > 0 && query.length === 0">
-    <h5>Pesquisas recentes</h5>
-    <ion-chip *ngFor="let item of searchHistory" (click)="useHistoryItem(item)">
-      {{ item }}
-    </ion-chip>
-    <ion-button size="small" fill="clear" (click)="clearSearchHistory()">Limpar histórico</ion-button>
+    <ion-button size="small" fill="clear" (click)="showSearchHistory()" *ngIf="searchHistory.length > 0">
+      <ion-icon name="time-outline"></ion-icon>
+    </ion-button>
   </div>
 
   <!-- Loader de pesquisa -->
