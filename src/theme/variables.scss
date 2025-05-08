@@ -138,6 +138,15 @@ ion-accordion::part(header) ion-icon {
   margin-bottom: 1rem;
 }
 
+.menu-item-livro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+
+}
+
 .menu-box {
   background: linear-gradient(
     145deg,

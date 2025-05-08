@@ -39,83 +39,100 @@ ion-card-content{
 .dashboard-title {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--accent-color);
-  margin: 1.2rem 0;
-
+  margin: 20px 0 15px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ion-color-primary);
+  
   ion-icon {
     margin-right: 8px;
-    font-size: 1.6rem;
-  }
-
-  span {
-    font-size: 1.1rem;
+    font-size: 20px;
   }
 }
 
 .menu-box {
-  padding: 16px 12px;
-  border-radius: 12px;
-  background-color: var(--background-color);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  min-height: 120px;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
   height: 100%;
-
-  &:hover {
-    background-color: #e9ecef;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  min-height: 120px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  
+  &:hover, &:active {
+    background-color: #e9f5ff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
+}
 
-  ion-icon {
-    font-size: 2rem;
-    margin-bottom: 10px;
-  }
+.text-center {
+  text-align: center;
+}
 
-  span {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    word-break: break-word;
-    line-height: 1.2;
-  }
+.icon-large {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.menu-text {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-top: 5px;
+  word-break: break-word;
 }
 
 .locked-item {
-  opacity: 0.8;
-  background-color: #f0f0f0;
-  border: 1px dashed #ccc;
-
-  &:hover {
-    background-color: #e6e6e6;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  }
+  opacity: 0.7;
+  cursor: pointer;
 }
 
 .locked-text {
-  color: #999;
+  color: var(--ion-color-medium);
 }
 
 .lock-container {
   position: relative;
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
 .lock-icon {
   position: absolute;
-  top: -5px;
-  right: -10px;
-  font-size: 0.9rem;
-  background-color: rgba(255, 255, 255, 0.9);
+  bottom: 0;
+  right: -5px;
+  font-size: 14px;
+  background: #fff;
   border-radius: 50%;
   padding: 2px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.content-center {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.single-item {
+  margin-bottom: 30px;
+}
+
+.single-book {
+  min-height: 180px;
+  padding: 25px;
+  
+  .icon-large {
+    font-size: 60px;
+    margin-bottom: 20px;
+  }
+  
+  .menu-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
 }
