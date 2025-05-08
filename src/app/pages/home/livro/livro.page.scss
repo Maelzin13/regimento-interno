@@ -42,7 +42,6 @@ ion-card-content{
   margin: 20px 0 15px;
   font-size: 18px;
   font-weight: 500;
-  color: var(--ion-color-primary);
   
   ion-icon {
     margin-right: 8px;
@@ -135,4 +134,8 @@ ion-card-content{
     font-weight: 500;
     line-height: 1.5;
   }
+}
+
+.link-text {
+ color: blue
 }
