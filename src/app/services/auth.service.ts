@@ -248,17 +248,30 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await signOut(auth);
+      // Verifica se o usuário está autenticado com o Firebase antes de tentar fazer logout
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await signOut(auth);
+      }
+      
+      // Limpa todos os dados de autenticação
       this.cookieService.delete(this.tokenKey);
       localStorage.removeItem(this.tokenKey);
       localStorage.removeItem('authUser');
       this.userChanged.next(null);
 
-      setTimeout(() => {
-        this.router.navigateByUrl('/login', { replaceUrl: true });
-      }, 300);
+      // Redireciona para a página de login
+      await this.router.navigateByUrl('/login', { replaceUrl: true });
     } catch (error) {
       console.error('Erro ao deslogar:', error);
+      // Mesmo com erro, tenta limpar os dados locais
+      this.cookieService.delete(this.tokenKey);
+      localStorage.removeItem(this.tokenKey);
+      localStorage.removeItem('authUser');
+      this.userChanged.next(null);
+      
+      // Força o redirecionamento mesmo em caso de erro
+      await this.router.navigateByUrl('/login', { replaceUrl: true });
     }
   }
 }

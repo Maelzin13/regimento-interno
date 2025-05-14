@@ -7,6 +7,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { IonContent, ModalController, AlertController, ToastController } from '@ionic/angular';
+import { RegimentoModalComponent } from '../../Modals/regimento-modal/regimento-modal.component';
 
 @Component({
   selector: 'app-view-text',
@@ -589,5 +590,28 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     });
 
     await alert.present();
+  }
+
+  async openModal(type: string) {
+    const modal = await this.modalController.create({
+      component: RegimentoModalComponent,
+      componentProps: {
+        type: type
+      }
+    });
+    return await modal.present();
+  }
+
+  processComentarioContent(content: string): SafeHtml {
+    if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
+    
+    let processedContent = content.replace(
+      /^([^:]+):(.*)$/gm,
+      (match, title, content) => {
+        return `<strong>${title}:</strong>${content}`;
+      }
+    );
+    
+    return this.sanitizer.bypassSecurityTrustHtml(processedContent);
   }
 }

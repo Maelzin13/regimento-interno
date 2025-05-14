@@ -63,16 +63,13 @@ export class LoginPage implements OnInit {
     }
   }
 
-  async socialLogin(provider: 'google' | 'facebook') {
+  async socialLogin(provider: 'google') {
     const loading = await this.presentLoading(
       `Conectando com ${provider === 'google' ? 'Google' : 'Facebook'}...`
     );
 
     try {
-      const response =
-        provider === 'google'
-          ? await this.authService.googleLogin()
-          : await this.authService.facebookLogin();
+      const response = await this.authService.googleLogin();
 
       if (response?.user && response?.token) {
         this.authService.saveAuthToken(response.token);
@@ -88,6 +85,10 @@ export class LoginPage implements OnInit {
       await loading.dismiss();
       this.presentToast(error.message || `Erro ao conectar com ${provider}`);
     }
+  }
+
+  async forgotPassword() {
+    
   }
 
   async presentLoading(message: string = 'Carregando...') {

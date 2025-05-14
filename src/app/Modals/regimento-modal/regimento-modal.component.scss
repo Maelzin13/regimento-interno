@@ -1,0 +1,43 @@
+ion-header {
+  ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: white;
+  }
+}
+
+.modal-content {
+  h3 {
+    color: var(--ion-color-primary);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    text-align: justify;
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+
+    li {
+      margin-bottom: 0.5rem;
+      padding-left: 1rem;
+      position: relative;
+
+      &:before {
+        content: "•";
+        color: var(--ion-color-primary);
+        position: absolute;
+        left: 0;
+      }
+    }
+  }
+
+  strong {
+    color: var(--ion-color-primary);
+  }
+} 

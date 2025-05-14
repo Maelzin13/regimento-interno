@@ -20,6 +20,12 @@
             label-placement="floating"></ion-input>
         </ion-item>
 
+        <br>
+        <ion-button fill="clear" class="forgot-password-btn" (click)="forgotPassword()">
+          Esqueceu sua senha?
+        </ion-button>
+        <br>
+
         <ion-button expand="block" class="login-btn ion-margin-top" (click)="login()">
           Entrar
         </ion-button>
@@ -36,12 +42,6 @@
               <ion-button expand="block" class="social-btn google-btn" (click)="socialLogin('google')">
                 <ion-icon slot="start" name="logo-google"></ion-icon>
                 Google
-              </ion-button>
-            </ion-col>
-            <ion-col size="12">
-              <ion-button expand="block" class="social-btn facebook-btn" (click)="socialLogin('facebook')">
-                <ion-icon slot="start" name="logo-facebook"></ion-icon>
-                Facebook
               </ion-button>
             </ion-col>
           </ion-row>

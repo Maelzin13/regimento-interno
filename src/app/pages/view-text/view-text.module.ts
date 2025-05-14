@@ -8,12 +8,15 @@ import { ViewTextPageRoutingModule } from './view-text-routing.module';
 
 import { ViewTextPage } from './view-text.page';
 
+import { RegimentoModalModule } from '../../Modals/regimento-modal/regimento-modal.module';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ViewTextPageRoutingModule
+    ViewTextPageRoutingModule,
+    RegimentoModalModule
   ],
   declarations: [ViewTextPage]
 })
