@@ -218,12 +218,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
   }
 
-  navigateToCapitulo(capitulo: any) {
-    this.router.navigate(['/chapters', capitulo.id], {
-      state: { capitulo },
-    });
-  }
-
   ngAfterViewInit() {
     if (!this.notaListenerAttached) {
       this.listenNotaClicks();
@@ -611,7 +605,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         return `<strong>${title}:</strong>${content}`;
       }
     );
+
+    processedContent = processedContent.replace(/\n/g, '<br>');
     
-    return this.sanitizer.bypassSecurityTrustHtml(processedContent);
+    return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(processedContent));
   }
 }

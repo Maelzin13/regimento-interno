@@ -5,22 +5,6 @@ const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   {
-    path: 'chapters/:titleId',
-    loadChildren: () =>
-      import('./pages/chapters/chapters.module').then(
-        (m) => m.ChaptersPageModule
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'articles/:sectionId',
-    loadChildren: () =>
-      import('./pages/articles/articles.module').then(
-        (m) => m.ArticlesPageModule
-      ),
-    canActivate: [AuthGuard],
-  },
-  {
     path: 'home',
     loadChildren: () =>
       import('./pages/home/home.module').then((m) => m.HomePageModule),

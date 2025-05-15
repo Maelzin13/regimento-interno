@@ -46,14 +46,13 @@
   <ng-container *ngIf="selectedSegment === 'corrido'">
     <!-- Cabeçalho fixo -->
     <div class="fixed-header">
-      <h1 class="main-title">Regimento Interno da Câmara dos Deputados Comentado</h1>
+      <h1 class="main-title">{{ book?.conteudo || 'Carregando...' }}</h1>
       <div class="header-links">
         <a (click)="openModal('autor')" class="header-link">O Autor</a>
         <a (click)="openModal('apresentacao')" class="header-link">Apresentação</a>
         <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
         <a (click)="openModal('indice')" class="header-link">Índice</a>
       </div>
-      <h2 class="subtitle">REGIMENTO INTERNO DA CÂMARA DOS DEPUTADOS APROVADO PELA RESOLUÇÃO 17, DE 1989</h2>
     </div>
 
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
@@ -95,8 +94,6 @@
                 <ion-label>
                   <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
                 </ion-label>
-                <ion-icon slot="end" name="chevron-forward-outline" (click)="navigateToCapitulo(capitulo)">
-                </ion-icon>
               </ion-item>
             </ng-container>
           </ion-list>
