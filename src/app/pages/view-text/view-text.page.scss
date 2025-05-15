@@ -12,7 +12,7 @@
 // Estilos base
 .law-text { color: black; }
 .comment-text { 
-  color: green; 
+  color: #92d050;
   cursor: pointer; 
 }
 
@@ -31,19 +31,19 @@ ion-content {
 .comentario {
   background-color: #f1f1f1;
   padding: var(--search-padding);
-  border-left: 4px solid var(--ion-color-primary);
+  border-left: 4px solid #92d050;
   margin-bottom: 12px;
   border-radius: 5px;
 
   .comentario-tipo {
-    color: var(--ion-color-primary);
+    color: #92d050;
     font-weight: 500;
     display: block;
     margin-bottom: 8px;
   }
 
   strong {
-    color: var(--ion-color-primary);
+    color: #92d050;
     font-weight: 600;
   }
 
@@ -288,12 +288,7 @@ ion-alert {
 
 .comentario {
   .comentario-tipo {
-    color: var(--ion-color-primary);
+    color: #92d050;
     font-weight: bold;
   }
-}
-
-// Estilo para inserções em verde
-.insercao {
-  color: #28a745;
 }

@@ -82,24 +82,29 @@
 
   <!-- Conteúdo no formato formatado -->
   <ng-container *ngIf="selectedSegment === 'formatado'">
-    <div *ngIf="(filteredBook || book)?.titulos?.length">
-      <ion-card *ngFor="let titulo of (filteredBook || book).titulos" class="ion-text-center">
-        <ion-card-header>
-          <ion-card-title class="titulo">{{ cleanHTML(titulo.conteudo) }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-list lines="none">
-            <ng-container *ngFor="let capitulo of titulo.capitulos">
-              <ion-item>
-                <ion-label>
-                  <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
-                </ion-label>
-              </ion-item>
+    <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
+      <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
+        <h2 class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></h2>
+        <ng-container *ngFor="let capitulo of titulo.capitulos">
+          <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
+          <ng-container *ngFor="let secao of capitulo.secaos">
+            <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
+            <ng-container *ngFor="let artigo of secao.artigos">
+              <h5 [id]="'artigo-' + artigo.id" [innerHTML]="safeHTML(artigo.conteudo)"></h5>
+              <ng-container *ngFor="let paragrafo of artigo.paragrafos">
+                <h5 [id]="'paragrafo-' + paragrafo.id" [innerHTML]="safeHTML(paragrafo.conteudo)" class="text-justify"></h5>
+                <ng-container *ngFor="let comentario of paragrafo.comentarios">
+                  <p class="comentario">
+                    <span class="comentario-tipo">{{ comentario.tipo | titlecase }}</span><br>
+                    <span [innerHTML]="processComentarioContent(comentario.conteudo)"></span>
+                  </p>
+                </ng-container>
+              </ng-container>
             </ng-container>
-          </ion-list>
-        </ion-card-content>
-      </ion-card>
-    </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
   </ng-container>
   
   <ng-template #loading>

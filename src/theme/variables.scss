@@ -31,6 +31,10 @@
   --card-max-width-lg: 600px;
 }
 
+ion-content {
+  --background: #332809;
+}
+
 ion-refresher {
   background: var(--ion-color-primary-contrast);
 }
@@ -91,11 +95,6 @@ ion-accordion::part(header) ion-icon {
   --color: white;
 }
 
-.facebook-btn {
-  --background: var(--facebook-blue);
-  --color: white;
-}
-
 .corPlano-btn {
   --background: var(--color-plan);
   --color: white;
@@ -116,14 +115,14 @@ ion-accordion::part(header) ion-icon {
 }
 
 .comentario {
-  color: var(--comentario-color);
+  color: #92d050;
 }
 
 .comentario-tipo {
   font-weight: bold;
   font-style: italic;
   display: inline-block;
-  color: var(--comentario-color);
+  color: #92d050;
 }
 
 .menu-content {
@@ -148,20 +147,8 @@ ion-accordion::part(header) ion-icon {
 }
 
 .menu-box {
-  background: linear-gradient(
-    145deg,
-    #ffffff,
-    #f3f3f3
-  ); // leve degradê para iluminação
+  background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 23px 30px rgba(0, 0, 0, 0.15),
-    // sombra principal suave com blur e ângulo
-    0 -12px 20px rgba(
-        255,
-        255,
-        255,
-        0.6
-      ); // ponto de luz (brilho superior negativo)
   width: 100%;
   max-width: 140px;
   height: 120px;

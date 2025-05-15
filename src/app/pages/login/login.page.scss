@@ -15,10 +15,6 @@
   padding: 2rem 1rem;
 }
 
-.login-content {
-  --background: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);
-}
-
 .center-container {
   display: flex;
   justify-content: center;
@@ -33,6 +29,7 @@
   border-radius: 15px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);
 }
 
 .separator {
