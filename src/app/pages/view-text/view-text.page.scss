@@ -10,7 +10,7 @@
 }
 
 // Estilos base
-.law-text { color: black; }
+.law-text { color: #1e999a; }
 .comment-text { 
   color: #92d050;
   cursor: pointer; 
@@ -29,7 +29,6 @@ ion-content {
 
 // Comentários
 .comentario {
-  background-color: #f1f1f1;
   padding: var(--search-padding);
   border-left: 4px solid #92d050;
   margin-bottom: 12px;
@@ -54,6 +53,25 @@ ion-content {
     user-select: none;
     text-decoration: underline;
   }
+}
+
+.artigo-container {
+  background-color: #f1f1f1;
+  margin-bottom: 12px;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+
+.comentario {
+  color: #92d050;
+}
+
+.comentario-tipo {
+  font-weight: bold;
+  font-style: italic;
+  display: inline-block;
+  color: #92d050;
 }
 
 // Sistema de busca
@@ -247,6 +265,7 @@ ion-alert {
   z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+  border-radius: 10px;
 
   .main-title {
     font-size: 1.5rem;

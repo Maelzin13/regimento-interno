@@ -32,7 +32,7 @@
 }
 
 ion-content {
-  --background: #332809;
+  --background: #463d23ab;
 }
 
 ion-refresher {
@@ -112,17 +112,6 @@ ion-accordion::part(header) ion-icon {
 
 .nota-link {
   color: var(--link-color);
-}
-
-.comentario {
-  color: #92d050;
-}
-
-.comentario-tipo {
-  font-weight: bold;
-  font-style: italic;
-  display: inline-block;
-  color: #92d050;
 }
 
 .menu-content {

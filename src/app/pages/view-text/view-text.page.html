@@ -10,7 +10,6 @@
 </ion-header>
 
 <ion-content fullscreen class="ion-padding">
-
   <ion-segment [(ngModel)]="selectedSegment">
     <ion-segment-button value="corrido">
       <ion-label class="law-text">Texto Corrido</ion-label>
@@ -22,16 +21,29 @@
 
   <!-- Sistema de busca aprimorado -->
   <div class="search-container">
-    <ion-searchbar #searchInput color="light" animated="true" placeholder="Buscar por palavra ou artigo..." 
-      show-clear-button="always" clear-icon="trash-bin" [(ngModel)]="query" 
-      (ionInput)="onSearchInput($event)" debounce="300">
+    <ion-searchbar
+      #searchInput
+      color="light"
+      animated="true"
+      placeholder="Buscar por palavra ou artigo..."
+      show-clear-button="always"
+      clear-icon="trash-bin"
+      [(ngModel)]="query"
+      (ionInput)="onSearchInput($event)"
+      debounce="300"
+    >
     </ion-searchbar>
-    
+
     <ion-button size="small" fill="clear" (click)="showSearchOptions()">
       <ion-icon name="options-outline"></ion-icon>
     </ion-button>
 
-    <ion-button size="small" fill="clear" (click)="showSearchHistory()" *ngIf="searchHistory.length > 0">
+    <ion-button
+      size="small"
+      fill="clear"
+      (click)="showSearchHistory()"
+      *ngIf="searchHistory.length > 0"
+    >
       <ion-icon name="time-outline"></ion-icon>
     </ion-button>
   </div>
@@ -49,8 +61,12 @@
       <h1 class="main-title">{{ book?.conteudo || 'Carregando...' }}</h1>
       <div class="header-links">
         <a (click)="openModal('autor')" class="header-link">O Autor</a>
-        <a (click)="openModal('apresentacao')" class="header-link">Apresentação</a>
-        <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
+        <a (click)="openModal('apresentacao')" class="header-link"
+          >Apresentação</a
+        >
+        <a (click)="openModal('abreviaturas')" class="header-link"
+          >Abreviaturas</a
+        >
         <a (click)="openModal('indice')" class="header-link">Índice</a>
       </div>
     </div>
@@ -62,18 +78,33 @@
           <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
           <ng-container *ngFor="let secao of capitulo.secaos">
             <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
-            <ng-container *ngFor="let artigo of secao.artigos">
-              <h5 [id]="'artigo-' + artigo.id" [innerHTML]="safeHTML(artigo.conteudo)"></h5>
-              <ng-container *ngFor="let paragrafo of artigo.paragrafos">
-                <h5 [id]="'paragrafo-' + paragrafo.id" [innerHTML]="safeHTML(paragrafo.conteudo)" class="text-justify"></h5>
-                <ng-container *ngFor="let comentario of paragrafo.comentarios">
-                  <p class="comentario">
-                    <span class="comentario-tipo">{{ comentario.tipo | titlecase }}</span><br>
-                    <span [innerHTML]="processComentarioContent(comentario.conteudo)"></span>
-                  </p>
+            <div class="artigo-container">
+              <ng-container *ngFor="let artigo of secao.artigos">
+                <h5
+                  [id]="'artigo-' + artigo.id"
+                  [innerHTML]="safeHTML(artigo.conteudo)"
+                ></h5>
+                <ng-container *ngFor="let paragrafo of artigo.paragrafos">
+                  <h5
+                    [id]="'paragrafo-' + paragrafo.id"
+                    [innerHTML]="safeHTML(paragrafo.conteudo)"
+                    class="text-justify"
+                  ></h5>
+                  <ng-container
+                    *ngFor="let comentario of paragrafo.comentarios"
+                  >
+                    <p class="comentario">
+                      <span class="comentario-tipo"
+                        >{{ comentario.tipo | titlecase }}</span
+                      ><br />
+                      <span
+                        [innerHTML]="processComentarioContent(comentario.conteudo)"
+                      ></span>
+                    </p>
+                  </ng-container>
                 </ng-container>
               </ng-container>
-            </ng-container>
+            </div>
           </ng-container>
         </ng-container>
       </ng-container>
@@ -89,24 +120,39 @@
           <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
           <ng-container *ngFor="let secao of capitulo.secaos">
             <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
-            <ng-container *ngFor="let artigo of secao.artigos">
-              <h5 [id]="'artigo-' + artigo.id" [innerHTML]="safeHTML(artigo.conteudo)"></h5>
-              <ng-container *ngFor="let paragrafo of artigo.paragrafos">
-                <h5 [id]="'paragrafo-' + paragrafo.id" [innerHTML]="safeHTML(paragrafo.conteudo)" class="text-justify"></h5>
-                <ng-container *ngFor="let comentario of paragrafo.comentarios">
-                  <p class="comentario">
-                    <span class="comentario-tipo">{{ comentario.tipo | titlecase }}</span><br>
-                    <span [innerHTML]="processComentarioContent(comentario.conteudo)"></span>
-                  </p>
+            <div class="artigo-container">
+              <ng-container *ngFor="let artigo of secao.artigos">
+                <h5
+                  [id]="'artigo-' + artigo.id"
+                  [innerHTML]="safeHTML(artigo.conteudo)"
+                ></h5>
+                <ng-container *ngFor="let paragrafo of artigo.paragrafos">
+                  <h5
+                    [id]="'paragrafo-' + paragrafo.id"
+                    [innerHTML]="safeHTML(paragrafo.conteudo)"
+                    class="text-justify"
+                  ></h5>
+                  <ng-container
+                    *ngFor="let comentario of paragrafo.comentarios"
+                  >
+                    <p>
+                      <span class="comentario-tipo"
+                        >{{ comentario.tipo | titlecase }}</span
+                      ><br />
+                      <span
+                        [innerHTML]="processComentarioContent(comentario.conteudo)"
+                      ></span>
+                    </p>
+                  </ng-container>
                 </ng-container>
               </ng-container>
-            </ng-container>
+            </div>
           </ng-container>
         </ng-container>
       </ng-container>
     </ng-container>
   </ng-container>
-  
+
   <ng-template #loading>
     <div class="ion-text-center ion-margin-top">
       <ion-spinner></ion-spinner>
@@ -121,13 +167,34 @@
     <span>{{ currentResultIndex + 1 }} de {{ totalResults }} resultados</span>
   </div>
   <div class="result-navigation">
-    <ion-button class="nav-button" size="small" fill="solid" color="primary" (click)="navigateToPreviousResult()" [disabled]="currentResultIndex <= 0">
+    <ion-button
+      class="nav-button"
+      size="small"
+      fill="solid"
+      color="primary"
+      (click)="navigateToPreviousResult()"
+      [disabled]="currentResultIndex <= 0"
+    >
       <ion-icon name="chevron-back-outline"></ion-icon>
     </ion-button>
-    <ion-button class="nav-button" size="small" fill="solid" color="primary" (click)="navigateToNextResult()" [disabled]="currentResultIndex >= totalResults - 1">
+    <ion-button
+      class="nav-button"
+      size="small"
+      fill="solid"
+      color="primary"
+      (click)="navigateToNextResult()"
+      [disabled]="currentResultIndex >= totalResults - 1"
+    >
       <ion-icon name="chevron-forward-outline"></ion-icon>
     </ion-button>
-    <ion-button class="nav-button" size="small" fill="solid" color="secondary" (click)="restoreLastPosition()" *ngIf="lastScrollPosition > 0">
+    <ion-button
+      class="nav-button"
+      size="small"
+      fill="solid"
+      color="secondary"
+      (click)="restoreLastPosition()"
+      *ngIf="lastScrollPosition > 0"
+    >
       <ion-icon name="return-up-back-outline"></ion-icon>
     </ion-button>
   </div>

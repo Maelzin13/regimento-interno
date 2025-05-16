@@ -15,14 +15,15 @@
           <ion-col size="12" *ngFor="let book of books" class="menu-item-livro">
             <ion-card [routerLink]="['/view-text', book.id]" *ngIf="user?.is_admin || user?.subscription_status === 'active'">
               <ion-card-content class="card-content-custom">
-                <ion-icon name="book-outline" color="primary" class="icon-large"></ion-icon>
+                <ion-icon name="book-outline" color="primary" class="icon-small"></ion-icon>
                 <div class="menu-text">Regimento interno Comentado</div>
+                <p class="menu-text">1ª Edição 2025</p>
               </ion-card-content>
             </ion-card>
             <ion-card (click)="showSubscriptionMessage()" *ngIf="!(user?.is_admin || user?.subscription_status === 'active')" class="locked-item">
               <ion-card-content class="card-content-custom">
                 <div class="lock-container">
-                  <ion-icon name="book-outline" color="medium" class="icon-large"></ion-icon>
+                  <ion-icon name="book-outline" color="medium" class="icon-small"></ion-icon>
                   <ion-icon name="lock-closed" class="lock-icon" color="warning"></ion-icon>
                 </div>
                 <div class="locked-text">Regimento interno Comentado</div>
@@ -34,6 +35,28 @@
     </ng-container>  
 
     <div class="dashboard-title">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span>Acontece na Câmara</span>
+    </div>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" class="menu-item">
+          <a class="menu-box text-center" href="https://www.camara.leg.br/plenario" target="_blank" style="text-decoration: none;">
+            <ion-icon name="people-outline" color="primary" class="icon-small"></ion-icon>
+            <div class="menu-text link-text">No plenário</div>
+          </a>
+        </ion-col>
+        <ion-col size="6" class="menu-item">
+          <a class="menu-box text-center" href="https://www.camara.leg.br/presenca-comissoes/painel.comissoes" target="_blank" style="text-decoration: none;">
+            <ion-icon name="business-outline" color="primary" class="icon-small"></ion-icon>
+            <div class="menu-text link-text">Nas comissões</div>
+          </a>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div class="dashboard-title">
       <ion-icon name="library-outline"></ion-icon>
       <span>Textos Auxiliares</span>
     </div>
@@ -41,13 +64,13 @@
     <ion-grid>
       <ion-row>
         <ion-col size="4" *ngFor="let texto of textos" class="menu-item">
-          <div class="menu-box text-center" (click)="openDescricaoModal(texto)" *ngIf="!texto.link; else externalLink">
-            <ion-icon name="document-text-outline" color="primary" class="icon-large"></ion-icon>
+          <div class="menu-box menu-box-compact text-center" (click)="openDescricaoModal(texto)" *ngIf="!texto.link; else externalLink">
+            <ion-icon name="document-text-outline" color="primary" class="icon-small"></ion-icon>
             <div class="menu-text">{{ cleanHTML(texto.title) }}</div>
           </div>
           <ng-template #externalLink>
-            <a class="menu-box text-center" [href]="texto.link" target="_blank" style="text-decoration: none;">
-              <ion-icon name="document-text-outline" color="primary" class="icon-large"></ion-icon>
+            <a class="menu-box menu-box-compact text-center" [href]="texto.link" target="_blank" style="text-decoration: none;">
+              <ion-icon name="document-text-outline" color="primary" class="icon-small"></ion-icon>
               <div class="menu-text link-text">{{ cleanHTML(texto.title) }}</div>
             </a>
           </ng-template>
