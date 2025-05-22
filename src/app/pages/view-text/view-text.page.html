@@ -45,7 +45,6 @@
 
   <!-- Conteúdo no formato corrido -->
   <ng-container *ngIf="selectedSegment === 'corrido'">
-    <!-- Cabeçalho fixo -->
     <div class="fixed-header">
       <h1 class="main-title">{{ book?.conteudo || 'Carregando...' }}</h1>
       <div class="header-links">
@@ -153,54 +152,43 @@
 
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
       <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
-        <h2 class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></h2>
-    
-        <ng-container *ngFor="let capitulo of titulo.capitulos">
-          <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
-    
-          <ng-container *ngFor="let secao of capitulo.secaos">
-            <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
-    
-            <div class="artigo-container">
-              <ng-container *ngFor="let artigo of secao.artigos">
-                <h5
-                  [id]="'artigo-' + artigo.id"
-                  [innerHTML]="safeHTML(artigo.conteudo)"
-                ></h5>
-    
-                <ng-container *ngFor="let paragrafo of artigo.paragrafos">
-                  <h5
-                    [id]="'paragrafo-' + paragrafo.id"
-                    [innerHTML]="safeHTML(paragrafo.conteudo)"
-                    class="text-justify"
-                  ></h5>
-
-                  <ng-container *ngFor="let remissao of paragrafo.remissoes">
-                    <div class="remissoes mt-4 mb-4 pl-4 border-l-2 border-green-500 bg-green-50 p-3 rounded-r-lg">
-                      <ul class="space-y-2">
-                        <li
-                          style="color: #333131;"
-                          [innerHTML]="safeHTML(remissao.conteudo)"
-                        ></li>
-                      </ul>
+        <ion-card *ngIf="titulo.conteudo?.trim()">
+          <ion-card-header>
+            <ion-card-title class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ng-container *ngFor="let capitulo of titulo.capitulos">
+              <div *ngIf="capitulo.conteudo?.trim()">
+                <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
+              </div>
+              <ng-container *ngFor="let secao of capitulo.secaos">
+                <div *ngIf="secao.conteudo?.trim()">
+                  <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
+                </div>
+                <div class="artigos">
+                  <ng-container *ngFor="let artigo of secao.artigos">
+                    <div *ngIf="artigo.conteudo?.trim()" class="artigo">
+                      <h5 class="artigo-titulo"  [id]="'artigo-' + artigo.id"  [innerHTML]="safeHTML(artigo.conteudo)"></h5>
                     </div>
+                    <ng-container *ngFor="let paragrafo of artigo.paragrafos">
+                      <p class="paragrafo"  [id]="'paragrafo-' + paragrafo.id" [innerHTML]="safeHTML(paragrafo.conteudo)"></p>
+                      <div *ngIf="paragrafo.remissoes.length" class="remissoes">
+                        <p *ngFor="let r of paragrafo.remissoes" class="comentario-tipo" [innerHTML]="safeHTML(r.conteudo)">
+                        </p>
+                      </div>
+                      <div *ngIf="paragrafo.comentarios.length" class="comentarios">
+                        <div *ngFor="let c of paragrafo.comentarios" class="comentario">
+                          <strong class="comentario-tipo">{{ c.tipo  | titlecase}}</strong>
+                          <p [innerHTML]="processComentarioContent(c.conteudo)"></p>
+                        </div>
+                      </div>
+                    </ng-container>
                   </ng-container>
-
-                  <ng-container *ngFor="let comentario of paragrafo.comentarios">
-                    <p class="comentario mt-4">
-                      <span class="comentario-tipo font-semibold"
-                        >{{ comentario.tipo | titlecase }}</span
-                      ><br />
-                      <span
-                        [innerHTML]="processComentarioContent(comentario.conteudo)"
-                      ></span>
-                    </p>
-                  </ng-container>
-                </ng-container>
+                </div>
               </ng-container>
-            </div>
-          </ng-container>
-        </ng-container>
+            </ng-container>
+          </ion-card-content>
+        </ion-card>
       </ng-container>
     </ng-container>
   </ng-container>
