@@ -54,7 +54,7 @@ const routes: Routes = [
       import('./pages/change-password/change-password.module').then(
         (m) => m.ChangePasswordPageModule
       ),
-  }, 
+  },
   {
     path: 'plans',
     loadChildren: () =>
@@ -65,6 +65,13 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/dashboard/dashboard.module').then(
         (m) => m.DashboardPageModule
+      ),
+  },
+  {
+    path: 'questao-ordem-nova',
+    loadChildren: () =>
+      import('./pages/questao-ordem-nova/questao-ordem-nova.module').then(
+        (m) => m.QuestaoOrdemNovaPageModule
       ),
   },
 ];
