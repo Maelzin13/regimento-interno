@@ -5,6 +5,7 @@
         <ion-icon name="arrow-back" color="light"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-title>Regimento Comentado</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -46,7 +47,7 @@
   <!-- Conteúdo no formato corrido -->
   <ng-container *ngIf="selectedSegment === 'corrido'">
     <div class="fixed-header">
-      <h1 class="main-title">{{ book?.conteudo || 'Carregando...' }}</h1>
+      <h1 class="main-title">REGIMENTO INTERNO DA CÂMARA DOS DEPUTADOS APROVADO PELA RESOLUÇÃO 17, DE 1989</h1>
       <div class="header-links">
         <a (click)="openModal('autor')" class="header-link">O Autor</a>
         <a (click)="openModal('apresentacao')" class="header-link"
@@ -71,6 +72,7 @@
 
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
       <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
+        <ng-container *ngIf="titulo.conteudo?.trim()">
         <h2 class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></h2>
     
         <ng-container *ngFor="let capitulo of titulo.capitulos">
@@ -119,6 +121,7 @@
             </div>
           </ng-container>
         </ng-container>
+      </ng-container>
       </ng-container>
     </ng-container>
   </ng-container>
@@ -172,10 +175,16 @@
                     </div>
                     <ng-container *ngFor="let paragrafo of artigo.paragrafos">
                       <p class="paragrafo"  [id]="'paragrafo-' + paragrafo.id" [innerHTML]="safeHTML(paragrafo.conteudo)"></p>
-                      <div *ngIf="paragrafo.remissoes.length" class="remissoes">
-                        <p *ngFor="let r of paragrafo.remissoes" class="comentario-tipo" [innerHTML]="safeHTML(r.conteudo)">
-                        </p>
-                      </div>
+                      <ng-container *ngFor="let r of paragrafo.remissoes">
+                        <div class="remissoes mt-4 mb-4 pl-4 border-l-2 border-green-500 bg-green-50 p-3 rounded-r-lg">
+                          <ul class="space-y-2">
+                            <li
+                              class="comentario-tipo font-semibold"
+                              [innerHTML]="safeHTML(r.conteudo)"
+                            ></li>
+                          </ul>
+                        </div>
+                      </ng-container>
                       <div *ngIf="paragrafo.comentarios.length" class="comentarios">
                         <div *ngFor="let c of paragrafo.comentarios" class="comentario">
                           <strong class="comentario-tipo">{{ c.tipo  | titlecase}}</strong>
