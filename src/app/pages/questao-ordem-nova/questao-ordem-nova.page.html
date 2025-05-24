@@ -1,13 +1,42 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>questao-ordem-nova</ion-title>
+  <ion-toolbar id="toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="roolBack()">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Questões de Ordem Nova</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="adicionar()">
+        <ion-icon name="add" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">questao-ordem-nova</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="container">
+    <ion-card *ngFor="let questao of listQuestoes">
+      <ion-card-header>
+        <ion-card-title>{{ questao.titulo }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>
+          {{ questao.descricao }}
+        </p>
+      </ion-card-content>
+      
+      <div class="button-container ion-padding center">
+        <ion-button (click)="editar(questao.id)" color="primary" size="small">
+          <ion-icon name="pencil-outline"></ion-icon>
+          Editar
+        </ion-button>
+        <ion-button (click)="excluir(questao.id)" color="danger" size="small">
+          <ion-icon name="trash-outline"></ion-icon>
+          Excluir
+        </ion-button>
+      </div>
+    
+    </ion-card>
+  </div>
 </ion-content>
