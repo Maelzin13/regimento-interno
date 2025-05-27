@@ -50,4 +50,24 @@ export class UserService {
       );
     }
   }
+
+  async deleteAccount(password?: string): Promise<void> {
+    try {
+      const body = password ? { password } : { confirm_delete: true };
+      
+      await firstValueFrom(
+        this.http.delete(`${this.apiservice.baseUrl}/me/delete-account`, {
+          body
+        }).pipe(
+          catchError((error) => {
+            console.error('Erro ao excluir conta:', error);
+            const errorMessage = error.error?.message || 'Erro ao excluir a conta. Por favor, tente novamente.';
+            return throwError(() => new Error(errorMessage));
+          })
+        )
+      );
+    } catch (error: any) {
+      throw new Error(error.message || 'Erro desconhecido ao excluir a conta.');
+    }
+  }
 }

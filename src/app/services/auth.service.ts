@@ -53,7 +53,7 @@ export class AuthService {
   async login(email: string, password: string): Promise<string> {
     try {
       const response: any = await this.http
-        .post(`${this.apiService.baseUrl}/auth/login`, { email, password })
+        .post(`${this.apiService.baseUrl}/login`, { email, password })
         .toPromise();
 
       const token = response.access_token;
@@ -210,42 +210,6 @@ export class AuthService {
     }
   }
 
-  async facebookLogin() {
-    try {
-      let accessToken: string;
-
-      if (Capacitor.getPlatform() === 'web') {
-        const provider = new FacebookAuthProvider();
-        const result = await signInWithPopup(auth, provider);
-        const credential = FacebookAuthProvider.credentialFromResult(result);
-        accessToken = credential?.accessToken ?? '';
-      } else {
-        const result = await FacebookLogin.login({
-          permissions: ['email', 'public_profile'],
-        });
-        accessToken = result?.accessToken?.token ?? '';
-      }
-
-      if (!accessToken) {
-        throw new Error('Falha ao obter token do Facebook.');
-      }
-
-      const response: any = await this.http
-        .post(`${this.apiService.baseUrl}/auth/social-login/facebook`, {
-          token: accessToken,
-        })
-        .toPromise();
-
-      this.saveAuthToken(response.token);
-      localStorage.setItem('authUser', JSON.stringify(response.user));
-      this.userChanged.next(response.user);
-
-      return response;
-    } catch (error: any) {
-      throw new Error('Erro ao fazer login com Facebook: ' + error.message);
-    }
-  }
-
   async logout(): Promise<void> {
     try {
       // Verifica se o usuário está autenticado com o Firebase antes de tentar fazer logout
@@ -256,22 +220,23 @@ export class AuthService {
       
       // Limpa todos os dados de autenticação
       this.cookieService.delete(this.tokenKey);
-      localStorage.removeItem(this.tokenKey);
-      localStorage.removeItem('authUser');
+      this.cookieService.deleteAll('/');
+      localStorage.clear();
+      sessionStorage.clear();
       this.userChanged.next(null);
 
-      // Redireciona para a página de login
       await this.router.navigateByUrl('/login', { replaceUrl: true });
+      window.location.reload();
     } catch (error) {
       console.error('Erro ao deslogar:', error);
-      // Mesmo com erro, tenta limpar os dados locais
-      this.cookieService.delete(this.tokenKey);
-      localStorage.removeItem(this.tokenKey);
-      localStorage.removeItem('authUser');
+      this.cookieService.deleteAll('/');
+      localStorage.clear();
+      sessionStorage.clear();
       this.userChanged.next(null);
       
-      // Força o redirecionamento mesmo em caso de erro
+
       await this.router.navigateByUrl('/login', { replaceUrl: true });
+      window.location.reload();
     }
   }
 }

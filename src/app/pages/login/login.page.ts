@@ -27,14 +27,27 @@ export class LoginPage implements OnInit {
     try {
       this.nameApp = config.appName;
 
-      const token = this.authService.getAuthToken();
-      if (token) {
+      // Limpa qualquer dado residual do localStorage e sessionStorage
+      if (!this.authService.getAuthToken()) {
+        localStorage.clear();
+        sessionStorage.clear();
+        this.authService.userChanged.next(null);
+        await loading.dismiss();
+        return;
+      }
+
+      // Verifica se o token é válido
+      try {
         const user = await this.authService.fetchProfile();
         localStorage.setItem('authUser', JSON.stringify(user));
         this.authService.userChanged.next(user);
         await loading.dismiss();
         this.router.navigate(['/home']);
-      } else {
+      } catch (error) {
+        // Se houver erro na validação do token, limpa tudo
+        localStorage.clear();
+        sessionStorage.clear();
+        this.authService.userChanged.next(null);
         await loading.dismiss();
       }
     } catch (error: any) {
