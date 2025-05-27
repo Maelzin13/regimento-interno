@@ -111,7 +111,7 @@
                       <span class="comentario-tipo font-semibold"
                         >{{ comentario.tipo | titlecase }}</span
                       ><br />
-                      <span
+                      <span 
                         [innerHTML]="processComentarioContent(comentario.conteudo)"
                       ></span>
                     </p>
@@ -187,8 +187,8 @@
                       </ng-container>
                       <div *ngIf="paragrafo.comentarios.length" class="comentarios">
                         <div *ngFor="let c of paragrafo.comentarios" class="comentario">
-                          <strong class="comentario-tipo">{{ c.tipo  | titlecase}}</strong>
-                          <p [innerHTML]="processComentarioContent(c.conteudo)"></p>
+                          <strong class="comentario-tipo">{{ c.tipo | titlecase }}</strong>
+                          <p [innerHTML]="processComentarioContentFormated(c.conteudo, c.id)" (click)="toggleComment(c.id)" class="cursor-pointer"></p>
                         </div>
                       </div>
                     </ng-container>

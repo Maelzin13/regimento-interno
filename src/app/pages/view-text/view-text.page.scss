@@ -311,3 +311,17 @@ ion-alert {
     font-weight: bold;
   }
 }
+
+.ver-mais, .ver-menos {
+  color: #3880ff;
+  margin-left: 8px;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+
+.comentario {
+  p {
+    cursor: default;
+  }
+}

@@ -35,6 +35,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   
   // Propriedade para o debounce da rolagem
   private scrollDebounceTimeout: any;
+  expandedComments: Set<string> = new Set();
 
   constructor(
     private router: Router,
@@ -596,6 +597,18 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     return await modal.present();
   }
 
+  toggleComment(commentId: string) {
+    if (this.expandedComments.has(commentId)) {
+      this.expandedComments.delete(commentId);
+    } else {
+      this.expandedComments.add(commentId);
+    }
+  }
+
+  isCommentExpanded(commentId: string): boolean {
+    return this.expandedComments.has(commentId);
+  }
+
   processComentarioContent(content: string): SafeHtml {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
     
@@ -608,6 +621,24 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     processedContent = processedContent.replace(/\n/g, '<br>');
     
+    return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(processedContent));
+  }
+
+  processComentarioContentFormated(content: string, commentId: string): SafeHtml {
+    if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
+    
+    const colonIndex = content.indexOf(':');
+    if (colonIndex === -1) return this.sanitizer.bypassSecurityTrustHtml(content);
+
+    const beforeColon = content.substring(0, colonIndex + 1);
+    const afterColon = content.substring(colonIndex + 1);
+
+    if (!this.isCommentExpanded(commentId)) {
+      const processedContent = `<strong>${beforeColon}</strong><a class="ver-mais" (click)="toggleComment('${commentId}')">Ver mais</a>`;
+      return this.sanitizer.bypassSecurityTrustHtml(processedContent);
+    }
+
+    const processedContent = `<strong>${beforeColon}</strong>${afterColon}<a class="ver-menos" (click)="toggleComment('${commentId}')">Ver menos</a>`;
     return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(processedContent));
   }
 }
