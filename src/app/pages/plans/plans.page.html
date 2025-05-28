@@ -39,10 +39,6 @@
                 <p *ngIf="plan.ativo" class="active-label">Plano Ativo</p>
                 <p *ngIf="!plan.ativo" class="inactive-label">Não Ativo</p>
               </ion-card-content>
-
-              <ion-item lines="none" *ngIf="!plan.ativo">
-                <ion-button expand="block" (click)="subscribe()">Assinar</ion-button>
-              </ion-item>
             </ion-card>
           </ion-col>
         </ng-container>

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { PlansService } from 'src/app/services/plans.service';
-import { environment } from 'src/environments/environment';
 import { NavController, ToastController } from '@ionic/angular';
 
 @Component({
@@ -54,10 +53,6 @@ export class PlansPage implements OnInit {
       icon: 'checkmark-circle-outline',
     });
     await toast.present();
-  }
-
-  subscribe() {
-    window.open(`${environment.baseUrl}/login`, '_blank');
   }
 
   roolBack() {
