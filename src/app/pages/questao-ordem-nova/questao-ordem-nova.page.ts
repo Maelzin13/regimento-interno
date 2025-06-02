@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, NavController } from '@ionic/angular';
 import { QuestoesOremModel } from 'src/app/models/questoesOrem.model';
 import { QuestoesOrdemService } from 'src/app/services/questoes-ordem.service';
+import { EditOredemModalPage } from './edit-oredem-modal/edit-oredem-modal.page';
+import { NovaOremModalPage } from './nova-orem-modal/nova-orem-modal.page';
 
 @Component({
   selector: 'app-questao-ordem-nova',
@@ -14,7 +16,6 @@ export class QuestaoOrdemNovaPage implements OnInit {
   questao: QuestoesOremModel = new QuestoesOremModel();
 
   constructor(
-    private router: Router,
     private navCtrl: NavController,
     private modalController: ModalController,
     private questoesOrdemService: QuestoesOrdemService,
@@ -28,19 +29,31 @@ export class QuestaoOrdemNovaPage implements OnInit {
 
   adicionar() {
     this.modalController.create({
-      component: QuestaoOrdemNovaPage,
+      component: NovaOremModalPage  ,
       mode: 'ios',
-      componentProps: {
-        questao: this.questao,
-      },
     }).then((modal) => {
       modal.present();
+      modal.onDidDismiss().then(async () => {
+        await this.questoesOrdemService.getAllQuestoesOrdem().then((questoes: any) => {
+          this.listQuestoes = questoes.data;
+        });
+      });
     });
   }
 
   editar(id: number) {
     this.questoesOrdemService.getQuestoesOrdemById(id).then((questao: any) => {
-      this.questao = questao.data;
+      this.questoesOrdemService.questao  = questao.data;
+      this.modalController.create({
+        component: EditOredemModalPage,
+      }).then((modal) => {
+        modal.present();
+        modal.onDidDismiss().then(async () => {
+          await this.questoesOrdemService.getAllQuestoesOrdem().then((questoes: any) => {
+            this.listQuestoes = questoes.data;
+          });
+        });
+      });
     });
   }
 

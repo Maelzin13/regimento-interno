@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
-import { QuestaoOrdemNovaPageRoutingModule } from './questao-ordem-nova-routing.module';
-
+import { CommonModule } from '@angular/common';
 import { QuestaoOrdemNovaPage } from './questao-ordem-nova.page';
+import { NovaOremModalPage } from './nova-orem-modal/nova-orem-modal.page';
+import { EditOredemModalPage } from './edit-oredem-modal/edit-oredem-modal.page';
+import { QuestaoOrdemNovaPageRoutingModule } from './questao-ordem-nova-routing.module';
 
 @NgModule({
   imports: [
@@ -15,6 +14,6 @@ import { QuestaoOrdemNovaPage } from './questao-ordem-nova.page';
     IonicModule,
     QuestaoOrdemNovaPageRoutingModule
   ],
-  declarations: [QuestaoOrdemNovaPage]
+  declarations: [QuestaoOrdemNovaPage, EditOredemModalPage, NovaOremModalPage]
 })
 export class QuestaoOrdemNovaPageModule {}
