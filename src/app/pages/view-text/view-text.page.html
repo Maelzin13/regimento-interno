@@ -98,10 +98,9 @@
                   <ng-container *ngFor="let remissao of paragrafo.remissoes">
                     <div class="remissoes mt-4 mb-4 pl-4 border-l-2 border-green-500 bg-green-50 p-3 rounded-r-lg">
                       <ul class="space-y-2">
-                        <li
-                          class="comentario-tipo font-semibold"
-                          [innerHTML]="safeHTML(remissao.conteudo)"
-                        ></li>
+                        <li class="remissoes font-semibold"
+                          [innerHTML]="formatRemissao(remissao.conteudo)">
+                        </li>
                       </ul>
                     </div>
                   </ng-container>
@@ -178,10 +177,9 @@
                       <ng-container *ngFor="let r of paragrafo.remissoes">
                         <div class="remissoes mt-4 mb-4 pl-4 border-l-2 border-green-500 bg-green-50 p-3 rounded-r-lg">
                           <ul class="space-y-2">
-                            <li
-                              class="comentario-tipo font-semibold"
-                              [innerHTML]="safeHTML(r.conteudo)"
-                            ></li>
+                            <li class="remissoes font-semibold"
+                              [innerHTML]="formatRemissao(r.conteudo)">
+                            </li>
                           </ul>
                         </div>
                       </ng-container>

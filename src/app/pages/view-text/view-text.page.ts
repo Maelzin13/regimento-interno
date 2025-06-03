@@ -32,7 +32,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   currentResultIndex: number = -1;
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild('searchInput') searchInput!: ElementRef;
-  
+
   // Propriedade para o debounce da rolagem
   private scrollDebounceTimeout: any;
   expandedComments: Set<string> = new Set();
@@ -46,7 +46,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     private alertController: AlertController,
     private modalController: ModalController,
     private toastController: ToastController
-  ) {}
+  ) { }
 
   ngOnInit() {
     const user = this.authService.getUser();
@@ -67,7 +67,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   onSearchInput(event: any) {
     const value = event.target.value;
     this.query = value;
-    
+
     if (this.query.length >= 3) {
       this.search();
     } else if (this.query.length === 0) {
@@ -106,7 +106,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     const textMatches = (text: string) => {
       if (!text) return false;
       const textLower = text.toLowerCase();
-      
+
       if (searchType === 'exact') {
         const regex = new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'i');
         return regex.test(textLower);
@@ -125,10 +125,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                 const artigosFiltrados = secao.artigos
                   .map((artigo: any) => {
                     let artigoMatches = false;
-                    
+
                     if (searchBy === 'keyword') {
                       artigoMatches = textMatches(artigo.conteudo);
-                      
+
                       if (artigoMatches) {
                         this.searchResults.push({
                           type: 'artigo',
@@ -200,7 +200,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.filteredBook = clone;
     this.totalResults = this.searchResults.length;
     this.isSearching = false;
-    
+
     // Adicionar à histórico de pesquisa
     this.addToSearchHistory(this.query);
 
@@ -209,7 +209,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.currentResultIndex = 0;
       this.navigateToResult(0);
       this.presentToast(`Encontrados ${this.totalResults} resultados para "${this.query}"`);
-      
+
       // Garantir que os destaques sejam aplicados após o DOM ser atualizado
       setTimeout(() => {
         this.forceHighlightsRefresh();
@@ -224,7 +224,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.listenNotaClicks();
       this.notaListenerAttached = true;
     }
-    
+
     // Adicionar listener para manter destaques durante a rolagem
     this.setupScrollListener();
   }
@@ -270,33 +270,83 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     });
   }
 
+
+  formatRemissao(content: string): SafeHtml {
+    if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
+
+    let formatted = content;
+
+    // Notas de rodapé
+    formatted = formatted.replace(/###nota (\d+)###/g, (match, notaId) => {
+      return `<sup>
+      <a href="javascript:void(0)" 
+         class="nota-ref"
+         data-nota-id="${notaId}" 
+         style="color: #3b82f6; text-decoration: underline; cursor:pointer">
+        ${notaId}
+      </a>
+    </sup>`;
+    });
+
+    // Artigos simples, tipo Art. 5 ou Art. 5, 6 e 7
+    formatted = formatted.replace(/Art\.\s+(\d+(?:\s*,\s*\d+)*(?:\s+e\s+\d+)*)/gi, (match, artigos) => {
+      const numeros = artigos.split(/\s*,\s*|\s+e\s+/);
+      let resultado = 'Art. ';
+      numeros.forEach((numero: any, idx: any) => {
+        resultado += `<a href="javascript:void(0)" 
+                        class="ref-artigo" 
+                        data-artigo="${numero.trim()}"
+                        style="color: #059669; text-decoration: underline; cursor:pointer">
+                        ${numero.trim()}
+                    </a>`;
+        if (idx < numeros.length - 1) {
+          resultado += (idx == numeros.length - 2) ? ' e ' : ', ';
+        }
+      });
+      return resultado;
+    });
+
+    // Parágrafo único ou §
+    formatted = formatted.replace(/Art\.\s+(\d+)(?:\s*,\s*parágrafo único|\s*,\s*§\s*(?:único|\d+º?))/gi, (match, numero) => {
+      return `<a href="javascript:void(0)" 
+              class="ref-artigo" 
+              data-artigo="${numero.trim()}"
+              style="color: #059669; text-decoration: underline; cursor:pointer">
+              Art. ${numero.trim()}
+            </a>` + match.substring(match.indexOf(','));
+    });
+
+    return this.sanitizer.bypassSecurityTrustHtml(formatted);
+  }
+
+
   async openAlertWithContent(content: any, notaId: any) {
-      const alert = await this.alertController.create({
+    const alert = await this.alertController.create({
       header: `Nota ${notaId}`,
       message: `${content.conteudo}`,
       buttons: ['Fechar'],
     });
-  
+
     await alert.present();
   }
 
   safeHTML(content: string): SafeHtml {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
-    
+
     let formatted = this.formatNotas(content);
-    
+
     // Destaca os termos de busca se estiver buscando
     if (this.query && this.searchBy === 'keyword') {
       const queryLower = this.query.toLowerCase();
-      const regex = this.searchType === 'exact' ? 
-        new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'gi') : 
+      const regex = this.searchType === 'exact' ?
+        new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'gi') :
         new RegExp(this.escapeRegExp(queryLower), 'gi');
-      
-      formatted = formatted.replace(regex, match => 
+
+      formatted = formatted.replace(regex, match =>
         `<span class="highlight-search">${match}</span>`
       );
     }
-    
+
     return this.sanitizer.bypassSecurityTrustHtml(formatted);
   }
 
@@ -338,28 +388,28 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   // Métodos para navegação nos resultados
   async navigateToResult(index: number) {
     if (index < 0 || index >= this.searchResults.length) return;
-    
+
     this.currentResultIndex = index;
     const result = this.searchResults[index];
-    
+
     // Remover destaques flash anteriores
     const previousHighlights = document.querySelectorAll('.flash-highlight');
     previousHighlights.forEach(el => {
       el.classList.remove('flash-highlight');
     });
-    
+
     // Encontrar o elemento correspondente ao resultado
     setTimeout(() => {
       const elementId = `${result.type}-${result.id}`;
       const element = document.getElementById(elementId);
-      
+
       if (element) {
         // Rolar para o elemento com maior suavidade
         this.content.scrollToPoint(0, element.offsetTop - 120, 500);
-        
+
         // Adicionar efeito de destaque temporário
         element.classList.add('flash-highlight');
-        
+
         // Forçar a atualização dos destaques das palavras
         this.forceHighlightsRefresh();
       }
@@ -369,11 +419,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   // Força a atualização dos destaques
   forceHighlightsRefresh() {
     if (!this.query) return;
-    
+
     setTimeout(() => {
       // Encontra todos os destaques existentes
       const highlights = document.querySelectorAll('.highlight-search');
-      
+
       // Certifica-se que todos estão com a classe correta e visíveis
       highlights.forEach(el => {
         el.classList.add('highlight-search');
@@ -512,7 +562,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           handler: (data) => {
             if (data) {
               this.searchType = data;
-              
+
               if (this.query) {
                 this.search();
               }
@@ -542,7 +592,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         if (this.scrollDebounceTimeout) {
           clearTimeout(this.scrollDebounceTimeout);
         }
-        
+
         this.scrollDebounceTimeout = setTimeout(() => {
           this.forceHighlightsRefresh();
         }, 200);
@@ -611,7 +661,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   processComentarioContent(content: string): SafeHtml {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
-    
+
     let processedContent = content.replace(
       /^([^:]+):(.*)$/gm,
       (match, title, content) => {
@@ -620,13 +670,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     );
 
     processedContent = processedContent.replace(/\n/g, '<br>');
-    
+
     return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(processedContent));
   }
 
   processComentarioContentFormated(content: string, commentId: string): SafeHtml {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
-    
+
     const colonIndex = content.indexOf(':');
     if (colonIndex === -1) return this.sanitizer.bypassSecurityTrustHtml(content);
 
