@@ -212,13 +212,11 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
-      // Verifica se o usuário está autenticado com o Firebase antes de tentar fazer logout
       const currentUser = auth.currentUser;
       if (currentUser) {
         await signOut(auth);
       }
-      
-      // Limpa todos os dados de autenticação
+
       this.cookieService.delete(this.tokenKey);
       this.cookieService.deleteAll('/');
       localStorage.clear();

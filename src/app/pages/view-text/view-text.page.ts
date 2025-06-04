@@ -19,7 +19,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   bookId: any;
   query: string = '';
   filteredBook: any = null;
-  selectedSegment = 'corrido';
   notaListenerAttached = false;
   user: UserModel | null = null;
   searchBy: 'keyword' | 'artigo' = 'keyword';
@@ -38,7 +37,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   expandedComments: Set<string> = new Set();
 
   constructor(
-    private router: Router,
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private bookService: BookService,
@@ -67,12 +65,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   onSearchInput(event: any) {
     const value = event.target.value;
     this.query = value;
-
-    if (this.query.length >= 3) {
-      this.search();
-    } else if (this.query.length === 0) {
-      this.clearSearch();
-    }
   }
 
   clearSearch() {
@@ -102,7 +94,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     const clone = JSON.parse(JSON.stringify(this.book));
     this.searchResults = [];
 
-    // Função para verificar se um texto contém a query de acordo com o tipo de busca
     const textMatches = (text: string) => {
       if (!text) return false;
       const textLower = text.toLowerCase();

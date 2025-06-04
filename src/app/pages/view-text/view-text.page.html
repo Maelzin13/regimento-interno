@@ -45,9 +45,9 @@
   </div>
 
   <!-- Conteúdo no formato corrido -->
-  <ng-container *ngIf="selectedSegment === 'corrido'">
+  <ng-container>
     <div class="fixed-header">
-      <h1 class="main-title">REGIMENTO INTERNO DA CÂMARA DOS DEPUTADOS APROVADO PELA RESOLUÇÃO 17, DE 1989</h1>
+      <h3 class="main-title">REGIMENTO INTERNO DA CÂMARA DOS DEPUTADOS APROVADO PELA RESOLUÇÃO 17, DE 1989</h3>
       <div class="header-links">
         <a (click)="openModal('autor')" class="header-link">O Autor</a>
         <a (click)="openModal('apresentacao')" class="header-link"
@@ -57,17 +57,7 @@
           >Abreviaturas</a
         >
         <a (click)="openModal('indice')" class="header-link">Índice</a>
-      </div>
-
-      <br>
-      <ion-segment [(ngModel)]="selectedSegment">
-        <ion-segment-button value="corrido">
-          <ion-label class="law-text">Texto Corrido</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="formatado">
-          <ion-label class="law-text">Texto Formatado</ion-label>
-        </ion-segment-button>
-      </ion-segment>
+      </div>  
     </div>
 
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
@@ -111,7 +101,7 @@
                         >{{ comentario.tipo | titlecase }}</span
                       ><br />
                       <span 
-                        [innerHTML]="processComentarioContent(comentario.conteudo)"
+                      [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)" (click)="toggleComment(comentario.id)"
                       ></span>
                     </p>
                   </ng-container>
@@ -125,81 +115,6 @@
     </ng-container>
   </ng-container>
 
-  <!-- Conteúdo no formato formatado -->
-  <ng-container *ngIf="selectedSegment === 'formatado'">
-
-    <div class="fixed-header">
-      <h1 class="main-title">{{ book?.conteudo || 'Carregando...' }}</h1>
-      <div class="header-links">
-        <a (click)="openModal('autor')" class="header-link">O Autor</a>
-        <a (click)="openModal('apresentacao')" class="header-link"
-          >Apresentação</a
-        >
-        <a (click)="openModal('abreviaturas')" class="header-link"
-          >Abreviaturas</a
-        >
-        <a (click)="openModal('indice')" class="header-link">Índice</a>
-      </div>
-
-      <br>
-      <ion-segment [(ngModel)]="selectedSegment">
-        <ion-segment-button value="corrido">
-          <ion-label class="law-text">Texto Corrido</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="formatado">
-          <ion-label class="law-text">Texto Formatado</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </div>
-
-    <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
-      <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
-        <ion-card *ngIf="titulo.conteudo?.trim()">
-          <ion-card-header>
-            <ion-card-title class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ng-container *ngFor="let capitulo of titulo.capitulos">
-              <div *ngIf="capitulo.conteudo?.trim()">
-                <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
-              </div>
-              <ng-container *ngFor="let secao of capitulo.secaos">
-                <div *ngIf="secao.conteudo?.trim()">
-                  <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
-                </div>
-                <div class="artigos">
-                  <ng-container *ngFor="let artigo of secao.artigos">
-                    <div *ngIf="artigo.conteudo?.trim()" class="artigo">
-                      <h5 class="artigo-titulo"  [id]="'artigo-' + artigo.id"  [innerHTML]="safeHTML(artigo.conteudo)"></h5>
-                    </div>
-                    <ng-container *ngFor="let paragrafo of artigo.paragrafos">
-                      <p class="paragrafo"  [id]="'paragrafo-' + paragrafo.id" [innerHTML]="safeHTML(paragrafo.conteudo)"></p>
-                      <ng-container *ngFor="let r of paragrafo.remissoes">
-                        <div class="remissoes mt-4 mb-4 pl-4 border-l-2 border-green-500 bg-green-50 p-3 rounded-r-lg">
-                          <ul class="space-y-2">
-                            <li class="remissoes font-semibold"
-                              [innerHTML]="formatRemissao(r.conteudo)">
-                            </li>
-                          </ul>
-                        </div>
-                      </ng-container>
-                      <div *ngIf="paragrafo.comentarios.length" class="comentarios">
-                        <div *ngFor="let c of paragrafo.comentarios" class="comentario">
-                          <strong class="comentario-tipo">{{ c.tipo | titlecase }}</strong>
-                          <p [innerHTML]="processComentarioContentFormated(c.conteudo, c.id)" (click)="toggleComment(c.id)" class="cursor-pointer"></p>
-                        </div>
-                      </div>
-                    </ng-container>
-                  </ng-container>
-                </div>
-              </ng-container>
-            </ng-container>
-          </ion-card-content>
-        </ion-card>
-      </ng-container>
-    </ng-container>
-  </ng-container>
-
   <ng-template #loading>
     <div class="ion-text-center ion-margin-top">
       <ion-spinner></ion-spinner>
@@ -208,7 +123,7 @@
   </ng-template>
 </ion-content>
 
-<!-- Indicadores de busca e navegação entre resultados - FIXO -->
+
 <div class="search-controls-fixed" *ngIf="totalResults > 0">
   <div class="result-info">
     <span>{{ currentResultIndex + 1 }} de {{ totalResults }} resultados</span>
@@ -247,7 +162,7 @@
   </div>
 </div>
 
-<ion-footer *ngIf="selectedSegment !== 'formatado'">
+<ion-footer>
   <ion-toolbar>
     <ion-buttons slot="end">
       <ion-button (click)="scrollToTop()">Voltar pro topo</ion-button>

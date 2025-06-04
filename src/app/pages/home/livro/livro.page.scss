@@ -13,18 +13,21 @@ ion-content {
 }
 
 ion-card {
-  --background: #ffffff;
+  background-color: #f8f9fa;
   color: #1e999a;
   margin: 0;
   height: 100%;
   width: 100%;
   cursor: pointer;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  padding: 15px;
+  min-height: 120px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  
+  &:hover, &:active {
+    background-color: #e9f5ff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
 }
 
@@ -65,10 +68,10 @@ ion-card-content{
 .dashboard-title {
   display: flex;
   font-weight: 500;
-  color: white;
+  color: black;
   
   ion-icon {
-    color: white;
+    color: black;
     margin-right: 8px;
     font-size: 20px;
   }
@@ -113,7 +116,7 @@ ion-card-content{
 }
 
 .menu-text {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.4;
   margin-top: 5px;
   color: #1e999a;
@@ -172,7 +175,7 @@ ion-card-content{
   }
   
   .menu-text {
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 500;
     line-height: 1.5;
   }
