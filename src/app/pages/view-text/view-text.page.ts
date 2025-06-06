@@ -18,18 +18,19 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   book: any;
   bookId: any;
   query: string = '';
-  filteredBook: any = null;
-  notaListenerAttached = false;
-  user: UserModel | null = null;
-  searchBy: 'keyword' | 'artigo' = 'keyword';
-  searchType: 'contains' | 'exact' = 'contains';
-  searchResults: any[] = [];
-  isSearching: boolean = false;
-  searchHistory: string[] = [];
-  lastScrollPosition: number = 0;
   totalResults: number = 0;
+  filteredBook: any = null;
+  searchResults: any[] = [];
+  notaListenerAttached = false;
+  searchHistory: string[] = [];
+  isSearching: boolean = false;
+  user: UserModel | null = null;
+  allCommentsExpanded = false;
+  lastScrollPosition: number = 0;
   currentResultIndex: number = -1;
+  searchBy: 'keyword' | 'artigo' = 'keyword';
   @ViewChild(IonContent) content!: IonContent;
+  searchType: 'contains' | 'exact' = 'contains';
   @ViewChild('searchInput') searchInput!: ElementRef;
 
   // Propriedade para o debounce da rolagem
@@ -647,6 +648,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   isCommentExpanded(commentId: string): boolean {
+    if (this.allCommentsExpanded) return true;
     return this.expandedComments.has(commentId);
   }
 
@@ -681,5 +683,38 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     const processedContent = `<strong>${beforeColon}</strong>${afterColon}<a class="ver-menos" (click)="toggleComment('${commentId}')">Ver menos</a>`;
     return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(processedContent));
+  }
+
+  toggleAllComments() {
+    this.allCommentsExpanded = !this.allCommentsExpanded;
+  
+    if (this.allCommentsExpanded) {
+      // Adiciona todos os comentários ao set
+      this.expandedComments = new Set(this.getAllCommentIds());
+    } else {
+      // Limpa todos (recolhe todos)
+      this.expandedComments.clear();
+    }
+  }
+  
+  getAllCommentIds(): string[] {
+    const ids: string[] = [];
+    const iterate = (book: any) => {
+      book?.titulos?.forEach((titulo: any) => {
+        titulo.capitulos?.forEach((capitulo: any) => {
+          capitulo.secaos?.forEach((secao: any) => {
+            secao.artigos?.forEach((artigo: any) => {
+              artigo.paragrafos?.forEach((paragrafo: any) => {
+                paragrafo.comentarios?.forEach((comentario: any) => {
+                  if (comentario.id) ids.push(comentario.id);
+                });
+              });
+            });
+          });
+        });
+      });
+    };
+    iterate(this.filteredBook || this.book);
+    return ids;
   }
 }

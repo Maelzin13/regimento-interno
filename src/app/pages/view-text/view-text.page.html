@@ -161,9 +161,15 @@
     </ion-button>
   </div>
 </div>
-
+  
 <ion-footer>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="toggleAllComments()">
+        <ion-icon [name]="allCommentsExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          {{ allCommentsExpanded ? 'Recolher' : 'Expandir' }}
+      </ion-button>
+    </ion-buttons>
     <ion-buttons slot="end">
       <ion-button (click)="scrollToTop()">Voltar pro topo</ion-button>
     </ion-buttons>
