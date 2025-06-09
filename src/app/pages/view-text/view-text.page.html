@@ -5,62 +5,66 @@
         <ion-icon name="arrow-back" color="light"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Regimento Comentado</ion-title>
+    <ion-title class="titulo-personalizado">Regimento Comentado</ion-title>
+  </ion-toolbar>
+  <ion-toolbar class="ion-padding">
+    <div class="search-container">
+      <ion-searchbar
+        #searchInput
+        color="light"
+        animated="true"
+        placeholder="Buscar por palavra ou artigo..."
+        show-clear-button="always"
+        clear-icon="trash-bin"
+        [(ngModel)]="query"
+        (ionInput)="onSearchInput($event)"
+        debounce="300"
+        style="margin-top: 10px;"
+      >
+      </ion-searchbar>
+  
+      <ion-button size="small" fill="clear" (click)="showSearchOptions()">
+        <ion-icon name="options-outline"></ion-icon>
+      </ion-button>
+  
+      <ion-button
+        size="small"
+        fill="clear"
+        (click)="showSearchHistory()"
+        *ngIf="searchHistory.length > 0"
+      >
+        <ion-icon name="time-outline"></ion-icon>
+      </ion-button>
+    </div>
+  
+    <!-- Loader de pesquisa -->
+    <div class="search-loader" *ngIf="isSearching">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Buscando...</p>
+    </div>
+
+
+    <div class="header-links">
+      <a (click)="openModal('autor')" class="header-link">Autor</a>
+      <a (click)="openModal('apresentacao')" class="header-link"
+        >Apresentação</a
+      >
+      <a (click)="openModal('abreviaturas')" class="header-link"
+        >Abreviaturas</a
+      >
+      <a (click)="openModal('indice')" class="header-link">Índice</a>
+    </div>  
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen class="ion-padding">
-   <div class="search-container">
-    <ion-searchbar
-      #searchInput
-      color="light"
-      animated="true"
-      placeholder="Buscar por palavra ou artigo..."
-      show-clear-button="always"
-      clear-icon="trash-bin"
-      [(ngModel)]="query"
-      (ionInput)="onSearchInput($event)"
-      debounce="300"
-    >
-    </ion-searchbar>
-
-    <ion-button size="small" fill="clear" (click)="showSearchOptions()">
-      <ion-icon name="options-outline"></ion-icon>
-    </ion-button>
-
-    <ion-button
-      size="small"
-      fill="clear"
-      (click)="showSearchHistory()"
-      *ngIf="searchHistory.length > 0"
-    >
-      <ion-icon name="time-outline"></ion-icon>
-    </ion-button>
-  </div>
-
-  <!-- Loader de pesquisa -->
-  <div class="search-loader" *ngIf="isSearching">
-    <ion-spinner name="crescent"></ion-spinner>
-    <p>Buscando...</p>
-  </div>
-
-  <!-- Conteúdo no formato corrido -->
   <ng-container>
     <div class="fixed-header">
-      <h3 class="main-title">REGIMENTO INTERNO DA CÂMARA DOS DEPUTADOS APROVADO PELA RESOLUÇÃO 17, DE 1989</h3>
-      <div class="header-links">
-        <a (click)="openModal('autor')" class="header-link">O Autor</a>
-        <a (click)="openModal('apresentacao')" class="header-link"
-          >Apresentação</a
-        >
-        <a (click)="openModal('abreviaturas')" class="header-link"
-          >Abreviaturas</a
-        >
-        <a (click)="openModal('indice')" class="header-link">Índice</a>
-      </div>  
+      <h3 class="main-title">Regimento Interno da Câmara dos Deputados Comentado</h3>
     </div>
 
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
+      <h3 class="main-title" [innerHTML]="safeHTML(primeiroParagrafo)"></h3>
       <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
         <ng-container *ngIf="titulo.conteudo?.trim()">
         <h2 class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></h2>
@@ -97,9 +101,7 @@
 
                   <ng-container *ngFor="let comentario of paragrafo.comentarios">
                     <p class="comentario mt-4">
-                      <span class="comentario-tipo font-semibold"
-                        >{{ comentario.tipo | titlecase }}</span
-                      ><br />
+                      <span class="comentario-tipo font-semibold">{{ comentario.tipo | titlecase }}</span>
                       <span 
                       [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)" (click)="toggleComment(comentario.id)"
                       ></span>

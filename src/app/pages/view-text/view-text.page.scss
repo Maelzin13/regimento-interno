@@ -16,10 +16,8 @@
   cursor: pointer; 
 }
 
-// Layout
 ion-content {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  --padding-top: 0px;
 }
 
 // Tipografia
@@ -38,7 +36,7 @@ ion-content {
     color: #92d050;
     font-weight: 500;
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
   strong {
@@ -265,47 +263,46 @@ ion-alert {
   }
 }
 
+.main-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+
 .fixed-header {
   position: sticky;
   top: 0;
-  background-color: var(--ion-color-light);
-  padding: 1px;
-  z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  z-index: 10;
+  margin-top: -4px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
   border-radius: 10px;
+  background-color: var(--ion-color-light);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .main-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 16px;
-    color: var(--ion-color-primary);
-  }
-
-  .header-links {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 16px;
-
-    .header-link {
-      color: var(--ion-color-primary);
-      text-decoration: none;
-      cursor: pointer;
-      font-weight: 500;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  .subtitle {
     font-size: 1.2rem;
     text-align: center;
-    color: var(--ion-color-dark);
-    margin: 0;
+    margin-bottom: 8px;
+    color: var(--ion-color-primary);
+  }
+}
+
+.header-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 16px;
+
+  .header-link {
+    color: var(--ion-color-primary);
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -332,4 +329,9 @@ ion-alert {
   p {
     cursor: default;
   }
+}
+
+.titulo-personalizado {
+  font-size: 19px;
+  font-weight: bold;
 }

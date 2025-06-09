@@ -6,7 +6,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
-import { IonContent, ModalController, AlertController, ToastController } from '@ionic/angular';
+import { IonContent, ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { RegimentoModalComponent } from '../../Modals/regimento-modal/regimento-modal.component';
 
 @Component({
@@ -18,6 +18,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   book: any;
   bookId: any;
   query: string = '';
+  primeiroParagrafo:any;
   totalResults: number = 0;
   filteredBook: any = null;
   searchResults: any[] = [];
@@ -36,6 +37,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   // Propriedade para o debounce da rolagem
   private scrollDebounceTimeout: any;
   expandedComments: Set<string> = new Set();
+  
+  private notasCache: Map<number, any> = new Map()
 
   constructor(
     private route: ActivatedRoute,
@@ -44,7 +47,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     private authService: AuthService,
     private alertController: AlertController,
     private modalController: ModalController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private loadingController: LoadingController
   ) { }
 
   ngOnInit() {
@@ -57,6 +61,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       .getBookById(this.bookId)
       .then((books: any) => {
         this.book = books.livro;
+        this.primeiroParagrafo = books.primeiro.conteudo;
       })
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);
@@ -226,17 +231,54 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       const target = event.target;
       if (target.classList.contains('nota-ref')) {
         const notaId = target.getAttribute('data-nota-id');
-        if (notaId) {
-          const nota = await this.bookService.getNotesById(notaId);
-          console.log('Nota:', nota);
-          this.openAlertWithContent(nota, notaId);
+  
+        // Feedback visual imediato
+        target.classList.add('nota-loading-feedback');
+        setTimeout(() => target.classList.remove('nota-loading-feedback'), 800);
+  
+        if (!notaId) return;
+  
+        const notaIdNumber = +notaId;
+  
+        if (this.notasCache.has(notaIdNumber)) {
+          const nota = this.notasCache.get(notaIdNumber);
+          await this.openAlertWithContent(nota, notaIdNumber);
+          return;
         }
+  
+        const loading = await this.loadingController.create({
+          message: 'Carregando nota...',
+          spinner: 'bubbles',
+          cssClass: 'custom-loading',
+        });
+  
+        await loading.present();
+  
+        this.bookService.getNotesById(notaIdNumber)
+          .then(async (nota: any) => {
+            this.notasCache.set(notaIdNumber, nota);
+            await this.openAlertWithContent(nota, notaIdNumber);
+          })
+          .catch((error: any) => {
+            console.error('Erro ao carregar nota:', error);
+            this.presentToast('Erro ao carregar a nota. Tente novamente.');
+          })
+          .finally(() => {
+            loading.dismiss();
+          });
       }
     });
   }
+  
 
   private formatNotas(content: string): string {
+    if (typeof content !== 'string') {
+      console.warn('formatNotas recebeu conteúdo inválido:', content);
+      return '';
+    }
+  
     const notaRegex = /###nota (\d+)###/g;
+  
     return content.replace(notaRegex, (_, num) => {
       return `
         <div 
@@ -244,19 +286,19 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           style="display: inline-block; vertical-align: baseline; margin-left: 3px; margin-top: 6px;"
         >
           <sup 
-        class="nota-ref" 
-        data-nota-id="${num}" 
-        role="link" 
-        tabindex="0"
-        style="
-          color: #007bff;
-          cursor: pointer;
-          font-size: 0.75em;
-          user-select: none;
-          text-decoration: underline;
-        "
+            class="nota-ref" 
+            data-nota-id="${num}" 
+            role="link" 
+            tabindex="0"
+            style="
+              color: #007bff;
+              cursor: pointer;
+              font-size: 0.75em;
+              user-select: none;
+              text-decoration: underline;
+            "
           >
-        ${num}
+            ${num}
           </sup>
         </div>`;
     });
@@ -313,10 +355,16 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
 
   async openAlertWithContent(content: any, notaId: any) {
+    if (!content || !content.conteudo) {
+      this.presentToast('Conteúdo da nota não disponível');
+      return;
+    }
+
     const alert = await this.alertController.create({
       header: `Nota ${notaId}`,
-      message: `${content.conteudo}`,
+      message: this.formatNotas(content.conteudo),
       buttons: ['Fechar'],
+      cssClass: 'nota-alert'
     });
 
     await alert.present();

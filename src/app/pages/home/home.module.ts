@@ -4,6 +4,7 @@ import { MenuPage } from './menu/menu.page';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { LivroPage } from './livro/livro.page';
+import { AutorPage } from './autor/autor.page';
 import { PerfilPage } from './perfil/perfil.page';
 import { HomePageRoutingModule } from './home-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -23,6 +24,7 @@ import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descrica
     MenuPage,
     LivroPage,
     PerfilPage,
+    AutorPage,
     EditBookModalPage,
     DescricaoModalComponent,
   ],

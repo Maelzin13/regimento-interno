@@ -1,0 +1,52 @@
+:root {
+  --text-color: #2e2e2e;
+  --text-muted: #6c757d;
+}
+
+.profile-card {
+  margin-top: 10px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  padding: 1.2rem;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.default-avatar {
+  width: 70px;
+  height: 70px;
+  background-color: #e9f7f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 3.4rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+
+
+.secondary-btn {
+  --background: #e9ecef;
+  --color: var(--ion-color-primary);
+  font-weight: 500;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
