@@ -59,10 +59,6 @@
 
 <ion-content fullscreen class="ion-padding">
   <ng-container>
-    <div class="fixed-header">
-      <h3 class="main-title">Regimento Interno da Câmara dos Deputados Comentado</h3>
-    </div>
-
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
       <h3 class="main-title" [innerHTML]="safeHTML(primeiroParagrafo)"></h3>
       <ng-container *ngFor="let titulo of (filteredBook || book).titulos">
