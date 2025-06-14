@@ -39,7 +39,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   expandedComments: Set<string> = new Set();
   
   private notasCache: Map<number, any> = new Map()
-  private handleRemissaoClick: any;
+  // private handleRemissaoClick: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -223,33 +223,32 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.listenNotaClicks();
       this.notaListenerAttached = true;
     }
-  
     
-    this.setupRemissaoLinks();
+    // this.setupRemissaoLinks();
   
     this.setupScrollListener();
   }
 
-  setupRemissaoLinks() {
-    // Remove handler antigo para evitar múltiplos binds (opcional, mas seguro em Ionic)
-    document.removeEventListener('click', this.handleRemissaoClick as any);
+  // setupRemissaoLinks() {
+  //   // Remove handler antigo para evitar múltiplos binds (opcional, mas seguro em Ionic)
+  //   document.removeEventListener('click', this.handleRemissaoClick as any);
   
-    // Cria uma referência de método que pode ser removida depois, se necessário
-    this.handleRemissaoClick = (event: any) => {
-      const target = event.target as HTMLElement;
-      if (target.classList.contains('ref-artigo')) {
-        // Pega o número do artigo e opcionalmente o inciso, se estiver no data-*
-        const artigo = target.getAttribute('data-artigo');
-        const inciso = target.getAttribute('data-inciso'); // futuro, se quiser
-        if (artigo) {
-          this.scrollToArtigo(artigo, inciso || undefined);
-          event.preventDefault();
-        }
-      }
-    };
+  //   // Cria uma referência de método que pode ser removida depois, se necessário
+  //   this.handleRemissaoClick = (event: any) => {
+  //     const target = event.target as HTMLElement;
+  //     if (target.classList.contains('ref-artigo')) {
+  //       // Pega o número do artigo e opcionalmente o inciso, se estiver no data-*
+  //       const artigo = target.getAttribute('data-artigo');
+  //       const inciso = target.getAttribute('data-inciso'); // futuro, se quiser
+  //       if (artigo) {
+  //         this.scrollToArtigo(artigo, inciso || undefined);
+  //         event.preventDefault();
+  //       }
+  //     }
+  //   };
   
-    document.addEventListener('click', this.handleRemissaoClick as any);
-  }
+  //   document.addEventListener('click', this.handleRemissaoClick as any);
+  // }
 
   scrollToArtigo(artigo: string, inciso?: string) {
     let id = 'artigo-' + artigo;
@@ -263,7 +262,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       setTimeout(() => element.classList.remove('flash-highlight'), 1500);
     }
   }
-  
 
   private listenNotaClicks() {
     document.addEventListener('click', async (event: any) => {
@@ -308,7 +306,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       }
     });
   }
-  
 
   private formatNotas(content: string): string {
     if (typeof content !== 'string') {
@@ -316,7 +313,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       return '';
     }
   
-    const notaRegex = /###nota (\d+)###/g;
+    const notaRegex = /###nota\s*(\d+)\s*###/gi;
   
     return content.replace(notaRegex, (_, num) => {
       return `
@@ -343,124 +340,121 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     });
   }
 
-
-  formatRemissao(content: string): SafeHtml {
-    console.log('formatRemissao', content);
-    if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
+  // formatRemissao(content: string): SafeHtml {
+  //   if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
   
-    // 1. Notas de rodapé
-    let formatted = content.replace(/###nota (\d+)###/g, (match, notaId) => {
-      return `<sup>
-        <a href="javascript:void(0)" 
-           class="nota-ref"
-           data-nota-id="${notaId}" 
-           style="color: #3b82f6; text-decoration: underline; cursor:pointer">
-          ${notaId}
-        </a>
-      </sup>`;
-    });
+  //   // 1. Notas de rodapé
+  //   let formatted = content.replace(/###nota (\d+)###/g, (match, notaId) => {
+  //     return `<sup>
+  //       <a href="javascript:void(0)" 
+  //          class="nota-ref"
+  //          data-nota-id="${notaId}" 
+  //          style="color: #3b82f6; text-decoration: underline; cursor:pointer">
+  //         ${notaId}
+  //       </a>
+  //     </sup>`;
+  //   });
   
-    // 2. Separe explicativo (em parênteses) se houver
-    let explicativo = '';
-    const explicativoMatch = formatted.match(/\(([^)]+)\)/);
-    if (explicativoMatch) {
-      explicativo = explicativoMatch[1];
-      formatted = formatted.replace(/\([^)]+\)/, ''); // Remove o explicativo para parsear as refs
-    }
+  //   // 2. Separe explicativo (em parênteses) se houver
+  //   let explicativo = '';
+  //   const explicativoMatch = formatted.match(/\(([^)]+)\)/);
+  //   if (explicativoMatch) {
+  //     explicativo = explicativoMatch[1];
+  //     formatted = formatted.replace(/\([^)]+\)/, ''); // Remove o explicativo para parsear as refs
+  //   }
   
-    // 3. Reconhece Arts. 4º, 5º, 65 e I (associa inciso/letra ao último artigo)
-    formatted = formatted.replace(
-      /(Art\.?s?)\.?\s+([^\(\);]+)/gi,
-      (match, prefixo, refs) => {
-        // Divide por vírgula e " e "
-        const rawParts = refs.split(/,|\se\s/i).map((s: any) => s.trim()).filter(Boolean);
+  //   // 3. Reconhece Arts. 4º, 5º, 65 e I (associa inciso/letra ao último artigo)
+  //   formatted = formatted.replace(
+  //     /(Art\.?s?)\.?\s+([^\(\);]+)/gi,
+  //     (match, prefixo, refs) => {
+  //       // Divide por vírgula e " e "
+  //       const rawParts = refs.split(/,|\se\s/i).map((s: any) => s.trim()).filter(Boolean);
   
-        let links: string[] = [];
-        let lastArtigo: string = '';
+  //       let links: string[] = [];
+  //       let lastArtigo: string = '';
   
-        rawParts.forEach((ref: any, idx: number) => {
-          // Artigo puro (número)
-          let artigoMatch = ref.match(/^(\d+)$/);
-          if (artigoMatch) {
-            lastArtigo = artigoMatch[1];
-            links.push(createArtigoLink(lastArtigo || '', undefined, idx));
-            return;
-          }
-          // Inciso puro (romano/letra) - associa ao último artigo
-          let incisoMatch = ref.match(/^([IVXLCDM]+)$/i);
-          if (incisoMatch && lastArtigo) {
-            links.push(createArtigoLink(lastArtigo, incisoMatch[1] || '', idx));
-            return;
-          }
-          // Artigo + inciso juntos ("65, I" ou "65 I")
-          let artigoIncisoMatch = ref.match(/^(\d+)[, ]+([IVXLCDM]+)$/i);
-          if (artigoIncisoMatch) {
-            lastArtigo = artigoIncisoMatch[1];
-            links.push(createArtigoLink(lastArtigo, artigoIncisoMatch[2] || '', idx));
-            return;
-          }
-          // Fallback (ex: §, alínea)
-          links.push(`<span style="color: #059669;">${ref}</span>`);
-        });
+  //       rawParts.forEach((ref: any, idx: number) => {
+  //         // Artigo puro (número)
+  //         let artigoMatch = ref.match(/^(\d+)$/);
+  //         if (artigoMatch) {
+  //           lastArtigo = artigoMatch[1];
+  //           links.push(createArtigoLink(lastArtigo || '', undefined, idx));
+  //           return;
+  //         }
+  //         // Inciso puro (romano/letra) - associa ao último artigo
+  //         let incisoMatch = ref.match(/^([IVXLCDM]+)$/i);
+  //         if (incisoMatch && lastArtigo) {
+  //           links.push(createArtigoLink(lastArtigo, incisoMatch[1] || '', idx));
+  //           return;
+  //         }
+  //         // Artigo + inciso juntos ("65, I" ou "65 I")
+  //         let artigoIncisoMatch = ref.match(/^(\d+)[, ]+([IVXLCDM]+)$/i);
+  //         if (artigoIncisoMatch) {
+  //           lastArtigo = artigoIncisoMatch[1];
+  //           links.push(createArtigoLink(lastArtigo, artigoIncisoMatch[2] || '', idx));
+  //           return;
+  //         }
+  //         // Fallback (ex: §, alínea)
+  //         links.push(`<span style="color: #059669;">${ref}</span>`);
+  //       });
   
-        // Helper para criar o link
-        function createArtigoLink(artigo: string, inciso?: string, idx?: number) {
-          let label = artigo;
-          let id = `artigo-${artigo}`;
-          if (inciso) {
-            label += ', ' + inciso;
-            id += `-inciso-${inciso}`;
-          }
-          let tooltip = explicativo && idx === 0 ? `title="${explicativo}"` : '';
-          return `<a href="javascript:void(0)" 
-                    class="ref-artigo"
-                    data-artigo="${artigo}" 
-                    ${inciso ? `data-inciso="${inciso}"` : ''}
-                    ${tooltip}
-                    style="color: #059669; text-decoration: underline; cursor:pointer">
-                  ${label}
-                </a>`;
-        }
+  //       // Helper para criar o link
+  //       function createArtigoLink(artigo: string, inciso?: string, idx?: number) {
+  //         let label = artigo;
+  //         let id = `artigo-${artigo}`;
+  //         if (inciso) {
+  //           label += ', ' + inciso;
+  //           id += `-inciso-${inciso}`;
+  //         }
+  //         let tooltip = explicativo && idx === 0 ? `title="${explicativo}"` : '';
+  //         return `<a href="javascript:void(0)" 
+  //                   class="ref-artigo"
+  //                   data-artigo="${artigo}" 
+  //                   ${inciso ? `data-inciso="${inciso}"` : ''}
+  //                   ${tooltip}
+  //                   style="color: #059669; text-decoration: underline; cursor:pointer">
+  //                 ${label}
+  //               </a>`;
+  //       }
   
-        // Monta string segmentada
-        let resultado = `${prefixo}. `;
-        links.forEach((link: any, idx: any) => {
-          if (idx > 0) {
-            resultado += idx === links.length - 1 ? ' e ' : ', ';
-          }
-          resultado += link;
-        });
+  //       // Monta string segmentada
+  //       let resultado = `${prefixo}. `;
+  //       links.forEach((link: any, idx: any) => {
+  //         if (idx > 0) {
+  //           resultado += idx === links.length - 1 ? ' e ' : ', ';
+  //         }
+  //         resultado += link;
+  //       });
   
-        // Se explicativo e só um link, mostra ao lado
-        if (explicativo && links.length === 1) {
-          resultado += ` <span class="text-gray-500 text-xs">(${explicativo})</span>`;
-        }
+  //       // Se explicativo e só um link, mostra ao lado
+  //       if (explicativo && links.length === 1) {
+  //         resultado += ` <span class="text-gray-500 text-xs">(${explicativo})</span>`;
+  //       }
   
-        return resultado;
-      }
-    );
+  //       return resultado;
+  //     }
+  //   );
   
-    // 4. Parágrafo único ou § (simples)
-    formatted = formatted.replace(
-      /Art\.\s+(\d+)(?:\s*,\s*parágrafo único|\s*,\s*§\s*(?:único|\d+º?))/gi,
-      (match, numero) => {
-        return `<a href="javascript:void(0)" 
-                class="ref-artigo" 
-                data-artigo="${numero.trim()}"
-                style="color: #059669; text-decoration: underline; cursor:pointer">
-                Art. ${numero.trim()}
-              </a>` + match.substring(match.indexOf(','));
-      }
-    );
+  //   // 4. Parágrafo único ou § (simples)
+  //   formatted = formatted.replace(
+  //     /Art\.\s+(\d+)(?:\s*,\s*parágrafo único|\s*,\s*§\s*(?:único|\d+º?))/gi,
+  //     (match, numero) => {
+  //       return `<a href="javascript:void(0)" 
+  //               class="ref-artigo" 
+  //               data-artigo="${numero.trim()}"
+  //               style="color: #059669; text-decoration: underline; cursor:pointer">
+  //               Art. ${numero.trim()}
+  //             </a>` + match.substring(match.indexOf(','));
+  //     }
+  //   );
   
-    // 5. Adiciona o tooltip ao final se for remissão "livre"
-    if (explicativo && !formatted.includes(explicativo)) {
-      formatted += ` <span class="text-gray-500 text-xs">(${explicativo})</span>`;
-    }
+  //   // 5. Adiciona o tooltip ao final se for remissão "livre"
+  //   if (explicativo && !formatted.includes(explicativo)) {
+  //     formatted += ` <span class="text-gray-500 text-xs">(${explicativo})</span>`;
+  //   }
   
-    return this.sanitizer.bypassSecurityTrustHtml(formatted);
-  }  
-
+  //   return this.sanitizer.bypassSecurityTrustHtml(formatted);
+  // }  
 
   async openAlertWithContent(content: any, notaId: any) {
     if (!content || !content.conteudo) {
@@ -825,21 +819,25 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   processComentarioContentFormated(content: string, commentId: string): SafeHtml {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
-
+    
+    const processAndSanitize = (str: string) => this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(str));
+  
     const colonIndex = content.indexOf(':');
-    if (colonIndex === -1) return this.sanitizer.bypassSecurityTrustHtml(content);
-
+    if (colonIndex === -1) {
+      return processAndSanitize(content);
+    }
+  
     const beforeColon = content.substring(0, colonIndex + 1);
     const afterColon = content.substring(colonIndex + 1);
-
+  
     if (!this.isCommentExpanded(commentId)) {
       const processedContent = `<strong>${beforeColon}</strong><a class="ver-mais" (click)="toggleComment('${commentId}')">Ver mais</a>`;
-      return this.sanitizer.bypassSecurityTrustHtml(processedContent);
+      return processAndSanitize(processedContent);
     }
-
+  
     const processedContent = `<strong>${beforeColon}</strong>${afterColon}<a class="ver-menos" (click)="toggleComment('${commentId}')">Ver menos</a>`;
-    return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(processedContent));
-  }
+    return processAndSanitize(processedContent);
+  }  
 
   toggleAllComments() {
     this.allCommentsExpanded = !this.allCommentsExpanded;
