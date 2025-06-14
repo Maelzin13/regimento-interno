@@ -39,6 +39,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   expandedComments: Set<string> = new Set();
   
   private notasCache: Map<number, any> = new Map()
+  private handleRemissaoClick: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,7 +49,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     private alertController: AlertController,
     private modalController: ModalController,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    
   ) { }
 
   ngOnInit() {
@@ -221,10 +223,47 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.listenNotaClicks();
       this.notaListenerAttached = true;
     }
-
-    // Adicionar listener para manter destaques durante a rolagem
+  
+    
+    this.setupRemissaoLinks();
+  
     this.setupScrollListener();
   }
+
+  setupRemissaoLinks() {
+    // Remove handler antigo para evitar múltiplos binds (opcional, mas seguro em Ionic)
+    document.removeEventListener('click', this.handleRemissaoClick as any);
+  
+    // Cria uma referência de método que pode ser removida depois, se necessário
+    this.handleRemissaoClick = (event: any) => {
+      const target = event.target as HTMLElement;
+      if (target.classList.contains('ref-artigo')) {
+        // Pega o número do artigo e opcionalmente o inciso, se estiver no data-*
+        const artigo = target.getAttribute('data-artigo');
+        const inciso = target.getAttribute('data-inciso'); // futuro, se quiser
+        if (artigo) {
+          this.scrollToArtigo(artigo, inciso || undefined);
+          event.preventDefault();
+        }
+      }
+    };
+  
+    document.addEventListener('click', this.handleRemissaoClick as any);
+  }
+
+  scrollToArtigo(artigo: string, inciso?: string) {
+    let id = 'artigo-' + artigo;
+    if (inciso) {
+      id += '-inciso-' + inciso;
+    }
+    const element = document.getElementById(id) || document.getElementById('artigo-' + artigo);
+    if (element) {
+      this.content.scrollToPoint(0, element.offsetTop - 120, 500);
+      element.classList.add('flash-highlight');
+      setTimeout(() => element.classList.remove('flash-highlight'), 1500);
+    }
+  }
+  
 
   private listenNotaClicks() {
     document.addEventListener('click', async (event: any) => {
@@ -306,52 +345,121 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
 
   formatRemissao(content: string): SafeHtml {
+    console.log('formatRemissao', content);
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
-
-    let formatted = content;
-
-    // Notas de rodapé
-    formatted = formatted.replace(/###nota (\d+)###/g, (match, notaId) => {
+  
+    // 1. Notas de rodapé
+    let formatted = content.replace(/###nota (\d+)###/g, (match, notaId) => {
       return `<sup>
-      <a href="javascript:void(0)" 
-         class="nota-ref"
-         data-nota-id="${notaId}" 
-         style="color: #3b82f6; text-decoration: underline; cursor:pointer">
-        ${notaId}
-      </a>
-    </sup>`;
+        <a href="javascript:void(0)" 
+           class="nota-ref"
+           data-nota-id="${notaId}" 
+           style="color: #3b82f6; text-decoration: underline; cursor:pointer">
+          ${notaId}
+        </a>
+      </sup>`;
     });
-
-    // Artigos simples, tipo Art. 5 ou Art. 5, 6 e 7
-    formatted = formatted.replace(/Art\.\s+(\d+(?:\s*,\s*\d+)*(?:\s+e\s+\d+)*)/gi, (match, artigos) => {
-      const numeros = artigos.split(/\s*,\s*|\s+e\s+/);
-      let resultado = 'Art. ';
-      numeros.forEach((numero: any, idx: any) => {
-        resultado += `<a href="javascript:void(0)" 
-                        class="ref-artigo" 
-                        data-artigo="${numero.trim()}"
-                        style="color: #059669; text-decoration: underline; cursor:pointer">
-                        ${numero.trim()}
-                    </a>`;
-        if (idx < numeros.length - 1) {
-          resultado += (idx == numeros.length - 2) ? ' e ' : ', ';
+  
+    // 2. Separe explicativo (em parênteses) se houver
+    let explicativo = '';
+    const explicativoMatch = formatted.match(/\(([^)]+)\)/);
+    if (explicativoMatch) {
+      explicativo = explicativoMatch[1];
+      formatted = formatted.replace(/\([^)]+\)/, ''); // Remove o explicativo para parsear as refs
+    }
+  
+    // 3. Reconhece Arts. 4º, 5º, 65 e I (associa inciso/letra ao último artigo)
+    formatted = formatted.replace(
+      /(Art\.?s?)\.?\s+([^\(\);]+)/gi,
+      (match, prefixo, refs) => {
+        // Divide por vírgula e " e "
+        const rawParts = refs.split(/,|\se\s/i).map((s: any) => s.trim()).filter(Boolean);
+  
+        let links: string[] = [];
+        let lastArtigo: string = '';
+  
+        rawParts.forEach((ref: any, idx: number) => {
+          // Artigo puro (número)
+          let artigoMatch = ref.match(/^(\d+)$/);
+          if (artigoMatch) {
+            lastArtigo = artigoMatch[1];
+            links.push(createArtigoLink(lastArtigo || '', undefined, idx));
+            return;
+          }
+          // Inciso puro (romano/letra) - associa ao último artigo
+          let incisoMatch = ref.match(/^([IVXLCDM]+)$/i);
+          if (incisoMatch && lastArtigo) {
+            links.push(createArtigoLink(lastArtigo, incisoMatch[1] || '', idx));
+            return;
+          }
+          // Artigo + inciso juntos ("65, I" ou "65 I")
+          let artigoIncisoMatch = ref.match(/^(\d+)[, ]+([IVXLCDM]+)$/i);
+          if (artigoIncisoMatch) {
+            lastArtigo = artigoIncisoMatch[1];
+            links.push(createArtigoLink(lastArtigo, artigoIncisoMatch[2] || '', idx));
+            return;
+          }
+          // Fallback (ex: §, alínea)
+          links.push(`<span style="color: #059669;">${ref}</span>`);
+        });
+  
+        // Helper para criar o link
+        function createArtigoLink(artigo: string, inciso?: string, idx?: number) {
+          let label = artigo;
+          let id = `artigo-${artigo}`;
+          if (inciso) {
+            label += ', ' + inciso;
+            id += `-inciso-${inciso}`;
+          }
+          let tooltip = explicativo && idx === 0 ? `title="${explicativo}"` : '';
+          return `<a href="javascript:void(0)" 
+                    class="ref-artigo"
+                    data-artigo="${artigo}" 
+                    ${inciso ? `data-inciso="${inciso}"` : ''}
+                    ${tooltip}
+                    style="color: #059669; text-decoration: underline; cursor:pointer">
+                  ${label}
+                </a>`;
         }
-      });
-      return resultado;
-    });
-
-    // Parágrafo único ou §
-    formatted = formatted.replace(/Art\.\s+(\d+)(?:\s*,\s*parágrafo único|\s*,\s*§\s*(?:único|\d+º?))/gi, (match, numero) => {
-      return `<a href="javascript:void(0)" 
-              class="ref-artigo" 
-              data-artigo="${numero.trim()}"
-              style="color: #059669; text-decoration: underline; cursor:pointer">
-              Art. ${numero.trim()}
-            </a>` + match.substring(match.indexOf(','));
-    });
-
+  
+        // Monta string segmentada
+        let resultado = `${prefixo}. `;
+        links.forEach((link: any, idx: any) => {
+          if (idx > 0) {
+            resultado += idx === links.length - 1 ? ' e ' : ', ';
+          }
+          resultado += link;
+        });
+  
+        // Se explicativo e só um link, mostra ao lado
+        if (explicativo && links.length === 1) {
+          resultado += ` <span class="text-gray-500 text-xs">(${explicativo})</span>`;
+        }
+  
+        return resultado;
+      }
+    );
+  
+    // 4. Parágrafo único ou § (simples)
+    formatted = formatted.replace(
+      /Art\.\s+(\d+)(?:\s*,\s*parágrafo único|\s*,\s*§\s*(?:único|\d+º?))/gi,
+      (match, numero) => {
+        return `<a href="javascript:void(0)" 
+                class="ref-artigo" 
+                data-artigo="${numero.trim()}"
+                style="color: #059669; text-decoration: underline; cursor:pointer">
+                Art. ${numero.trim()}
+              </a>` + match.substring(match.indexOf(','));
+      }
+    );
+  
+    // 5. Adiciona o tooltip ao final se for remissão "livre"
+    if (explicativo && !formatted.includes(explicativo)) {
+      formatted += ` <span class="text-gray-500 text-xs">(${explicativo})</span>`;
+    }
+  
     return this.sanitizer.bypassSecurityTrustHtml(formatted);
-  }
+  }  
 
 
   async openAlertWithContent(content: any, notaId: any) {
@@ -765,4 +873,5 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     iterate(this.filteredBook || this.book);
     return ids;
   }
+  
 }
