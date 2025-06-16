@@ -81,6 +81,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.totalResults = 0;
     this.currentResultIndex = -1;
     this.isSearching = false;
+    console.log('totalResults', this.totalResults);
   }
 
   async search() {
@@ -108,6 +109,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
       if (searchType === 'exact') {
         const regex = new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'i');
+        console.log('regex', regex);
         return regex.test(textLower);
       } else {
         return textLower.includes(queryLower);

@@ -216,3 +216,17 @@ ion-accordion::part(header) ion-icon {
     height: 140px;
   }
 }
+
+.searchbar-input.sc-ion-searchbar-md {
+  -webkit-padding-start: 3.4375rem;
+  padding-inline-start: 1.4375rem;
+  -webkit-padding-end: 3.4375rem;
+  padding-inline-end: 3.4375rem;
+  padding-top: 0.375rem;
+  padding-bottom: -0.625rem;
+  background-position: left 8px center;
+  height: auto;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 41px;
+}
