@@ -1,31 +1,31 @@
 -- Merging decision tree log ---
 provider#androidx.core.content.FileProvider
-INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:34:9-42:20
+INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:34:9-42:20
 	android:grantUriPermissions
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:38:13-47
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:38:13-47
 	android:authorities
-		INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:36:13-64
+		INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:36:13-64
 	android:exported
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:37:13-37
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:37:13-37
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:35:13-62
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:35:13-62
 manifest
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:2:1-60:12
-INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:2:1-60:12
-INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:2:1-60:12
-INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:2:1-60:12
-MERGED from [:capacitor-community-facebook-login] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
-MERGED from [:capacitor-community-generic-oauth2] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
-MERGED from [:capacitor-firebase-authentication] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
-MERGED from [:capacitor-app] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
-MERGED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-21:12
-MERGED from [:capacitor-haptics] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
-MERGED from [:capacitor-keyboard] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
-MERGED from [:capacitor-network] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
-MERGED from [:capacitor-status-bar] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
-MERGED from [:capacitor-android] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
-MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Projeto E-book\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-11:12
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:2:1-60:12
+INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:2:1-60:12
+INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:2:1-60:12
+INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:2:1-60:12
+MERGED from [:capacitor-community-facebook-login] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
+MERGED from [:capacitor-community-generic-oauth2] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
+MERGED from [:capacitor-firebase-authentication] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
+MERGED from [:capacitor-app] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
+MERGED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-21:12
+MERGED from [:capacitor-haptics] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
+MERGED from [:capacitor-keyboard] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
+MERGED from [:capacitor-network] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
+MERGED from [:capacitor-status-bar] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
+MERGED from [:capacitor-android] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
+MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Regimento Interno\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\Ismael\.gradle\caches\transforms-3\8d27239342a1fb80adaa1de5055db6bc\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:17:1-22:12
 MERGED from [com.facebook.android:facebook-login:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\32aac9dd66ad640366a67b6b0b038665\transformed\facebook-login-17.0.0\AndroidManifest.xml:9:1-19:12
 MERGED from [net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:15:1-54:12
@@ -111,20 +111,20 @@ MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.0] C:\U
 MERGED from [com.google.android.play:core-common:2.0.3] C:\Users\Ismael\.gradle\caches\transforms-3\583088643a7416961155728876b60551\transformed\core-common-2.0.3\AndroidManifest.xml:2:1-21:12
 MERGED from [com.android.installreferrer:installreferrer:1.0] C:\Users\Ismael\.gradle\caches\transforms-3\e714f8ddad9d8c0c07117bf96333ee6b\transformed\installreferrer-1.0\AndroidManifest.xml:2:1-13:12
 	package
-		INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
 	android:versionName
-		INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
 	android:versionCode
-		INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
 	xmlns:android
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:2:11-69
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:2:11-69
 application
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:4:5-59:19
-INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:4:5-59:19
-MERGED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:13:5-19:19
-MERGED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:13:5-19:19
-MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Projeto E-book\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:8:5-9:19
-MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Projeto E-book\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:8:5-9:19
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:4:5-59:19
+INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:4:5-59:19
+MERGED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:13:5-19:19
+MERGED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:13:5-19:19
+MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Regimento Interno\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:8:5-9:19
+MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Regimento Interno\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:8:5-9:19
 MERGED from [com.facebook.android:facebook-login:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\32aac9dd66ad640366a67b6b0b038665\transformed\facebook-login-17.0.0\AndroidManifest.xml:16:5-17:19
 MERGED from [com.facebook.android:facebook-login:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\32aac9dd66ad640366a67b6b0b038665\transformed\facebook-login-17.0.0\AndroidManifest.xml:16:5-17:19
 MERGED from [net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:34:5-52:19
@@ -198,125 +198,125 @@ MERGED from [com.google.android.play:core-common:2.0.3] C:\Users\Ismael\.gradle\
 MERGED from [com.android.installreferrer:installreferrer:1.0] C:\Users\Ismael\.gradle\caches\transforms-3\e714f8ddad9d8c0c07117bf96333ee6b\transformed\installreferrer-1.0\AndroidManifest.xml:11:5-20
 MERGED from [com.android.installreferrer:installreferrer:1.0] C:\Users\Ismael\.gradle\caches\transforms-3\e714f8ddad9d8c0c07117bf96333ee6b\transformed\installreferrer-1.0\AndroidManifest.xml:11:5-20
 	android:extractNativeLibs
-		INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.12.0] C:\Users\Ismael\.gradle\caches\transforms-3\91f00a5b7e289b40ec4337c5400b4c58\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:9:9-35
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:9:9-35
 	android:label
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:7:9-41
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:7:9-41
 	android:roundIcon
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:8:9-54
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:8:9-54
 	android:icon
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:6:9-43
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:6:9-43
 	android:allowBackup
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:5:9-35
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:5:9-35
 	android:theme
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:10:9-40
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:10:9-40
 activity#com.regimento.app.MainActivity
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:12:9-32:20
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:12:9-32:20
 	android:label
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:14:13-56
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:14:13-56
 	android:launchMode
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:16:13-44
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:16:13-44
 	android:exported
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:17:13-36
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:17:13-36
 	android:configChanges
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:18:13-129
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:18:13-129
 	android:theme
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:15:13-62
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:15:13-62
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:13:13-41
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:13:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:20:13-23:29
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:20:13-23:29
 action#android.intent.action.MAIN
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:21:17-69
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:21:17-69
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:21:25-66
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:21:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:22:17-77
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:22:17-77
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:22:27-74
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:22:27-74
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:your.package.id
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:26:13-31:29
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:26:13-31:29
 	android:autoVerify
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:26:28-53
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:26:28-53
 action#android.intent.action.VIEW
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
 category#android.intent.category.DEFAULT
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
 category#android.intent.category.BROWSABLE
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
 data
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
 	android:scheme
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
 meta-data#com.facebook.sdk.ApplicationId
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:44:9-46:55
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:44:9-46:55
 	android:value
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:46:13-52
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:46:13-52
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:45:13-58
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:45:13-58
 activity#com.facebook.FacebookActivity
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:48:9-52:39
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:48:9-52:39
 MERGED from [com.facebook.android:facebook-common:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\f74a76d24f5251cf140be5d4f0a519e1\transformed\facebook-common-17.0.0\AndroidManifest.xml:22:9-25:66
 MERGED from [com.facebook.android:facebook-common:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\f74a76d24f5251cf140be5d4f0a519e1\transformed\facebook-common-17.0.0\AndroidManifest.xml:22:9-25:66
 	android:label
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:51:13-45
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:51:13-45
 	android:exported
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:52:13-36
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:52:13-36
 	android:configChanges
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:50:13-96
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:50:13-96
 	android:theme
 		ADDED from [com.facebook.android:facebook-common:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\f74a76d24f5251cf140be5d4f0a519e1\transformed\facebook-common-17.0.0\AndroidManifest.xml:25:13-63
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:49:13-57
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:49:13-57
 provider#com.facebook.FacebookContentProvider
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:54:9-57:39
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:54:9-57:39
 	android:authorities
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:56:13-91
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:56:13-91
 	android:exported
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:57:13-36
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:57:13-36
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:55:13-64
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:55:13-64
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:39:13-41:54
+ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:39:13-41:54
 	android:resource
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:41:17-51
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:41:17-51
 	android:name
-		ADDED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:40:17-67
+		ADDED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:40:17-67
 uses-sdk
-INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
-INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
-MERGED from [:capacitor-community-facebook-login] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-community-facebook-login] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-community-generic-oauth2] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-community-generic-oauth2] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-firebase-authentication] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-firebase-authentication] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-app] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-app] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-haptics] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-haptics] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-keyboard] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-keyboard] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-network] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-network] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-status-bar] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-status-bar] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-android] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-android] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
-MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Projeto E-book\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:6:5-44
-MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Projeto E-book\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:6:5-44
+INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
+INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
+MERGED from [:capacitor-community-facebook-login] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-community-facebook-login] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-community-generic-oauth2] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-community-generic-oauth2] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-firebase-authentication] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-firebase-authentication] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-app] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-app] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-haptics] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-haptics] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-keyboard] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-keyboard] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-network] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-network] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-status-bar] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-status-bar] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-android] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-android] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Regimento Interno\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:6:5-44
+MERGED from [:capacitor-cordova-android-plugins] C:\Projetos\Regimento Interno\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\merged_manifest\debug\AndroidManifest.xml:6:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\Ismael\.gradle\caches\transforms-3\8d27239342a1fb80adaa1de5055db6bc\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\Ismael\.gradle\caches\transforms-3\8d27239342a1fb80adaa1de5055db6bc\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
 MERGED from [com.facebook.android:facebook-login:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\32aac9dd66ad640366a67b6b0b038665\transformed\facebook-login-17.0.0\AndroidManifest.xml:12:5-14:41
@@ -488,37 +488,37 @@ MERGED from [com.android.installreferrer:installreferrer:1.0] C:\Users\Ismael\.g
 	tools:overrideLibrary
 		ADDED from [com.google.firebase:firebase-auth:23.2.0] C:\Users\Ismael\.gradle\caches\transforms-3\fe724b75ee59a756544bf4eb342fa398\transformed\firebase-auth-23.2.0\AndroidManifest.xml:23:9-148
 	android:targetSdkVersion
-		INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml
 queries
-ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-11:15
+ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-11:15
 MERGED from [net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:24:5-32:15
 MERGED from [net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:24:5-32:15
 MERGED from [com.facebook.android:facebook-common:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\f74a76d24f5251cf140be5d4f0a519e1\transformed\facebook-common-17.0.0\AndroidManifest.xml:17:5-19:15
 MERGED from [com.facebook.android:facebook-common:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\f74a76d24f5251cf140be5d4f0a519e1\transformed\facebook-common-17.0.0\AndroidManifest.xml:17:5-19:15
 intent#action:name:android.support.customtabs.action.CustomTabsService
-ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:8:9-10:18
+ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:8:9-10:18
 action#android.support.customtabs.action.CustomTabsService
-ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-90
+ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-90
 	android:name
-		ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:21-87
+		ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:21-87
 activity#com.capacitorjs.plugins.browser.BrowserControllerActivity
-ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:14:9-18:75
+ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:14:9-18:75
 	android:launchMode
-		ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:17:13-44
+		ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:17:13-44
 	android:exported
-		ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:13-37
+		ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:13-37
 	android:theme
-		ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:18:13-72
+		ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:18:13-72
 	android:name
-		ADDED from [:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:15:13-85
+		ADDED from [:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:15:13-85
 uses-permission#android.permission.VIBRATE
-ADDED from [:capacitor-haptics] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-66
+ADDED from [:capacitor-haptics] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-66
 	android:name
-		ADDED from [:capacitor-haptics] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-63
+		ADDED from [:capacitor-haptics] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-63
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from [:capacitor-network] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-79
+ADDED from [:capacitor-network] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-79
 MERGED from [com.google.firebase:firebase-auth:23.2.0] C:\Users\Ismael\.gradle\caches\transforms-3\fe724b75ee59a756544bf4eb342fa398\transformed\firebase-auth-23.2.0\AndroidManifest.xml:26:5-79
 MERGED from [com.google.firebase:firebase-auth:23.2.0] C:\Users\Ismael\.gradle\caches\transforms-3\fe724b75ee59a756544bf4eb342fa398\transformed\firebase-auth-23.2.0\AndroidManifest.xml:26:5-79
 MERGED from [com.google.android.gms:play-services-measurement-api:22.4.0] C:\Users\Ismael\.gradle\caches\transforms-3\420bf3835bf05ca5f700d7371c26c2db\transformed\play-services-measurement-api-22.4.0\AndroidManifest.xml:23:5-79
@@ -534,7 +534,7 @@ MERGED from [com.google.android.gms:play-services-measurement-impl:22.4.0] C:\Us
 MERGED from [com.google.android.gms:play-services-measurement-sdk-api:22.4.0] C:\Users\Ismael\.gradle\caches\transforms-3\9b111e5fa7b9c71ae5239903c9115cd4\transformed\play-services-measurement-sdk-api-22.4.0\AndroidManifest.xml:24:5-79
 MERGED from [com.google.android.gms:play-services-measurement-sdk-api:22.4.0] C:\Users\Ismael\.gradle\caches\transforms-3\9b111e5fa7b9c71ae5239903c9115cd4\transformed\play-services-measurement-sdk-api-22.4.0\AndroidManifest.xml:24:5-79
 	android:name
-		ADDED from [:capacitor-network] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-76
+		ADDED from [:capacitor-network] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-76
 uses-permission#android.permission.INTERNET
 ADDED from [net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:22:5-67
 MERGED from [com.google.firebase:firebase-auth:23.2.0] C:\Users\Ismael\.gradle\caches\transforms-3\fe724b75ee59a756544bf4eb342fa398\transformed\firebase-auth-23.2.0\AndroidManifest.xml:25:5-67

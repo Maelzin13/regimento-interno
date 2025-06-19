@@ -41,6 +41,12 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   private notasCache: Map<number, any> = new Map()
   // private handleRemissaoClick: any;
 
+  // Adicionar propriedades para histórico de navegação
+  navigationHistory: { artigoId: string, scrollPosition: number }[] = [];
+  currentHistoryIndex: number = -1;
+  private remissaoListenerAttached = false;
+  private handleRemissaoClick: any;
+
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
@@ -226,43 +232,365 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.notaListenerAttached = true;
     }
     
-    // this.setupRemissaoLinks();
+    if (!this.remissaoListenerAttached) {
+      this.setupRemissaoLinks();
+      this.remissaoListenerAttached = true;
+    }
   
     this.setupScrollListener();
   }
 
-  // setupRemissaoLinks() {
-  //   // Remove handler antigo para evitar múltiplos binds (opcional, mas seguro em Ionic)
-  //   document.removeEventListener('click', this.handleRemissaoClick as any);
-  
-  //   // Cria uma referência de método que pode ser removida depois, se necessário
-  //   this.handleRemissaoClick = (event: any) => {
-  //     const target = event.target as HTMLElement;
-  //     if (target.classList.contains('ref-artigo')) {
-  //       // Pega o número do artigo e opcionalmente o inciso, se estiver no data-*
-  //       const artigo = target.getAttribute('data-artigo');
-  //       const inciso = target.getAttribute('data-inciso'); // futuro, se quiser
-  //       if (artigo) {
-  //         this.scrollToArtigo(artigo, inciso || undefined);
-  //         event.preventDefault();
-  //       }
-  //     }
-  //   };
-  
-  //   document.addEventListener('click', this.handleRemissaoClick as any);
-  // }
+  setupRemissaoLinks() {
+    // Remove o antigo listener para evitar duplicação
+    document.removeEventListener('click', this.handleRemissaoClick as any);
+
+    this.handleRemissaoClick = (event: any) => {
+      const target = event.target as HTMLElement;
+      // A remissão pode estar em qualquer nível dentro do .remissoes
+      const remissaoElement = target.closest('.remissoes') as HTMLElement;
+      if (remissaoElement) {
+        // Feedback visual no clique
+        remissaoElement.classList.add('flash-highlight');
+        setTimeout(() => remissaoElement.classList.remove('flash-highlight'), 600);
+        this.handleRemissaoContent(remissaoElement, event);
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('click', this.handleRemissaoClick as any);
+    console.log('Setup de remissão concluído. Estado do histórico:', this.navigationHistory);
+  }
+
+  handleRemissaoContent(remissaoElement: HTMLElement, event: Event) {
+    const conteudo = remissaoElement.innerText || remissaoElement.textContent || '';
+    console.log('Conteúdo da remissão:', conteudo);
+
+    // Salva posição antes de navegar
+    this.content.getScrollElement().then(scrollElement => {
+      const currentPosition = scrollElement.scrollTop;
+      this.saveToHistory(null, currentPosition);
+
+      // Padrões para diferentes formatos de remissões
+      // 1. Formato "Arts. X, Y e Z"
+      const multipleArtsPattern = /Arts?\.\s*(\d+)[º°]?(?:\s*,\s*(\d+)[º°]?)*(?:\s*e\s*(\d+)[º°]?)?/i;
+      // 2. Formato "Art. X"
+      const singleArtPattern = /Art\.\s*(\d+)[º°]?/i;
+      // 3. Formato para capturar números isolados após "Art." ou "Arts."
+      const numbersPattern = /Art(?:s)?\.(?:[^0-9]+(\d+)[º°]?)+/gi;
+      
+      // Tenta encontrar múltiplos artigos no formato "Arts. X, Y e Z"
+      const multipleMatch = conteudo.match(multipleArtsPattern);
+      if (multipleMatch) {
+        // Extrai todos os números mencionados
+        const artigos: string[] = [];
+        
+        // Primeiro, pegamos o número após "Arts."
+        if (multipleMatch[1]) artigos.push(multipleMatch[1]);
+        
+        // Depois, procuramos por todos os números que aparecem após vírgulas ou "e"
+        const allNumbersPattern = /\b(\d+)[º°]?\b/g;
+        let numberMatch;
+        
+        // Usamos uma abordagem compatível com ES5/ES6 em vez de matchAll
+        while ((numberMatch = allNumbersPattern.exec(conteudo)) !== null) {
+          const num = numberMatch[1];
+          if (!artigos.includes(num)) {
+            artigos.push(num);
+          }
+        }
+        
+        console.log('Artigos encontrados na remissão:', artigos);
+        
+        if (artigos.length > 1) {
+          // Se encontrou múltiplos artigos, mostra um modal para escolha
+          this.showArtigosChoiceModal(artigos);
+        } else if (artigos.length === 1) {
+          // Se encontrou apenas um artigo, navega diretamente
+          this.scrollToArtigo(artigos[0]);
+        }
+        
+        event.preventDefault();
+        return;
+      }
+      
+      // Se não encontrou o padrão múltiplo, tenta o padrão simples "Art. X"
+      const singleMatch = conteudo.match(singleArtPattern);
+      if (singleMatch && singleMatch[1]) {
+        this.scrollToArtigo(singleMatch[1]);
+        event.preventDefault();
+        return;
+      }
+      
+      // Último recurso: procura por qualquer número após "Art." ou "Arts."
+      const allNumbers: string[] = [];
+      let match;
+      
+      // Extrair todos os números que aparecem após "Art." ou "Arts."
+      while ((match = numbersPattern.exec(conteudo)) !== null) {
+        if (match[1] && !allNumbers.includes(match[1])) {
+          allNumbers.push(match[1]);
+        }
+      }
+      
+      if (allNumbers.length > 0) {
+        console.log('Números de artigos encontrados:', allNumbers);
+        
+        if (allNumbers.length > 1) {
+          // Se encontrou múltiplos artigos, mostra um modal para escolha
+          this.showArtigosChoiceModal(allNumbers);
+        } else {
+          // Se encontrou apenas um artigo, navega diretamente
+          this.scrollToArtigo(allNumbers[0]);
+        }
+        
+        event.preventDefault();
+        return;
+      }
+
+      // Fallback: pega o primeiro número isolado
+      const numerosMatch = conteudo.match(/(\d+)/g);
+      if (numerosMatch && numerosMatch.length > 0) {
+        console.log('Números isolados encontrados:', numerosMatch);
+        
+        if (numerosMatch.length > 1) {
+          // Se encontrou múltiplos números, mostra um modal para escolha
+          this.showArtigosChoiceModal(numerosMatch);
+        } else {
+          // Se encontrou apenas um número, navega diretamente
+          this.scrollToArtigo(numerosMatch[0]);
+        }
+        
+        event.preventDefault();
+        return;
+      }
+
+      this.presentToast('Não foi possível identificar o artigo referenciado');
+    });
+  }
+
+  // Modal para múltiplos artigos
+  async showArtigosChoiceModal(artigos: string[]) {
+    const alert = await this.alertController.create({
+      header: 'Escolha o artigo para navegar',
+      inputs: artigos.map(a => ({
+        type: 'radio',
+        label: `Artigo ${a}`,
+        value: a
+      })),
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Ir',
+          handler: (value) => {
+            if (value) this.scrollToArtigo(value);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  saveToHistory(artigoId: string | null, scrollPosition: number) {
+    // Se estamos navegando a partir de um ponto intermediário do histórico,
+    // descartar tudo o que vem depois
+    if (this.currentHistoryIndex < this.navigationHistory.length - 1) {
+      this.navigationHistory = this.navigationHistory.slice(0, this.currentHistoryIndex + 1);
+    }
+    
+    // Adicionar nova entrada ao histórico
+    this.navigationHistory.push({
+      artigoId: artigoId || 'unknown',
+      scrollPosition: scrollPosition
+    });
+    
+    // Atualizar o índice atual
+    this.currentHistoryIndex = this.navigationHistory.length - 1;
+    
+    console.log('Histórico atualizado:', this.navigationHistory);
+  }
+
+  navigateBack() {
+    // Verificar se há para onde voltar
+    if (this.currentHistoryIndex > 0) {
+      this.currentHistoryIndex--;
+      const previousPosition = this.navigationHistory[this.currentHistoryIndex];
+      
+      // Restaurar a posição anterior
+      this.content.scrollToPoint(0, previousPosition.scrollPosition, 500);
+      
+      console.log('Navegando de volta para:', previousPosition);
+    } else {
+      console.log('Não há posição anterior no histórico');
+    }
+  }
 
   scrollToArtigo(artigo: string, inciso?: string) {
-    let id = 'artigo-' + artigo;
-    if (inciso) {
-      id += '-inciso-' + inciso;
-    }
-    const element = document.getElementById(id) || document.getElementById('artigo-' + artigo);
-    if (element) {
-      this.content.scrollToPoint(0, element.offsetTop - 120, 500);
-      element.classList.add('flash-highlight');
-      setTimeout(() => element.classList.remove('flash-highlight'), 1500);
-    }
+    // Remover caracteres especiais como º ou ° que podem estar no número do artigo
+    const artigoLimpo = artigo.replace(/[^\d]/g, '');
+    
+    console.log(`Tentando encontrar o Artigo ${artigoLimpo}`);
+    
+    // Salvar a posição atual antes de navegar
+    this.content.getScrollElement().then(scrollElement => {
+      const currentPosition = scrollElement.scrollTop;
+      
+      // Primeiro tentamos encontrar pelo ID exato
+      let id = 'artigo-' + artigoLimpo;
+      if (inciso) {
+        id += '-inciso-' + inciso;
+      }
+      
+      let element = document.getElementById(id);
+      let foundByContent = false;
+      
+      // Se não encontrar pelo ID, usamos uma busca mais precisa pelo conteúdo
+      if (!element) {
+        const artigos = document.querySelectorAll('h5');
+        let exactMatches = [];
+        let possibleMatches = [];
+        
+        // Mapeamento de conteúdos específicos para artigos problemáticos
+        const artigosEspeciais: Record<string, string> = {
+          '4': 'No dia 1º de fevereiro do primeiro ano de cada legislatura',
+          // Adicione outros artigos problemáticos aqui se necessário
+        };
+        
+        // Primeiro loop: procurar por correspondências exatas
+        for (let i = 0; i < artigos.length; i++) {
+          const el = artigos[i];
+          const texto = el.textContent || '';
+          
+          // Verificação para artigos especiais com conteúdo conhecido
+          if (artigoLimpo in artigosEspeciais && texto.includes(artigosEspeciais[artigoLimpo])) {
+            console.log(`Encontrado Artigo ${artigoLimpo} pelo conteúdo específico:`, texto.substring(0, 100));
+            exactMatches = [el];
+            break;
+          }
+          
+          // Padrão para encontrar "Art. X" no início do texto
+          const padraoExato = new RegExp(`^Art\\.\\s*${artigoLimpo}[º°]?\\b`, 'i');
+          if (padraoExato.test(texto)) {
+            exactMatches.push(el);
+            console.log(`Correspondência exata encontrada para Artigo ${artigoLimpo}:`, texto.substring(0, 100));
+          }
+          // Padrão alternativo: contém "Art. X" em qualquer lugar
+          else if (texto.match(new RegExp(`Art\\.\\s*${artigoLimpo}[º°]?\\b`, 'i'))) {
+            possibleMatches.push(el);
+            console.log(`Correspondência possível encontrada para Artigo ${artigoLimpo}:`, texto.substring(0, 100));
+          }
+        }
+        
+        // Verificação adicional para artigos que não foram encontrados
+        if (exactMatches.length === 0 && artigoLimpo in artigosEspeciais) {
+          // Busca mais ampla pelo conteúdo específico
+          for (let i = 0; i < artigos.length; i++) {
+            const el = artigos[i];
+            const texto = el.textContent || '';
+            
+            if (texto.includes(artigosEspeciais[artigoLimpo])) {
+              console.log(`Encontrado Artigo ${artigoLimpo} pelo conteúdo específico (busca ampla):`, texto.substring(0, 100));
+              exactMatches = [el];
+              break;
+            }
+          }
+        }
+        
+        // Usa a primeira correspondência exata, ou a primeira possível se não houver exatas
+        if (exactMatches.length > 0) {
+          element = exactMatches[0];
+          foundByContent = true;
+          console.log(`Usando correspondência exata para Artigo ${artigoLimpo}:`, element.textContent?.substring(0, 100));
+        } else if (possibleMatches.length > 0) {
+          element = possibleMatches[0];
+          foundByContent = true;
+          console.log(`Usando correspondência possível para Artigo ${artigoLimpo}:`, element.textContent?.substring(0, 100));
+        }
+      }
+      
+      // Se encontrou o elemento, rola até ele e destaca
+      if (element) {
+        console.log(`Elemento encontrado para Artigo ${artigoLimpo}:`, element);
+        
+        // Se encontrado pelo conteúdo, adiciona um ID para facilitar futuras referências
+        if (foundByContent && !element.id) {
+          element.id = `artigo-${artigoLimpo}-temp`;
+        }
+        
+        // Atribuir um índice ao elemento para identificação no DOM
+        const allElements = document.querySelectorAll('h5');
+        let elementIndex = -1;
+        for (let i = 0; i < allElements.length; i++) {
+          if (allElements[i] === element) {
+            elementIndex = i;
+            break;
+          }
+        }
+        console.log(`Índice do elemento no DOM: ${elementIndex}`);
+        
+        // Garantir que o elemento está visível na página
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Ajusta a posição para considerar o header
+        setTimeout(() => {
+          // Usar getBoundingClientRect para obter a posição atual do elemento
+          const rect = element.getBoundingClientRect();
+          const offsetTop = rect.top + window.pageYOffset - 120;
+          
+          this.content.scrollToPoint(0, offsetTop, 500);
+          
+          // Salvar o artigo no histórico
+          this.saveToHistory(artigoLimpo, currentPosition);
+        }, 100);
+        
+        // Destaque visual
+        element.classList.add('flash-highlight');
+        setTimeout(() => element.classList.remove('flash-highlight'), 1500);
+        
+        // Feedback visual para o usuário
+        this.presentToast(`Navegando para o Artigo ${artigoLimpo}`);
+      } else {
+        // Se não encontrou o elemento, tenta uma busca mais ampla pelo conteúdo
+        console.log(`Elemento para Artigo ${artigoLimpo} não foi encontrado. Tentando busca mais ampla...`);
+        
+        // Busca por qualquer menção ao número do artigo
+        const allElements = document.querySelectorAll('h5, p');
+        let foundElement = null;
+        
+        for (let i = 0; i < allElements.length; i++) {
+          const el = allElements[i];
+          const texto = el.textContent || '';
+          
+          if (texto.includes(`Art. ${artigoLimpo}`) || 
+              texto.includes(`Art.${artigoLimpo}`) || 
+              texto.includes(`Artigo ${artigoLimpo}`)) {
+            foundElement = el;
+            console.log(`Encontrada menção ao Artigo ${artigoLimpo} em:`, texto.substring(0, 100));
+            break;
+          }
+        }
+        
+        if (foundElement) {
+          foundElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          setTimeout(() => {
+            // Usar getBoundingClientRect para obter a posição atual do elemento
+            const rect = foundElement.getBoundingClientRect();
+            const offsetTop = rect.top + window.pageYOffset - 120;
+            
+            this.content.scrollToPoint(0, offsetTop, 500);
+            this.saveToHistory(artigoLimpo, currentPosition);
+          }, 100);
+          
+          foundElement.classList.add('flash-highlight');
+          setTimeout(() => foundElement.classList.remove('flash-highlight'), 1500);
+          
+          this.presentToast(`Navegando para menção ao Artigo ${artigoLimpo}`);
+        } else {
+          this.presentToast(`Artigo ${artigoLimpo} não encontrado`);
+          console.log(`Elemento para Artigo ${artigoLimpo} não foi encontrado após busca ampla`);
+        }
+      }
+    });
   }
 
   private listenNotaClicks() {
@@ -341,122 +669,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         </div>`;
     });
   }
-
-  // formatRemissao(content: string): SafeHtml {
-  //   if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
-  
-  //   // 1. Notas de rodapé
-  //   let formatted = content.replace(/###nota (\d+)###/g, (match, notaId) => {
-  //     return `<sup>
-  //       <a href="javascript:void(0)" 
-  //          class="nota-ref"
-  //          data-nota-id="${notaId}" 
-  //          style="color: #3b82f6; text-decoration: underline; cursor:pointer">
-  //         ${notaId}
-  //       </a>
-  //     </sup>`;
-  //   });
-  
-  //   // 2. Separe explicativo (em parênteses) se houver
-  //   let explicativo = '';
-  //   const explicativoMatch = formatted.match(/\(([^)]+)\)/);
-  //   if (explicativoMatch) {
-  //     explicativo = explicativoMatch[1];
-  //     formatted = formatted.replace(/\([^)]+\)/, ''); // Remove o explicativo para parsear as refs
-  //   }
-  
-  //   // 3. Reconhece Arts. 4º, 5º, 65 e I (associa inciso/letra ao último artigo)
-  //   formatted = formatted.replace(
-  //     /(Art\.?s?)\.?\s+([^\(\);]+)/gi,
-  //     (match, prefixo, refs) => {
-  //       // Divide por vírgula e " e "
-  //       const rawParts = refs.split(/,|\se\s/i).map((s: any) => s.trim()).filter(Boolean);
-  
-  //       let links: string[] = [];
-  //       let lastArtigo: string = '';
-  
-  //       rawParts.forEach((ref: any, idx: number) => {
-  //         // Artigo puro (número)
-  //         let artigoMatch = ref.match(/^(\d+)$/);
-  //         if (artigoMatch) {
-  //           lastArtigo = artigoMatch[1];
-  //           links.push(createArtigoLink(lastArtigo || '', undefined, idx));
-  //           return;
-  //         }
-  //         // Inciso puro (romano/letra) - associa ao último artigo
-  //         let incisoMatch = ref.match(/^([IVXLCDM]+)$/i);
-  //         if (incisoMatch && lastArtigo) {
-  //           links.push(createArtigoLink(lastArtigo, incisoMatch[1] || '', idx));
-  //           return;
-  //         }
-  //         // Artigo + inciso juntos ("65, I" ou "65 I")
-  //         let artigoIncisoMatch = ref.match(/^(\d+)[, ]+([IVXLCDM]+)$/i);
-  //         if (artigoIncisoMatch) {
-  //           lastArtigo = artigoIncisoMatch[1];
-  //           links.push(createArtigoLink(lastArtigo, artigoIncisoMatch[2] || '', idx));
-  //           return;
-  //         }
-  //         // Fallback (ex: §, alínea)
-  //         links.push(`<span style="color: #059669;">${ref}</span>`);
-  //       });
-  
-  //       // Helper para criar o link
-  //       function createArtigoLink(artigo: string, inciso?: string, idx?: number) {
-  //         let label = artigo;
-  //         let id = `artigo-${artigo}`;
-  //         if (inciso) {
-  //           label += ', ' + inciso;
-  //           id += `-inciso-${inciso}`;
-  //         }
-  //         let tooltip = explicativo && idx === 0 ? `title="${explicativo}"` : '';
-  //         return `<a href="javascript:void(0)" 
-  //                   class="ref-artigo"
-  //                   data-artigo="${artigo}" 
-  //                   ${inciso ? `data-inciso="${inciso}"` : ''}
-  //                   ${tooltip}
-  //                   style="color: #059669; text-decoration: underline; cursor:pointer">
-  //                 ${label}
-  //               </a>`;
-  //       }
-  
-  //       // Monta string segmentada
-  //       let resultado = `${prefixo}. `;
-  //       links.forEach((link: any, idx: any) => {
-  //         if (idx > 0) {
-  //           resultado += idx === links.length - 1 ? ' e ' : ', ';
-  //         }
-  //         resultado += link;
-  //       });
-  
-  //       // Se explicativo e só um link, mostra ao lado
-  //       if (explicativo && links.length === 1) {
-  //         resultado += ` <span class="text-gray-500 text-xs">(${explicativo})</span>`;
-  //       }
-  
-  //       return resultado;
-  //     }
-  //   );
-  
-  //   // 4. Parágrafo único ou § (simples)
-  //   formatted = formatted.replace(
-  //     /Art\.\s+(\d+)(?:\s*,\s*parágrafo único|\s*,\s*§\s*(?:único|\d+º?))/gi,
-  //     (match, numero) => {
-  //       return `<a href="javascript:void(0)" 
-  //               class="ref-artigo" 
-  //               data-artigo="${numero.trim()}"
-  //               style="color: #059669; text-decoration: underline; cursor:pointer">
-  //               Art. ${numero.trim()}
-  //             </a>` + match.substring(match.indexOf(','));
-  //     }
-  //   );
-  
-  //   // 5. Adiciona o tooltip ao final se for remissão "livre"
-  //   if (explicativo && !formatted.includes(explicativo)) {
-  //     formatted += ` <span class="text-gray-500 text-xs">(${explicativo})</span>`;
-  //   }
-  
-  //   return this.sanitizer.bypassSecurityTrustHtml(formatted);
-  // }  
 
   async openAlertWithContent(content: any, notaId: any) {
     if (!content || !content.conteudo) {
@@ -596,10 +808,15 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   restoreLastPosition() {
+    if (this.navigationHistory.length > 0 && this.currentHistoryIndex >= 0) {
+      const lastPosition = this.navigationHistory[this.currentHistoryIndex].scrollPosition;
+      this.content.scrollToPoint(0, lastPosition, 500);
+      console.log('Restaurando última posição:', lastPosition);
+    } else {
+      // Fallback para o comportamento existente
     if (this.lastScrollPosition > 0) {
-      setTimeout(() => {
         this.content.scrollToPoint(0, this.lastScrollPosition, 500);
-      }, 100);
+      }
     }
   }
 
@@ -874,4 +1091,18 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     return ids;
   }
   
+  // Função auxiliar para depuração
+  private debugArticleElements(targetArticle: string) {
+    console.log(`Depurando elementos para encontrar Artigo ${targetArticle}:`);
+    const artigos = document.querySelectorAll('h5');
+    
+    artigos.forEach((el, index) => {
+      const texto = el.textContent || '';
+      if (texto.includes(`Art. ${targetArticle}º`) || texto.includes(`Art.${targetArticle}º`)) {
+        console.log(`Elemento ${index} contém Artigo ${targetArticle}:`, texto.substring(0, 100));
+        console.log('ID do elemento:', el.id);
+        console.log('Elemento completo:', el);
+      }
+    });
+  }
 }

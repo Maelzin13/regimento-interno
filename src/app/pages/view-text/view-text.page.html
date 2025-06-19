@@ -6,6 +6,14 @@
       </ion-button>
     </ion-buttons>
     <ion-title class="titulo-personalizado">Regimento Comentado</ion-title>
+    
+    <!-- Botão de navegação para voltar ao ponto anterior -->
+    <ion-buttons slot="end" *ngIf="navigationHistory.length > 1 && currentHistoryIndex > 0">
+      <ion-button (click)="navigateBack()">
+        <ion-icon name="return-up-back-outline" color="light"></ion-icon>
+        <span class="nav-button-text">Voltar à remissão</span>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar class="ion-padding">
     <div class="search-container">
@@ -92,6 +100,7 @@
                           [innerHTML]="safeHTML(remissao.conteudo)">
                         </li>
                       </ul>
+                      <div class="remissao-indicator">Clique para navegar</div>
                     </div>
                   </ng-container>
 

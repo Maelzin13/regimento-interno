@@ -1,22 +1,22 @@
-com.regimento.app-pngs-0 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\generated\res\pngs\debug
-com.regimento.app-res-1 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\generated\res\processDebugGoogleServices
-com.regimento.app-resValues-2 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\generated\res\resValues\debug
-com.regimento.app-packageDebugResources-3 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.regimento.app-packageDebugResources-4 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.regimento.app-merged_res-5 C:\Projetos\Projeto E-book\regimento-interno\android\app\build\intermediates\merged_res\debug
-com.regimento.app-debug-6 C:\Projetos\Projeto E-book\regimento-interno\android\app\src\debug\res
-com.regimento.app-main-7 C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\res
-com.regimento.app-packaged_res-8 C:\Projetos\Projeto E-book\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-9 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-10 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-11 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-12 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-13 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-14 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-15 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-16 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-17 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\packaged_res\debug
-com.regimento.app-packaged_res-18 C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\packaged_res\debug
+com.regimento.app-pngs-0 C:\Projetos\Regimento Interno\regimento-interno\android\app\build\generated\res\pngs\debug
+com.regimento.app-res-1 C:\Projetos\Regimento Interno\regimento-interno\android\app\build\generated\res\processDebugGoogleServices
+com.regimento.app-resValues-2 C:\Projetos\Regimento Interno\regimento-interno\android\app\build\generated\res\resValues\debug
+com.regimento.app-packageDebugResources-3 C:\Projetos\Regimento Interno\regimento-interno\android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.regimento.app-packageDebugResources-4 C:\Projetos\Regimento Interno\regimento-interno\android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.regimento.app-merged_res-5 C:\Projetos\Regimento Interno\regimento-interno\android\app\build\intermediates\merged_res\debug
+com.regimento.app-debug-6 C:\Projetos\Regimento Interno\regimento-interno\android\app\src\debug\res
+com.regimento.app-main-7 C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\res
+com.regimento.app-packaged_res-8 C:\Projetos\Regimento Interno\regimento-interno\android\capacitor-cordova-android-plugins\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-9 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-community\facebook-login\android\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-10 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-community\generic-oauth2\android\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-11 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor-firebase\authentication\android\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-12 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\android\capacitor\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-13 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\app\android\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-14 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-15 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-16 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\keyboard\android\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-17 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\packaged_res\debug
+com.regimento.app-packaged_res-18 C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\status-bar\android\build\intermediates\packaged_res\debug
 com.regimento.app-annotation-experimental-1.4.0-19 C:\Users\Ismael\.gradle\caches\transforms-3\01555f55e70a0723b6ed04af4d832fb4\transformed\annotation-experimental-1.4.0\res
 com.regimento.app-play-services-base-18.5.0-20 C:\Users\Ismael\.gradle\caches\transforms-3\04b73d0b9badaf6484db65c1c039fa9d\transformed\play-services-base-18.5.0\res
 com.regimento.app-emoji2-views-helper-1.2.0-21 C:\Users\Ismael\.gradle\caches\transforms-3\1ea53787ff48bb4bd699ccd63a0880ea\transformed\emoji2-views-helper-1.2.0\res

@@ -9,26 +9,26 @@
 9        android:targetSdkVersion="35" />
 10
 11    <queries>
-11-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-11:15
+11-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-11:15
 12        <intent>
-12-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:8:9-10:18
+12-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:8:9-10:18
 13            <action android:name="android.support.customtabs.action.CustomTabsService" />
-13-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-90
-13-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:21-87
+13-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-90
+13-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:9:21-87
 14        </intent>
 15        <intent>
 15-->[net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:25:9-31:18
 16            <action android:name="android.intent.action.VIEW" />
-16-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
-16-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
+16-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
+16-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
 17
 18            <category android:name="android.intent.category.BROWSABLE" />
-18-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
-18-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
+18-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
+18-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
 19
 20            <data android:scheme="https" />
-20-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
-20-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
+20-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
+20-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
 21        </intent>
 22
 23        <package android:name="com.facebook.katana" />
@@ -37,11 +37,11 @@
 24    </queries>
 25
 26    <uses-permission android:name="android.permission.VIBRATE" />
-26-->[:capacitor-haptics] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-66
-26-->[:capacitor-haptics] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-63
+26-->[:capacitor-haptics] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-66
+26-->[:capacitor-haptics] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\haptics\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-63
 27    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-27-->[:capacitor-network] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-79
-27-->[:capacitor-network] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-76
+27-->[:capacitor-network] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-79
+27-->[:capacitor-network] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\network\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-76
 28    <uses-permission android:name="android.permission.INTERNET" />
 28-->[net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:22:5-67
 28-->[net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:22:22-64
@@ -76,124 +76,124 @@
 40-->[androidx.core:core:1.12.0] C:\Users\Ismael\.gradle\caches\transforms-3\91f00a5b7e289b40ec4337c5400b4c58\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
 41
 42    <application
-42-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:4:5-59:19
+42-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:4:5-59:19
 43        android:allowBackup="true"
-43-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:5:9-35
+43-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:5:9-35
 44        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 44-->[androidx.core:core:1.12.0] C:\Users\Ismael\.gradle\caches\transforms-3\91f00a5b7e289b40ec4337c5400b4c58\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
 45        android:debuggable="true"
 46        android:extractNativeLibs="false"
 47        android:icon="@mipmap/ic_launcher"
-47-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:6:9-43
+47-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:6:9-43
 48        android:label="@string/app_name"
-48-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:7:9-41
+48-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:7:9-41
 49        android:roundIcon="@mipmap/ic_launcher_round"
-49-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:8:9-54
+49-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:8:9-54
 50        android:supportsRtl="true"
-50-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:9:9-35
+50-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:9:9-35
 51        android:testOnly="true"
 52        android:theme="@style/AppTheme" >
-52-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:10:9-40
+52-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:10:9-40
 53        <activity
-53-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:12:9-32:20
+53-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:12:9-32:20
 54            android:name="com.regimento.app.MainActivity"
-54-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:13:13-41
+54-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:13:13-41
 55            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
-55-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:18:13-129
+55-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:18:13-129
 56            android:exported="true"
-56-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:17:13-36
+56-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:17:13-36
 57            android:label="@string/title_activity_main"
-57-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:14:13-56
+57-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:14:13-56
 58            android:launchMode="singleTask"
-58-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:16:13-44
+58-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:16:13-44
 59            android:theme="@style/AppTheme.NoActionBarLaunch" >
-59-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:15:13-62
+59-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:15:13-62
 60            <intent-filter>
-60-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:20:13-23:29
+60-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:20:13-23:29
 61                <action android:name="android.intent.action.MAIN" />
-61-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:21:17-69
-61-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:21:25-66
+61-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:21:17-69
+61-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:21:25-66
 62
 63                <category android:name="android.intent.category.LAUNCHER" />
-63-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:22:17-77
-63-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:22:27-74
+63-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:22:17-77
+63-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:22:27-74
 64            </intent-filter>
 65            <intent-filter android:autoVerify="true" >
-65-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:26:13-31:29
-65-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:26:28-53
+65-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:26:13-31:29
+65-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:26:28-53
 66                <action android:name="android.intent.action.VIEW" />
-66-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
-66-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
+66-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
+66-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
 67
 68                <category android:name="android.intent.category.DEFAULT" />
-68-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
-68-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
+68-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
+68-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
 69                <category android:name="android.intent.category.BROWSABLE" />
-69-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
-69-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
+69-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
+69-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
 70
 71                <data android:scheme="your.package.id" />
-71-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
-71-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
+71-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
+71-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
 72            </intent-filter>
 73        </activity>
 74
 75        <provider
 76            android:name="androidx.core.content.FileProvider"
-76-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:35:13-62
+76-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:35:13-62
 77            android:authorities="com.regimento.app.fileprovider"
-77-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:36:13-64
+77-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:36:13-64
 78            android:exported="false"
-78-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:37:13-37
+78-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:37:13-37
 79            android:grantUriPermissions="true" >
-79-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:38:13-47
+79-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:38:13-47
 80            <meta-data
-80-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:39:13-41:54
+80-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:39:13-41:54
 81                android:name="android.support.FILE_PROVIDER_PATHS"
-81-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:40:17-67
+81-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:40:17-67
 82                android:resource="@xml/file_paths" />
-82-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:41:17-51
+82-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:41:17-51
 83        </provider>
 84
 85        <meta-data
-85-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:44:9-46:55
+85-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:44:9-46:55
 86            android:name="com.facebook.sdk.ApplicationId"
-86-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:45:13-58
+86-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:45:13-58
 87            android:value="@string/facebook_app_id" />
-87-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:46:13-52
+87-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:46:13-52
 88
 89        <activity
-89-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:48:9-52:39
+89-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:48:9-52:39
 90            android:name="com.facebook.FacebookActivity"
-90-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:49:13-57
+90-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:49:13-57
 91            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-91-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:50:13-96
+91-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:50:13-96
 92            android:exported="true"
-92-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:52:13-36
+92-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:52:13-36
 93            android:label="@string/app_name"
-93-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:51:13-45
+93-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:51:13-45
 94            android:theme="@style/com_facebook_activity_theme" />
 94-->[com.facebook.android:facebook-common:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\f74a76d24f5251cf140be5d4f0a519e1\transformed\facebook-common-17.0.0\AndroidManifest.xml:25:13-63
 95
 96        <provider
-96-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:54:9-57:39
+96-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:54:9-57:39
 97            android:name="com.facebook.FacebookContentProvider"
-97-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:55:13-64
+97-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:55:13-64
 98            android:authorities="com.facebook.app.FacebookContentProvider9233731516671511"
-98-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:56:13-91
+98-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:56:13-91
 99            android:exported="true" />
-99-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:57:13-36
+99-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:57:13-36
 100
 101        <activity
-101-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:14:9-18:75
+101-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:14:9-18:75
 102            android:name="com.capacitorjs.plugins.browser.BrowserControllerActivity"
-102-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:15:13-85
+102-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:15:13-85
 103            android:exported="false"
-103-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:13-37
+103-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:13-37
 104            android:launchMode="singleTask"
-104-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:17:13-44
+104-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:17:13-44
 105            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-105-->[:capacitor-browser] C:\Projetos\Projeto E-book\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:18:13-72
+105-->[:capacitor-browser] C:\Projetos\Regimento Interno\regimento-interno\node_modules\@capacitor\browser\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:18:13-72
 106        <activity
 106-->[net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:35:9-39:77
 107            android:name="net.openid.appauth.AuthorizationManagementActivity"
@@ -213,19 +213,19 @@
 114            <intent-filter>
 114-->[net.openid:appauth:0.9.1] C:\Users\Ismael\.gradle\caches\transforms-3\7d8cdf78f8a71fd3edb5c49047a3d534\transformed\appauth-0.9.1\AndroidManifest.xml:43:13-50:29
 115                <action android:name="android.intent.action.VIEW" />
-115-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
-115-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
+115-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
+115-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
 116
 117                <category android:name="android.intent.category.DEFAULT" />
-117-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
-117-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
+117-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
+117-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
 118                <category android:name="android.intent.category.BROWSABLE" />
-118-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
-118-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
+118-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
+118-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
 119
 120                <data android:scheme="com.regimento.app" />
-120-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
-120-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
+120-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
+120-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
 121            </intent-filter>
 122        </activity>
 123        <activity android:name="com.facebook.CustomTabMainActivity" />
@@ -240,21 +240,21 @@
 127            <intent-filter>
 127-->[com.facebook.android:facebook-common:17.0.0] C:\Users\Ismael\.gradle\caches\transforms-3\f74a76d24f5251cf140be5d4f0a519e1\transformed\facebook-common-17.0.0\AndroidManifest.xml:31:13-40:29
 128                <action android:name="android.intent.action.VIEW" />
-128-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
-128-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
+128-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
+128-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
 129
 130                <category android:name="android.intent.category.DEFAULT" />
-130-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
-130-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
+130-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
+130-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
 131                <category android:name="android.intent.category.BROWSABLE" />
-131-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
-131-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
+131-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
+131-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
 132
 133                <data
-133-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
+133-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
 134                    android:host="cct.com.regimento.app"
 135                    android:scheme="fbconnect" />
-135-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
+135-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
 136            </intent-filter>
 137        </activity>
 138        <activity
@@ -272,22 +272,22 @@
 144            <intent-filter>
 144-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\Ismael\.gradle\caches\transforms-3\fe724b75ee59a756544bf4eb342fa398\transformed\firebase-auth-23.2.0\AndroidManifest.xml:35:13-45:29
 145                <action android:name="android.intent.action.VIEW" />
-145-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
-145-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
+145-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
+145-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
 146
 147                <category android:name="android.intent.category.DEFAULT" />
-147-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
-147-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
+147-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
+147-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
 148                <category android:name="android.intent.category.BROWSABLE" />
-148-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
-148-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
+148-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
+148-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
 149
 150                <data
-150-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
+150-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
 151                    android:host="firebase.auth"
 152                    android:path="/"
 153                    android:scheme="genericidp" />
-153-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
+153-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
 154            </intent-filter>
 155        </activity>
 156        <activity
@@ -305,22 +305,22 @@
 162            <intent-filter>
 162-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\Ismael\.gradle\caches\transforms-3\fe724b75ee59a756544bf4eb342fa398\transformed\firebase-auth-23.2.0\AndroidManifest.xml:53:13-63:29
 163                <action android:name="android.intent.action.VIEW" />
-163-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
-163-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
+163-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:17-69
+163-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:27:25-66
 164
 165                <category android:name="android.intent.category.DEFAULT" />
-165-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
-165-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
+165-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:17-76
+165-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:28:27-73
 166                <category android:name="android.intent.category.BROWSABLE" />
-166-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
-166-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
+166-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:17-78
+166-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:29:27-75
 167
 168                <data
-168-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
+168-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:17-58
 169                    android:host="firebase.auth"
 170                    android:path="/"
 171                    android:scheme="recaptcha" />
-171-->C:\Projetos\Projeto E-book\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
+171-->C:\Projetos\Regimento Interno\regimento-interno\android\app\src\main\AndroidManifest.xml:30:23-55
 172            </intent-filter>
 173        </activity>
 174

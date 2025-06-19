@@ -78,6 +78,64 @@ ion-content {
   font-style: italic;
   display: block;
   margin-bottom: 8px;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 6px;
+  text-decoration: underline;
+  position: relative;
+  background: rgba(30, 153, 154, 0.05);
+  box-shadow: 0 1px 6px rgba(30,153,154,0.07);
+  border: 1px solid rgba(30, 153, 154, 0.15);
+
+  transition: all 0.25s ease;
+
+  &:hover, &:focus {
+    background: rgba(30, 153, 154, 0.13);
+    box-shadow: 0 2px 12px rgba(30,153,154,0.14);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 4px rgba(30,153,154,0.1);
+  }
+
+  &.flash-highlight {
+    animation: flash-animation 1.4s;
+    border: 2px solid #1e999a;
+  }
+}
+
+@keyframes flash-animation {
+  0% { background: rgba(255, 254, 176, 0.9); }
+  40% { background: rgba(208, 255, 238, 0.7); }
+  100% { background: rgba(30, 153, 154, 0.05);}
+}
+
+.remissao-indicator {
+  font-size: 0.8rem;
+  color: #1e999a;
+  text-align: right;
+  margin-top: 2px;
+  opacity: 0.7;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+  
+  &::before {
+    content: '→';
+    margin-right: 4px;
+    font-size: 1em;
+  }
+}
+
+// Estilo para o botão de navegação de retorno
+.nav-button-text {
+  margin-left: 5px;
+  font-size: 0.9em;
+  font-weight: 500;
 }
 
 // Sistema de busca
