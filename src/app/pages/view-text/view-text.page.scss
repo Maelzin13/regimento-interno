@@ -394,3 +394,177 @@ ion-alert {
   font-size: 19px;
   font-weight: bold;
 }
+
+.remissao-container {
+  border-left: 3px solid var(--ion-color-success);
+  background-color: rgba(var(--ion-color-success-rgb), 0.05);
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(var(--ion-color-success-rgb), 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+.remissao-content {
+  cursor: pointer;
+}
+
+.remissao-text {
+  font-weight: 500;
+  margin-bottom: 8px;
+  padding-right: 28px;
+  position: relative;
+}
+
+.remissao-indicator {
+  display: flex;
+  align-items: center;
+  font-size: 0.85em;
+  color: var(--ion-color-medium);
+  margin-top: 4px;
+  
+  .remissao-icon {
+    margin-right: 6px;
+    font-size: 1.2em;
+    color: var(--ion-color-success);
+  }
+}
+
+.remissao-active {
+  background-color: rgba(var(--ion-color-warning-rgb), 0.15);
+  border-left-color: var(--ion-color-warning);
+}
+
+.nav-back-button {
+  position: relative;
+  overflow: visible;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--ion-color-light);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+// Indicador de retorno flutuante
+.return-indicator {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background-color: var(--ion-color-primary);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 10;
+  animation: fadeIn 0.3s ease;
+  
+  ion-icon {
+    margin-right: 6px;
+    font-size: 1.2em;
+  }
+  
+  &:hover {
+    background-color: var(--ion-color-primary-shade);
+  }
+}
+
+// Animação de destaque para remissões
+.remissao-highlight {
+  animation: pulse 1.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--ion-color-success-rgb), 0.5); }
+  50% { box-shadow: 0 0 0 10px rgba(var(--ion-color-success-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--ion-color-success-rgb), 0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.flash-highlight {
+  animation: flash-highlight 1.5s ease-out;
+}
+
+@keyframes flash-highlight {
+  0% { background-color: rgba(var(--ion-color-warning-rgb), 0.5); }
+  100% { background-color: transparent; }
+}
+
+// Estilos para remissões inline detectadas no texto
+.remissao-inline {
+  color: var(--ion-color-primary);
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--ion-color-primary-rgb), 0.4);
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  padding: 0 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  
+  &:hover, &:focus {
+    color: var(--ion-color-primary-shade);
+    text-decoration-color: var(--ion-color-primary);
+  }
+  
+  &:active {
+    color: var(--ion-color-primary-tint);
+  }
+  
+  // Tooltip ao passar o mouse
+  &::after {
+    content: "Clique para navegar";
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    z-index: 100;
+  }
+  
+  &:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+// Destaque especial para remissões dentro de parênteses
+.remissao-parentese {
+  background-color: rgba(var(--ion-color-success-rgb), 0.05);
+  border-radius: 3px;
+  padding: 0 3px;
+  
+  &:hover {
+    background-color: rgba(var(--ion-color-success-rgb), 0.1);
+  }
+}

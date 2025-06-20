@@ -9,6 +9,13 @@ import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angula
 import { IonContent, ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { RegimentoModalComponent } from '../../Modals/regimento-modal/regimento-modal.component';
 
+interface HistoryEntry {
+  artigoId: string;
+  scrollPosition: number;
+  remissaoId?: string | null;
+  remissaoText?: string | null;
+}
+
 @Component({
   selector: 'app-view-text',
   templateUrl: './view-text.page.html',
@@ -33,19 +40,20 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
   searchType: 'contains' | 'exact' = 'contains';
   @ViewChild('searchInput') searchInput!: ElementRef;
+  showReturnIndicator: boolean = false;
 
   // Propriedade para o debounce da rolagem
   private scrollDebounceTimeout: any;
   expandedComments: Set<string> = new Set();
   
   private notasCache: Map<number, any> = new Map()
-  // private handleRemissaoClick: any;
-
+  
   // Adicionar propriedades para histórico de navegação
-  navigationHistory: { artigoId: string, scrollPosition: number }[] = [];
+  navigationHistory: HistoryEntry[] = [];
   currentHistoryIndex: number = -1;
   private remissaoListenerAttached = false;
   private handleRemissaoClick: any;
+  private showReturnIndicatorTimeout: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -70,11 +78,32 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       .then((books: any) => {
         this.book = books.livro;
         this.primeiroParagrafo = books.primeiro.conteudo;
+        this.buildArtigoNumeroParaIdMap();
       })
       .catch((error) => {
         console.error('Erro ao carregar os livros:', error);
       });
   }
+
+  private artigoNumeroParaId: Record<string, string> = {};
+
+private buildArtigoNumeroParaIdMap() {
+  this.artigoNumeroParaId = {};
+  const book = this.filteredBook || this.book;
+  book?.titulos?.forEach((titulo: any) => {
+    titulo.capitulos?.forEach((capitulo: any) => {
+      capitulo.secaos?.forEach((secao: any) => {
+        secao.artigos?.forEach((artigo: any) => {
+          const match = artigo.conteudo.match(/Art\.?\s*(\d+)[º°]?/i);
+          if (match && match[1]) {
+            const numero = match[1];
+            this.artigoNumeroParaId[numero] = artigo.id;
+          }
+        });
+      });
+    });
+  });
+}
 
   onSearchInput(event: any) {
     const value = event.target.value;
@@ -236,6 +265,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.setupRemissaoLinks();
       this.remissaoListenerAttached = true;
     }
+    
+    // Adicionar listener para remissões inline
+    this.setupInlineRemissoesLinks();
   
     this.setupScrollListener();
   }
@@ -246,12 +278,24 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     this.handleRemissaoClick = (event: any) => {
       const target = event.target as HTMLElement;
-      // A remissão pode estar em qualquer nível dentro do .remissoes
-      const remissaoElement = target.closest('.remissoes') as HTMLElement;
+      
+      // A remissão pode estar em qualquer nível dentro do .remissao-content
+      const remissaoElement = target.closest('.remissao-content') as HTMLElement;
+      
       if (remissaoElement) {
         // Feedback visual no clique
-        remissaoElement.classList.add('flash-highlight');
-        setTimeout(() => remissaoElement.classList.remove('flash-highlight'), 600);
+        const container = remissaoElement.closest('.remissao-container') as HTMLElement;
+        if (container) {
+          // Adicionamos a classe de destaque
+          container.classList.add('remissao-highlight');
+          
+          // E removemos depois de um tempo
+          setTimeout(() => {
+            container.classList.remove('remissao-highlight');
+          }, 1500);
+        }
+        
+        // Passamos o remissaoElement para o handler
         this.handleRemissaoContent(remissaoElement, event);
         event.preventDefault();
       }
@@ -262,13 +306,18 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   handleRemissaoContent(remissaoElement: HTMLElement, event: Event) {
-    const conteudo = remissaoElement.innerText || remissaoElement.textContent || '';
+    const conteudo = remissaoElement.textContent || '';
     console.log('Conteúdo da remissão:', conteudo);
+    
+    // Obtém o ID da remissão para rastreamento
+    const remissaoId = remissaoElement.getAttribute('data-remissao-id');
 
     // Salva posição antes de navegar
     this.content.getScrollElement().then(scrollElement => {
       const currentPosition = scrollElement.scrollTop;
-      this.saveToHistory(null, currentPosition);
+      
+      // Salvamos informações adicionais sobre a remissão para melhorar a navegação
+      this.saveToHistory(null, currentPosition, remissaoId, conteudo);
 
       // Padrões para diferentes formatos de remissões
       // 1. Formato "Arts. X, Y e Z"
@@ -306,7 +355,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           this.showArtigosChoiceModal(artigos);
         } else if (artigos.length === 1) {
           // Se encontrou apenas um artigo, navega diretamente
-          this.scrollToArtigo(artigos[0]);
+          this.scrollToArtigo(artigos[0], undefined, true);
         }
         
         event.preventDefault();
@@ -316,7 +365,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       // Se não encontrou o padrão múltiplo, tenta o padrão simples "Art. X"
       const singleMatch = conteudo.match(singleArtPattern);
       if (singleMatch && singleMatch[1]) {
-        this.scrollToArtigo(singleMatch[1]);
+        this.scrollToArtigo(singleMatch[1], undefined, true);
         event.preventDefault();
         return;
       }
@@ -340,7 +389,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           this.showArtigosChoiceModal(allNumbers);
         } else {
           // Se encontrou apenas um artigo, navega diretamente
-          this.scrollToArtigo(allNumbers[0]);
+          this.scrollToArtigo(allNumbers[0], undefined, true);
         }
         
         event.preventDefault();
@@ -357,7 +406,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           this.showArtigosChoiceModal(numerosMatch);
         } else {
           // Se encontrou apenas um número, navega diretamente
-          this.scrollToArtigo(numerosMatch[0]);
+          this.scrollToArtigo(numerosMatch[0], undefined, true);
         }
         
         event.preventDefault();
@@ -382,7 +431,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         {
           text: 'Ir',
           handler: (value) => {
-            if (value) this.scrollToArtigo(value);
+            if (value) this.scrollToArtigo(value, undefined, true);
           }
         }
       ]
@@ -390,7 +439,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     await alert.present();
   }
 
-  saveToHistory(artigoId: string | null, scrollPosition: number) {
+  saveToHistory(artigoId: string | null, scrollPosition: number, remissaoId?: string | null, remissaoText?: string | null) {
     // Se estamos navegando a partir de um ponto intermediário do histórico,
     // descartar tudo o que vem depois
     if (this.currentHistoryIndex < this.navigationHistory.length - 1) {
@@ -400,7 +449,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     // Adicionar nova entrada ao histórico
     this.navigationHistory.push({
       artigoId: artigoId || 'unknown',
-      scrollPosition: scrollPosition
+      scrollPosition: scrollPosition,
+      remissaoId: remissaoId || null,
+      remissaoText: remissaoText || null
     });
     
     // Atualizar o índice atual
@@ -419,27 +470,50 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.content.scrollToPoint(0, previousPosition.scrollPosition, 500);
       
       console.log('Navegando de volta para:', previousPosition);
-    } else {
-      console.log('Não há posição anterior no histórico');
+      
+      // Se voltamos para uma remissão, destacar a remissão de origem
+      if (previousPosition.remissaoId) {
+        setTimeout(() => {
+          const remissaoElement = document.querySelector(`[data-remissao-id="${previousPosition.remissaoId}"]`);
+          
+          if (remissaoElement) {
+            const container = remissaoElement.closest('.remissao-container');
+            if (container) {
+              container.classList.add('remissao-active');
+              
+              // E removemos depois de um tempo
+              setTimeout(() => {
+                container.classList.remove('remissao-active');
+              }, 3000);
+            }
+          }
+        }, 600);
+      }
+      
+      // Ocultar o indicador de retorno após voltar
+      this.showReturnIndicator = false;
+      
+      // Feedback para o usuário
+      this.presentToast('Voltando para a posição anterior');
     }
   }
 
-  scrollToArtigo(artigo: string, inciso?: string) {
+  scrollToArtigo(artigo: string, inciso?: string, showReturnOption: boolean = false) {
     // Remover caracteres especiais como º ou ° que podem estar no número do artigo
     const artigoLimpo = artigo.replace(/[^\d]/g, '');
+
+    const artigoIdReal = this.artigoNumeroParaId[artigoLimpo];
+    let id = artigoIdReal ? `artigo-${artigoIdReal}` : `artigo-${artigoLimpo}`;
     
-    console.log(`Tentando encontrar o Artigo ${artigoLimpo}`);
+    console.log('ID do artigo:', id);
+    if (inciso) {
+      id += '-inciso-' + inciso;
+    }
     
-    // Salvar a posição atual antes de navegar
+    // Salvar posição atual antes de buscar o artigo
     this.content.getScrollElement().then(scrollElement => {
-      const currentPosition = scrollElement.scrollTop;
-      
-      // Primeiro tentamos encontrar pelo ID exato
-      let id = 'artigo-' + artigoLimpo;
-      if (inciso) {
-        id += '-inciso-' + inciso;
-      }
-      
+      const currentScrollPosition = scrollElement.scrollTop;
+
       let element = document.getElementById(id);
       let foundByContent = false;
       
@@ -516,21 +590,17 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           element.id = `artigo-${artigoLimpo}-temp`;
         }
         
-        // Atribuir um índice ao elemento para identificação no DOM
-        const allElements = document.querySelectorAll('h5');
-        let elementIndex = -1;
-        for (let i = 0; i < allElements.length; i++) {
-          if (allElements[i] === element) {
-            elementIndex = i;
-            break;
-          }
+        // Salvar a posição atual no histórico se estamos navegando por remissão
+        // Isso permite voltar ao ponto de origem
+        if (showReturnOption) {
+          this.saveToHistory(artigoLimpo, currentScrollPosition);
         }
-        console.log(`Índice do elemento no DOM: ${elementIndex}`);
+        
+        // Interrompemos qualquer rolagem em andamento
+        const scrollY = typeof this.content.scrollY === 'number' ? this.content.scrollY : 0;
+        this.content.scrollToPoint(0, scrollY, 0);
         
         // Garantir que o elemento está visível na página
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Ajusta a posição para considerar o header
         setTimeout(() => {
           // Usar getBoundingClientRect para obter a posição atual do elemento
           const rect = element.getBoundingClientRect();
@@ -538,16 +608,28 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           
           this.content.scrollToPoint(0, offsetTop, 500);
           
-          // Salvar o artigo no histórico
-          this.saveToHistory(artigoLimpo, currentPosition);
+          // Destaque visual
+          element.classList.add('flash-highlight');
+          setTimeout(() => element.classList.remove('flash-highlight'), 1500);
+          
+          // Mostrar o indicador de retorno flutuante, se solicitado
+          if (showReturnOption && this.navigationHistory.length > 1) {
+            this.showReturnIndicator = true;
+            
+            // Limpar qualquer timeout existente
+            if (this.showReturnIndicatorTimeout) {
+              clearTimeout(this.showReturnIndicatorTimeout);
+            }
+            
+            // Configurar para ocultar o indicador após 8 segundos
+            this.showReturnIndicatorTimeout = setTimeout(() => {
+              this.showReturnIndicator = false;
+            }, 8000);
+          }
+          
+          // Feedback visual para o usuário
+          this.presentToast(`Navegando para o Artigo ${artigoLimpo}`);
         }, 100);
-        
-        // Destaque visual
-        element.classList.add('flash-highlight');
-        setTimeout(() => element.classList.remove('flash-highlight'), 1500);
-        
-        // Feedback visual para o usuário
-        this.presentToast(`Navegando para o Artigo ${artigoLimpo}`);
       } else {
         // Se não encontrou o elemento, tenta uma busca mais ampla pelo conteúdo
         console.log(`Elemento para Artigo ${artigoLimpo} não foi encontrado. Tentando busca mais ampla...`);
@@ -570,7 +652,14 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         }
         
         if (foundElement) {
-          foundElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Salvar a posição atual no histórico se estamos navegando por remissão
+          if (showReturnOption) {
+            this.saveToHistory(artigoLimpo, currentScrollPosition);
+          }
+          
+          // Interrompemos qualquer rolagem em andamento
+          const scrollY = typeof this.content.scrollY === 'number' ? this.content.scrollY : 0;
+          this.content.scrollToPoint(0, scrollY, 0);
           
           setTimeout(() => {
             // Usar getBoundingClientRect para obter a posição atual do elemento
@@ -578,13 +667,27 @@ export class ViewTextPage implements OnInit, AfterViewInit {
             const offsetTop = rect.top + window.pageYOffset - 120;
             
             this.content.scrollToPoint(0, offsetTop, 500);
-            this.saveToHistory(artigoLimpo, currentPosition);
+            
+            foundElement.classList.add('flash-highlight');
+            setTimeout(() => foundElement.classList.remove('flash-highlight'), 1500);
+            
+            // Mostrar o indicador de retorno flutuante, se solicitado
+            if (showReturnOption && this.navigationHistory.length > 1) {
+              this.showReturnIndicator = true;
+              
+              // Limpar qualquer timeout existente
+              if (this.showReturnIndicatorTimeout) {
+                clearTimeout(this.showReturnIndicatorTimeout);
+              }
+              
+              // Configurar para ocultar o indicador após 8 segundos
+              this.showReturnIndicatorTimeout = setTimeout(() => {
+                this.showReturnIndicator = false;
+              }, 8000);
+            }
+            
+            this.presentToast(`Navegando para menção ao Artigo ${artigoLimpo}`);
           }, 100);
-          
-          foundElement.classList.add('flash-highlight');
-          setTimeout(() => foundElement.classList.remove('flash-highlight'), 1500);
-          
-          this.presentToast(`Navegando para menção ao Artigo ${artigoLimpo}`);
         } else {
           this.presentToast(`Artigo ${artigoLimpo} não encontrado`);
           console.log(`Elemento para Artigo ${artigoLimpo} não foi encontrado após busca ampla`);
@@ -690,6 +793,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
 
     let formatted = this.formatNotas(content);
+    
+    // Processa remissões inline (referências a artigos no texto)
+    formatted = this.formatRemissoes(formatted);
 
     // Destaca os termos de busca se estiver buscando
     if (this.query && this.searchBy === 'keyword') {
@@ -704,6 +810,43 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     return this.sanitizer.bypassSecurityTrustHtml(formatted);
+  }
+  
+  // Método para identificar e formatar remissões dentro do texto
+  private formatRemissoes(content: string): string {
+    if (typeof content !== 'string') {
+      return '';
+    }
+    
+    // Padrões para diferentes formatos de remissões no texto
+    
+    // Padrão 1: Art. X (ou Art. Xº)
+    const padrao1 = /(Art\.\s+\d+[º°]?)\b/g;
+    
+    // Padrão 2: Arts. X, Y e Z
+    const padrao2 = /(Arts\.\s+\d+(?:[º°])?(?:,\s*\d+(?:[º°])?)*(?:\s+e\s+\d+(?:[º°])?)?)/g;
+    
+    // Padrão 3: artigo X (ou artigo Xº)
+    const padrao3 = /\b(artigos?\s+\d+[º°]?)\b/gi;
+    
+    // Padrão 4: Detectar parênteses com remissão específica - ex: (Art. 4, sessões preparatorias)
+    const padrao4 = /\(([^)]*Art\.[^)]*)\)/g;
+    
+    // Aplicar formatação para cada padrão
+    let result = content
+      // Formatar Art. X
+      .replace(padrao1, '<span class="remissao-inline" role="link" tabindex="0">$1</span>')
+      
+      // Formatar Arts. X, Y e Z
+      .replace(padrao2, '<span class="remissao-inline" role="link" tabindex="0">$1</span>')
+      
+      // Formatar "artigo X"
+      .replace(padrao3, '<span class="remissao-inline" role="link" tabindex="0">$1</span>')
+      
+      // Formatar remissões entre parênteses
+      .replace(padrao4, '(<span class="remissao-inline remissao-parentese" role="link" tabindex="0">$1</span>)');
+    
+    return result;
   }
 
   // Método para escapar caracteres especiais em expressões regulares
@@ -1102,6 +1245,75 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         console.log(`Elemento ${index} contém Artigo ${targetArticle}:`, texto.substring(0, 100));
         console.log('ID do elemento:', el.id);
         console.log('Elemento completo:', el);
+      }
+    });
+  }
+
+  // Método para configurar listeners para remissões inline
+  private setupInlineRemissoesLinks() {
+    // Usamos delegação de eventos para capturar cliques em remissões inline
+    document.addEventListener('click', (event: any) => {
+      const target = event.target;
+      if (target && target.classList && target.classList.contains('remissao-inline')) {
+        event.preventDefault();
+        event.stopPropagation(); // Impede propagação do evento que pode causar comportamentos inesperados
+        
+        // Capturar o texto da remissão
+        const remissaoText = target.textContent || target.innerText;
+        if (!remissaoText) return;
+        
+        console.log('Clique em remissão inline:', remissaoText);
+        
+        // Salvar posição atual da rolagem para permitir voltar
+        this.content.getScrollElement().then(scrollElement => {
+          const currentPosition = scrollElement.scrollTop;
+          
+          // Adicionar um efeito visual ao clicar
+          target.classList.add('remissao-active');
+          setTimeout(() => {
+            target.classList.remove('remissao-active');
+          }, 500);
+          
+          // Processar padrões de artigo
+          const artigoMatch = remissaoText.match(/Art(?:igos?)?\.?\s+(\d+)[º°]?/i);
+          const multipleArtsMatch = remissaoText.match(/Arts\.?\s+(\d+)[º°]?(?:,\s*(\d+)[º°]?)*(?:\s+e\s+(\d+)[º°]?)?/i);
+          
+          if (multipleArtsMatch) {
+            // Extrai todos os números mencionados
+            const artigos: string[] = [];
+            const allNumbersPattern = /\b(\d+)[º°]?\b/g;
+            let numberMatch;
+            
+            while ((numberMatch = allNumbersPattern.exec(remissaoText)) !== null) {
+              const num = numberMatch[1];
+              if (!artigos.includes(num)) {
+                artigos.push(num);
+              }
+            }
+            
+            if (artigos.length > 1) {
+              // Salva a posição atual antes de mostrar modal
+              this.saveToHistory(null, currentPosition, null, remissaoText);
+              
+              // Mostra modal para escolha se encontrou múltiplos artigos
+              this.showArtigosChoiceModal(artigos);
+            } else if (artigos.length === 1) {
+              // Navega diretamente para o artigo
+              this.scrollToArtigo(artigos[0], undefined, true);
+            }
+          } else if (artigoMatch && artigoMatch[1]) {
+            // Navega para o artigo mencionado
+            this.scrollToArtigo(artigoMatch[1], undefined, true);
+          } else {
+            // Se não conseguiu extrair o número do artigo, tenta como fallback
+            const numerosMatch = remissaoText.match(/\b(\d+)\b/);
+            if (numerosMatch && numerosMatch[1]) {
+              this.scrollToArtigo(numerosMatch[1], undefined, true);
+            } else {
+              this.presentToast('Não foi possível identificar o artigo referenciado');
+            }
+          }
+        });
       }
     });
   }

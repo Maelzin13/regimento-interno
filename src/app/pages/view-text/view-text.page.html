@@ -9,7 +9,7 @@
     
     <!-- Botão de navegação para voltar ao ponto anterior -->
     <ion-buttons slot="end" *ngIf="navigationHistory.length > 1 && currentHistoryIndex > 0">
-      <ion-button (click)="navigateBack()">
+      <ion-button (click)="navigateBack()" class="nav-back-button">
         <ion-icon name="return-up-back-outline" color="light"></ion-icon>
         <span class="nav-button-text">Voltar à remissão</span>
       </ion-button>
@@ -94,13 +94,16 @@
                   ></h5>
 
                   <ng-container *ngFor="let remissao of paragrafo.remissoes">
-                    <div class="remissoes mt-4 mb-4 pl-4 border-l-2 border-green-500 bg-green-50 p-3 rounded-r-lg">
-                      <ul class="space-y-2">
-                        <li class="remissoes font-semibold"
+                    <div class="remissao-container mt-3 mb-4 pl-4">
+                      <div class="remissao-content" [attr.data-remissao-id]="remissao.id">
+                        <div class="remissao-text"
                           [innerHTML]="safeHTML(remissao.conteudo)">
-                        </li>
-                      </ul>
-                      <div class="remissao-indicator">Clique para navegar</div>
+                        </div>
+                        <div class="remissao-indicator">
+                          <ion-icon name="link-outline" class="remissao-icon"></ion-icon>
+                          <span>Clique para navegar</span>
+                        </div>
+                      </div>
                     </div>
                   </ng-container>
 
@@ -128,6 +131,12 @@
       <p class="text-center">Carregando dados...</p>
     </div>
   </ng-template>
+
+  <!-- Indicador de retorno de remissão -->
+  <div *ngIf="showReturnIndicator" class="return-indicator" (click)="navigateBack()">
+    <ion-icon name="return-up-back-outline"></ion-icon>
+    <span>Voltar à remissão</span>
+  </div>
 </ion-content>
 
 
