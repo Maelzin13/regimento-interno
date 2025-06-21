@@ -18,19 +18,49 @@
 
 ion-content {
   --padding-top: 0px;
+  will-change: scroll-position;
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
 }
 
-// Tipografia
-.titulo { font-size: 1.4rem; font-weight: bold; }
-.capitulo { font-size: 1.2rem; font-weight: 500; }
-.secao { font-size: 1rem; font-style: italic; }
+.main-title,
+.titulo,
+.capitulo,
+.secao,
+.artigo-container {
+  contain: content;
+  will-change: transform;
+}
 
-// Comentários
+
+.titulo { 
+  font-size: 1.4rem; 
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.capitulo { 
+  font-size: 1.2rem; 
+  font-weight: 500;
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+
+.secao { 
+  font-size: 1rem; 
+  font-style: italic;
+  margin-top: 16px;
+  margin-bottom: 10px;
+}
+
 .comentario {
   padding: var(--search-padding);
   border-left: 4px solid #92d050;
   margin-bottom: 12px;
   border-radius: 5px;
+  contain: content;
+  will-change: transform, opacity;
 
   .comentario-tipo {
     color: #92d050;
@@ -58,8 +88,8 @@ ion-content {
   margin-bottom: 12px;
   border-radius: 5px;
   padding: 5px;
+  contain: content;
 }
-
 
 .comentario {
   color: #92d050;
@@ -72,28 +102,31 @@ ion-content {
   color: #92d050;
 }
 
+
+.remissao-inline,
 .remissoes {
   color: #1e999a;
   font-weight: bold;
   font-style: italic;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: transform 250ms ease, background 250ms ease;
+
+  &:hover, &:focus {
+    background: rgba(30, 153, 154, 0.13);
+    transform: translateY(-1px);
+  }
+}
+
+.remissoes {
   display: block;
   margin-bottom: 8px;
-  cursor: pointer;
   padding: 8px 10px;
   border-radius: 6px;
-  text-decoration: underline;
   position: relative;
   background: rgba(30, 153, 154, 0.05);
   box-shadow: 0 1px 6px rgba(30,153,154,0.07);
   border: 1px solid rgba(30, 153, 154, 0.15);
-
-  transition: all 0.25s ease;
-
-  &:hover, &:focus {
-    background: rgba(30, 153, 154, 0.13);
-    box-shadow: 0 2px 12px rgba(30,153,154,0.14);
-    transform: translateY(-1px);
-  }
 
   &:active {
     transform: translateY(1px);
@@ -131,14 +164,12 @@ ion-content {
   }
 }
 
-// Estilo para o botão de navegação de retorno
 .nav-button-text {
   margin-left: 5px;
   font-size: 0.9em;
   font-weight: 500;
 }
 
-// Sistema de busca
 .search-container {
   display: flex;
   align-items: center;
@@ -156,7 +187,6 @@ ion-content {
   }
 }
 
-// Controles de navegação
 .search-controls-fixed {
   display: flex;
   justify-content: space-between;
@@ -174,6 +204,7 @@ ion-content {
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid var(--search-border);
   transition: all 0.3s ease;
+  transform: translateZ(0);
 }
 
 @supports (padding-bottom: env(safe-area-inset-bottom)) {

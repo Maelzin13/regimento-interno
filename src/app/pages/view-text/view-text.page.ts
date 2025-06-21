@@ -55,6 +55,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   private handleRemissaoClick: any;
   private showReturnIndicatorTimeout: any;
 
+  private contentCache = new Map<string, SafeHtml>();
+  private remissoesCache = new Map<string, string>();
+  private comentarioCache = new Map<string, SafeHtml>();
+
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
@@ -67,43 +71,81 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     
   ) { }
 
-  ngOnInit() {
-    const user = this.authService.getUser();
+  async ngOnInit() {
+    const user = await this.authService.getUser();
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
     this.loadSearchHistory();
+    await this.loadBook();
+    
+  }
 
-    this.bookService
-      .getBookById(this.bookId)
-      .then((books: any) => {
-        this.book = books.livro;
-        this.primeiroParagrafo = books.primeiro.conteudo;
-        this.buildArtigoNumeroParaIdMap();
-      })
-      .catch((error) => {
-        console.error('Erro ao carregar os livros:', error);
+  async loadBook() {
+    try {
+      this.loadingController.create({
+        message: 'Carregando regimento...',
+        spinner: 'circles',
+        cssClass: 'loading-regimento'
+      }).then(loader => {
+        loader.present();
+        
+        // Carregar o livro
+        this.bookService.getBookById(this.bookId)
+          .then((books: any) => {
+            // Remover o loading
+            loader.dismiss();
+            
+            // Guardar os dados do livro
+            this.book = books.livro;
+            this.primeiroParagrafo = books.primeiro.conteudo;
+            
+            // Construir o mapa de artigos depois que os dados forem carregados
+            setTimeout(() => {
+              this.buildArtigoNumeroParaIdMap();
+            }, 0);
+            
+            // Checar a URL por algum artigo específico para navegar
+            this.route.queryParams.subscribe(params => {
+              if (params && params['artigo']) {
+                setTimeout(() => {
+                  this.scrollToArtigo(params['artigo']);
+                }, 500);
+              }
+            });
+          })
+          .catch((error) => {
+            // Remover o loading em caso de erro
+            loader.dismiss();
+            console.error('Erro ao carregar os livros:', error);
+            this.presentToast('Erro ao carregar o regimento. Tente novamente.');
+          });
       });
+    } catch (error) {
+      console.error('Erro ao carregar o livro:', error);
+    } finally {
+      this.loadingController.dismiss();
+    }
   }
 
   private artigoNumeroParaId: Record<string, string> = {};
 
-private buildArtigoNumeroParaIdMap() {
-  this.artigoNumeroParaId = {};
-  const book = this.filteredBook || this.book;
-  book?.titulos?.forEach((titulo: any) => {
-    titulo.capitulos?.forEach((capitulo: any) => {
-      capitulo.secaos?.forEach((secao: any) => {
-        secao.artigos?.forEach((artigo: any) => {
-          const match = artigo.conteudo.match(/Art\.?\s*(\d+)[º°]?/i);
-          if (match && match[1]) {
-            const numero = match[1];
-            this.artigoNumeroParaId[numero] = artigo.id;
-          }
+  private buildArtigoNumeroParaIdMap() {
+    this.artigoNumeroParaId = {};
+    const book = this.filteredBook || this.book;
+    book?.titulos?.forEach((titulo: any) => {
+      titulo.capitulos?.forEach((capitulo: any) => {
+        capitulo.secaos?.forEach((secao: any) => {
+          secao.artigos?.forEach((artigo: any) => {
+            const match = artigo.conteudo.match(/Art\.?\s*(\d+)[º°]?/i);
+            if (match && match[1]) {
+              const numero = match[1];
+              this.artigoNumeroParaId[numero] = artigo.id;
+            }
+          });
         });
       });
     });
-  });
-}
+  }
 
   onSearchInput(event: any) {
     const value = event.target.value;
@@ -791,6 +833,14 @@ private buildArtigoNumeroParaIdMap() {
 
   safeHTML(content: string): SafeHtml {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
+    
+    // Gerar uma chave de cache baseada no conteúdo e no estado atual da pesquisa
+    const cacheKey = content + (this.query || '') + (this.searchType || '') + (this.searchBy || '');
+    
+    // Verificar se já temos o resultado em cache
+    if (this.contentCache.has(cacheKey)) {
+      return this.contentCache.get(cacheKey)!;
+    }
 
     let formatted = this.formatNotas(content);
     
@@ -809,7 +859,12 @@ private buildArtigoNumeroParaIdMap() {
       );
     }
 
-    return this.sanitizer.bypassSecurityTrustHtml(formatted);
+    const result = this.sanitizer.bypassSecurityTrustHtml(formatted);
+    
+    // Guardar o resultado em cache
+    this.contentCache.set(cacheKey, result);
+    
+    return result;
   }
   
   // Método para identificar e formatar remissões dentro do texto
@@ -817,34 +872,48 @@ private buildArtigoNumeroParaIdMap() {
     if (typeof content !== 'string') {
       return '';
     }
+
+    // Verificar se já processamos este conteúdo antes
+    if (this.remissoesCache.has(content)) {
+      return this.remissoesCache.get(content)!;
+    }
     
-    // Padrões para diferentes formatos de remissões no texto
+    // Ao invés de usar várias expressões regulares separadas,
+    // vamos concatená-las em uma única utilizando alternância (|)
+    // para reduzir o número de iterações pelo texto
+    const combinedPattern = /(Art\.\s+\d+[º°]?)\b|(Arts\.\s+\d+(?:[º°])?(?:,\s*\d+(?:[º°])?)*(?:\s+e\s+\d+(?:[º°])?)?)|(\b(?:artigos?|inciso|alínea|parágrafo)\s+\d+[º°]?\b)|\(([^)]*Art\.[^)]*)\)/gi;
     
-    // Padrão 1: Art. X (ou Art. Xº)
-    const padrao1 = /(Art\.\s+\d+[º°]?)\b/g;
-    
-    // Padrão 2: Arts. X, Y e Z
-    const padrao2 = /(Arts\.\s+\d+(?:[º°])?(?:,\s*\d+(?:[º°])?)*(?:\s+e\s+\d+(?:[º°])?)?)/g;
-    
-    // Padrão 3: artigo X (ou artigo Xº)
-    const padrao3 = /\b(artigos?\s+\d+[º°]?)\b/gi;
-    
-    // Padrão 4: Detectar parênteses com remissão específica - ex: (Art. 4, sessões preparatorias)
-    const padrao4 = /\(([^)]*Art\.[^)]*)\)/g;
-    
-    // Aplicar formatação para cada padrão
-    let result = content
-      // Formatar Art. X
-      .replace(padrao1, '<span class="remissao-inline" role="link" tabindex="0">$1</span>')
+    let lastIndex = 0;
+    let result = '';
+    let match;
+
+    // Única varredura pelo texto
+    while ((match = combinedPattern.exec(content)) !== null) {
+      const matchText = match[0];
+      const matchIndex = match.index;
       
-      // Formatar Arts. X, Y e Z
-      .replace(padrao2, '<span class="remissao-inline" role="link" tabindex="0">$1</span>')
+      // Adicionar texto entre a última correspondência e a atual
+      result += content.substring(lastIndex, matchIndex);
       
-      // Formatar "artigo X"
-      .replace(padrao3, '<span class="remissao-inline" role="link" tabindex="0">$1</span>')
+      // Determinar qual padrão foi correspondido e aplicar a formatação adequada
+      if (match[1]) { // Art. X
+        result += `<span class="remissao-inline" role="link" tabindex="0">${matchText}</span>`;
+      } else if (match[2]) { // Arts. X, Y e Z
+        result += `<span class="remissao-inline" role="link" tabindex="0">${matchText}</span>`;
+      } else if (match[3]) { // artigo X, inciso X, etc.
+        result += `<span class="remissao-inline" role="link" tabindex="0">${matchText}</span>`;
+      } else if (match[4]) { // (Art. X...)
+        result += `(<span class="remissao-inline remissao-parentese" role="link" tabindex="0">${match[4]}</span>)`;
+      }
       
-      // Formatar remissões entre parênteses
-      .replace(padrao4, '(<span class="remissao-inline remissao-parentese" role="link" tabindex="0">$1</span>)');
+      lastIndex = matchIndex + matchText.length;
+    }
+    
+    // Adicionar o restante do texto
+    result += content.substring(lastIndex);
+    
+    // Guardar no cache para uso futuro
+    this.remissoesCache.set(content, result);
     
     return result;
   }
@@ -1182,25 +1251,42 @@ private buildArtigoNumeroParaIdMap() {
   processComentarioContentFormated(content: string, commentId: string): SafeHtml {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
     
+    // Gerar chave única para o cache baseado no conteúdo, ID do comentário e estado de expansão
+    const isExpanded = this.isCommentExpanded(commentId);
+    const cacheKey = `${content}_${commentId}_${isExpanded}`;
+    
+    // Verificar se já temos o resultado em cache
+    if (this.comentarioCache.has(cacheKey)) {
+      return this.comentarioCache.get(cacheKey)!;
+    }
+    
     const processAndSanitize = (str: string) => this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(str));
-  
+
     const colonIndex = content.indexOf(':');
     if (colonIndex === -1) {
-      return processAndSanitize(content);
+      const result = processAndSanitize(content);
+      this.comentarioCache.set(cacheKey, result);
+      return result;
     }
-  
+
     const beforeColon = content.substring(0, colonIndex + 1);
     const afterColon = content.substring(colonIndex + 1);
-  
-    if (!this.isCommentExpanded(commentId)) {
-      const processedContent = `<strong>${beforeColon}</strong><a class="ver-mais" (click)="toggleComment('${commentId}')">Ver mais</a>`;
-      return processAndSanitize(processedContent);
-    }
-  
-    const processedContent = `<strong>${beforeColon}</strong>${afterColon}<a class="ver-menos" (click)="toggleComment('${commentId}')">Ver menos</a>`;
-    return processAndSanitize(processedContent);
-  }  
 
+    let processedContent;
+    if (!isExpanded) {
+      processedContent = `<strong>${beforeColon}</strong><a class="ver-mais" (click)="toggleComment('${commentId}')">Ver mais</a>`;
+    } else {
+      processedContent = `<strong>${beforeColon}</strong>${afterColon}<a class="ver-menos" (click)="toggleComment('${commentId}')">Ver menos</a>`;
+    }
+
+    const result = processAndSanitize(processedContent);
+    
+    // Armazenar em cache
+    this.comentarioCache.set(cacheKey, result);
+    
+    return result;
+  }
+  
   toggleAllComments() {
     this.allCommentsExpanded = !this.allCommentsExpanded;
   
@@ -1316,5 +1402,34 @@ private buildArtigoNumeroParaIdMap() {
         });
       }
     });
+  }
+
+  // Funções de rastreamento para otimizar a renderização de listas
+  trackByTituloId(index: number, item: any): number {
+    return item.id || index;
+  }
+
+  trackByCapituloId(index: number, item: any): number {
+    return item.id || index;
+  }
+
+  trackBySecaoId(index: number, item: any): number {
+    return item.id || index;
+  }
+
+  trackByArtigoId(index: number, item: any): number {
+    return item.id || index;
+  }
+
+  trackByParagrafoId(index: number, item: any): number {
+    return item.id || index;
+  }
+
+  trackByRemissaoId(index: number, item: any): number {
+    return item.id || index;
+  }
+
+  trackByComentarioId(index: number, item: any): number {
+    return item.id || index;
   }
 }
