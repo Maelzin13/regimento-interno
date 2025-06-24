@@ -431,7 +431,8 @@ ion-alert {
   background-color: rgba(var(--ion-color-success-rgb), 0.05);
   padding: 12px;
   border-radius: 0 8px 8px 0;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  margin: 10px 0;
   
   &:hover {
     background-color: rgba(var(--ion-color-success-rgb), 0.1);
@@ -442,6 +443,16 @@ ion-alert {
 
 .remissao-content {
   cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: var(--ion-color-success-shade);
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
 }
 
 .remissao-text {
@@ -467,7 +478,13 @@ ion-alert {
 
 .remissao-active {
   background-color: rgba(var(--ion-color-warning-rgb), 0.15);
-  border-left-color: var(--ion-color-warning);
+  border-left: 4px solid var(--ion-color-warning);
+  border-right: 4px solid var(--ion-color-warning);
+  box-shadow: 0 0 15px rgba(var(--ion-color-warning-rgb), 0.4);
+  padding: 12px;
+  border-radius: 6px;
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
 }
 
 .nav-back-button {
@@ -496,25 +513,39 @@ ion-alert {
 .return-indicator {
   position: fixed;
   bottom: 80px;
-  right: 20px;
+  right: 16px;
   background-color: var(--ion-color-primary);
   color: white;
   padding: 10px 16px;
   border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
   display: flex;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  z-index: 10;
-  animation: fadeIn 0.3s ease;
+  justify-content: center;
+  font-weight: 500;
+  animation: return-indicator-entrance 0.5s ease-out;
+  transition: all 0.3s ease;
   
   ion-icon {
-    margin-right: 6px;
-    font-size: 1.2em;
+    margin-right: 8px;
+    font-size: 18px;
   }
   
-  &:hover {
-    background-color: var(--ion-color-primary-shade);
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@keyframes return-indicator-entrance {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -554,38 +585,48 @@ ion-alert {
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  border-radius: 3px;
   
   &:hover, &:focus {
     color: var(--ion-color-primary-shade);
     text-decoration-color: var(--ion-color-primary);
+    background-color: rgba(var(--ion-color-primary-rgb), 0.08);
+    box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.1);
   }
   
   &:active {
     color: var(--ion-color-primary-tint);
+    background-color: rgba(var(--ion-color-primary-rgb), 0.12);
   }
   
-  // Tooltip ao passar o mouse
-  &::after {
-    content: "Clique para navegar";
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translateX(-50%) scale(0.9);
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    white-space: nowrap;
-    z-index: 100;
+  &.remissao-active {
+    background-color: rgba(var(--ion-color-warning-rgb), 0.15);
+    box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
+    color: var(--ion-color-warning-shade);
+    text-decoration-color: var(--ion-color-warning);
   }
   
-  &:hover::after {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
+  &.remissao-pulsing {
+    animation: remissao-pulse 1.5s ease-in-out;
+  }
+}
+
+// Animação de pulso para remissões clicadas
+@keyframes remissao-pulse {
+  0% {
+    transform: scale(1);
+    background-color: rgba(var(--ion-color-warning-rgb), 0.2);
+    box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    background-color: rgba(var(--ion-color-warning-rgb), 0.3);
+    box-shadow: 0 0 0 4px rgba(var(--ion-color-warning-rgb), 0.4), 0 0 20px rgba(var(--ion-color-warning-rgb), 0.3);
+  }
+  100% {
+    transform: scale(1);
+    background-color: rgba(var(--ion-color-warning-rgb), 0.15);
+    box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
   }
 }
 
@@ -597,5 +638,111 @@ ion-alert {
   
   &:hover {
     background-color: rgba(var(--ion-color-success-rgb), 0.1);
+  }
+}
+
+// Melhorar o destaque dos elementos específicos
+.elemento-especifico-highlight {
+  animation: elemento-especifico-animation 3s ease-in-out;
+  position: relative;
+  z-index: 10;
+  background-color: rgba(var(--ion-color-warning-rgb), 0.15);
+  box-shadow: 0 0 15px rgba(var(--ion-color-warning-rgb), 0.4);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 4px -8px;
+}
+
+.elemento-especifico-pulse {
+  animation: elemento-especifico-pulse 2s ease-in-out;
+}
+
+@keyframes elemento-especifico-pulse {
+  0% {
+    transform: scale(1);
+    background-color: rgba(var(--ion-color-warning-rgb), 0.2);
+    box-shadow: 0 0 5px rgba(var(--ion-color-warning-rgb), 0.4);
+  }
+  50% {
+    transform: scale(1.03);
+    background-color: rgba(var(--ion-color-warning-rgb), 0.3);
+    box-shadow: 0 0 20px rgba(var(--ion-color-warning-rgb), 0.7);
+  }
+  100% {
+    transform: scale(1);
+    background-color: rgba(var(--ion-color-warning-rgb), 0.15);
+    box-shadow: 0 0 15px rgba(var(--ion-color-warning-rgb), 0.4);
+  }
+}
+
+@keyframes elemento-especifico-animation {
+  0% {
+    background-color: rgba(var(--ion-color-warning-rgb), 0.4);
+    box-shadow: 0 0 20px rgba(var(--ion-color-warning-rgb), 0.7);
+  }
+  15% {
+    background-color: rgba(var(--ion-color-warning-rgb), 0.2);
+    box-shadow: 0 0 10px rgba(var(--ion-color-warning-rgb), 0.5);
+  }
+  30% {
+    background-color: rgba(var(--ion-color-warning-rgb), 0.4);
+    box-shadow: 0 0 20px rgba(var(--ion-color-warning-rgb), 0.7);
+  }
+  100% {
+    background-color: rgba(var(--ion-color-warning-rgb), 0.15);
+    box-shadow: 0 0 15px rgba(var(--ion-color-warning-rgb), 0.4);
+  }
+}
+
+// Melhorar o destaque dos artigos
+.artigo-destacado {
+  position: relative;
+  z-index: 5;
+  background-color: rgba(var(--ion-color-primary-rgb), 0.08);
+  box-shadow: 0 0 10px rgba(var(--ion-color-primary-rgb), 0.3);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 4px -8px;
+}
+
+.artigo-highlight-pulse {
+  animation: artigo-pulse 2s ease-in-out;
+}
+
+@keyframes artigo-pulse {
+  0% {
+    transform: scale(1);
+    background-color: rgba(var(--ion-color-primary-rgb), 0.1);
+    box-shadow: 0 0 5px rgba(var(--ion-color-primary-rgb), 0.3);
+  }
+  50% {
+    transform: scale(1.02);
+    background-color: rgba(var(--ion-color-primary-rgb), 0.15);
+    box-shadow: 0 0 15px rgba(var(--ion-color-primary-rgb), 0.5);
+  }
+  100% {
+    transform: scale(1);
+    background-color: rgba(var(--ion-color-primary-rgb), 0.08);
+    box-shadow: 0 0 10px rgba(var(--ion-color-primary-rgb), 0.3);
+  }
+}
+
+// Destacar elemento quando retorna para a remissão original
+.remissao-active {
+  animation: remissao-return-highlight 2s ease-in-out;
+}
+
+@keyframes remissao-return-highlight {
+  0% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.3);
+    box-shadow: 0 0 20px rgba(var(--ion-color-success-rgb), 0.6);
+  }
+  50% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.15);
+    box-shadow: 0 0 10px rgba(var(--ion-color-success-rgb), 0.4);
+  }
+  100% {
+    background-color: rgba(var(--ion-color-success-rgb), 0.05);
+    box-shadow: 0 0 0 rgba(var(--ion-color-success-rgb), 0);
   }
 }
