@@ -71,6 +71,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   private contentCache = new Map<string, SafeHtml>();
   private remissoesCache = new Map<string, string>();
   private comentarioCache = new Map<string, SafeHtml>();
+  // Cache para elementos específicos encontrados (artigos, parágrafos, incisos)
+  private elementosCache: Map<string, HTMLElement | null> = new Map();
 
   constructor(
     private route: ActivatedRoute,
@@ -101,6 +103,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         cssClass: 'loading-regimento'
       }).then(loader => {
         loader.present();
+        
+        // Limpar caches para garantir dados atualizados
+        this.elementosCache.clear();
+        this.contentCache.clear();
+        this.remissoesCache.clear();
         
         // Carregar o livro
         this.bookService.getBookById(this.bookId)
@@ -410,7 +417,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.content.getScrollElement().then(scrollElement => {
       const currentPosition = scrollElement.scrollTop;
       
-      // Tenta o parser avançado primeiro - esta é a abordagem principal
+      // Processa a remissão para identificar os possíveis destinos
       const destinosRemissao = this.parseRemissaoCompleta(conteudo);
       
       if (destinosRemissao.length > 0) {
@@ -435,133 +442,24 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           event.preventDefault();
           return;
         }
+      } else {
+        // Não encontrou nenhum destino com o parser
+        console.log('Nenhum destino encontrado para a remissão:', conteudo);
+        this.presentToast('Não foi possível identificar a referência na remissão.');
       }
-      
-      // Fallback para o comportamento existente se o parser avançado não encontrar nada
-      // Este código raramente será executado com o parser melhorado
-      console.log('Parser avançado não encontrou destinos, usando fallback');
-      
-      // Salvamos informações adicionais sobre a remissão para melhorar a navegação
-      this.saveToHistory(null, currentPosition, remissaoId, conteudo, null, null);
-
-      // Padrões para diferentes formatos de remissões
-      // 1. Formato "Arts. X, Y e Z"
-      const multipleArtsPattern = /Arts?\.\s*(\d+)[º°]?(?:\s*,\s*(\d+)[º°]?)*(?:\s*e\s*(\d+)[º°]?)?/i;
-      // 2. Formato "Art. X"
-      const singleArtPattern = /Art\.\s*(\d+)[º°]?/i;
-      // 3. Formato para capturar números isolados após "Art." ou "Arts."
-      const numbersPattern = /Art(?:s)?\.(?:[^0-9]+(\d+)[º°]?)+/gi;
-      
-      // Tenta encontrar múltiplos artigos no formato "Arts. X, Y e Z"
-      const multipleMatch = conteudo.match(multipleArtsPattern);
-      if (multipleMatch) {
-        // Extrai todos os números mencionados
-        const artigos: string[] = [];
-        
-        // Primeiro, pegamos o número após "Arts."
-        if (multipleMatch[1]) artigos.push(multipleMatch[1]);
-        
-        // Depois, procuramos por todos os números que aparecem após vírgulas ou "e"
-        const allNumbersPattern = /\b(\d+)[º°]?\b/g;
-        let numberMatch;
-        
-        // Usamos uma abordagem compatível com ES5/ES6 em vez de matchAll
-        while ((numberMatch = allNumbersPattern.exec(conteudo)) !== null) {
-          const num = numberMatch[1];
-          if (!artigos.includes(num)) {
-            artigos.push(num);
-          }
-        }
-        
-        console.log('Artigos encontrados na remissão:', artigos);
-        
-        if (artigos.length > 1) {
-          // Se encontrou múltiplos artigos, mostra um modal para escolha
-          this.showArtigosChoiceModal(artigos);
-        } else if (artigos.length === 1) {
-          // Se encontrou apenas um artigo, navega diretamente
-          this.scrollToArtigo(artigos[0], undefined, undefined, true);
-        }
-        
-        event.preventDefault();
-        return;
-      }
-      
-      // Se não encontrou o padrão múltiplo, tenta o padrão simples "Art. X"
-      const singleMatch = conteudo.match(singleArtPattern);
-      if (singleMatch && singleMatch[1]) {
-        this.scrollToArtigo(singleMatch[1], undefined, undefined, true);
-        event.preventDefault();
-        return;
-      }
-      
-      // Último recurso: procura por qualquer número após "Art." ou "Arts."
-      const allNumbers: string[] = [];
-      let match;
-      
-      // Extrair todos os números que aparecem após "Art." ou "Arts."
-      while ((match = numbersPattern.exec(conteudo)) !== null) {
-        if (match[1] && !allNumbers.includes(match[1])) {
-          allNumbers.push(match[1]);
-        }
-      }
-      
-      if (allNumbers.length > 0) {
-        console.log('Números de artigos encontrados:', allNumbers);
-        
-        if (allNumbers.length > 1) {
-          // Se encontrou múltiplos artigos, mostra um modal para escolha
-          this.showArtigosChoiceModal(allNumbers);
-        } else {
-          // Se encontrou apenas um artigo, navega diretamente
-          this.scrollToArtigo(allNumbers[0], undefined, undefined, true);
-        }
-        
-        event.preventDefault();
-        return;
-      }
-
-      // Fallback: pega o primeiro número isolado
-      const numerosMatch = conteudo.match(/(\d+)/g);
-      if (numerosMatch && numerosMatch.length > 0) {
-        console.log('Números isolados encontrados:', numerosMatch);
-        
-        if (numerosMatch.length > 1) {
-          // Se encontrou múltiplos números, mostra um modal para escolha
-          this.showArtigosChoiceModal(numerosMatch);
-        } else {
-          // Se encontrou apenas um número, navega diretamente
-          this.scrollToArtigo(numerosMatch[0], undefined, undefined, true);
-        }
-        
-        event.preventDefault();
-        return;
-      }
-
-      this.presentToast('Não foi possível identificar o artigo referenciado');
     });
   }
 
   // Modal para múltiplos artigos
   async showArtigosChoiceModal(artigos: string[]) {
-    const alert = await this.alertController.create({
-      header: 'Escolha o artigo para navegar',
-      inputs: artigos.map(a => ({
-        type: 'radio',
-        label: `Artigo ${a}`,
-        value: a
-      })),
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Ir',
-          handler: (value) => {
-            if (value) this.scrollToArtigo(value, undefined, undefined, true);
-          }
-        }
-      ]
-    });
-    await alert.present();
+    // Convertendo artigos simples para o formato RemissaoDestino
+    const destinos: RemissaoDestino[] = artigos.map(artigo => ({
+      artigo,
+      origem: { text: `Art. ${artigo}` }
+    }));
+    
+    // Usando o modal de destino mais completo
+    await this.showDestinationChoiceModal(destinos);
   }
 
   saveToHistory(artigoId: string | null, scrollPosition: number, remissaoId?: string | null, remissaoText?: string | null, paragrafo?: string | null, inciso?: string | null) {
@@ -655,171 +553,85 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   scrollToArtigo(artigo: string, paragrafo?: string, inciso?: string, showReturnOption: boolean = false) {
+    // Verificar se o artigo é um marcador de contexto
+    if (artigo === 'contexto') {
+      // Neste caso, precisamos determinar o artigo atual baseado no contexto
+      console.log('Artigo marcado como contexto, tentando determinar o artigo atual');
+      
+      // Obter o artigo atual onde o usuário está
+      this.content.getScrollElement().then(scrollElement => {
+        const currentScrollPosition = scrollElement.scrollTop;
+        
+        // Procurar o artigo visível na tela ou o mais próximo acima da posição atual
+        const artigos = document.querySelectorAll('h5');
+        let artigoContexto = null;
+        let ultimaPosicaoValida = -1;
+        
+        for (let i = 0; i < artigos.length; i++) {
+          const el = artigos[i];
+          const rect = el.getBoundingClientRect();
+          const posicao = rect.top + window.pageYOffset;
+          
+          // Se o elemento está acima da posição atual de rolagem, pode ser um candidato
+          if (posicao <= currentScrollPosition) {
+            // Verifica se o texto contém indicação de artigo
+            const texto = el.textContent || '';
+            if (texto.match(/Art\.\s*\d+[º°]?\b/i)) {
+              // Este é um artigo válido acima da posição atual
+              artigoContexto = el;
+              ultimaPosicaoValida = posicao;
+            }
+          }
+        }
+        
+        if (artigoContexto) {
+          // Extrair o número do artigo do texto
+          const texto = artigoContexto.textContent || '';
+          const match = texto.match(/Art\.\s*(\d+)[º°]?\b/i);
+          
+          if (match && match[1]) {
+            const artigoNumero = match[1];
+            console.log(`Artigo do contexto determinado: ${artigoNumero}`);
+            
+            // Agora podemos navegar para o elemento específico dentro deste artigo
+            this.scrollToArtigo(artigoNumero, paragrafo, inciso, showReturnOption);
+            return;
+          }
+        }
+        
+        // Se não conseguiu determinar o artigo do contexto
+        this.presentToast('Não foi possível determinar o artigo no contexto atual.');
+      });
+      
+      return;
+    }
+    
     // Remover caracteres especiais como º ou ° que podem estar no número do artigo
     const artigoLimpo = artigo.replace(/[^\d]/g, '');
 
-    // Buscar o ID do artigo no mapa
-    const artigoIdReal = this.artigoNumeroParaId[artigoLimpo];
-    let id = artigoIdReal ? `artigo-${artigoIdReal}` : `artigo-${artigoLimpo}`;
-    
-    console.log('ID do artigo:', id, 'Parágrafo:', paragrafo, 'Inciso:', inciso);
-    
     // Salvar posição atual antes de buscar o artigo
     this.content.getScrollElement().then(scrollElement => {
       const currentScrollPosition = scrollElement.scrollTop;
 
-      // Primeiro tentamos encontrar o elemento específico completo usando os dados do this.book
-      let element = null;
-      let foundByContent = false;
+      // Identificar o tipo de elemento que estamos buscando
       let elementType = "artigo";
-      
       if (paragrafo) elementType = "parágrafo";
       if (inciso) elementType = "inciso";
       
-      // Primeiro tentar encontrar o elemento específico (parágrafo ou inciso)
-      if (paragrafo || inciso) {
-        element = this.findElementoEspecifico(artigoLimpo, paragrafo, inciso);
-        if (element) {
-          console.log(`Elemento específico encontrado para ${elementType}:`, element);
-        }
-      }
+      console.log(`Buscando ${elementType}: Artigo ${artigoLimpo}${paragrafo ? ', §'+paragrafo : ''}${inciso ? ', '+inciso : ''}`);
       
-      // Se não encontrou elemento específico, busca o artigo na estrutura de dados
-      if (!element) {
-        const artigoObj = this.findArtigoByNumero(artigoLimpo);
-        
-        if (artigoObj) {
-          // Se encontrou o artigo na estrutura de dados, usa o ID real
-          id = `artigo-${artigoObj.id}`;
-          element = document.getElementById(id);
-          console.log('Artigo encontrado na estrutura de dados:', artigoObj);
-          
-          // Se encontrou o artigo mas estamos procurando por parágrafo/inciso específico
-          if (element && (paragrafo || inciso)) {
-            // Buscar o parágrafo/inciso dentro do artigo encontrado
-            const elementoEspecifico = this.findElementoEspecifico(artigoLimpo, paragrafo, inciso);
-            if (elementoEspecifico) {
-              element = elementoEspecifico;
-              console.log(`Elemento específico encontrado dentro do artigo:`, element);
-            }
-          }
-        }
-      }
+      // Usar a função especializada para encontrar o elemento exato
+      let element = this.findElementoEspecifico(artigoLimpo, paragrafo, inciso);
       
-      // Se ainda não encontrou, continua com busca normal pelo artigo
-      if (!element) {
-        element = document.getElementById(id);
-      }
-      
-      // Se não encontrar pelo ID, usamos uma busca mais precisa pelo conteúdo
-      if (!element) {
-        const artigos = document.querySelectorAll('h5');
-        let exactMatches = [];
-        let possibleMatches = [];
-        
-        // Mapeamento de conteúdos específicos para artigos problemáticos
-        const artigosEspeciais: Record<string, string> = {
-          '4': 'No dia 1º de fevereiro do primeiro ano de cada legislatura',
-          // Adicione outros artigos problemáticos aqui se necessário
-        };
-        
-        // Primeiro loop: procurar por correspondências exatas
-        for (let i = 0; i < artigos.length; i++) {
-          const el = artigos[i];
-          const texto = el.textContent || '';
-          
-          // Verificação para artigos especiais com conteúdo conhecido
-          if (artigoLimpo in artigosEspeciais && texto.includes(artigosEspeciais[artigoLimpo])) {
-            console.log(`Encontrado Artigo ${artigoLimpo} pelo conteúdo específico:`, texto.substring(0, 100));
-            exactMatches = [el];
-            break;
-          }
-          
-          // Padrão para encontrar "Art. X" no início do texto
-          const padraoExato = new RegExp(`^Art\\.\\s*${artigoLimpo}[º°]?\\b`, 'i');
-          if (padraoExato.test(texto)) {
-            exactMatches.push(el);
-            console.log(`Correspondência exata encontrada para Artigo ${artigoLimpo}:`, texto.substring(0, 100));
-            
-            // Se também procuramos por parágrafo/inciso, damos prioridade
-            if (paragrafo && (texto.includes(`§ ${paragrafo}`) || texto.includes(`§${paragrafo}`))) {
-              if (inciso && (texto.includes(`${inciso} –`) || texto.includes(`${inciso} -`) || texto.includes(`${inciso}-`))) {
-                // Encontrou correspondência perfeita!
-                exactMatches = [el];
-                break;
-              } else if (!inciso) {
-                // Encontrou parágrafo sem inciso
-                exactMatches = [el];
-                break;
-              }
-            }
-          }
-          // Padrão alternativo: contém "Art. X" em qualquer lugar
-          else if (texto.match(new RegExp(`Art\\.\\s*${artigoLimpo}[º°]?\\b`, 'i'))) {
-            possibleMatches.push(el);
-            console.log(`Correspondência possível encontrada para Artigo ${artigoLimpo}:`, texto.substring(0, 100));
-          }
-          
-          // Verifica por parágrafo específico
-          if (paragrafo && (texto.includes(`§ ${paragrafo}`) || texto.includes(`§${paragrafo}`))) {
-            possibleMatches.push(el);
-            console.log(`Possível parágrafo ${paragrafo} encontrado:`, texto.substring(0, 100));
-          }
-          
-          // Verifica por inciso específico
-          if (inciso && (texto.includes(`${inciso} –`) || texto.includes(`${inciso} -`) || texto.includes(`${inciso}-`))) {
-            possibleMatches.push(el);
-            console.log(`Possível inciso ${inciso} encontrado:`, texto.substring(0, 100));
-          }
-        }
-        
-        // Verificação adicional para artigos que não foram encontrados
-        if (exactMatches.length === 0 && artigoLimpo in artigosEspeciais) {
-          // Busca mais ampla pelo conteúdo específico
-          for (let i = 0; i < artigos.length; i++) {
-            const el = artigos[i];
-            const texto = el.textContent || '';
-            
-            if (texto.includes(artigosEspeciais[artigoLimpo])) {
-              console.log(`Encontrado Artigo ${artigoLimpo} pelo conteúdo específico (busca ampla):`, texto.substring(0, 100));
-              exactMatches = [el];
-              break;
-            }
-          }
-        }
-        
-        // Usa a primeira correspondência exata, ou a primeira possível se não houver exatas
-        if (exactMatches.length > 0) {
-          element = exactMatches[0];
-          foundByContent = true;
-          console.log(`Usando correspondência exata para Artigo ${artigoLimpo}:`, element.textContent?.substring(0, 100));
-        } else if (possibleMatches.length > 0) {
-          element = possibleMatches[0];
-          foundByContent = true;
-          console.log(`Usando correspondência possível para Artigo ${artigoLimpo}:`, element.textContent?.substring(0, 100));
-        }
+      // Se não encontrou o elemento específico, tenta encontrar apenas o artigo
+      if (!element && (paragrafo || inciso)) {
+        console.log('Elemento específico não encontrado, tentando encontrar apenas o artigo');
+        element = this.findElementoEspecifico(artigoLimpo);
       }
       
       // Se encontrou o elemento, rola até ele e destaca
       if (element) {
         console.log(`Elemento encontrado para ${elementType} ${artigoLimpo}:`, element);
-        
-        // Se encontrado pelo conteúdo, adiciona um ID para facilitar futuras referências
-        if (foundByContent && !element.id) {
-          const idBase = `artigo-${artigoLimpo}`;
-          let newId = idBase;
-          
-          if (paragrafo) {
-            newId += `-paragrafo-${paragrafo}`;
-          }
-          
-          if (inciso) {
-            newId += `-inciso-${inciso}`;
-          }
-          
-          newId += '-temp';
-          element.id = newId;
-        }
         
         // Salvar a posição atual no histórico se estamos navegando por remissão
         // Isso permite voltar ao ponto de origem
@@ -843,18 +655,30 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           
           // Centralizar o elemento na tela, com um pequeno ajuste para cima
           // para garantir que o elemento fique na parte superior central da tela
-          const scrollPosition = offsetTop - (windowHeight / 2) + (elementHeight / 2) - 50;
+          const scrollPosition = offsetTop - (windowHeight * 0.3); // Posiciona a 30% do topo da tela
           
           // Rolar para a posição calculada com animação suave
           this.content.scrollToPoint(0, scrollPosition, 500);
           
-          // Destaque visual mais forte para parágrafos e incisos
+          // Remover qualquer destaque anterior
+          const destaques = document.querySelectorAll('.flash-highlight, .elemento-destacado, .artigo-destacado, .elemento-especifico-highlight');
+          destaques.forEach(el => {
+            el.classList.remove('flash-highlight', 'elemento-destacado', 'artigo-destacado', 'elemento-especifico-highlight');
+          });
+          
+          // Aplicar destaque visual mais forte
           element.classList.add('flash-highlight');
           
           // Adicionar classe específica para o tipo de elemento
           if (paragrafo || inciso) {
             element.classList.add('elemento-especifico-highlight');
             element.classList.add('elemento-destacado'); // Nova classe para destaque persistente
+            
+            // Adicionar uma borda para destacar melhor o elemento específico
+            element.style.border = '2px solid #3880ff';
+            element.style.borderRadius = '4px';
+            element.style.padding = '8px';
+            element.style.backgroundColor = 'rgba(56, 128, 255, 0.1)';
           } else {
             element.classList.add('artigo-destacado'); // Nova classe para destaque de artigos
           }
@@ -868,8 +692,14 @@ export class ViewTextPage implements OnInit, AfterViewInit {
               element.classList.remove('elemento-especifico-highlight');
               element.classList.remove('elemento-destacado');
               element.classList.remove('artigo-destacado');
-            }, 3000);
-          }, 3000);
+              
+              // Remover estilos inline
+              element.style.border = '';
+              element.style.borderRadius = '';
+              element.style.padding = '';
+              element.style.backgroundColor = '';
+            }, 5000);
+          }, 2000);
           
           // Mostrar o indicador de retorno flutuante, se solicitado
           if (showReturnOption && this.navigationHistory.length > 1) {
@@ -1775,24 +1605,21 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     
     console.log('Texto processado para análise:', textoProcessado);
     
-    // Padrão para remissões complexas com múltiplos artigos e possível inciso
-    // Ex: "Arts. 4º, 5º e 65, I"
-    const multipleArtsWithIncisoPattern = /Arts?\.?\s*(\d+)[º°]?(?:\s*,\s*(\d+)[º°]?)*(?:\s*e\s*(\d+)[º°]?)?(?:\s*,\s*([IVX]+))?/i;
+    // Identificar remissões de lei externa para não confundir com artigos do regimento interno
+    // Ex: "Lei 9.504/1997, art. 12"
+    const leiExternaPattern = /(?:Lei|Resolução|Código)\s+(?:n[º°]?\s*)?[\d\.\-\/]+,?\s+(?:art\.?|§)/i;
+    const leiExternaMatch = textoProcessado.match(leiExternaPattern);
     
-    // Padrão para remissão de artigo com parágrafo e inciso
-    // Ex: "art. 231, § 8º, I"
-    const artigoComParagrafoIncisoPattern = /Art\.?\s*(\d+)[º°]?(?:\s*,\s*§\s*(\d+)[º°]?)?(?:\s*,\s*([IVX]+))?/gi;
-    
-    // Padrão para remissão de artigo com parágrafo
-    // Ex: "Art. 2º, § 2º"
-    const artigoComParagrafoPattern = /Art\.?\s*(\d+)[º°]?(?:\s*,\s*§\s*(\d+)[º°]?)/gi;
-    
-    // Padrão para artigos separados por ponto e vírgula
-    // Ex: "Art. 2º, § 2º; art. 65, I"
-    const multipleRemissoesPattern = /([^;]+)/g;
+    if (leiExternaMatch) {
+      console.log('Identificada referência à lei externa:', leiExternaMatch[0]);
+      // Apresentaremos todas as opções mas indicando se são leis externas
+    }
     
     // Verificar se há múltiplas remissões separadas por ponto e vírgula
+    // Ex: "Art. 2º, § 2º; art. 65, I"
+    const multipleRemissoesPattern = /([^;]+)/g;
     const remissoesSeparadas = textoProcessado.match(multipleRemissoesPattern);
+    
     if (remissoesSeparadas && remissoesSeparadas.length > 1) {
       console.log('Encontradas múltiplas remissões separadas por ponto e vírgula:', remissoesSeparadas);
       
@@ -1805,36 +1632,50 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       return resultados;
     }
     
-    // Verificar o padrão de múltiplos artigos com possível inciso (Arts. 4º, 5º e 65, I)
-    const multipleMatch = textoProcessado.match(multipleArtsWithIncisoPattern);
+    // Padrão para referenciar múltiplos artigos com possíveis parágrafos e incisos
+    // Ex: "Arts. 4º, 5º e 65, I" ou "Arts. 4º, 5º e 65, § 2º, I"
+    const multipleArtsPattern = /\b(?:Arts?\.?\s*)(\d+)[º°]?(?:(?:\s*,|\s+e)\s*(\d+)[º°]?)+/i;
+    const multipleMatch = textoProcessado.match(multipleArtsPattern);
+    
     if (multipleMatch) {
-      console.log('Encontrou padrão de múltiplos artigos:', multipleMatch);
+      console.log('Padrão de múltiplos artigos encontrado:', multipleMatch);
       
       // Extrair todos os números de artigos mencionados
       const artigos: string[] = [];
-      const allNumbersPattern = /\b(\d+)[º°]?\b/g;
-      let numberMatch;
+      let eventoFrasePrincipal = textoProcessado;
       
+      // Primeiro identificamos todos os artigos
+      const allNumbersPattern = /(?:Arts?\.?\s*|,\s*|\s+e\s+)(\d+)[º°]?/g;
+      let numberMatch;
       while ((numberMatch = allNumbersPattern.exec(textoProcessado)) !== null) {
-        const num = numberMatch[1];
-        if (!artigos.includes(num)) {
-          artigos.push(num);
+        if (numberMatch[1] && !artigos.includes(numberMatch[1])) {
+          artigos.push(numberMatch[1]);
+          // Remover o artigo processado do texto para análise de parágrafos e incisos
+          eventoFrasePrincipal = eventoFrasePrincipal.replace(numberMatch[0], ' ');
         }
       }
       
       console.log('Artigos extraídos:', artigos);
+      console.log('Texto restante após remoção de artigos:', eventoFrasePrincipal);
       
-      // Verificar se há inciso mencionado (formato romano)
-      const incisoPattern = /,\s*([IVX]+)\b/i;
-      const incisoMatch = textoProcessado.match(incisoPattern);
+      // Verificar se há parágrafo mencionado após o último artigo
+      const paragrafoPattern = /§\s*(\d+)[º°]?/;
+      const paragrafoMatch = eventoFrasePrincipal.match(paragrafoPattern);
+      const paragrafo = paragrafoMatch ? paragrafoMatch[1] : undefined;
+      
+      // Verificar se há inciso mencionado após o último artigo/parágrafo
+      const incisoPattern = /(?:,\s*|e\s+)([IVX]+)\b/i;
+      const incisoMatch = eventoFrasePrincipal.match(incisoPattern);
       const inciso = incisoMatch ? incisoMatch[1] : undefined;
       
+      console.log('Parágrafo encontrado:', paragrafo);
       console.log('Inciso encontrado:', inciso);
       
       // Adicionar cada artigo como um destino separado
       for (const artigo of artigos) {
         resultados.push({
           artigo,
+          paragrafo,
           inciso,
           origem: {
             text: conteudo
@@ -1842,18 +1683,20 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         });
       }
       
-      return resultados;
+      if (resultados.length > 0) {
+        return resultados;
+      }
     }
     
-    // Resetar o regex lastIndex
-    artigoComParagrafoIncisoPattern.lastIndex = 0;
+    // Padrão para remissão de artigo com parágrafo e inciso
+    // Ex: "art. 231, § 8º, I"
+    const artigoComParagrafoIncisoPattern = /\bart\.?\s*(\d+)[º°]?(?:\s*,\s*§\s*(\d+)[º°]?)?(?:\s*,\s*([IVX]+))?/i;
+    const complexMatch = artigoComParagrafoIncisoPattern.exec(textoProcessado);
     
-    // Processar padrões de artigo com parágrafo e inciso (art. 231, § 8º, I)
-    let match;
-    while ((match = artigoComParagrafoIncisoPattern.exec(textoProcessado)) !== null) {
-      const artigo = match[1];
-      const paragrafo = match[2];
-      const inciso = match[3];
+    if (complexMatch) {
+      const artigo = complexMatch[1];
+      const paragrafo = complexMatch[2];
+      const inciso = complexMatch[3];
       
       console.log(`Encontrado artigo ${artigo}, parágrafo ${paragrafo}, inciso ${inciso}`);
       
@@ -1862,24 +1705,21 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         paragrafo,
         inciso,
         origem: {
-          text: match[0]
+          text: complexMatch[0]
         }
       });
-    }
-    
-    // Se encontrou resultados com o padrão específico, retorna
-    if (resultados.length > 0) {
-      console.log('Destinos de remissão encontrados com padrão específico:', resultados);
+      
       return resultados;
     }
     
-    // Resetar o regex lastIndex
-    artigoComParagrafoPattern.lastIndex = 0;
+    // Padrão para remissão de artigo com parágrafo
+    // Ex: "Art. 2º, § 2º"
+    const artigoComParagrafoPattern = /\bart\.?\s*(\d+)[º°]?(?:\s*,\s*§\s*(\d+)[º°]?)/i;
+    const paragMatch = artigoComParagrafoPattern.exec(textoProcessado);
     
-    // Processar padrões de artigo com parágrafo (Art. 2º, § 2º)
-    while ((match = artigoComParagrafoPattern.exec(textoProcessado)) !== null) {
-      const artigo = match[1];
-      const paragrafo = match[2];
+    if (paragMatch) {
+      const artigo = paragMatch[1];
+      const paragrafo = paragMatch[2];
       
       console.log(`Encontrado artigo ${artigo}, parágrafo ${paragrafo}`);
       
@@ -1887,29 +1727,85 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         artigo,
         paragrafo,
         origem: {
-          text: match[0]
+          text: paragMatch[0]
         }
       });
+      
+      return resultados;
     }
     
-    // Se ainda não encontrou nada, tenta um padrão mais simples para artigos
-    if (resultados.length === 0) {
-      const artigoSimples = /Art\.?\s*(\d+)[º°]?/gi;
-      while ((match = artigoSimples.exec(textoProcessado)) !== null) {
-        const artigo = match[1];
-        
-        console.log(`Encontrado artigo simples ${artigo}`);
+    // Padrão para artigo único sem parágrafo ou inciso
+    // Ex: "Art. 123"
+    const artigoSimplesPattern = /\bart\.?\s*(\d+)[º°]?/i;
+    const simplesMatch = artigoSimplesPattern.exec(textoProcessado);
+    
+    if (simplesMatch) {
+      const artigo = simplesMatch[1];
+      
+      console.log(`Encontrado artigo simples ${artigo}`);
+      
+      resultados.push({
+        artigo,
+        origem: {
+          text: simplesMatch[0]
+        }
+      });
+      
+      return resultados;
+    }
+    
+    // Padrão para parágrafo único sem referência explícita ao artigo
+    // Ex: "§ 3º" ou "§§ 3º e 4º"
+    const paragSemArtigoPattern = /§{1,2}\s*(\d+)[º°]?(?:\s*e\s*(\d+)[º°]?)?/i;
+    const paragSemArtigoMatch = paragSemArtigoPattern.exec(textoProcessado);
+    
+    if (paragSemArtigoMatch) {
+      // Neste caso, precisamos tentar inferir o artigo pelo contexto ou usar o atual
+      console.log('Parágrafo sem referência explícita de artigo:', paragSemArtigoMatch[0]);
+      
+      // Se tiver múltiplos parágrafos (§§ 3º e 4º)
+      if (paragSemArtigoMatch[2]) {
+        resultados.push({
+          artigo: 'contexto', // Marcador para indicar que precisa usar o artigo do contexto
+          paragrafo: paragSemArtigoMatch[1],
+          origem: { text: paragSemArtigoMatch[0] }
+        });
         
         resultados.push({
-          artigo,
-          origem: {
-            text: match[0]
-          }
+          artigo: 'contexto',
+          paragrafo: paragSemArtigoMatch[2],
+          origem: { text: paragSemArtigoMatch[0] }
+        });
+      } else {
+        // Parágrafo único
+        resultados.push({
+          artigo: 'contexto',
+          paragrafo: paragSemArtigoMatch[1],
+          origem: { text: paragSemArtigoMatch[0] }
         });
       }
+      
+      return resultados;
     }
     
-    // Último recurso: procura por qualquer número
+    // Padrão para inciso romano sem referência explícita ao artigo
+    // Ex: "inciso V" ou "V -"
+    const incisoSemArtigoPattern = /(?:inciso\s+)?([IVX]+)(?:\s*[–\-]|\s+do\s+art\.)/i;
+    const incisoSemArtigoMatch = incisoSemArtigoPattern.exec(textoProcessado);
+    
+    if (incisoSemArtigoMatch) {
+      console.log('Inciso sem referência explícita de artigo:', incisoSemArtigoMatch[0]);
+      
+      resultados.push({
+        artigo: 'contexto',
+        inciso: incisoSemArtigoMatch[1],
+        origem: { text: incisoSemArtigoMatch[0] }
+      });
+      
+      return resultados;
+    }
+    
+    // Último recurso: procura por qualquer número que possa ser um artigo
     if (resultados.length === 0) {
       const numerosMatch = textoProcessado.match(/\b(\d+)\b/g);
       if (numerosMatch) {
@@ -1932,135 +1828,170 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   findElementoEspecifico(artigoId: string, paragrafo?: string, inciso?: string): HTMLElement | null {
     console.log(`Buscando elemento específico: Artigo ${artigoId}, Parágrafo ${paragrafo}, Inciso ${inciso}`);
     
-    // Primeiro tentamos encontrar o elemento pelo ID
-    let seletorId = `artigo-${artigoId}`;
+    // Gerar uma chave única para o cache
+    const cacheKey = `artigo-${artigoId}${paragrafo ? `-p${paragrafo}` : ''}${inciso ? `-i${inciso}` : ''}`;
     
-    // Construir seletores específicos baseados nos parâmetros
-    if (paragrafo && inciso) {
-      // Tenta encontrar o elemento mais específico primeiro (artigo + parágrafo + inciso)
-      const seletorCompleto = `#artigo-${artigoId}-paragrafo-${paragrafo}-inciso-${inciso}`;
-      const elementoCompleto = document.querySelector(seletorCompleto);
-      if (elementoCompleto) {
-        console.log(`Elemento encontrado pelo seletor específico: ${seletorCompleto}`);
-        return elementoCompleto as HTMLElement;
+    try {
+      // Verificar se o elemento já está em cache
+      if (this.elementosCache.has(cacheKey)) {
+        const cachedElement = this.getElementFromCache(cacheKey);
+        console.log(`Elemento encontrado em cache: ${cacheKey}`);
+        return cachedElement;
       }
-      
-      // Se não encontrou, tenta só com parágrafo
-      seletorId = `artigo-${artigoId}-paragrafo-${paragrafo}`;
-    } else if (paragrafo) {
-      seletorId = `artigo-${artigoId}-paragrafo-${paragrafo}`;
-    } else if (inciso) {
-      seletorId = `artigo-${artigoId}-inciso-${inciso}`;
+    } catch (error) {
+      console.error('Erro ao acessar cache:', error);
+      // Em caso de erro, continuar com a busca normal
     }
     
-    // Tenta pelo ID construído
-    const elementoPorId = document.getElementById(seletorId);
-    if (elementoPorId) {
-      console.log(`Elemento encontrado pelo ID: ${seletorId}`);
-      return elementoPorId;
-    }
-    
-    // Se não encontrou pelo ID, busca na estrutura de dados
+    // Primeiro, vamos buscar o artigo diretamente na estrutura de dados
     const artigoObj = this.findArtigoByNumero(artigoId);
-    if (artigoObj) {
-      console.log('Artigo encontrado na estrutura de dados:', artigoObj);
-      
-      // Tenta encontrar o elemento pelo ID do artigo encontrado
-      const artigoElement = document.getElementById(`artigo-${artigoObj.id}`);
-      if (artigoElement) {
-        // Se não estamos procurando por parágrafo ou inciso específico, retorna o artigo
-        if (!paragrafo && !inciso) {
-          return artigoElement;
-        }
-        
-        // Caso contrário, busca pelo parágrafo/inciso dentro do artigo
-        if (paragrafo || inciso) {
-          // Busca todos os elementos h5 dentro do artigo e seus irmãos
-          const paragrafos = artigoElement.parentElement?.querySelectorAll('h5') || [];
-          
-          for (let i = 0; i < paragrafos.length; i++) {
-            const texto = paragrafos[i].textContent || '';
-            
-            // Verifica se o parágrafo contém a referência ao parágrafo específico
-            if (paragrafo && (texto.includes(`§ ${paragrafo}`) || texto.includes(`§${paragrafo}`))) {
-              if (inciso) {
-                // Se também busca por inciso, verifica se esse parágrafo contém o inciso
-                if (texto.includes(`${inciso} –`) || texto.includes(`${inciso} -`) || texto.includes(`${inciso}-`)) {
-                  console.log(`Encontrado parágrafo ${paragrafo} com inciso ${inciso}`);
-                  return paragrafos[i];
-                }
-              } else {
-                console.log(`Encontrado parágrafo ${paragrafo}`);
-                return paragrafos[i];
-              }
-            }
-            // Se busca apenas inciso
-            else if (inciso && !paragrafo && (texto.includes(`${inciso} –`) || texto.includes(`${inciso} -`) || texto.includes(`${inciso}-`))) {
-              console.log(`Encontrado inciso ${inciso}`);
-              return paragrafos[i];
-            }
-          }
-        }
-      }
-    }
-    
-    // Busca o artigo pelo seletor genérico
-    const artigoElement = document.getElementById(`artigo-${artigoId}`);
-    if (!artigoElement) {
-      console.log(`Elemento não encontrado para artigo ${artigoId}`);
+    if (!artigoObj) {
+      console.log(`Artigo ${artigoId} não encontrado na estrutura de dados`);
       return null;
     }
     
-    if (paragrafo || inciso) {
-      // Se tem parágrafo ou inciso, busca no conteúdo
-      const paragrafos = artigoElement.parentElement?.querySelectorAll('h5') || [];
+    console.log('Artigo encontrado na estrutura de dados:', artigoObj);
+    
+    // Encontrar o elemento do artigo no DOM
+    const artigoElement = document.getElementById(`artigo-${artigoObj.id}`);
+    if (!artigoElement) {
+      console.log(`Elemento do artigo ${artigoId} (ID: ${artigoObj.id}) não encontrado no DOM`);
+      return null;
+    }
+    
+    // Se não estamos procurando por parágrafo ou inciso específico, retorna o artigo
+    if (!paragrafo && !inciso) {
+      // Armazenar em cache
+      this.elementosCache.set(cacheKey, artigoElement);
+      return artigoElement;
+    }
+    
+    // Buscar o parágrafo específico na estrutura de dados
+    if (paragrafo && artigoObj.paragrafos && artigoObj.paragrafos.length > 0) {
+      let paragrafoEncontrado = null;
       
-      for (let i = 0; i < paragrafos.length; i++) {
-        const texto = paragrafos[i].textContent || '';
+      // Procurar pelo parágrafo específico
+      for (const p of artigoObj.paragrafos) {
+        const conteudo = p.conteudo || '';
+        const paragPattern = new RegExp(`§\\s*${paragrafo}[º°]?\\b`, 'i');
         
-        // Verifica se o parágrafo contém a referência ao parágrafo específico
-        if (paragrafo && (texto.includes(`§ ${paragrafo}`) || texto.includes(`§${paragrafo}`))) {
-          if (inciso) {
-            // Se também busca por inciso, verifica se esse parágrafo contém o inciso
-            if (texto.includes(`${inciso} –`) || texto.includes(`${inciso} -`) || texto.includes(`${inciso}-`)) {
-              return paragrafos[i];
-            }
-          } else {
-            return paragrafos[i];
-          }
+        if (paragPattern.test(conteudo)) {
+          paragrafoEncontrado = p;
+          console.log(`Parágrafo ${paragrafo} encontrado na estrutura de dados:`, p);
+          break;
         }
-        // Se busca apenas inciso
-        else if (inciso && (texto.includes(`${inciso} –`) || texto.includes(`${inciso} -`) || texto.includes(`${inciso}-`))) {
-          return paragrafos[i];
+      }
+      
+      if (paragrafoEncontrado) {
+        // Tentar encontrar o elemento pelo ID do parágrafo
+        const paragrafoElement = document.getElementById(`paragrafo-${paragrafoEncontrado.id}`);
+        if (paragrafoElement) {
+          console.log(`Elemento do parágrafo ${paragrafo} encontrado pelo ID:`, paragrafoElement);
+          
+          // Se também estamos procurando por um inciso específico
+          if (inciso) {
+            // Verificar se o conteúdo do parágrafo contém o inciso
+            const conteudo = paragrafoElement.textContent || '';
+            const incisoPattern = new RegExp(`\\b${inciso}\\s*[-–]`, 'i');
+            
+            if (incisoPattern.test(conteudo)) {
+              console.log(`Inciso ${inciso} encontrado no parágrafo ${paragrafo}`);
+              // Armazenar em cache
+              this.elementosCache.set(cacheKey, paragrafoElement);
+              return paragrafoElement;
+            }
+          }
+          
+          // Armazenar em cache
+          this.elementosCache.set(cacheKey, paragrafoElement);
+          return paragrafoElement;
         }
       }
     }
     
-    return artigoElement; // Retorna o artigo se não encontrou específico
+    // Fallback: busca no DOM por texto
+    console.log('Buscando no DOM por texto...');
+    const paragrafos = artigoElement.parentElement?.querySelectorAll('h5') || [];
+    
+    for (let i = 0; i < paragrafos.length; i++) {
+      const texto = paragrafos[i].textContent || '';
+      
+      // Verificar se o elemento contém o parágrafo específico
+      if (paragrafo && (texto.includes(`§ ${paragrafo}`) || texto.includes(`§${paragrafo}`))) {
+        if (inciso) {
+          // Se também busca por inciso, verifica se esse parágrafo contém o inciso
+          if (texto.includes(`${inciso} –`) || texto.includes(`${inciso} -`) || texto.includes(`${inciso}-`)) {
+            console.log(`Encontrado parágrafo ${paragrafo} com inciso ${inciso} no DOM`);
+            // Armazenar em cache
+            this.elementosCache.set(cacheKey, paragrafos[i]);
+            return paragrafos[i];
+          }
+        } else {
+          console.log(`Encontrado parágrafo ${paragrafo} no DOM`);
+          // Armazenar em cache
+          this.elementosCache.set(cacheKey, paragrafos[i]);
+          return paragrafos[i];
+        }
+      }
+      // Se busca apenas inciso
+      else if (inciso && !paragrafo && (texto.includes(`${inciso} –`) || texto.includes(`${inciso} -`) || texto.includes(`${inciso}-`))) {
+        console.log(`Encontrado inciso ${inciso} no DOM`);
+        // Armazenar em cache
+        this.elementosCache.set(cacheKey, paragrafos[i]);
+        return paragrafos[i];
+      }
+    }
+    
+    // Se não encontrou o elemento específico, retorna o artigo
+    console.log(`Elemento específico não encontrado, retornando o artigo ${artigoId}`);
+    return artigoElement;
   }
 
   // Modal para escolha de destino complexo (artigo, parágrafo, inciso)
   async showDestinationChoiceModal(destinos: RemissaoDestino[]) {
-    const alert = await this.alertController.create({
-      header: 'Escolha o destino para navegar',
-      inputs: destinos.map((destino, index) => {
-        let label = `Art. ${destino.artigo}`;
+    const inputs = destinos.map((destino, index) => {
+      let label = '';
+      
+      // Formatar a label de acordo com o tipo de destino
+      if (destino.artigo === 'contexto') {
+        // Para elementos que dependem do contexto atual
+        if (destino.paragrafo && destino.inciso) {
+          label = `§ ${destino.paragrafo}, inciso ${destino.inciso} (no artigo atual)`;
+        } else if (destino.paragrafo) {
+          label = `§ ${destino.paragrafo} (no artigo atual)`;
+        } else if (destino.inciso) {
+          label = `Inciso ${destino.inciso} (no artigo atual)`;
+        }
+      } else {
+        // Para referências diretas a artigos
+        label = `Art. ${destino.artigo}`;
         if (destino.paragrafo) {
           label += `, § ${destino.paragrafo}`;
         }
         if (destino.inciso) {
-          label += `, ${destino.inciso}`;
+          label += `, inciso ${destino.inciso}`;
         }
-        if (destino.origem?.text) {
-          label += ` (${destino.origem.text})`;
+      }
+      
+      // Se tiver texto de origem, adiciona como descrição
+      // Isso é útil quando há múltiplas opções semelhantes
+      if (destino.origem?.text) {
+        const origemText = destino.origem.text.trim();
+        if (origemText) {
+          label += ` (${origemText})`;
         }
+      }
         
-        return {
-          type: 'radio',
-          label: label,
-          value: index.toString()
-        };
-      }),
+      return {
+        type: 'radio' as 'radio',
+        label: label,
+        value: index.toString()
+      };
+    });
+    
+    const alert = await this.alertController.create({
+      header: 'Escolha o destino para navegar',
+      inputs: inputs,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
@@ -2076,5 +2007,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       ]
     });
     await alert.present();
+  }
+
+  // Função auxiliar para obter elementos do cache com segurança de tipo
+  private getElementFromCache(key: string): HTMLElement | null {
+    const element = this.elementosCache.get(key);
+    return element || null;
   }
 }
