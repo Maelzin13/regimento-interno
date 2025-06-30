@@ -38,14 +38,11 @@
         <ion-icon name="time-outline"></ion-icon>
       </ion-button>
     </div>
-  
     <!-- Loader de pesquisa -->
     <div class="search-loader" *ngIf="isSearching">
       <ion-spinner name="crescent"></ion-spinner>
       <p>Buscando...</p>
     </div>
-
-
     <div class="header-links">
       <a (click)="openModal('abreviaturas')" class="header-link"
         >Abreviaturas</a
@@ -96,7 +93,6 @@
                         </div>
                       </div>
                     </ng-container>
-
 
                     <ng-container *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId">
                       <p class="comentario mt-4">

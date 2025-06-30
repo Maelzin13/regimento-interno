@@ -710,10 +710,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
               clearTimeout(this.showReturnIndicatorTimeout);
             }
             
-            // Configurar para ocultar o indicador após 8 segundos
+            // Configurar para ocultar o indicador após 30 segundos
             this.showReturnIndicatorTimeout = setTimeout(() => {
               this.showReturnIndicator = false;
-            }, 8000);
+            }, 30000);
           }
           
           // Feedback visual para o usuário
@@ -929,11 +929,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           dataIncisos = incisos.join(',');
           
           // Log para depuração
-          console.log(`Remissão "${match}" parseada:`, {
-            artigos,
-            paragrafos,
-            incisos
-          });
+          // console.log(`Remissão "${match}" parseada:`, {
+          //   artigos,
+          //   paragrafos,
+          //   incisos
+          // });
         } else {
           // Tentar extrair manualmente
           const artigoMatch = match.match(/\b(\d+)[º°]?\b/g);
@@ -1978,7 +1978,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       if (destino.origem?.text) {
         const origemText = destino.origem.text.trim();
         if (origemText) {
-          label += ` (${origemText})`;
+          // label += ` (${origemText})`;
+          label;
         }
       }
         
