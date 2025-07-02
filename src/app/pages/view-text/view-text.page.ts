@@ -207,7 +207,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.totalResults = 0;
     this.currentResultIndex = -1;
     this.isSearching = false;
-    console.log('totalResults', this.totalResults);
   }
 
   async search() {
@@ -1140,16 +1139,30 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         {
           name: 'searchOption',
           type: 'radio',
-          label: 'Buscar por Palavra-chave',
-          value: 'keyword',
-          checked: this.searchBy === 'keyword'
+          label: 'Palavra-chave (contém)',
+          value: 'keyword_contains',
+          checked: this.searchBy === 'keyword' && this.searchType === 'contains'
         },
         {
           name: 'searchOption',
           type: 'radio',
-          label: 'Buscar por Artigo',
-          value: 'artigo',
-          checked: this.searchBy === 'artigo'
+          label: 'Palavra-chave (termo exato)',
+          value: 'keyword_exact',
+          checked: this.searchBy === 'keyword' && this.searchType === 'exact'
+        },
+        {
+          name: 'searchOption',
+          type: 'radio',
+          label: 'Artigo (contém)',
+          value: 'artigo_contains',
+          checked: this.searchBy === 'artigo' && this.searchType === 'contains'
+        },
+        {
+          name: 'searchOption',
+          type: 'radio',
+          label: 'Artigo (termo exato)',
+          value: 'artigo_exact',
+          checked: this.searchBy === 'artigo' && this.searchType === 'exact'
         }
       ],
       buttons: [
@@ -1158,52 +1171,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           role: 'cancel'
         },
         {
-          text: 'Próximo',
+          text: 'Pesquisar',
           handler: (data) => {
             if (data) {
-              this.searchBy = data;
-              this.showSearchTypeOptions();
-            }
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  async showSearchTypeOptions() {
-    const alert = await this.alertController.create({
-      header: 'Opções de Busca',
-      subHeader: 'Escolha como buscar o termo',
-      inputs: [
-        {
-          name: 'searchOption',
-          type: 'radio',
-          label: 'Conteúdo que contém o termo',
-          value: 'contains',
-          checked: this.searchType === 'contains'
-        },
-        {
-          name: 'searchOption',
-          type: 'radio',
-          label: 'Termo exato',
-          value: 'exact',
-          checked: this.searchType === 'exact'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Voltar',
-          handler: () => {
-            this.showSearchOptions();
-          }
-        },
-        {
-          text: 'Confirmar',
-          handler: (data) => {
-            if (data) {
-              this.searchType = data;
+              // Separar o valor em tipo de busca e modo
+              const [searchBy, searchType] = data.split('_');
+              this.searchBy = searchBy;
+              this.searchType = searchType;
 
               if (this.query) {
                 this.search();
