@@ -16,7 +16,6 @@
         animated="true"
         placeholder="Buscar por palavra ou artigo..."
         show-clear-button="always"
-        clear-icon="trash-bin"
         [(ngModel)]="query"
         (ionInput)="onSearchInput($event)"
         (ionClear)="clearSearch()"
@@ -125,7 +124,6 @@
     <span>Voltar à origem</span>
   </div>
 </ion-content>
-
 
 <div class="search-controls-fixed" *ngIf="totalResults > 0">
   <div class="result-info">
