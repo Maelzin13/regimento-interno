@@ -1,14 +1,30 @@
 <ion-header>
   <ion-toolbar id="toolbar">
-    <ion-title>{{ content[type]?.title }}</ion-title>
+    <ion-title>
+      {{ type === 'resumo' ? 'Resumos Temáticos' : content[type]?.title }}
+    </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()" color="primary">
-        <ion-icon name="close" color="light"></ion-icon>
+        <ion-icon name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="modal-content" [innerHTML]="content[type]?.content"></div>
-</ion-content> 
+<!-- removi o ion-padding e usei fullscreen -->
+<ion-content fullscreen class="pdf-container">
+  <ng-container *ngIf="type === 'resumo'; else htmlContent">
+    <pdf-viewer
+      [src]="'/assets/docs/Resumos Temáticos.pdf'"
+      [render-text]="true"
+      [show-all]="true"
+      [zoom]="1.5"
+      [original-size]="true"
+      style="display: block; width: 80%; height: 80%;"
+    ></pdf-viewer>
+  </ng-container>
+
+  <ng-template #htmlContent>
+    <div class="modal-content" [innerHTML]="content[type]?.content"></div>
+  </ng-template>
+</ion-content>

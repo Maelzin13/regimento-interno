@@ -20,9 +20,12 @@
     "module": "es2020",
     "lib": [
       "es2018",
+      "es2015.collection",
+      "es2015.iterable",
       "dom"
     ],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "skipLibCheck": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

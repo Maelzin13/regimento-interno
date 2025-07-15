@@ -105,7 +105,6 @@ export class RegimentoModalComponent {
   };
 
   constructor(private modalCtrl: ModalController) {}
-
   dismiss() {
     this.modalCtrl.dismiss();
   }

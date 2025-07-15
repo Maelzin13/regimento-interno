@@ -5,6 +5,31 @@ ion-header {
   }
 }
 
+.pdf-container {
+  --padding-top: 0;
+  --padding-bottom: 0;
+  position: relative;
+
+  pdf-viewer {
+    display: block !important;
+    width: 100%  !important;
+    height: 100% !important;
+  }
+
+  .pdf-nav {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    padding: 4px;
+  }
+}
+
+
 .modal-content {
   h3 {
     color: var(--ion-color-primary);
