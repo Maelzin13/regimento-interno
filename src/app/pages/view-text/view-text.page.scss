@@ -746,3 +746,21 @@ ion-alert {
     box-shadow: 0 0 0 rgba(var(--ion-color-success-rgb), 0);
   }
 }
+
+.pdf-direct-link {
+  display: flex;
+  align-items: center;
+  background-color: rgba(30, 153, 154, 0.1);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 8px;
+  
+  ion-icon {
+    margin-right: 4px;
+    font-size: 16px;
+  }
+
+  &:hover {
+    background-color: rgba(30, 153, 154, 0.2);
+  }
+}

@@ -1263,6 +1263,15 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     return await modal.present();
   }
 
+  async openPdfDirectly(pdfName: string) {
+    // Abre o PDF diretamente em uma nova janela/aba
+    const pdfPath = pdfName === 'resumos' 
+      ? '/assets/docs/Resumos Temáticos.pdf' 
+      : '/assets/docs/ESQUEMAS.pdf';
+    
+    window.open(pdfPath, '_blank');
+  }
+
   toggleComment(commentId: string) {
     if (this.expandedComments.has(commentId)) {
       this.expandedComments.delete(commentId);

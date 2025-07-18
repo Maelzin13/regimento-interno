@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar id="toolbar">
     <ion-title>
-      {{ type === 'resumo' ? 'Resumos Temáticos' : content[type]?.title }}
+      {{ content[type]?.title }}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()" color="primary">
@@ -11,17 +11,54 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- removi o ion-padding e usei fullscreen -->
 <ion-content fullscreen class="pdf-container">
-  <ng-container *ngIf="type === 'resumo'; else htmlContent">
-    <pdf-viewer
-      [src]="'/assets/docs/Resumos Temáticos.pdf'"
-      [render-text]="true"
-      [show-all]="true"
-      [zoom]="1.5"
-      [original-size]="true"
-      style="display: block; width: 80%; height: 80%;"
-    ></pdf-viewer>
+  <ng-container *ngIf="type === 'resumo' || type === 'esquematico'; else htmlContent">
+    <!-- Loader enquanto carrega -->
+    <div class="loading-container" *ngIf="isLoading">
+      <ion-spinner></ion-spinner>
+      <p>Carregando documento...</p>
+    </div>
+
+    <!-- Context7 para dispositivos móveis -->
+    <ng-container *ngIf="showContextViewer">
+      <iframe 
+        [src]="contextViewerUrl | safeUrl" 
+        class="context-viewer"
+        frameborder="0"
+        allow="fullscreen"
+      ></iframe>
+    </ng-container>
+
+    <!-- PDF Viewer padrão para desktop -->
+    <ng-container *ngIf="!showContextViewer">
+      <pdf-viewer
+        [src]="pdfUrl"
+        [render-text]="true"
+        [show-all]="true"
+        [original-size]="false"
+        [zoom]="pdfScale"
+        [page]="currentPage"
+        (after-load-complete)="onPdfLoaded($event)"
+        class="pdf-viewer"
+      ></pdf-viewer>
+
+      <!-- Controles de navegação para desktop -->
+      <div class="pdf-controls">
+        <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage <= 1">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-button>
+        <span>{{ currentPage }} / {{ totalPages }}</span>
+        <ion-button fill="clear" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="zoomOut()">
+          <ion-icon name="remove-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="zoomIn()">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </ng-container>
   </ng-container>
 
   <ng-template #htmlContent>

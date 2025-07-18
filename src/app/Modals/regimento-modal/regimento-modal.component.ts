@@ -1,12 +1,13 @@
-import { Component, Input } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
+import { ModalController, Platform } from '@ionic/angular';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-regimento-modal',
   templateUrl: './regimento-modal.component.html',
   styleUrls: ['./regimento-modal.component.scss']
 })
-export class RegimentoModalComponent {
+export class RegimentoModalComponent implements OnInit {
   @Input() type: string = '';
   
   content: any = {
@@ -87,7 +88,7 @@ export class RegimentoModalComponent {
       `
     },
     resumo: {
-      title: 'Índice dos Resumos temáticos',
+      title: 'Resumos Temáticos',
       content: `
         <div>
           <h3 class="text-xl font-bold text-[#1E999A] mb-4">Índice dos Resumos temáticos</h3>
@@ -95,7 +96,7 @@ export class RegimentoModalComponent {
       `
     },
     esquematico: {
-      title: 'Índice dos Quadros esquemáticos',
+      title: 'Esquemas',
       content: `
         <div>
           <h3 class="text-xl font-bold text-[#1E999A] mb-4">Índice dos Quadros esquemáticos</h3>
@@ -104,7 +105,88 @@ export class RegimentoModalComponent {
     }
   };
 
-  constructor(private modalCtrl: ModalController) {}
+  pdfUrl: SafeResourceUrl = '';
+  isMobile: boolean = false;
+  isLoading: boolean = true;
+  currentPage: number = 1;
+  totalPages: number = 0;
+  pdfScale: number = 1.0;
+  showContextViewer: boolean = false;
+  contextViewerUrl: string = '';
+
+  constructor(
+    private modalCtrl: ModalController,
+    private platform: Platform,
+    private sanitizer: DomSanitizer
+  ) {}
+
+  ngOnInit() {
+    this.isMobile = this.platform.is('mobile') || this.platform.is('android') || this.platform.is('ios');
+    this.setupPdfViewer();
+  }
+
+  setupPdfViewer() {
+    // Definir os caminhos dos PDFs
+    let pdfPath = '';
+    
+    if (this.type === 'resumo') {
+      pdfPath = '/assets/docs/Resumos Temáticos.pdf';
+    } else if (this.type === 'esquematico') {
+      pdfPath = '/assets/docs/ESQUEMAS.pdf';
+    } else {
+      return; // Não é um tipo de PDF
+    }
+    
+    // Configurar o visualizador de PDF padrão
+    this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfPath);
+    
+    // Usar Context7 para visualização em dispositivos móveis
+    if (this.isMobile) {
+      // Para o Context7, precisamos da URL completa do PDF
+      // Vamos usar uma URL pública para os PDFs, pois o Context7 precisa acessar o PDF diretamente
+      
+      // Em produção, os PDFs devem estar hospedados em um servidor acessível publicamente
+      // Por exemplo, um bucket S3 ou outro serviço de armazenamento
+      
+      // Para este exemplo, usaremos a URL base da aplicação
+      const baseUrl = window.location.origin;
+      const fullPdfUrl = `${baseUrl}${pdfPath}`;
+      
+      // Usar o serviço Context7 para visualização
+      this.contextViewerUrl = `https://context7.com/view?url=${encodeURIComponent(fullPdfUrl)}`;
+      this.showContextViewer = true;
+      
+      console.log('Context7 URL:', this.contextViewerUrl);
+    }
+  }
+
+  onPdfLoaded(event: any) {
+    this.isLoading = false;
+    this.totalPages = event.numPages;
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  zoomIn() {
+    this.pdfScale += 0.25;
+  }
+
+  zoomOut() {
+    if (this.pdfScale > 0.5) {
+      this.pdfScale -= 0.25;
+    }
+  }
+
   dismiss() {
     this.modalCtrl.dismiss();
   }
