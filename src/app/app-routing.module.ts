@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { AuthGuard } from './guards/auth.guard';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -15,6 +16,14 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/view-text/view-text.module').then(
         (m) => m.ViewTextPageModule
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'pdf-viewer/:name',
+    loadComponent: () =>
+      import('./pages/pdf-viewer-page/pdf-viewer-page.component').then(
+        (m) => m.PdfViewerPageComponent
       ),
     canActivate: [AuthGuard],
   },

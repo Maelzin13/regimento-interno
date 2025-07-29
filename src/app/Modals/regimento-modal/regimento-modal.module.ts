@@ -1,19 +1,15 @@
 import { NgModule } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
-import { SafeUrlPipe } from '../../pipes/safe-url.pipe'; 
 import { RegimentoModalComponent } from './regimento-modal.component';
 
 @NgModule({
   declarations: [
-    RegimentoModalComponent,
-    SafeUrlPipe
+    RegimentoModalComponent
   ],
   imports: [
     CommonModule,
-    IonicModule,
-    PdfViewerModule
+    IonicModule
   ],
   exports: [
     RegimentoModalComponent

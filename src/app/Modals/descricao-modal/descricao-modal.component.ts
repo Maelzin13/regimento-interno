@@ -95,7 +95,7 @@ export class DescricaoModalComponent implements OnInit {
         numero: "31",
         ano: "2012",
         ementa: "Disciplina a concessão de diárias, de adicional de embarque e desembarque e de passagens aéreas.",
-        link: "https://www2.camara.leg.br/legin/int/atomes/"
+        link: "https://www2.camara.leg.br/legin/int/atomes/2015/atodamesa-25-6-maio-2015-780670-norma-cd-mesa.html"
       },
       {
         numero: "45",

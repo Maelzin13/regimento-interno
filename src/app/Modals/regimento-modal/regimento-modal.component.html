@@ -11,57 +11,6 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen class="pdf-container">
-  <ng-container *ngIf="type === 'resumo' || type === 'esquematico'; else htmlContent">
-    <!-- Loader enquanto carrega -->
-    <div class="loading-container" *ngIf="isLoading">
-      <ion-spinner></ion-spinner>
-      <p>Carregando documento...</p>
-    </div>
-
-    <!-- Context7 para dispositivos móveis -->
-    <ng-container *ngIf="showContextViewer">
-      <iframe 
-        [src]="contextViewerUrl | safeUrl" 
-        class="context-viewer"
-        frameborder="0"
-        allow="fullscreen"
-      ></iframe>
-    </ng-container>
-
-    <!-- PDF Viewer padrão para desktop -->
-    <ng-container *ngIf="!showContextViewer">
-      <pdf-viewer
-        [src]="pdfUrl"
-        [render-text]="true"
-        [show-all]="true"
-        [original-size]="false"
-        [zoom]="pdfScale"
-        [page]="currentPage"
-        (after-load-complete)="onPdfLoaded($event)"
-        class="pdf-viewer"
-      ></pdf-viewer>
-
-      <!-- Controles de navegação para desktop -->
-      <div class="pdf-controls">
-        <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage <= 1">
-          <ion-icon name="chevron-back-outline"></ion-icon>
-        </ion-button>
-        <span>{{ currentPage }} / {{ totalPages }}</span>
-        <ion-button fill="clear" (click)="nextPage()" [disabled]="currentPage >= totalPages">
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="zoomOut()">
-          <ion-icon name="remove-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="zoomIn()">
-          <ion-icon name="add-outline"></ion-icon>
-        </ion-button>
-      </div>
-    </ng-container>
-  </ng-container>
-
-  <ng-template #htmlContent>
-    <div class="modal-content" [innerHTML]="content[type]?.content"></div>
-  </ng-template>
+<ion-content fullscreen class="modal-content-container">
+  <div class="modal-content" [innerHTML]="content[type]?.content"></div>
 </ion-content>

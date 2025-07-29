@@ -1,0 +1,51 @@
+<div class="pdf-container">
+  <!-- Loader enquanto carrega -->
+  <div class="loading-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Carregando documento...</p>
+  </div>
+
+  <!-- Mensagem de erro -->
+  <div class="error-container" *ngIf="hasError && !isLoading">
+    <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
+    <h3>Erro ao carregar o PDF</h3>
+    <p>{{ errorMessage }}</p>
+    <ion-button (click)="retryLoading()">Tentar novamente</ion-button>
+  </div>
+
+  <!-- PDF Viewer -->
+  <ng-container *ngIf="pdfSrc && !hasError">
+    <pdf-viewer
+      [src]="pdfSrc"
+      [render-text]="pdfRenderText"
+      [show-all]="pdfShowAll"
+      [original-size]="pdfOriginalSize"
+      [zoom]="pdfScale"
+      [page]="currentPage"
+      [external-link-target]="pdfExternalLinkTarget"
+      [show-borders]="pdfShowBorders"
+      [autoresize]="pdfAutoresize"
+      [stick-to-page]="pdfStickToPage"
+      (after-load-complete)="onPdfLoaded($event)"
+      (error)="onPdfError($event)"
+      class="pdf-viewer"
+    ></pdf-viewer>
+
+    <!-- Controles de navegação -->
+    <div class="pdf-controls">
+      <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage <= 1">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      <span>{{ currentPage }} / {{ totalPages }}</span>
+      <ion-button fill="clear" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="zoomOut()">
+        <ion-icon name="remove-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="zoomIn()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </ng-container>
+</div> 

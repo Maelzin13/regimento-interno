@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, Platform } from '@ionic/angular';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-regimento-modal',
@@ -105,86 +106,27 @@ export class RegimentoModalComponent implements OnInit {
     }
   };
 
-  pdfUrl: SafeResourceUrl = '';
-  isMobile: boolean = false;
-  isLoading: boolean = true;
-  currentPage: number = 1;
-  totalPages: number = 0;
-  pdfScale: number = 1.0;
-  showContextViewer: boolean = false;
-  contextViewerUrl: string = '';
-
   constructor(
     private modalCtrl: ModalController,
     private platform: Platform,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.isMobile = this.platform.is('mobile') || this.platform.is('android') || this.platform.is('ios');
-    this.setupPdfViewer();
-  }
-
-  setupPdfViewer() {
-    // Definir os caminhos dos PDFs
-    let pdfPath = '';
-    
-    if (this.type === 'resumo') {
-      pdfPath = '/assets/docs/Resumos Temáticos.pdf';
-    } else if (this.type === 'esquematico') {
-      pdfPath = '/assets/docs/ESQUEMAS.pdf';
-    } else {
-      return; // Não é um tipo de PDF
-    }
-    
-    // Configurar o visualizador de PDF padrão
-    this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfPath);
-    
-    // Usar Context7 para visualização em dispositivos móveis
-    if (this.isMobile) {
-      // Para o Context7, precisamos da URL completa do PDF
-      // Vamos usar uma URL pública para os PDFs, pois o Context7 precisa acessar o PDF diretamente
-      
-      // Em produção, os PDFs devem estar hospedados em um servidor acessível publicamente
-      // Por exemplo, um bucket S3 ou outro serviço de armazenamento
-      
-      // Para este exemplo, usaremos a URL base da aplicação
-      const baseUrl = window.location.origin;
-      const fullPdfUrl = `${baseUrl}${pdfPath}`;
-      
-      // Usar o serviço Context7 para visualização
-      this.contextViewerUrl = `https://context7.com/view?url=${encodeURIComponent(fullPdfUrl)}`;
-      this.showContextViewer = true;
-      
-      console.log('Context7 URL:', this.contextViewerUrl);
+    // Se o tipo for um PDF, redirecionar para a página de visualização
+    if (this.type === 'resumo' || this.type === 'esquema') {
+      const pdfName = this.type === 'resumo' ? 'resumos' : 'esquemas';
+      this.redirectToPdfViewer(pdfName);
     }
   }
 
-  onPdfLoaded(event: any) {
-    this.isLoading = false;
-    this.totalPages = event.numPages;
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  zoomIn() {
-    this.pdfScale += 0.25;
-  }
-
-  zoomOut() {
-    if (this.pdfScale > 0.5) {
-      this.pdfScale -= 0.25;
-    }
+  redirectToPdfViewer(pdfName: string) {
+    // Fechar o modal
+    this.modalCtrl.dismiss().then(() => {
+      // Navegar para a página de visualização de PDF
+      this.router.navigateByUrl(`/pdf-viewer/${pdfName}`);
+    });
   }
 
   dismiss() {

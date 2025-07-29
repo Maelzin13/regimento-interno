@@ -1264,12 +1264,14 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   async openPdfDirectly(pdfName: string) {
-    // Abre o PDF diretamente em uma nova janela/aba
-    const pdfPath = pdfName === 'resumos' 
-      ? '/assets/docs/Resumos Temáticos.pdf' 
-      : '/assets/docs/ESQUEMAS.pdf';
+    console.log(`Abrindo PDF: ${pdfName}`);
     
-    window.open(pdfPath, '_blank');
+    // Navegar para a página de visualização de PDF com URLs remotas
+    // Usando window.location.href para garantir uma navegação completa
+    const url = `/pdf-viewer/${pdfName}?remote=true`;
+    console.log(`Redirecionando para: ${url}`);
+    
+    window.location.href = url;
   }
 
   toggleComment(commentId: string) {
