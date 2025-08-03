@@ -24,9 +24,11 @@
         Editar Perfil
       </ion-button>
 
-      <ion-button expand="block" class="secondary-btn" (click)="subscribe()">
-        Alterar Plano
-      </ion-button>
+      <div *ngIf="user?.is_admin || user?.subscription_status === 'active'">
+        <ion-button expand="block" class="secondary-btn" (click)="subscribe()">
+          Alterar Plano
+        </ion-button>
+      </div>
 
       <ion-button expand="block" color="danger" fill="outline" (click)="deleteAccount()">
         <ion-icon name="trash-outline" slot="start"></ion-icon>
