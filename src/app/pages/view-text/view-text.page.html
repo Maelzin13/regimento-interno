@@ -82,7 +82,8 @@
                     ></h5>
 
                     <ng-container *ngFor="let remissao of paragrafo.remissoes; trackBy: trackByRemissaoId">
-                      <div class="remissao-container mt-3 mb-4 pl-4">
+                      <div class="remissao-container mt-3 mb-4 pl-4" 
+                           *ngIf="remissao.conteudo && remissao.conteudo.trim().startsWith('Art')">
                         <div class="remissao-content" [attr.data-remissao-id]="remissao.id">
                           <div class="remissao-text"
                             [innerHTML]="safeHTML(remissao.conteudo)">

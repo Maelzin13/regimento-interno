@@ -53,21 +53,21 @@ ion-content {
 
 .comentario {
   padding: var(--search-padding);
-  border-left: 4px solid #92d050;
+  border-left: 4px solid #329632;
   margin-bottom: 12px;
   border-radius: 5px;
   contain: content;
   will-change: transform, opacity;
 
   .comentario-tipo {
-    color: #92d050;
+    color: #329632;
     font-weight: 500;
     display: block;
     margin-bottom: 4px;
   }
 
   strong {
-    color: #92d050;
+    color: #329632;
     font-weight: 600;
   }
 
@@ -89,14 +89,14 @@ ion-content {
 }
 
 .comentario {
-  color: #92d050;
+  color: #329632;
 }
 
 .comentario-tipo {
   font-weight: bold;
   font-style: italic;
   display: inline-block;
-  color: #92d050;
+  color: #329632;
 }
 
 
@@ -397,7 +397,7 @@ ion-alert {
 
 .comentario {
   .comentario-tipo {
-    color: #92d050;
+    color: #329632;
     font-weight: bold;
   }
 }

@@ -409,6 +409,12 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     const conteudo = remissaoElement.textContent || '';
     console.log('Conteúdo da remissão:', conteudo);
     
+    // Verificação rápida: se não começa com "Art.", ignora
+    if (!conteudo.trim().startsWith('Art')) {
+      console.log('Remissão não começa com "Art.", ignorando:', conteudo);
+      return;
+    }
+    
     // Obtém o ID da remissão para rastreamento
     const remissaoId = remissaoElement.getAttribute('data-remissao-id');
 
@@ -891,8 +897,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     // Detecta padrões de remissão inline
     try {
-      // Padrão para detectar referências a artigos: "Art. X" ou "Arts. X, Y e Z"
-      const artigoPattern = /\b(Art(?:s)?\.?\s+\d+[º°]?(?:(?:\s*,\s*|\s+e\s+)\d+[º°]?)*(?:\s*,\s*§\s*\d+[º°]?)?(?:\s*,\s*[IVX]+)?)/gi;
+      // Padrão otimizado para detectar apenas referências que começam com "Art." (A maiúsculo)
+      // Isso melhora significativamente a performance ao reduzir falsos positivos
+      const artigoPattern = /\b(Art\.?\s+\d+[º°]?(?:(?:\s*,\s*|\s+e\s+)\d+[º°]?)*(?:\s*,\s*§\s*\d+[º°]?)?(?:\s*,\s*[IVX]+)?)/gi;
       
       // Padrão para detectar referências a parágrafos: "§ X" ou "§§ X, Y e Z"
       const paragrafoPattern = /\b(§{1,2}\s+\d+[º°]?(?:(?:\s*,\s*|\s+e\s+)\d+[º°]?)*)/gi;
@@ -900,11 +907,17 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       // Padrão para detectar referências a incisos: "inciso X" ou "incisos X, Y e Z"
       const incisoPattern = /\b(inciso[s]?\s+[IVX]+(?:(?:\s*,\s*|\s+e\s+)[IVX]+)*)/gi;
       
-      // Padrão para detectar referências combinadas: "Art. X, § Y, inciso Z"
+      // Padrão otimizado para detectar referências combinadas que começam com "Art."
       const combinedPattern = /\b(Art\.?\s+\d+[º°]?(?:\s*,\s*§\s*\d+[º°]?)?(?:\s*,\s*(?:inciso\s+)?[IVX]+)?)/gi;
       
       // Função para substituir com marcação HTML
       const replaceWithLink = (match: string, p1: string): string => {
+        // Verificar se a remissão realmente começa com "Art." (A maiúsculo)
+        // Esta verificação adicional garante que apenas remissões válidas sejam processadas
+        if (!match.trim().startsWith('Art')) {
+          return match; // Retorna o texto original se não começar com "Art"
+        }
+        
         // Gera um ID único para esta remissão
         const remissaoId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         
@@ -927,14 +940,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           dataParagrafos = paragrafos.join(',');
           dataIncisos = incisos.join(',');
           
-          // Log para depuração
-          // console.log(`Remissão "${match}" parseada:`, {
-          //   artigos,
-          //   paragrafos,
-          //   incisos
-          // });
         } else {
-          // Tentar extrair manualmente
+          // Tentar extrair manualmente apenas se começar com "Art"
           const artigoMatch = match.match(/\b(\d+)[º°]?\b/g);
           if (artigoMatch) {
             dataArtigos = artigoMatch.join(',');
@@ -970,12 +977,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         return `<span class="remissao-inline ${extraClass}" role="link" tabindex="0" ${dataAtributos.trim()}>${match}</span>`;
       };
 
-      // Aplicar substituições
+      // Aplicar substituições apenas para padrões que começam com "Art."
       formattedContent = formattedContent
         .replace(combinedPattern, replaceWithLink)
-        .replace(artigoPattern, replaceWithLink)
-        .replace(paragrafoPattern, replaceWithLink)
-        .replace(incisoPattern, replaceWithLink);
+        .replace(artigoPattern, replaceWithLink);
 
       // Adicionar ao cache
       this.remissoesCache.set(content, formattedContent);
@@ -1402,6 +1407,12 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         const remissaoText = target.textContent || target.innerText;
         if (!remissaoText) return;
         
+        // Verificação rápida: se não começa com "Art.", ignora
+        if (!remissaoText.trim().startsWith('Art')) {
+          console.log('Remissão não começa com "Art.", ignorando:', remissaoText);
+          return;
+        }
+        
         console.log('Clique em remissão inline:', remissaoText);
         
         // Salvar posição atual da rolagem para permitir voltar
@@ -1502,7 +1513,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           // Fallback para o comportamento anterior se o parser não encontrou nada
           console.log('Parser avançado não encontrou destinos, usando fallback');
           
-          // Processar padrões de artigo
+          // Processar padrões de artigo apenas se começar com "Art"
           const artigoMatch = remissaoText.match(/Art(?:igos?)?\.?\s+(\d+)[º°]?/i);
           const multipleArtsMatch = remissaoText.match(/Arts\.?\s+(\d+)[º°]?(?:,\s*(\d+)[º°]?)*(?:\s+e\s+(\d+)[º°]?)?/i);
           
@@ -1589,6 +1600,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     const textoProcessado = conteudo.replace(/\(.*?\)/g, '').trim(); // Remove texto entre parênteses
     
     console.log('Texto processado para análise:', textoProcessado);
+    
+    // Verificação inicial: se não começa com "Art.", retorna array vazio
+    // Isso melhora significativamente a performance ao evitar processamento desnecessário
+    if (!textoProcessado.trim().startsWith('Art')) {
+      console.log('Texto não começa com "Art.", ignorando:', textoProcessado);
+      return resultados;
+    }
     
     // Identificar remissões de lei externa para não confundir com artigos do regimento interno
     // Ex: "Lei 9.504/1997, art. 12"
@@ -1791,7 +1809,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
     
     // Último recurso: procura por qualquer número que possa ser um artigo
-    if (resultados.length === 0) {
+    // Mas apenas se o texto começar com "Art"
+    if (resultados.length === 0 && textoProcessado.trim().startsWith('Art')) {
       const numerosMatch = textoProcessado.match(/\b(\d+)\b/g);
       if (numerosMatch) {
         for (const numero of numerosMatch) {
