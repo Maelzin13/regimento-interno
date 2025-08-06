@@ -10,7 +10,13 @@
     <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
     <h3>Erro ao carregar o PDF</h3>
     <p>{{ errorMessage }}</p>
-    <ion-button (click)="retryLoading()">Tentar novamente</ion-button>
+    <div class="error-actions">
+      <ion-button (click)="retryLoading()">Tentar novamente</ion-button>
+      <ion-button fill="outline" (click)="openInNewTab()">
+        <ion-icon name="open-outline"></ion-icon>
+        Abrir em nova aba
+      </ion-button>
+    </div>
   </div>
 
   <!-- PDF Viewer -->

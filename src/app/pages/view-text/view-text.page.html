@@ -19,6 +19,7 @@
         [(ngModel)]="query"
         (ionInput)="onSearchInput($event)"
         (ionClear)="clearSearch()"
+        (keyup.enter)="performSearchOnEnter()"
         debounce="300"
         style="margin-top: 10px;"
       >

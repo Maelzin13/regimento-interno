@@ -60,8 +60,20 @@
     color: var(--ion-color-medium);
   }
   
-  ion-button {
-    --background: var(--ion-color-primary);
+  .error-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+    
+    ion-button {
+      --background: var(--ion-color-primary);
+      
+      ion-icon {
+        margin-right: 8px;
+      }
+    }
   }
 }
 

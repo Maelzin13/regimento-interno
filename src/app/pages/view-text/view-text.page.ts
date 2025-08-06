@@ -324,6 +324,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.debouncedSearch();
   }
 
+  performSearchOnEnter() {
+    // Executar busca imediatamente quando Enter for pressionado
+    if (this.query.trim()) {
+      this.performAdvancedSearch();
+    }
+  }
+
   clearSearch() {
     this.filteredBook = null;
     this.searchResults = [];
@@ -1162,9 +1169,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   async openPdfDirectly(pdfName: string) {
     console.log(`Abrindo PDF: ${pdfName}`);
     
-    // Navegar para a página de visualização de PDF com URLs remotas
+    // Navegar para a página de visualização de PDF com URLs locais por padrão
     // Usando window.location.href para garantir uma navegação completa
-    const url = `/pdf-viewer/${pdfName}?remote=true`;
+    const url = `/pdf-viewer/${pdfName}?remote=false`;
     console.log(`Redirecionando para: ${url}`);
     
     window.location.href = url;

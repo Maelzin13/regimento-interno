@@ -13,11 +13,11 @@ PODS:
     - Capacitor
     - OAuthSwift (= 2.2.0)
   - CapacitorCordova (7.2.0)
-  - CapacitorFirebaseAuthentication (7.1.0):
+  - CapacitorFirebaseAuthentication (7.2.0):
     - Capacitor
-    - CapacitorFirebaseAuthentication/Lite (= 7.1.0)
+    - CapacitorFirebaseAuthentication/Lite (= 7.2.0)
     - FirebaseAuth (~> 11.7.0)
-  - CapacitorFirebaseAuthentication/Lite (7.1.0):
+  - CapacitorFirebaseAuthentication/Lite (7.2.0):
     - Capacitor
     - FirebaseAuth (~> 11.7.0)
   - CapacitorHaptics (7.0.1):
@@ -141,7 +141,7 @@ SPEC CHECKSUMS:
   CapacitorCommunityFacebookLogin: d509d10f51c6458a3d200ad5c7e87f5f8164b685
   CapacitorCommunityGenericOauth2: a30d35d43010aca671e8c5b5d3da45b9386eafae
   CapacitorCordova: 5967b9ba03915ef1d585469d6e31f31dc49be96f
-  CapacitorFirebaseAuthentication: 9aa0fcf60b1c98e173e13f22a2fcc2cab42c7377
+  CapacitorFirebaseAuthentication: 7043f8e03813762af1b037da82c67963fa5768e0
   CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
   CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
   CapacitorNetwork: 07ec4c69c1bb696f41c23e00d31bda1bbb221bba
@@ -161,6 +161,6 @@ SPEC CHECKSUMS:
   OAuthSwift: 75efbb5bd9a4b2b71a37bd7e986bf3f55ddd54c6
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
 
-PODFILE CHECKSUM: 596d7903ab46e2655a83479580069dac24601462
+PODFILE CHECKSUM: 288bc20fe5ee8d3f65cd00027b4ccff23ac4088d
 
 COCOAPODS: 1.16.2

@@ -15,6 +15,12 @@ export class AuthInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('authToken');
 
+    // Não adicionar headers de autorização para requisições de assets (PDFs)
+    if (req.url.includes('/assets/') || req.url.includes('assets/docs/')) {
+      console.log('Requisição para asset detectada, pulando interceptor:', req.url);
+      return next.handle(req);
+    }
+
     if (token) {
       const cloned = req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`),
