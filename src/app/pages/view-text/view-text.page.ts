@@ -6,8 +6,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
-import { IonContent, ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { RegimentoModalComponent } from '../../Modals/regimento-modal/regimento-modal.component';
+import { IonContent, ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 
 interface HistoryEntry {
   artigoId: string;
@@ -199,6 +199,26 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   onSearchInput(event: any) {
     const value = event.target.value;
     this.query = value;
+    
+    // Se o usuário apagou a busca, limpar os resultados e cache imediatamente
+    if (!value.trim()) {
+      this.clearSearch();
+      return;
+    }
+    
+    // NÃO executar busca automática - apenas armazenar o valor
+    // A busca será executada apenas quando o usuário clicar em "Buscar" ou pressionar Enter
+  }
+
+  // Função para executar a busca quando solicitado pelo usuário
+  async executeSearch() {
+    if (!this.query.trim()) {
+      this.presentToast('Digite algo para buscar');
+      return;
+    }
+    
+    // Executar a busca
+    await this.search();
   }
 
   clearSearch() {
@@ -207,6 +227,27 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.totalResults = 0;
     this.currentResultIndex = -1;
     this.isSearching = false;
+  }
+
+
+  // Função para forçar limpeza dos highlights
+  forceClearHighlights() {
+    setTimeout(() => {
+      const highlights = document.querySelectorAll('.highlight-search, mark.highlight-search, .permanent-highlight');
+      highlights.forEach(el => {
+        el.classList.remove('highlight-search', 'permanent-highlight');
+        if (el.tagName.toLowerCase() === 'mark') {
+          (el as HTMLElement).style.backgroundColor = '';
+          (el as HTMLElement).style.padding = '';
+          (el as HTMLElement).style.borderRadius = '';
+          (el as HTMLElement).style.boxShadow = '';
+          (el as HTMLElement).style.fontWeight = '';
+          (el as HTMLElement).style.color = '';
+          (el as HTMLElement).style.zIndex = '';
+          (el as HTMLElement).style.position = '';
+        }
+      });
+    }, 100);
   }
 
   async search() {
@@ -218,14 +259,32 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     this.isSearching = true;
-    const queryLower = this.query.toLowerCase();
+    const queryLower = this.query.toLowerCase().trim();
     const searchBy = this.searchBy;
     const searchType = this.searchType;
+  
+
+    // Para busca por artigo, limpar a entrada do usuário
+    let processedQuery = queryLower;
+    if (searchBy === 'artigo') {
+      // Remover "Art.", "Artigo", "Arts.", "Artigos" da entrada do usuário
+      processedQuery = queryLower
+        .replace(/^(Art\.?\s*|Artigo\s*|Arts\.?\s*|Artigos\s*)/i, '')
+        .trim();
+      
+      // Se após a limpeza não sobrou nada, usar a query original
+      if (!processedQuery) {
+        processedQuery = queryLower;
+      }
+      
+      console.log(`Query original: "${queryLower}", Query processada: "${processedQuery}"`);
+    }
 
     // Salvando posição atual antes da busca
     this.saveCurrentPosition();
 
-    const clone = JSON.parse(JSON.stringify(this.book));
+    
+    const clone = this.book;
     this.searchResults = [];
 
     const textMatches = (text: string) => {
@@ -233,99 +292,147 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       const textLower = text.toLowerCase();
 
       if (searchType === 'exact') {
-        const regex = new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'i');
-        console.log('regex', regex);
-        return regex.test(textLower);
+        const normalizedText = this.normalizeText(textLower);
+        const normalizedQuery = this.normalizeText(queryLower);
+
+        const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'i');
+        console.log('Word Boundary Regex:', wordBoundaryRegex);
+        console.log('Normalized Text:', normalizedText);
+        console.log('Normalized Query:', normalizedQuery);
+        return wordBoundaryRegex.test(normalizedText);
       } else {
         return textLower.includes(queryLower);
       }
     };
 
-    // Processamento de títulos
-    clone.titulos = clone.titulos
-      .map((titulo: any) => {
-        const capitulosFiltrados = titulo.capitulos
-          .map((capitulo: any) => {
-            const secoesFiltradas = capitulo.secaos
-              .map((secao: any) => {
-                const artigosFiltrados = secao.artigos
-                  .map((artigo: any) => {
-                    let artigoMatches = false;
+    // Função para verificar se o artigo contém a busca
+    const checkArtigoMatch = (artigoContent: string) => {
+      if (!artigoContent) return false;
+      const contentLower = artigoContent.toLowerCase();
+      
+      // Para busca de artigo, sempre usar termo exato
+      const artigoPatterns = [
+        // Padrão básico: "Art. X" ou "Artigo X"
+        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\b`, 'i'),
+        // Padrão com alíneas: "Art. X-A", "Art. X-B", etc.
+        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z]\\b`, 'i'),
+        // Padrão com múltiplas alíneas: "Art. X-A, X-B, X-C"
+        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z](?:\\s*,\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z])*\\b`, 'i'),
+      ];
+      return artigoPatterns.some(pattern => pattern.test(contentLower));
+    };
 
-                    if (searchBy === 'keyword') {
-                      artigoMatches = textMatches(artigo.conteudo);
+    // Processar a estrutura do livro de forma mais eficiente
+    let titulosFiltrados = [];
+    
+    for (const titulo of clone.titulos) {
+      let capitulosFiltrados = [];
+      
+      for (const capitulo of titulo.capitulos || []) {
+        let secoesFiltradas = [];
+        
+        for (const secao of capitulo.secaos || []) {
+          let artigosFiltrados = [];
+          
+          for (const artigo of secao.artigos || []) {
+            let artigoMatches = false;
+            let paragrafosFiltrados = [];
 
-                      if (artigoMatches) {
-                        this.searchResults.push({
-                          type: 'artigo',
-                          id: artigo.id,
-                          content: artigo.conteudo,
-                          path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
-                          parent: secao
-                        });
-                      }
-                    } else if (searchBy === 'artigo') {
-                      // Busca específica por artigo (número)
-                      if (artigo.conteudo?.toLowerCase().includes(`art. ${queryLower}`)) {
-                        artigoMatches = true;
-                        this.searchResults.push({
-                          type: 'artigo',
-                          id: artigo.id,
-                          content: artigo.conteudo,
-                          path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
-                          parent: secao
-                        });
-                      }
-                    }
+            // Buscar por palavras-chave
+            if (searchBy === 'keyword') {
+              // Verificar se o artigo contém a busca
+              if (textMatches(artigo.conteudo)) {
+                artigoMatches = true;
+                this.searchResults.push({
+                  type: 'artigo',
+                  id: artigo.id,
+                  content: artigo.conteudo,
+                  path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
+                  parent: secao,
+                  position: this.calculatePosition(artigo)
+                });
+              }
 
-                    // Processar parágrafos apenas se estivermos procurando por palavras-chave
-                    const paragrafosFiltrados = artigo.paragrafos
-                      .map((paragrafo: any) => {
-                        if (searchBy === 'keyword' && textMatches(paragrafo.conteudo)) {
-                          this.searchResults.push({
-                            type: 'paragrafo',
-                            id: paragrafo.id,
-                            content: paragrafo.conteudo,
-                            path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`,
-                            parent: artigo
-                          });
-                          return paragrafo;
-                        }
-                        return null;
-                      })
-                      .filter(Boolean);
+              // Verificar parágrafos do artigo
+              for (const paragrafo of artigo.paragrafos || []) {
+                if (textMatches(paragrafo.conteudo)) {
+                  paragrafosFiltrados.push(paragrafo);
+                  this.searchResults.push({
+                    type: 'paragrafo',
+                    id: paragrafo.id,
+                    content: paragrafo.conteudo,
+                    path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`,
+                    parent: artigo,
+                    position: this.calculatePosition(paragrafo)
+                  });
+                }
+              }
+            } 
+            // Buscar por artigos específicos
+            else if (searchBy === 'artigo') {
+              if (checkArtigoMatch(artigo.conteudo)) {
+                artigoMatches = true;
+                this.searchResults.push({
+                  type: 'artigo',
+                  id: artigo.id,
+                  content: artigo.conteudo,
+                  path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
+                  parent: secao,
+                  position: this.calculatePosition(artigo)
+                });
+              }
+            }
 
-                    if (paragrafosFiltrados.length) {
-                      artigoMatches = true;
-                      return { ...artigo, paragrafos: paragrafosFiltrados };
-                    } else if (artigoMatches) {
-                      return artigo;
-                    }
-                    return null;
-                  })
-                  .filter(Boolean);
+            // Adicionar artigo se encontrou correspondência ou se tem parágrafos filtrados
+            if (artigoMatches || paragrafosFiltrados.length > 0) {
+              artigosFiltrados.push({
+                ...artigo,
+                paragrafos: paragrafosFiltrados.length > 0 ? paragrafosFiltrados : artigo.paragrafos
+              });
+            }
+          }
 
-                return artigosFiltrados.length
-                  ? { ...secao, artigos: artigosFiltrados }
-                  : null;
-              })
-              .filter(Boolean);
+          // Adicionar seção se tem artigos filtrados
+          if (artigosFiltrados.length > 0) {
+            secoesFiltradas.push({
+              ...secao,
+              artigos: artigosFiltrados
+            });
+          }
+        }
 
-            return secoesFiltradas.length
-              ? { ...capitulo, secaos: secoesFiltradas }
-              : null;
-          })
-          .filter(Boolean);
+        // Adicionar capítulo se tem seções filtradas
+        if (secoesFiltradas.length > 0) {
+          capitulosFiltrados.push({
+            ...capitulo,
+            secaos: secoesFiltradas
+          });
+        }
+      }
 
-        return capitulosFiltrados.length
-          ? { ...titulo, capitulos: capitulosFiltrados }
-          : null;
-      })
-      .filter(Boolean);
+      // Adicionar título se tem capítulos filtrados
+      if (capitulosFiltrados.length > 0) {
+        titulosFiltrados.push({
+          ...titulo,
+          capitulos: capitulosFiltrados
+        });
+      }
+    }
 
-    this.filteredBook = clone;
+    // Atualizar o livro filtrado
+    this.filteredBook = {
+      ...clone,
+      titulos: titulosFiltrados
+    };
+
     this.totalResults = this.searchResults.length;
     this.isSearching = false;
+
+    // Ordenar resultados por posição no documento
+    this.sortSearchResults();
+
+    // Limpar cache de conteúdo para forçar re-renderização com novos destaques
+    this.contentCache.clear();
 
     // Adicionar à histórico de pesquisa
     this.addToSearchHistory(this.query);
@@ -345,12 +452,52 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
   }
 
+  // Função para calcular a posição relativa de um elemento no documento
+  private calculatePosition(element: any): number {
+    // Usar o ID do elemento como base para a posição
+    // Elementos com IDs menores aparecem primeiro no documento
+    return element.id || 0;
+  }
+
+  // Função para ordenar os resultados de forma mais lógica
+  private sortSearchResults() {
+    // Ordenar por posição no documento (usando a propriedade position calculada)
+    this.searchResults.sort((a, b) => {
+      // Primeiro por tipo: artigos vêm antes de parágrafos
+      if (a.type !== b.type) {
+        return a.type === 'artigo' ? -1 : 1;
+      }
+      
+      // Se são do mesmo tipo, ordenar por posição no documento
+      const posA = a.position || a.id || 0;
+      const posB = b.position || b.id || 0;
+      
+      return posA - posB;
+    });
+    
+    console.log('Resultados ordenados:', this.searchResults.map((r, i) => ({
+      index: i,
+      type: r.type,
+      id: r.id,
+      position: r.position,
+      content: r.content.substring(0, 50) + '...'
+    })));
+  }
+
+  // Método auxiliar para normalizar texto (remover acentos e caracteres especiais)
+  private normalizeText(text: string): string {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/[^\w\s]/g, ' ') // Remove pontuação
+      .replace(/\s+/g, ' ') // Normaliza espaços
+      .trim();
+  }
+
   ngAfterViewInit() {
     // Garantir que o mapa de artigos está construído
     setTimeout(() => {
-      console.log('Reconstruindo mapa de artigos...');
       this.buildArtigoNumeroParaIdMap();
-      console.log('Mapa de artigos reconstruído:', this.artigoNumeroParaId);
     }, 1000);
     
     if (!this.notaListenerAttached) {
@@ -853,7 +1000,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
     
     // Gerar uma chave de cache baseada no conteúdo e no estado atual da pesquisa
-    const cacheKey = content + (this.query || '') + (this.searchType || '') + (this.searchBy || '');
+    const cacheKey = content + (this.query || '') + (this.searchType || '') + (this.searchBy || '') + (this.totalResults || 0);
     
     // Verificar se já temos o resultado em cache
     if (this.contentCache.has(cacheKey)) {
@@ -865,21 +1012,39 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     // Processa remissões inline (referências a artigos no texto)
     formatted = this.formatRemissoes(formatted);
 
-    // Destaca os termos de busca se estiver buscando
-    if (this.query && this.searchBy === 'keyword') {
-      const queryLower = this.query.toLowerCase();
-      const regex = this.searchType === 'exact' ?
-        new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'gi') :
-        new RegExp(this.escapeRegExp(queryLower), 'gi');
-
-      formatted = formatted.replace(regex, match =>
-        `<span class="highlight-search">${match}</span>`
-      );
+    // Destaca os termos de busca APENAS se a busca foi executada E se houver resultados
+    // NÃO aplicar highlights durante a digitação
+    if (this.query && this.searchBy === 'keyword' && this.totalResults > 0 && !this.isSearching) {
+      const queryLower = this.query.toLowerCase().trim();
+      
+      if (this.searchType === 'exact') {
+        // Para termo exato, usar uma abordagem mais precisa
+        const normalizedQuery = this.normalizeText(queryLower);
+        const normalizedContent = this.normalizeText(formatted);
+        
+        // Usar word boundaries mais precisos para termos exatos
+        const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'gi');
+        
+        // Aplicar destaque permanente nas ocorrências exatas usando <mark>
+        formatted = formatted.replace(wordBoundaryRegex, (match) => {
+          // Verificar se a correspondência original (não normalizada) realmente contém o termo exato
+          const originalMatch = match.toLowerCase();
+          if (originalMatch.includes(queryLower)) {
+            return `<mark class="highlight-search permanent-highlight" style="background-color: rgba(255, 230, 0, 0.8); padding: 2px 4px; border-radius: 3px; font-weight: 600; color: #000; box-shadow: 0 0 6px rgba(255, 230, 0, 0.5);">${match}</mark>`;
+          }
+          return match;
+        });
+      } else {
+        // Para "contém", usar busca simples mas case-insensitive com <mark> permanente
+        const regex = new RegExp(this.escapeRegExp(queryLower), 'gi');
+        formatted = formatted.replace(regex, match =>
+          `<mark class="highlight-search permanent-highlight" style="background-color: rgba(255, 230, 0, 0.8); padding: 2px 4px; border-radius: 3px; font-weight: 600; color: #000; box-shadow: 0 0 6px rgba(255, 230, 0, 0.5);">${match}</mark>`
+        );
+      }
     }
 
     const result = this.sanitizer.bypassSecurityTrustHtml(formatted);
     
-    // Guardar o resultado em cache
     this.contentCache.set(cacheKey, result);
     
     return result;
@@ -959,12 +1124,12 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         }
         
         // Construir os atributos data-*
-        const dataAtributos = `
-          data-remissao-id="${remissaoId}"
-          ${dataArtigos ? `data-artigos="${dataArtigos}"` : ''}
-          ${dataParagrafos ? `data-paragrafos="${dataParagrafos}"` : ''}
-          ${dataIncisos ? `data-incisos="${dataIncisos}"` : ''}
-        `;
+        const dataAtributos = [
+          `data-remissao-id="${remissaoId}"`,
+          dataArtigos ? `data-artigos="${dataArtigos}"` : '',
+          dataParagrafos ? `data-paragrafos="${dataParagrafos}"` : '',
+          dataIncisos ? `data-incisos="${dataIncisos}"` : ''
+        ].filter(attr => attr).join(' ');
         
         // Determinar se a remissão está dentro de parênteses
         const isInParentheses = /\([^)]*$/.test(formattedContent.substring(0, formattedContent.indexOf(match))) && 
@@ -973,19 +1138,19 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         // Adicionar classe especial para remissões dentro de parênteses
         const extraClass = isInParentheses ? 'remissao-parentese' : '';
         
-        // Retorna o HTML com a classe remissao-inline
-        return `<span class="remissao-inline ${extraClass}" role="link" tabindex="0" ${dataAtributos.trim()}>${match}</span>`;
+        // Retorna o HTML com a classe remissao-inline de forma segura
+        return `<span class="remissao-inline ${extraClass}" role="link" tabindex="0" ${dataAtributos}>${match}</span>`;
       };
 
       // Aplicar substituições apenas para padrões que começam com "Art."
-      formattedContent = formattedContent
-        .replace(combinedPattern, replaceWithLink)
-        .replace(artigoPattern, replaceWithLink);
+      // Usar apenas o combinedPattern para evitar duplicações
+      formattedContent = formattedContent.replace(combinedPattern, replaceWithLink);
 
       // Adicionar ao cache
       this.remissoesCache.set(content, formattedContent);
     } catch (error) {
       console.error('Erro ao formatar remissões:', error);
+      return content;
     }
 
     return formattedContent;
@@ -996,11 +1161,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  cleanHTML(content: string): string {
-    if (!content) return '';
-    const doc = new DOMParser().parseFromString(content, 'text/html');
-    return doc.body.textContent || '';
-  }
 
   async showModal(content: string) {
     const modal = await this.modalController.create({
@@ -1028,10 +1188,24 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   // Métodos para navegação nos resultados
   async navigateToResult(index: number) {
-    if (index < 0 || index >= this.searchResults.length) return;
+    console.log(`=== NAVEGAÇÃO PARA RESULTADO ${index} ===`);
+    
+    if (index < 0 || index >= this.searchResults.length) {
+      console.error(`Índice inválido: ${index}. Total de resultados: ${this.searchResults.length}`);
+      return;
+    }
 
     this.currentResultIndex = index;
     const result = this.searchResults[index];
+
+    console.log('Resultado atual:', {
+      index: index,
+      type: result.type,
+      id: result.id,
+      position: result.position,
+      content: result.content.substring(0, 100) + '...',
+      path: result.path
+    });
 
     // Remover destaques flash anteriores
     const previousHighlights = document.querySelectorAll('.flash-highlight');
@@ -1041,18 +1215,81 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     // Encontrar o elemento correspondente ao resultado
     setTimeout(() => {
+      let element: HTMLElement | null = null;
+      
+      // Tentar encontrar pelo ID específico usando a nova estrutura
       const elementId = `${result.type}-${result.id}`;
-      const element = document.getElementById(elementId);
+      element = document.getElementById(elementId);
+      console.log('Element:', element);
+      
+      if (element) {
+        console.log(`Elemento encontrado pelo ID: ${elementId}`);
+      } else {
+        console.log(`Elemento não encontrado pelo ID: ${elementId}, buscando por conteúdo...`);
+        
+        // Buscar elementos que contenham o texto do resultado
+        const allElements = document.querySelectorAll('h5, p, div');
+        for (const el of Array.from(allElements)) {
+          const text = el.textContent || '';
+          if (text.includes(result.content.substring(0, 50))) {
+            element = el as HTMLElement;
+            console.log('Elemento encontrado por conteúdo:', element);
+            break;
+          }
+        }
+      }
 
       if (element) {
+        console.log('Elemento encontrado, rolando para:', element);
+        
+        // Calcular a posição para centralizar o elemento
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const elementHeight = rect.height;
+        const offsetTop = rect.top + window.pageYOffset;
+        
+        // Centralizar o elemento na tela com um pequeno ajuste para cima
+        const scrollPosition = offsetTop - (windowHeight * 0.3); // Posiciona a 30% do topo
+        
+        console.log(`Posições calculadas:`, {
+          rectTop: rect.top,
+          windowHeight: windowHeight,
+          elementHeight: elementHeight,
+          offsetTop: offsetTop,
+          scrollPosition: scrollPosition
+        });
+        
         // Rolar para o elemento com maior suavidade
-        this.content.scrollToPoint(0, element.offsetTop - 120, 500);
+        this.content.scrollToPoint(0, scrollPosition, 500);
 
-        // Adicionar efeito de destaque temporário
+        // Adicionar efeito de destaque temporário mais visível
         element.classList.add('flash-highlight');
+        
+        // Adicionar estilos inline para garantir visibilidade
+        element.style.backgroundColor = 'rgba(255, 230, 0, 0.3)';
+        element.style.borderRadius = '4px';
+        element.style.padding = '8px';
+        element.style.transition = 'all 0.3s ease';
 
         // Forçar a atualização dos destaques das palavras
-        this.forceHighlightsRefresh();
+        setTimeout(() => {
+          this.forceHighlightsRefresh();
+        }, 300);
+        
+        // Remover estilos após um tempo
+        setTimeout(() => {
+          element.classList.remove('flash-highlight');
+          element.style.backgroundColor = '';
+          element.style.border = '';
+          element.style.borderRadius = '';
+          element.style.padding = '';
+          element.style.transition = '';
+        }, 3000);
+        
+        console.log('Navegação concluída para elemento:', element);
+      } else {
+        console.error('Elemento não encontrado para resultado:', result);
+        this.presentToast('Elemento não encontrado na página');
       }
     }, 100);
   }
@@ -1062,26 +1299,60 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     if (!this.query) return;
 
     setTimeout(() => {
-      // Encontra todos os destaques existentes
-      const highlights = document.querySelectorAll('.highlight-search');
+      // Encontra todos os destaques existentes (tanto span quanto mark)
+      const highlights = document.querySelectorAll('.highlight-search, mark.highlight-search, .permanent-highlight');
 
       // Certifica-se que todos estão com a classe correta e visíveis
-      highlights.forEach(el => {
-        el.classList.add('highlight-search');
-        (el as HTMLElement).style.backgroundColor = 'rgba(255, 230, 0, 0.4)';
+      highlights.forEach((el, index) => {
+        el.classList.add('highlight-search', 'permanent-highlight');
+        
+        // Garantir que elementos mark tenham os estilos corretos
+        if (el.tagName.toLowerCase() === 'mark') {
+          (el as HTMLElement).style.backgroundColor = 'rgba(255, 230, 0, 0.8)';
+          (el as HTMLElement).style.padding = '2px 4px';
+          (el as HTMLElement).style.borderRadius = '3px';
+          (el as HTMLElement).style.boxShadow = '0 0 6px rgba(255, 230, 0, 0.5)';
+          (el as HTMLElement).style.fontWeight = '600';
+          (el as HTMLElement).style.textDecoration = 'none';
+          (el as HTMLElement).style.color = '#000';
+          (el as HTMLElement).style.zIndex = '10';
+          (el as HTMLElement).style.position = 'relative';
+        } else {
+          // Para elementos span (fallback)
+          (el as HTMLElement).style.backgroundColor = 'rgba(255, 230, 0, 0.6)';
+          (el as HTMLElement).style.padding = '2px 4px';
+          (el as HTMLElement).style.borderRadius = '3px';
+          (el as HTMLElement).style.fontWeight = '600';
+          (el as HTMLElement).style.zIndex = '10';
+          (el as HTMLElement).style.position = 'relative';
+        }
       });
     }, 200);
   }
 
   navigateToNextResult() {
+    console.log(`Navegando para próximo resultado. Atual: ${this.currentResultIndex}, Total: ${this.totalResults}`);
+    
     if (this.currentResultIndex < this.totalResults - 1) {
-      this.navigateToResult(this.currentResultIndex + 1);
+      const nextIndex = this.currentResultIndex + 1;
+      console.log(`Indo para índice ${nextIndex}`);
+      this.navigateToResult(nextIndex);
+    } else {
+      console.log('Já no último resultado');
+      this.presentToast('Já no último resultado');
     }
   }
 
   navigateToPreviousResult() {
+    console.log(`Navegando para resultado anterior. Atual: ${this.currentResultIndex}, Total: ${this.totalResults}`);
+    
     if (this.currentResultIndex > 0) {
-      this.navigateToResult(this.currentResultIndex - 1);
+      const prevIndex = this.currentResultIndex - 1;
+      console.log(`Indo para índice ${prevIndex}`);
+      this.navigateToResult(prevIndex);
+    } else {
+      console.log('Já no primeiro resultado');
+      this.presentToast('Já no primeiro resultado');
     }
   }
 
@@ -1154,13 +1425,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           label: 'Palavra-chave (termo exato)',
           value: 'keyword_exact',
           checked: this.searchBy === 'keyword' && this.searchType === 'exact'
-        },
-        {
-          name: 'searchOption',
-          type: 'radio',
-          label: 'Artigo (contém)',
-          value: 'artigo_contains',
-          checked: this.searchBy === 'artigo' && this.searchType === 'contains'
         },
         {
           name: 'searchOption',
@@ -1637,7 +1901,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     
     // Padrão para referenciar múltiplos artigos com possíveis parágrafos e incisos
     // Ex: "Arts. 4º, 5º e 65, I" ou "Arts. 4º, 5º e 65, § 2º, I"
-    const multipleArtsPattern = /\b(?:Arts?\.?\s*)(\d+)[º°]?(?:(?:\s*,|\s+e)\s*(\d+)[º°]?)+/i;
+    const multipleArtsPattern = /\b(?:Arts?\.?\s*)(\d+)[º°]?(?:\s*[-–]\s*[A-Z])?(?:(?:\s*,|\s+e)\s*(\d+)[º°]?(?:\s*[-–]\s*[A-Z])?)+/i;
     const multipleMatch = textoProcessado.match(multipleArtsPattern);
     
     if (multipleMatch) {
@@ -1648,7 +1912,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       let eventoFrasePrincipal = textoProcessado;
       
       // Primeiro identificamos todos os artigos
-      const allNumbersPattern = /(?:Arts?\.?\s*|,\s*|\s+e\s+)(\d+)[º°]?/g;
+      const allNumbersPattern = /(?:Arts?\.?\s*|,\s*|\s+e\s+)(\d+)[º°]?(?:\s*[-–]\s*[A-Z])?/g;
       let numberMatch;
       while ((numberMatch = allNumbersPattern.exec(textoProcessado)) !== null) {
         if (numberMatch[1] && !artigos.includes(numberMatch[1])) {
@@ -1689,6 +1953,29 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       if (resultados.length > 0) {
         return resultados;
       }
+    }
+
+    const artigoComAlineaPattern = /\bart\.?\s*(\d+)[º°]?\s*[-–]\s*([A-Z])(?:\s*,\s*§\s*(\d+)[º°]?)?(?:\s*,\s*([IVX]+))?/i;
+    const alineaMatch = artigoComAlineaPattern.exec(textoProcessado);
+    
+    if (alineaMatch) {
+      const artigo = alineaMatch[1];
+      const alinea = alineaMatch[2];
+      const paragrafo = alineaMatch[3];
+      const inciso = alineaMatch[4];
+      
+      console.log(`Encontrado artigo ${artigo}-${alinea}, parágrafo ${paragrafo}, inciso ${inciso}`);
+      
+      resultados.push({
+        artigo: `${artigo}-${alinea}`,
+        paragrafo,
+        inciso,
+        origem: {
+          text: alineaMatch[0]
+        }
+      });
+      
+      return resultados;
     }
     
     // Padrão para remissão de artigo com parágrafo e inciso
@@ -1741,14 +2028,16 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     // Ex: "Art. 123"
     const artigoSimplesPattern = /\bart\.?\s*(\d+)[º°]?/i;
     const simplesMatch = artigoSimplesPattern.exec(textoProcessado);
+    console.log('Simples Match:', simplesMatch);
     
     if (simplesMatch) {
       const artigo = simplesMatch[1];
+      const alinea = simplesMatch[2];
       
-      console.log(`Encontrado artigo simples ${artigo}`);
+      console.log(`Encontrado artigo simples ${artigo}${alinea ? `-${alinea}` : ''}`);
       
       resultados.push({
-        artigo,
+        artigo: alinea ? `${artigo}-${alinea}` : artigo,
         origem: {
           text: simplesMatch[0]
         }
@@ -2018,5 +2307,44 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   private getElementFromCache(key: string): HTMLElement | null {
     const element = this.elementosCache.get(key);
     return element || null;
+  }
+
+  // Método para obter contexto do resultado atual
+  getCurrentResultContext(): string {
+    if (this.currentResultIndex < 0 || this.currentResultIndex >= this.searchResults.length) {
+      return '';
+    }
+    
+    const result = this.searchResults[this.currentResultIndex];
+    if (!result) return '';
+    
+    // Extrair informações relevantes do resultado
+    const type = result.type === 'artigo' ? 'Artigo' : 'Parágrafo';
+    const path = result.path || '';
+    
+    // Limitar o tamanho do contexto para não ficar muito longo
+    const maxLength = 50;
+    const context = `${type}: ${path}`;
+    
+    return context.length > maxLength ? context.substring(0, maxLength) + '...' : context;
+  }
+
+  // Método para manter a posição atual (salvar no histórico)
+  keepCurrentPosition() {
+    this.content.getScrollElement().then(scrollElement => {
+      console.log('Scroll Element:', scrollElement);
+      const currentPosition = scrollElement.scrollTop;
+      console.log('Current Position:', currentPosition);
+      this.lastScrollPosition = currentPosition;
+      console.log('Current Position:', this.lastScrollPosition);
+      
+      // Feedback visual
+      this.presentToast('Posição atual mantida');
+      
+      // Ocultar a barra de navegação após um tempo
+      setTimeout(() => {
+        this.clearSearch();
+      }, 2000);
+    });
   }
 }
