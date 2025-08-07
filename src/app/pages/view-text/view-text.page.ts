@@ -55,10 +55,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   @ViewChild('searchInput') searchInput!: ElementRef;
   showReturnIndicator: boolean = false;
 
-  highlightedElements: HTMLElement[] = [];
-  highlightTerm: string = '';
-  currentHighlightIndex: number = 0;
-
   // Propriedade para o debounce da rolagem
   private scrollDebounceTimeout: any;
   expandedComments: Set<string> = new Set();
@@ -78,10 +74,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   // Cache para elementos específicos encontrados (artigos, parágrafos, incisos)
   private elementosCache: Map<string, HTMLElement | null> = new Map();
 
-  // Propriedades para busca avançada
-  searchTimeout: any = null;
-  searchContainers: string[] = ['ion-content'];
-
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
@@ -94,123 +86,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     
   ) { }
 
-
-
-  // Função de debounce para evitar múltiplas buscas durante digitação
-  debouncedSearch(callback?: () => void) {
-    // Limpar timeout anterior se existir
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
-
-    // Configurar novo timeout
-    this.searchTimeout = setTimeout(() => {
-      if (callback) {
-        callback();
-      } else {
-        this.performAdvancedSearch();
-      }
-      this.searchTimeout = null;
-    }, 300); // 300ms de debounce
-  }
-
-  // Busca avançada baseada no componente Laravel+Blade
-  performAdvancedSearch() {
-    const term = this.query.trim();
-    this.clearHighlights();
-    this.searchResults = [];
-    
-    if (!term) {
-      this.totalResults = 0;
-      this.currentResultIndex = -1;
-      return;
-    }
-
-    // Regex para identificar busca de artigo: Art. 12, Art. 12-A, Art. 1º, etc
-    const artigoRegexJS = /^Art\.\s*(\d+)(?:-([A-Z]))?(º)?$/i;
-    const onlyNumber = /^\d+$/;
-    let regex: RegExp;
-    let match = term.match(artigoRegexJS);
-
-    if (match) {
-      // Busca por "Art. 12", "Art. 12-A", "Art. 1º", etc
-      let numero = match[1];
-      let letra = match[2] ? '-' + match[2] : '';
-      let ordinal = match[3] ? 'º' : '';
-      // Permite zeros à esquerda, espaço após ponto
-      regex = new RegExp(`(Art\\.\\s*0*${numero}${letra}${ordinal})\\b`, 'gi');
-    } else if (onlyNumber.test(term)) {
-      // Busca apenas número: "12" → "Art. 12", "Art. 12-A", "Art. 012"
-      regex = new RegExp(`(Art\\.\\s*0*${term}(?:-[A-Z])?º?)\\b`, 'gi');
-    } else {
-      // Busca literal exata (sem split por palavra!)
-      regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-    }
-
-    // Agora faz o highlight dentro dos containers
-    this.searchContainers.forEach(sel => {
-      let content = document.querySelector(sel);
-      if (!content) return;
-      
-      let walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null);
-      let nodes: Node[] = [];
-      while (walker.nextNode()) nodes.push(walker.currentNode);
-
-      nodes.forEach(node => {
-        let text = node.nodeValue;
-        if (!text) return;
-        
-        let newHtml = text.replace(regex, 
-          `<mark class='find-highlight bg-yellow-300 text-black rounded px-1'>$1</mark>`
-        );
-        
-        if (newHtml !== text) {
-          let span = document.createElement('span');
-          span.innerHTML = newHtml;
-          node.parentNode?.replaceChild(span, node);
-        }
-      });
-    });
-
-    this.searchResults = Array.from(document.querySelectorAll(this.searchContainers.join(', ') + ' .find-highlight')) as HTMLElement[];
-    this.totalResults = this.searchResults.length;
-    this.currentResultIndex = this.totalResults > 0 ? 0 : -1;
-    this.scrollToCurrentResult();
-  }
-
-  nextResult() {
-    if (this.totalResults > 0) {
-      this.currentResultIndex = (this.currentResultIndex + 1) % this.totalResults;
-      this.scrollToCurrentResult();
-    }
-  }
-
-  prevResult() {
-    if (this.totalResults > 0) {
-      this.currentResultIndex = (this.currentResultIndex - 1 + this.totalResults) % this.totalResults;
-      this.scrollToCurrentResult();
-    }
-  }
-
-  scrollToCurrentResult() {
-    if (this.searchResults.length > 0) {
-      this.searchResults.forEach(el => {
-        el.classList.remove('ring-2', 'ring-blue-500', 'bg-yellow-400');
-      });
-      
-      let el = this.searchResults[this.currentResultIndex];
-      el.classList.add('ring-2', 'ring-blue-500', 'bg-yellow-400');
-      el.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-    }
-  }
-
   async ngOnInit() {
     const user = await this.authService.getUser();
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
+    this.loadSearchHistory();
     await this.loadBook();
     
   }
@@ -319,16 +199,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   onSearchInput(event: any) {
     const value = event.target.value;
     this.query = value;
-    
-    // Usar o novo sistema de busca avançada
-    this.debouncedSearch();
-  }
-
-  performSearchOnEnter() {
-    // Executar busca imediatamente quando Enter for pressionado
-    if (this.query.trim()) {
-      this.performAdvancedSearch();
-    }
   }
 
   clearSearch() {
@@ -337,8 +207,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.totalResults = 0;
     this.currentResultIndex = -1;
     this.isSearching = false;
-    this.clearHighlights();
-    this.query = '';
   }
 
   async search() {
@@ -350,107 +218,132 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     this.isSearching = true;
+    const queryLower = this.query.toLowerCase();
+    const searchBy = this.searchBy;
+    const searchType = this.searchType;
+
+    // Salvando posição atual antes da busca
+    this.saveCurrentPosition();
+
+    const clone = JSON.parse(JSON.stringify(this.book));
     this.searchResults = [];
 
+    const textMatches = (text: string) => {
+      if (!text) return false;
+      const textLower = text.toLowerCase();
 
+      if (searchType === 'exact') {
+        const regex = new RegExp(`\\b${this.escapeRegExp(queryLower)}\\b`, 'i');
+        console.log('regex', regex);
+        return regex.test(textLower);
+      } else {
+        return textLower.includes(queryLower);
+      }
+    };
 
-    this.filteredBook = this.book;
+    // Processamento de títulos
+    clone.titulos = clone.titulos
+      .map((titulo: any) => {
+        const capitulosFiltrados = titulo.capitulos
+          .map((capitulo: any) => {
+            const secoesFiltradas = capitulo.secaos
+              .map((secao: any) => {
+                const artigosFiltrados = secao.artigos
+                  .map((artigo: any) => {
+                    let artigoMatches = false;
+
+                    if (searchBy === 'keyword') {
+                      artigoMatches = textMatches(artigo.conteudo);
+
+                      if (artigoMatches) {
+                        this.searchResults.push({
+                          type: 'artigo',
+                          id: artigo.id,
+                          content: artigo.conteudo,
+                          path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
+                          parent: secao
+                        });
+                      }
+                    } else if (searchBy === 'artigo') {
+                      // Busca específica por artigo (número)
+                      if (artigo.conteudo?.toLowerCase().includes(`art. ${queryLower}`)) {
+                        artigoMatches = true;
+                        this.searchResults.push({
+                          type: 'artigo',
+                          id: artigo.id,
+                          content: artigo.conteudo,
+                          path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
+                          parent: secao
+                        });
+                      }
+                    }
+
+                    // Processar parágrafos apenas se estivermos procurando por palavras-chave
+                    const paragrafosFiltrados = artigo.paragrafos
+                      .map((paragrafo: any) => {
+                        if (searchBy === 'keyword' && textMatches(paragrafo.conteudo)) {
+                          this.searchResults.push({
+                            type: 'paragrafo',
+                            id: paragrafo.id,
+                            content: paragrafo.conteudo,
+                            path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`,
+                            parent: artigo
+                          });
+                          return paragrafo;
+                        }
+                        return null;
+                      })
+                      .filter(Boolean);
+
+                    if (paragrafosFiltrados.length) {
+                      artigoMatches = true;
+                      return { ...artigo, paragrafos: paragrafosFiltrados };
+                    } else if (artigoMatches) {
+                      return artigo;
+                    }
+                    return null;
+                  })
+                  .filter(Boolean);
+
+                return artigosFiltrados.length
+                  ? { ...secao, artigos: artigosFiltrados }
+                  : null;
+              })
+              .filter(Boolean);
+
+            return secoesFiltradas.length
+              ? { ...capitulo, secaos: secoesFiltradas }
+              : null;
+          })
+          .filter(Boolean);
+
+        return capitulosFiltrados.length
+          ? { ...titulo, capitulos: capitulosFiltrados }
+          : null;
+      })
+      .filter(Boolean);
+
+    this.filteredBook = clone;
     this.totalResults = this.searchResults.length;
     this.isSearching = false;
 
+    // Adicionar à histórico de pesquisa
+    this.addToSearchHistory(this.query);
 
     // Exibir resultado da busca
     if (this.totalResults > 0) {
       this.currentResultIndex = 0;
+      this.navigateToResult(0);
       this.presentToast(`Encontrados ${this.totalResults} resultados para "${this.query}"`);
+
+      // Garantir que os destaques sejam aplicados após o DOM ser atualizado
+      setTimeout(() => {
+        this.forceHighlightsRefresh();
+      }, 500);
     } else {
       this.presentToast(`Nenhum resultado encontrado para "${this.query}"`);
     }
   }
-
-  highlightAllOccurrences(term: string) {
-    this.clearHighlights();
-  
-    if (!term || term.trim().length === 0) {
-      this.highlightedElements = [];
-      this.totalResults = 0;
-      return;
-    }
-  
-    // Customizable: pode limitar onde buscar, ex: #content-area
-    const contentArea = document.querySelector('ion-content .main-title')?.parentElement;
-    if (!contentArea) return;
-  
-    // Pode ajustar para buscar dentro do container correto, se o DOM for diferente
-    const walker = document.createTreeWalker(contentArea, NodeFilter.SHOW_TEXT, null);
-  
-    let nodes: Node[] = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-  
-    const regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-    nodes.forEach(node => {
-      const text = node.nodeValue || '';
-      if (regex.test(text)) {
-        // Wrap occurrences
-        const newHtml = text.replace(regex, (match) =>
-          `<mark class="find-highlight">${match}</mark>`
-        );
-        const span = document.createElement('span');
-        span.innerHTML = newHtml;
-        node.parentNode?.replaceChild(span, node);
-      }
-    });
-  
-    this.highlightedElements = Array.from(document.querySelectorAll('.find-highlight')) as HTMLElement[];
-    this.totalResults = this.highlightedElements.length;
-    this.currentHighlightIndex = 0;
-  
-    // Scroll to first if found
-    this.scrollToCurrentHighlight();
-  }
-
-  clearHighlights() {
-    // Limpar destaques da busca avançada
-    document.querySelectorAll('.find-highlight').forEach(el => {
-      const parent = el.parentNode;
-      if (parent) {
-        parent.replaceChild(document.createTextNode(el.textContent || ''), el);
-        parent.normalize();
-      }
-    });
-    
-    // Limpar destaques da busca antiga
-    document.querySelectorAll('.highlight-search').forEach(el => {
-      const parent = el.parentNode;
-      if (parent) {
-        parent.replaceChild(document.createTextNode(el.textContent || ''), el);
-        parent.normalize();
-      }
-    });
-    
-    this.highlightedElements = [];
-    this.searchResults = [];
-    this.totalResults = 0;
-    this.currentHighlightIndex = 0;
-    this.currentResultIndex = -1;
-  }
-
-  navigateToHighlight(indexDelta: number) {
-    if (this.totalResults === 0) return;
-  
-    this.currentHighlightIndex =
-      (this.currentHighlightIndex + indexDelta + this.totalResults) % this.totalResults;
-    this.scrollToCurrentHighlight();
-  }
-  
-  scrollToCurrentHighlight() {
-    if (this.highlightedElements.length === 0) return;
-    this.highlightedElements.forEach(el => el.classList.remove('current-highlight'));
-    const el = this.highlightedElements[this.currentHighlightIndex];
-    el.classList.add('current-highlight');
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-  
 
   ngAfterViewInit() {
     // Garantir que o mapa de artigos está construído
@@ -1133,7 +1026,175 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.content.scrollToTop(500);
   }
 
+  // Métodos para navegação nos resultados
+  async navigateToResult(index: number) {
+    if (index < 0 || index >= this.searchResults.length) return;
 
+    this.currentResultIndex = index;
+    const result = this.searchResults[index];
+
+    // Remover destaques flash anteriores
+    const previousHighlights = document.querySelectorAll('.flash-highlight');
+    previousHighlights.forEach(el => {
+      el.classList.remove('flash-highlight');
+    });
+
+    // Encontrar o elemento correspondente ao resultado
+    setTimeout(() => {
+      const elementId = `${result.type}-${result.id}`;
+      const element = document.getElementById(elementId);
+
+      if (element) {
+        // Rolar para o elemento com maior suavidade
+        this.content.scrollToPoint(0, element.offsetTop - 120, 500);
+
+        // Adicionar efeito de destaque temporário
+        element.classList.add('flash-highlight');
+
+        // Forçar a atualização dos destaques das palavras
+        this.forceHighlightsRefresh();
+      }
+    }, 100);
+  }
+
+  // Força a atualização dos destaques
+  forceHighlightsRefresh() {
+    if (!this.query) return;
+
+    setTimeout(() => {
+      // Encontra todos os destaques existentes
+      const highlights = document.querySelectorAll('.highlight-search');
+
+      // Certifica-se que todos estão com a classe correta e visíveis
+      highlights.forEach(el => {
+        el.classList.add('highlight-search');
+        (el as HTMLElement).style.backgroundColor = 'rgba(255, 230, 0, 0.4)';
+      });
+    }, 200);
+  }
+
+  navigateToNextResult() {
+    if (this.currentResultIndex < this.totalResults - 1) {
+      this.navigateToResult(this.currentResultIndex + 1);
+    }
+  }
+
+  navigateToPreviousResult() {
+    if (this.currentResultIndex > 0) {
+      this.navigateToResult(this.currentResultIndex - 1);
+    }
+  }
+
+  // Salvar e restaurar posição da rolagem
+  saveCurrentPosition() {
+    this.content.getScrollElement().then(element => {
+      this.lastScrollPosition = element.scrollTop;
+    });
+  }
+
+  restoreLastPosition() {
+    if (this.navigationHistory.length > 0 && this.currentHistoryIndex >= 0) {
+      const lastPosition = this.navigationHistory[this.currentHistoryIndex].scrollPosition;
+      this.content.scrollToPoint(0, lastPosition, 500);
+      console.log('Restaurando última posição:', lastPosition);
+    } else {
+      // Fallback para o comportamento existente
+    if (this.lastScrollPosition > 0) {
+        this.content.scrollToPoint(0, this.lastScrollPosition, 500);
+      }
+    }
+  }
+
+  // Gerenciamento do histórico de pesquisa
+  loadSearchHistory() {
+    const history = localStorage.getItem('searchHistory');
+    if (history) {
+      this.searchHistory = JSON.parse(history);
+    }
+  }
+
+  addToSearchHistory(query: string) {
+    if (!this.searchHistory.includes(query)) {
+      this.searchHistory.unshift(query);
+      if (this.searchHistory.length > 10) {
+        this.searchHistory.pop();
+      }
+      localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+    }
+  }
+
+  useHistoryItem(query: string) {
+    this.query = query;
+    if (this.searchInput && this.searchInput.nativeElement) {
+      this.searchInput.nativeElement.value = query;
+    }
+    this.search();
+  }
+
+  clearSearchHistory() {
+    this.searchHistory = [];
+    localStorage.removeItem('searchHistory');
+  }
+
+  async showSearchOptions() {
+    const alert = await this.alertController.create({
+      header: 'Opções de Busca',
+      subHeader: 'Escolha o tipo de busca',
+      inputs: [
+        {
+          name: 'searchOption',
+          type: 'radio',
+          label: 'Palavra-chave (contém)',
+          value: 'keyword_contains',
+          checked: this.searchBy === 'keyword' && this.searchType === 'contains'
+        },
+        {
+          name: 'searchOption',
+          type: 'radio',
+          label: 'Palavra-chave (termo exato)',
+          value: 'keyword_exact',
+          checked: this.searchBy === 'keyword' && this.searchType === 'exact'
+        },
+        {
+          name: 'searchOption',
+          type: 'radio',
+          label: 'Artigo (contém)',
+          value: 'artigo_contains',
+          checked: this.searchBy === 'artigo' && this.searchType === 'contains'
+        },
+        {
+          name: 'searchOption',
+          type: 'radio',
+          label: 'Artigo (termo exato)',
+          value: 'artigo_exact',
+          checked: this.searchBy === 'artigo' && this.searchType === 'exact'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Pesquisar',
+          handler: (data) => {
+            if (data) {
+              // Separar o valor em tipo de busca e modo
+              const [searchBy, searchType] = data.split('_');
+              this.searchBy = searchBy;
+              this.searchType = searchType;
+
+              if (this.query) {
+                this.search();
+              }
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
 
   async presentToast(message: string) {
     const toast = await this.toastController.create({
@@ -1152,8 +1213,49 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         if (this.scrollDebounceTimeout) {
           clearTimeout(this.scrollDebounceTimeout);
         }
+
+        this.scrollDebounceTimeout = setTimeout(() => {
+          this.forceHighlightsRefresh();
+        }, 200);
       }
     });
+  }
+
+  async showSearchHistory() {
+    const alert = await this.alertController.create({
+      header: 'Histórico de Pesquisas',
+      message: 'Selecione uma pesquisa anterior ou limpe o histórico',
+      inputs: this.searchHistory.map(item => ({
+        name: 'history',
+        type: 'radio',
+        label: item,
+        value: item
+      })),
+      buttons: [
+        {
+          text: 'Limpar Histórico',
+          role: 'destructive',
+          handler: () => {
+            this.clearSearchHistory();
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Selecionar',
+          handler: (data) => {
+            if (data) {
+              this.useHistoryItem(data);
+            }
+          }
+        }
+      ],
+      cssClass: 'search-history-alert'
+    });
+
+    await alert.present();
   }
 
   async openModal(type: string) {
@@ -1169,9 +1271,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   async openPdfDirectly(pdfName: string) {
     console.log(`Abrindo PDF: ${pdfName}`);
     
-    // Navegar para a página de visualização de PDF com URLs locais por padrão
+    // Navegar para a página de visualização de PDF com URLs remotas
     // Usando window.location.href para garantir uma navegação completa
-    const url = `/pdf-viewer/${pdfName}?remote=false`;
+    const url = `/pdf-viewer/${pdfName}?remote=true`;
     console.log(`Redirecionando para: ${url}`);
     
     window.location.href = url;
