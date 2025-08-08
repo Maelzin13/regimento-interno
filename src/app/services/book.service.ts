@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class BookService {
+  private bookCache: { [id: number]: any } = {};
   constructor(private http: HttpClient, private apiservice: ApiService) {}
 
   async getAllBooks() {
@@ -15,12 +16,42 @@ export class BookService {
     return response;
   }
 
-  async getBookById(id: number) {
+  async getBookById(id: number, forceRefresh = false) {
+    const cacheKey = `book_${id}`;
+    if (!forceRefresh) {
+      // 1. Verifica cache em memória
+      if (this.bookCache[id]) return this.bookCache[id];
+      // 2. Verifica localStorage
+      const localData = localStorage.getItem(cacheKey);
+      if (localData) {
+        try {
+          const data = JSON.parse(localData);
+          // Valide se não está velho demais (exemplo: 1h)
+          if (Date.now() - data.timestamp < 1000 * 60 * 60) {
+            this.bookCache[id] = data.value;
+            return data.value;
+          }
+        } catch (e) {}
+      }
+    }
+  
+    // 3. Busca do backend
     const response: any = await this.http
       .get(`${this.apiservice.baseUrl}/books/${id}`)
       .toPromise();
-
+    // Salva em memória e no localStorage
+    this.bookCache[id] = response.data;
+    localStorage.setItem(cacheKey, JSON.stringify({
+      timestamp: Date.now(),
+      value: response.data
+    }));
+  
     return response.data;
+  }
+  
+  clearBookCache(id: number) {
+    delete this.bookCache[id];
+    localStorage.removeItem(`book_${id}`);
   }
 
   async updateBook(id: number, book: any) {

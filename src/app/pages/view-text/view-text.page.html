@@ -59,26 +59,26 @@
 <ion-content fullscreen class="ion-padding">
   <ng-container>
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
-      <h3 class="main-title" [innerHTML]="safeHTML(primeiroParagrafo)"></h3>
+      <h3 class="main-title" [innerHTML]="highlightAndSanitize(primeiroParagrafo)"></h3>
       <div *ngFor="let titulo of (filteredBook || book).titulos; trackBy: trackByTituloId">
         <ng-container *ngIf="titulo.conteudo?.trim()">
-          <h2 class="titulo" [innerHTML]="safeHTML(titulo.conteudo)"></h2>
+          <h2 class="titulo" [innerHTML]="highlightAndSanitize(titulo.conteudo)"></h2>
 
           <ng-container *ngFor="let capitulo of titulo.capitulos; trackBy: trackByCapituloId">
-            <h3 class="capitulo" [innerHTML]="safeHTML(capitulo.conteudo)"></h3>
+            <h3 class="capitulo" [innerHTML]="highlightAndSanitize(capitulo.conteudo)"></h3>
             <ng-container *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId">
-              <h4 class="secao" [innerHTML]="safeHTML(secao.conteudo)"></h4>
+              <h4 class="secao" [innerHTML]="highlightAndSanitize(secao.conteudo)"></h4>
               <div class="artigo-container">
                 <div *ngFor="let artigo of secao.artigos; trackBy: trackByArtigoId">
                   <h5
                     [id]="'artigo-' + artigo.id"
-                    [innerHTML]="safeHTML(artigo.conteudo)"
+                    [innerHTML]="highlightAndSanitize(artigo.conteudo)"
                   ></h5>
 
                   <div *ngFor="let paragrafo of artigo.paragrafos; trackBy: trackByParagrafoId">
                     <h5
                       [id]="'paragrafo-' + paragrafo.id"
-                      [innerHTML]="safeHTML(paragrafo.conteudo)"
+                      [innerHTML]="highlightAndSanitize(paragrafo.conteudo)"
                       class="text-justify"
                     ></h5>
 
@@ -87,7 +87,7 @@
                            *ngIf="remissao.conteudo && remissao.conteudo.trim().startsWith('Art')">
                         <div class="remissao-content" [attr.data-remissao-id]="remissao.id">
                           <div class="remissao-text"
-                            [innerHTML]="safeHTML(remissao.conteudo)">
+                            [innerHTML]="highlightAndSanitize(remissao.conteudo)">
                           </div>
                           <div class="remissao-indicator">
                             <ion-icon name="link-outline" class="remissao-icon"></ion-icon>

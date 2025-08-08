@@ -1,11 +1,27 @@
 :root {
-  --search-highlight: rgba(255, 230, 0, 0.6);
+  --search-highlight: rgba(255, 230, 0, 0.8);
   --search-flash: rgba(56, 128, 255, 0.1);
   --search-shadow: rgba(0, 0, 0, 0.2);
   --search-border: rgba(200, 200, 200, 0.5);
   --search-radius: 8px;
   --search-padding: 10px;
   --search-gap: 4px;
+}
+
+.search-highlight, mark.search-highlight {
+  background-color: var(--search-highlight);
+  border-radius: 4px;
+  padding: 0 2px;
+  color: #222;
+  font-weight: 600;
+  box-shadow: 0 0 4px var(--search-highlight);
+  transition: background 0.2s;
+}
+
+.result-focus {
+  outline: 2px solid #3880ff;
+  background-color: #fff3cd !important;
+  transition: outline 0.3s, background 0.3s;
 }
 
 .law-text { color: #1e999a; }
@@ -98,6 +114,68 @@ ion-content {
   display: inline-block;
   color: #329632;
 }
+
+.remissao-container {
+  border-left: 3px solid var(--ion-color-success);
+  background-color: rgba(var(--ion-color-success-rgb), 0.05);
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
+  transition: all 0.3s ease;
+  margin: 10px 0;
+  
+  &:hover {
+    background-color: rgba(var(--ion-color-success-rgb), 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+.remissao-content {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: var(--ion-color-success-shade);
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.remissao-text {
+  font-weight: 500;
+  margin-bottom: 8px;
+  padding-right: 28px;
+  position: relative;
+}
+
+.remissao-indicator {
+  display: flex;
+  align-items: center;
+  font-size: 0.85em;
+  color: var(--ion-color-medium);
+  margin-top: 4px;
+  
+  .remissao-icon {
+    margin-right: 6px;
+    font-size: 1.2em;
+    color: var(--ion-color-success);
+  }
+}
+
+.remissao-active {
+  background-color: rgba(var(--ion-color-warning-rgb), 0.15);
+  border-left: 4px solid var(--ion-color-warning);
+  border-right: 4px solid var(--ion-color-warning);
+  box-shadow: 0 0 15px rgba(var(--ion-color-warning-rgb), 0.4);
+  padding: 12px;
+  border-radius: 6px;
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
 
 
 .remissao-inline,
