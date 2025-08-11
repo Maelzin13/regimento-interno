@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.regimento.app-mergeReleaseResources-3:/values-kk/values-kk.xml",
+            "outputFile": "com.regimento.app-mergeReleaseResources-40:/values-kk/values-kk.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Ismael\\.gradle\\caches\\transforms-3\\04b73d0b9badaf6484db65c1c039fa9d\\transformed\\play-services-base-18.5.0\\res\\values-kk\\values.xml",
+                    "source": "/Users/ismaeldias/.gradle/caches/transforms-3/04b73d0b9badaf6484db65c1c039fa9d/transformed/play-services-base-18.5.0/res/values-kk/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
@@ -21,41 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Ismael\\.gradle\\caches\\transforms-3\\b46311db57989a48bad29b29a90435b0\\transformed\\browser-1.8.0\\res\\values-kk\\values-kk.xml",
-                    "from": {
-                        "startLines": "2,3,4,5",
-                        "startColumns": "4,4,4,4",
-                        "startOffsets": "55,155,259,367",
-                        "endColumns": "99,103,107,104",
-                        "endOffsets": "150,254,362,467"
-                    },
-                    "to": {
-                        "startLines": "56,57,58,59",
-                        "startColumns": "4,4,4,4",
-                        "startOffsets": "5957,6057,6161,6269",
-                        "endColumns": "99,103,107,104",
-                        "endOffsets": "6052,6156,6264,6369"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Ismael\\.gradle\\caches\\transforms-3\\32804ce976399431261bc3943272c4a5\\transformed\\play-services-basement-18.5.0\\res\\values-kk\\values.xml",
-                    "from": {
-                        "startLines": "4",
-                        "startColumns": "0",
-                        "startOffsets": "195",
-                        "endColumns": "159",
-                        "endOffsets": "354"
-                    },
-                    "to": {
-                        "startLines": "46",
-                        "startColumns": "4",
-                        "startOffsets": "4726",
-                        "endColumns": "163",
-                        "endOffsets": "4885"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Ismael\\.gradle\\caches\\transforms-3\\5ab5a976858504390a1af3458f9d8eb9\\transformed\\appcompat-1.6.1\\res\\values-kk\\values-kk.xml",
+                    "source": "/Users/ismaeldias/.gradle/caches/transforms-3/5ab5a976858504390a1af3458f9d8eb9/transformed/appcompat-1.6.1/res/values-kk/values-kk.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -72,24 +38,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Ismael\\.gradle\\caches\\transforms-3\\b9523dae288abeb7656df634e743d811\\transformed\\credentials-1.2.0-rc01\\res\\values-kk\\values-kk.xml",
+                    "source": "/Users/ismaeldias/.gradle/caches/transforms-3/b46311db57989a48bad29b29a90435b0/transformed/browser-1.8.0/res/values-kk/values-kk.xml",
                     "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,168",
-                        "endColumns": "112,116",
-                        "endOffsets": "163,280"
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,155,259,367",
+                        "endColumns": "99,103,107,104",
+                        "endOffsets": "150,254,362,467"
                     },
                     "to": {
-                        "startLines": "29,30",
-                        "startColumns": "4,4",
-                        "startOffsets": "2796,2909",
-                        "endColumns": "112,116",
-                        "endOffsets": "2904,3021"
+                        "startLines": "56,57,58,59",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "5957,6057,6161,6269",
+                        "endColumns": "99,103,107,104",
+                        "endOffsets": "6052,6156,6264,6369"
                     }
                 },
                 {
-                    "source": "C:\\Users\\Ismael\\.gradle\\caches\\transforms-3\\91f00a5b7e289b40ec4337c5400b4c58\\transformed\\core-1.12.0\\res\\values-kk\\values-kk.xml",
+                    "source": "/Users/ismaeldias/.gradle/caches/transforms-3/91f00a5b7e289b40ec4337c5400b4c58/transformed/core-1.12.0/res/values-kk/values-kk.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -103,6 +69,40 @@
                         "startOffsets": "3026,3121,3223,3325,3428,3532,3629,6456",
                         "endColumns": "94,101,101,102,103,96,110,100",
                         "endOffsets": "3116,3218,3320,3423,3527,3624,3735,6552"
+                    }
+                },
+                {
+                    "source": "/Users/ismaeldias/.gradle/caches/transforms-3/32804ce976399431261bc3943272c4a5/transformed/play-services-basement-18.5.0/res/values-kk/values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "195",
+                        "endColumns": "159",
+                        "endOffsets": "354"
+                    },
+                    "to": {
+                        "startLines": "46",
+                        "startColumns": "4",
+                        "startOffsets": "4726",
+                        "endColumns": "163",
+                        "endOffsets": "4885"
+                    }
+                },
+                {
+                    "source": "/Users/ismaeldias/.gradle/caches/transforms-3/b9523dae288abeb7656df634e743d811/transformed/credentials-1.2.0-rc01/res/values-kk/values-kk.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,168",
+                        "endColumns": "112,116",
+                        "endOffsets": "163,280"
+                    },
+                    "to": {
+                        "startLines": "29,30",
+                        "startColumns": "4,4",
+                        "startOffsets": "2796,2909",
+                        "endColumns": "112,116",
+                        "endOffsets": "2904,3021"
                     }
                 }
             ]
