@@ -15,30 +15,50 @@
     <p>Carregando...</p>
   </div>
 
+  <ion-card *ngIf="!loading && user && isGoogle" color="warning">
+    <ion-card-content>
+      Esta conta está vinculada ao Google. Edições de perfil pelo app estão bloqueadas.
+      Para alterar nome ou e-mail, atualize seus dados na sua Conta Google.
+    </ion-card-content>
+  </ion-card>
+
   <form *ngIf="!loading && user" (ngSubmit)="saveChanges()">
-    <!-- Nome -->
-    <ion-item>
+    <ion-item [disabled]="isGoogle">
       <ion-label position="floating">Nome</ion-label>
-      <ion-input [(ngModel)]="user.name" name="name" required></ion-input>
+      <ion-input
+        [(ngModel)]="user.name"
+        name="name"
+        required
+        [readonly]="isGoogle"
+        [attr.tabindex]="isGoogle ? -1 : null">
+      </ion-input>
     </ion-item>
-
-    <!-- Email -->
-    <ion-item>
+    
+    <ion-item [disabled]="isGoogle">
       <ion-label position="floating">Email</ion-label>
-      <ion-input [(ngModel)]="user.email" name="email" type="email" required></ion-input>
+      <ion-input
+        [(ngModel)]="user.email"
+        name="email"
+        type="email"
+        required
+        [readonly]="isGoogle"
+        [attr.tabindex]="isGoogle ? -1 : null">
+      </ion-input>
     </ion-item>
 
-    <!-- Administrador -->
-    <ion-item *ngIf="user.is_admin === true">
+    <ion-item [disabled]="isGoogle" *ngIf="user.is_admin === true">
       <ion-label>Administrador</ion-label>
-      <ion-select [(ngModel)]="user.is_admin" name="is_admin">
+      <ion-select
+        [(ngModel)]="user.is_admin"
+        name="is_admin"
+        [interface]="'popover'">
         <ion-select-option [value]="false">Não</ion-select-option>
         <ion-select-option [value]="true">Sim</ion-select-option>
       </ion-select>
     </ion-item>
 
     <!-- Status da Assinatura -->
-    <ion-item lines="none">
+    <ion-item lines="none" *ngIf="user.plan === 'monthly' || user.plan === 'yearly'">
       <ion-label>Status da Assinatura</ion-label>
       <ion-badge [color]="user.subscription_status === 'active' ? 'success' : 'medium'" slot="end">
         {{ user.subscription_status === 'active' ? 'Ativo' : 'Inativo' }}
@@ -46,7 +66,7 @@
     </ion-item>
 
     <!-- Plano -->
-    <ion-item lines="none">
+    <ion-item lines="none" *ngIf="user.plan === 'monthly' || user.plan === 'yearly'">
       <ion-label>Plano</ion-label>
       <ion-text color="dark" slot="end">
         {{ user.plan || '—' }}
@@ -54,7 +74,11 @@
     </ion-item>
 
     <!-- Botão -->
-    <ion-button expand="block" type="submit" color="primary" [disabled]="loading">
+    <ion-button
+      expand="block"
+      type="submit"
+      color="primary"
+      [disabled]="loading || isGoogle">
       Salvar Alterações
     </ion-button>
 
@@ -62,5 +86,4 @@
     <ion-text color="success" *ngIf="successMessage">{{ successMessage }}</ion-text>
     <ion-text color="danger" *ngIf="errorMessage">{{ errorMessage }}</ion-text>
   </form>
-
 </ion-content>

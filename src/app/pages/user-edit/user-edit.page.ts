@@ -15,6 +15,11 @@ export class UserEditPage implements OnInit {
   successMessage = '';
   user: DetailedUserModel | null = null;
 
+  // Centraliza a regra: travar edição se provider === 'google'
+  get isGoogle(): boolean {
+    return (this.user?.provider || '').toLowerCase() === 'google';
+  }
+
   constructor(
     private navParams: NavParams,
     private route: ActivatedRoute,
@@ -40,15 +45,21 @@ export class UserEditPage implements OnInit {
 
   async saveChanges() {
     if (!this.user) return;
+
+    // Defesa extra: mesmo se alguém reabilitar o botão, o método bloqueia.
+    if (this.isGoogle) {
+      this.errorMessage = 'Esta conta é do Google. Edições devem ser feitas na sua Conta Google.';
+      return;
+    }
+
     this.loading = true;
     this.successMessage = '';
     this.errorMessage = '';
+
     try {
       await this.userService.updateUser(this.user);
       this.successMessage = 'Usuário atualizado com sucesso!';
-      setTimeout(() => {
-        this.fecharModal();
-      }, 1000);
+      setTimeout(() => this.fecharModal(), 1000);
     } catch (error) {
       console.error(error);
       this.errorMessage = 'Erro ao salvar as alterações.';

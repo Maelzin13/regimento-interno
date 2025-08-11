@@ -4,5 +4,6 @@ export class DetailedUserModel {
   name: string = '';
   plan: string = '';
   email: string = '';
+  provider: string = '';
   subscription_status: string = '';
 }

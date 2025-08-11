@@ -78,7 +78,7 @@ export class LoginPage implements OnInit {
 
   async socialLogin(provider: 'google') {
     const loading = await this.presentLoading(
-      `Conectando com ${provider === 'google' ? 'Google' : 'Facebook'}...`
+      `Conectando com ${provider === 'google' ? 'Google' : 'Google'}...`
     );
 
     try {
