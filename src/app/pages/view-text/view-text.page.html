@@ -9,26 +9,32 @@
   </ion-toolbar>
   <ion-toolbar class="ion-padding">
     <div class="search-container">
-        <ion-searchbar
-        searchIcon="none"
-        #searchInput
-        color="light"
-        animated="true"
-        placeholder="Digite sua busca..."
-        show-clear-button="always"
-        [(ngModel)]="query"
-        (ionInput)="onSearchInput($event)"
-        (ionClear)="clearSearch()"
-        debounce="300"
-        (keyup.enter)="executeSearch()"
-        style="margin-top: 10px;"
-      >
-      </ion-searchbar>
-  
-      <ion-button size="small" fill="clear" (click)="showSearchOptions()">
-        <ion-icon name="options-outline"></ion-icon>
+      <ion-searchbar
+      searchIcon="none"
+      #searchInput
+      color="light"
+      animated="true"
+      [placeholder]="getSearchPlaceholder()"
+      show-clear-button="always"
+      [(ngModel)]="query"
+      (ionInput)="onSearchInput($event)"
+      (ionClear)="clearSearch()"
+      debounce="300"
+      (keyup.enter)="executeSearch()"
+      style="margin-top: 10px;"
+    >
+    </ion-searchbar>
+
+      <ion-button shape="round" (click)="search()">
+        <ion-icon slot="icon-only" name="search" ></ion-icon>
       </ion-button>
-  
+
+
+
+      <!-- <ion-button size="small" fill="clear" (click)="showSearchOptions()">
+        <ion-icon name="options-outline"></ion-icon>
+      </ion-button> -->
+
       <ion-button
         size="small"
         fill="clear"
@@ -43,6 +49,17 @@
       <ion-spinner name="crescent"></ion-spinner>
       <p>Buscando...</p>
     </div>
+    <div>
+      <ion-segment [(ngModel)]="selectedFilter" (ionChange)="onFilterChange($event)">
+        <ion-segment-button value="keyword">
+          <ion-label>Palavra-chave</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="article">
+          <ion-label>Artigo</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
     <div class="header-links">
       <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
       <a (click)="openModal('indice')" class="header-link">Sumário</a>
@@ -52,7 +69,7 @@
       <a (click)="openPdfDirectly('esquemas')" class="header-link">
         Esquemas
       </a>
-    </div>  
+    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -83,7 +100,7 @@
                     ></h5>
 
                     <ng-container *ngFor="let remissao of paragrafo.remissoes; trackBy: trackByRemissaoId">
-                      <div class="remissao-container mt-3 mb-4 pl-4" 
+                      <div class="remissao-container mt-3 mb-4 pl-4"
                            *ngIf="remissao.conteudo && remissao.conteudo.trim().startsWith('Art')">
                         <div class="remissao-content" [attr.data-remissao-id]="remissao.id">
                           <div class="remissao-text"
@@ -100,7 +117,7 @@
                     <ng-container *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId">
                       <p class="comentario mt-4">
                         <span class="comentario-tipo font-semibold">{{ comentario.tipo | titlecase }}</span>
-                        <span 
+                        <span
                         [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)" (click)="toggleComment(comentario.id)"
                         ></span>
                       </p>
@@ -135,13 +152,13 @@
   <div class="navigation-tooltip" *ngIf="currentResultIndex >= 0">
     <span class="tooltip-text">{{ getCurrentResultContext() }}</span>
   </div>
-  
+
   <!-- Controles de navegação -->
   <div class="navigation-controls">
     <!-- Navegação com setas -->
     <div class="navigation-arrows">
-      <button 
-        class="nav-arrow-btn" 
+      <button
+        class="nav-arrow-btn"
         (click)="navigateToPreviousResult()"
         [disabled]="currentResultIndex <= 0"
         [class.disabled]="currentResultIndex <= 0"
@@ -149,15 +166,15 @@
       >
         <ion-icon name="chevron-up-outline"></ion-icon>
       </button>
-      
+
       <div class="result-counter">
         <span class="current-result">{{ currentResultIndex + 1 }}</span>
         <span class="separator">/</span>
         <span class="total-results">{{ totalResults }}</span>
       </div>
-      
-      <button 
-        class="nav-arrow-btn" 
+
+      <button
+        class="nav-arrow-btn"
         (click)="navigateToNextResult()"
         [disabled]="currentResultIndex >= totalResults - 1"
         [class.disabled]="currentResultIndex >= totalResults - 1"
@@ -168,13 +185,13 @@
     </div>
   </div>
 </div>
-  
+
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="toggleAllComments()">
         <ion-icon [name]="allCommentsExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-          {{ allCommentsExpanded ? 'Recolher' : 'Expandir' }}
+          {{ allCommentsExpanded ? 'Recolher Coment.' : 'Expandir Coment.' }}
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
