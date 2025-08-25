@@ -8,8 +8,7 @@
     <ion-title class="titulo-personalizado">Regimento Comentado</ion-title>
   </ion-toolbar>
   <ion-toolbar class="ion-padding">
-    <div class="search-container">
-      <ion-searchbar
+    <ion-searchbar
       searchIcon="none"
       #searchInput
       color="light"
@@ -17,51 +16,49 @@
       [placeholder]="getSearchPlaceholder()"
       show-clear-button="always"
       [(ngModel)]="query"
-      (ionInput)="onSearchInput($event)"
       (ionClear)="clearSearch()"
       debounce="300"
-      (keyup.enter)="executeSearch()"
-      style="margin-top: 10px;"
+      (keyup.enter)="search()"
+      style="margin-top: 10px"
     >
+    <!-- (ionInput)="onSearchInput($event)" -->
     </ion-searchbar>
 
-      <ion-button shape="round" (click)="search()">
-        <ion-icon slot="icon-only" name="search" ></ion-icon>
-      </ion-button>
+    <ion-button shape="round" (click)="search()">
+      <ion-icon slot="icon-only" name="search"></ion-icon>
+    </ion-button>
 
+    <ion-button
+      size="small"
+      fill="clear"
+      (click)="showSearchHistory()"
+      *ngIf="searchHistory.length > 0"
+    >
+      <ion-icon name="time-outline"></ion-icon>
+    </ion-button>
 
-
-      <!-- <ion-button size="small" fill="clear" (click)="showSearchOptions()">
-        <ion-icon name="options-outline"></ion-icon>
-      </ion-button> -->
-
-      <ion-button
-        size="small"
-        fill="clear"
-        (click)="showSearchHistory()"
-        *ngIf="searchHistory.length > 0"
-      >
-        <ion-icon name="time-outline"></ion-icon>
-      </ion-button>
-    </div>
     <!-- Loader de pesquisa -->
     <div class="search-loader" *ngIf="isSearching">
       <ion-spinner name="crescent"></ion-spinner>
       <p>Buscando...</p>
     </div>
+
     <div>
-      <ion-segment [(ngModel)]="selectedFilter" (ionChange)="onFilterChange($event)">
+      <ion-segment [(ngModel)]="searchBy">
         <ion-segment-button value="keyword">
           <ion-label>Palavra-chave</ion-label>
         </ion-segment-button>
 
-        <ion-segment-button value="article">
+        <ion-segment-button value="artigo">
           <ion-label>Artigo</ion-label>
         </ion-segment-button>
       </ion-segment>
     </div>
+
     <div class="header-links">
-      <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
+      <a (click)="openModal('abreviaturas')" class="header-link"
+        >Abreviaturas</a
+      >
       <a (click)="openModal('indice')" class="header-link">Sumário</a>
       <a (click)="openPdfDirectly('resumos')" class="header-link">
         Resumos temáticos
@@ -76,49 +73,87 @@
 <ion-content fullscreen class="ion-padding">
   <ng-container>
     <ng-container *ngIf="(filteredBook || book)?.titulos?.length; else loading">
-      <h3 class="main-title" [innerHTML]="highlightAndSanitize(primeiroParagrafo)"></h3>
-      <div *ngFor="let titulo of (filteredBook || book).titulos; trackBy: trackByTituloId">
+      <h3
+        class="main-title"
+        [innerHTML]="highlightAndSanitize(primeiroParagrafo)"
+      ></h3>
+      <div
+        *ngFor="let titulo of (filteredBook || book).titulos; trackBy: trackByTituloId"
+      >
         <ng-container *ngIf="titulo.conteudo?.trim()">
-          <h2 class="titulo" [innerHTML]="highlightAndSanitize(titulo.conteudo)"></h2>
+          <h2
+            class="titulo"
+            [innerHTML]="highlightAndSanitize(titulo.conteudo)"
+          ></h2>
 
-          <ng-container *ngFor="let capitulo of titulo.capitulos; trackBy: trackByCapituloId">
-            <h3 class="capitulo" [innerHTML]="highlightAndSanitize(capitulo.conteudo)"></h3>
-            <ng-container *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId">
-              <h4 class="secao" [innerHTML]="highlightAndSanitize(secao.conteudo)"></h4>
+          <ng-container
+            *ngFor="let capitulo of titulo.capitulos; trackBy: trackByCapituloId"
+          >
+            <h3
+              class="capitulo"
+              [innerHTML]="highlightAndSanitize(capitulo.conteudo)"
+            ></h3>
+            <ng-container
+              *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId"
+            >
+              <h4
+                class="secao"
+                [innerHTML]="highlightAndSanitize(secao.conteudo)"
+              ></h4>
               <div class="artigo-container">
-                <div *ngFor="let artigo of secao.artigos; trackBy: trackByArtigoId">
+                <div
+                  *ngFor="let artigo of secao.artigos; trackBy: trackByArtigoId"
+                >
                   <h5
                     [id]="'artigo-' + artigo.id"
                     [innerHTML]="highlightAndSanitize(artigo.conteudo)"
                   ></h5>
 
-                  <div *ngFor="let paragrafo of artigo.paragrafos; trackBy: trackByParagrafoId">
+                  <div
+                    *ngFor="let paragrafo of artigo.paragrafos; trackBy: trackByParagrafoId"
+                  >
                     <h5
                       [id]="'paragrafo-' + paragrafo.id"
                       [innerHTML]="highlightAndSanitize(paragrafo.conteudo)"
                       class="text-justify"
                     ></h5>
 
-                    <ng-container *ngFor="let remissao of paragrafo.remissoes; trackBy: trackByRemissaoId">
-                      <div class="remissao-container mt-3 mb-4 pl-4"
-                           *ngIf="remissao.conteudo && remissao.conteudo.trim().startsWith('Art')">
-                        <div class="remissao-content" [attr.data-remissao-id]="remissao.id">
-                          <div class="remissao-text"
-                            [innerHTML]="highlightAndSanitize(remissao.conteudo)">
-                          </div>
+                    <ng-container
+                      *ngFor="let remissao of paragrafo.remissoes; trackBy: trackByRemissaoId"
+                    >
+                      <div
+                        class="remissao-container mt-3 mb-4 pl-4"
+                        *ngIf="remissao.conteudo && remissao.conteudo.trim().startsWith('Art')"
+                      >
+                        <div
+                          class="remissao-content"
+                          [attr.data-remissao-id]="remissao.id"
+                        >
+                          <div
+                            class="remissao-text"
+                            [innerHTML]="highlightAndSanitize(remissao.conteudo)"
+                          ></div>
                           <div class="remissao-indicator">
-                            <ion-icon name="link-outline" class="remissao-icon"></ion-icon>
+                            <ion-icon
+                              name="link-outline"
+                              class="remissao-icon"
+                            ></ion-icon>
                             <span>Clique para navegar</span>
                           </div>
                         </div>
                       </div>
                     </ng-container>
 
-                    <ng-container *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId">
+                    <ng-container
+                      *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId"
+                    >
                       <p class="comentario mt-4">
-                        <span class="comentario-tipo font-semibold">{{ comentario.tipo | titlecase }}</span>
+                        <span class="comentario-tipo font-semibold"
+                          >{{ comentario.tipo | titlecase }}</span
+                        >
                         <span
-                        [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)" (click)="toggleComment(comentario.id)"
+                          [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)"
+                          (click)="toggleComment(comentario.id)"
                         ></span>
                       </p>
                     </ng-container>
@@ -140,7 +175,11 @@
   </ng-template>
 
   <!-- Indicador de retorno de remissão -->
-  <div *ngIf="showReturnIndicator" class="return-indicator" (click)="navigateBack()">
+  <div
+    *ngIf="showReturnIndicator"
+    class="return-indicator"
+    (click)="navigateBack()"
+  >
     <ion-icon name="arrow-back-circle-outline"></ion-icon>
     <span>Voltar à origem</span>
   </div>
@@ -190,8 +229,10 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="toggleAllComments()">
-        <ion-icon [name]="allCommentsExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-          {{ allCommentsExpanded ? 'Recolher Coment.' : 'Expandir Coment.' }}
+        <ion-icon
+          [name]="allCommentsExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"
+        ></ion-icon>
+        {{ allCommentsExpanded ? 'Recolher Coment.' : 'Expandir Coment.' }}
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">

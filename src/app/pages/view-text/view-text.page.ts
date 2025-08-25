@@ -253,29 +253,23 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     await this.search();
   }*/
 
-  clearSearch() {
+    clearSearch() {
+      this.query = '';
+      this.filteredBook = null;
+      this.searchResults = [];
+      this.totalResults = 0;
+      this.currentResultIndex = -1;
+      this.isSearching = false;
 
-    this.query = '';
-    this.filteredBook = null;
-    this.searchResults = [];
-    this.totalResults = 0;
-    this.currentResultIndex = -1;
-    this.isSearching = false;
+      // Cancela busca em andamento
+      // (se houver debounce ou subscrição em Observable, cancelar aqui)
 
-    // Limpar cache de highlights
-    setTimeout(() => {
-      this.forceClearHighlights();
-    }, 0);
+      setTimeout(() => {
+        this.searchInput?.nativeElement?.focus();
+      }, 50);
+    }
 
-    // Opcional: foque de volta no input (evita delay de render)
-    setTimeout(() => {
-      if (this.searchInput && this.searchInput.nativeElement) {
-        this.searchInput.nativeElement.value = '';
-        this.searchInput.nativeElement.blur();
-        this.searchInput.nativeElement.focus();
-      }
-    }, 50);
-  }
+
 
 
   // Função para forçar limpeza dos highlights
