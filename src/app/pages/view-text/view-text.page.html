@@ -10,7 +10,6 @@
   <ion-toolbar class="search-toolbar">
     <ion-searchbar
       slot="start"
-      #searchInput
       color="light"
       animated="true"
       [placeholder]="getSearchPlaceholder()"
@@ -19,7 +18,7 @@
       (ionClear)="clearSearch()"
       debounce="300"
       (keyup.enter)="search()"
-      class="searchbar-shrink">
+      class="searchbar-shrink searchbar-no-icon">
     </ion-searchbar>
   
     <ion-buttons slot="end">
@@ -40,8 +39,7 @@
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-  
-  <!-- TOOLBAR: LINKS -->
+  <br>
   <ion-toolbar>
     <div class="header-links">
       <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>

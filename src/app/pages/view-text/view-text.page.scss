@@ -752,18 +752,8 @@ mark.highlight-search {
   }
 }
 
-.searchbar-no-icon::part(search-icon) {
-  display: none;
-}
-
-/* compensa o espaço que o ícone ocupava */
-.searchbar-no-icon {
-  --padding-start: 12px;      /* ajuste fino se precisar */
-}
-
-/* (opcional) se ainda sobrar margem interna no container do searchbar */
-.searchbar-no-icon::part(container) {
-  padding-inline-start: 12px; /* alguns temas usam esse padding */
+ion-segment {
+  --background: #d9e6dfa8;
 }
 
 /* Deixa o toolbar de busca compacto e com paddings controlados */
