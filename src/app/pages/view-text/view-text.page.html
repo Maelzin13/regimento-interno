@@ -7,9 +7,9 @@
     </ion-buttons>
     <ion-title class="titulo-personalizado">Regimento Comentado</ion-title>
   </ion-toolbar>
-  <ion-toolbar class="ion-padding">
+  <ion-toolbar class="search-toolbar">
     <ion-searchbar
-      searchIcon="none"
+      slot="start"
       #searchInput
       color="light"
       animated="true"
@@ -19,53 +19,35 @@
       (ionClear)="clearSearch()"
       debounce="300"
       (keyup.enter)="search()"
-      style="margin-top: 10px"
-    >
-    <!-- (ionInput)="onSearchInput($event)" -->
+      class="searchbar-shrink">
     </ion-searchbar>
-
-    <ion-button shape="round" (click)="search()">
-      <ion-icon slot="icon-only" name="search"></ion-icon>
-    </ion-button>
-
-    <ion-button
-      size="small"
-      fill="clear"
-      (click)="showSearchHistory()"
-      *ngIf="searchHistory.length > 0"
-    >
-      <ion-icon name="time-outline"></ion-icon>
-    </ion-button>
-
-    <!-- Loader de pesquisa -->
-    <div class="search-loader" *ngIf="isSearching">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Buscando...</p>
-    </div>
-
-    <div>
-      <ion-segment [(ngModel)]="searchBy">
-        <ion-segment-button value="keyword">
-          <ion-label>Palavra-chave</ion-label>
-        </ion-segment-button>
-
-        <ion-segment-button value="artigo">
-          <ion-label>Artigo</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </div>
-
+  
+    <ion-buttons slot="end">
+      <ion-button shape="round" (click)="search()" class="search-btn">
+        <ion-icon slot="icon-only" name="search"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <!-- TOOLBAR: SEGMENTO -->
+  <ion-toolbar class="ion-padding-top">
+    <ion-segment [(ngModel)]="searchBy">
+      <ion-segment-button value="keyword">
+        <ion-label>Palavra-chave</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="artigo">
+        <ion-label>Artigo</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+  
+  <!-- TOOLBAR: LINKS -->
+  <ion-toolbar>
     <div class="header-links">
-      <a (click)="openModal('abreviaturas')" class="header-link"
-        >Abreviaturas</a
-      >
+      <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
       <a (click)="openModal('indice')" class="header-link">Sumário</a>
-      <a (click)="openPdfDirectly('resumos')" class="header-link">
-        Resumos temáticos
-      </a>
-      <a (click)="openPdfDirectly('esquemas')" class="header-link">
-        Esquemas
-      </a>
+      <a (click)="openPdfDirectly('resumos')" class="header-link">Resumos temáticos</a>
+      <a (click)="openPdfDirectly('esquemas')" class="header-link">Esquemas</a>
     </div>
   </ion-toolbar>
 </ion-header>
