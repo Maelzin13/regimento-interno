@@ -16,6 +16,14 @@ export class BookService {
     return response;
   }
 
+  async getBookByIdLimit(id: number) {
+    const response: any = await this.http
+      .get(`${this.apiservice.baseUrl}/livros-limitados/${id}`)
+      .toPromise();
+    return response;
+  }
+
+
   async getBookById(id: number, forceRefresh = false) {
     const cacheKey = `book_${id}`;
     if (!forceRefresh) {

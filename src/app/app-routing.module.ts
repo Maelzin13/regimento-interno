@@ -20,6 +20,14 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'view-text-limit/:id',
+    loadChildren: () =>
+      import('./pages/view-text-limit/view-text-limit.module').then(
+        (m) => m.ViewTextLimitPageModule
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'pdf-viewer/:name',
     loadComponent: () =>
       import('./pages/pdf-viewer-page/pdf-viewer-page.component').then(
