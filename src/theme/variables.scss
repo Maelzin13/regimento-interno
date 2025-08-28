@@ -217,16 +217,17 @@ ion-accordion::part(header) ion-icon {
   }
 }
 
-.searchbar-input.sc-ion-searchbar-md {
-  -webkit-padding-start: 3.4375rem;
-  padding-inline-start: 1.4375rem;
-  -webkit-padding-end: 3.4375rem;
-  padding-inline-end: 3.4375rem;
-  padding-top: 0.375rem;
-  padding-bottom: -0.625rem;
-  background-position: left 8px center;
-  height: auto;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 41px;
+/* esconde o ícone interno do searchbar */
+.searchbar-no-icon::part(search-icon) {
+  display: none;
+}
+
+/* compensa o espaço que o ícone ocupava */
+.searchbar-no-icon {
+  --padding-start: 12px;      /* ajuste fino se precisar */
+}
+
+/* (opcional) se ainda sobrar margem interna no container do searchbar */
+.searchbar-no-icon::part(container) {
+  padding-inline-start: 12px; /* alguns temas usam esse padding */
 }

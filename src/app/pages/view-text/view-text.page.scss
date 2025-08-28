@@ -751,3 +751,50 @@ mark.highlight-search {
     box-shadow: 0 0 0 rgba(var(--ion-color-success-rgb), 0);
   }
 }
+
+ion-segment {
+  --background: #d9e6dfa8;
+}
+
+/* Deixa o toolbar de busca compacto e com paddings controlados */
+.search-toolbar {
+  --min-height: 56px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+/* Faz o searchbar “caber” ao lado do botão no iOS */
+.searchbar-shrink {
+  width: 100%;
+  --border-radius: 9999px;
+  --box-shadow: none;
+}
+/* O input interno do ion-searchbar pode encolher sem empurrar o botão */
+.search-toolbar ::part(input) { min-width: 0; }
+
+/* Botão de busca compacto, sem estourar altura do toolbar */
+.search-btn {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  height: 40px;
+  width: 40px;
+  margin-left: 8px;
+}
+
+/* Mantém seus links centralizados como antes */
+.header-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 8px 0 12px;
+  .header-link {
+    color: var(--ion-color-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+}
+
+/* Opcional: melhora a integração com safe-area no iOS */
+:host {
+  --ion-safe-area-top: env(safe-area-inset-top);
+}

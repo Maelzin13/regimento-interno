@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
+import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { AuthService } from 'src/app/services/auth.service';
 import { BookService } from 'src/app/services/book.service';
 import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
-import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-livro',
@@ -42,6 +43,10 @@ export class LivroPage implements OnInit {
       description:
         'Atos diretamente relacionados ao processo legislativo strictu sensu.',
     },
+    {
+      title: 'Código de Ética e Decoro Parlamentar',
+      link: 'https://www.planalto.gov.br/ccivil_03/leis/lcp/Lcp95compilado.htm',
+    },
   ];
 
   constructor(
@@ -77,6 +82,17 @@ export class LivroPage implements OnInit {
 
     await modal.present();
   }
+
+  // async openDescricaoModal(texto: any) {
+  //   try { await Haptics.impact({ style: ImpactStyle.Light }); } catch {}
+  //   const modal = await this.modalCtrl.create({
+  //     component: DescricaoModalComponent,
+  //     componentProps: { titulo: texto.title, descricao: texto.description },
+  //     breakpoints: [0, .4, .75],
+  //     initialBreakpoint: .4, // sheet modal style
+  //   });
+  //   await modal.present();
+  // }
 
   async showSubscriptionMessage() {
     const toast = await this.toastCtrl.create({
