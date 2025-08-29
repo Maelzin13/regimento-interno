@@ -603,6 +603,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     document.addEventListener('click', this.handleRemissaoClick as any);
   }
 
+  openExternalLink(url: string) {
+    console.log(url);
+    window.open(url, '_blank');
+  }
+
   handleRemissaoContent(remissaoElement: HTMLElement, event: Event) {
     const conteudo = remissaoElement.textContent || '';
     const remissaoId = remissaoElement.getAttribute('data-remissao-id');
@@ -617,17 +622,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     // Salva posição antes de navegar
     this.content.getScrollElement().then(scrollElement => {
       const currentPosition = scrollElement.scrollTop;
-
-      // Se é uma remissão externa, abrir link em nova aba do browser
-      if (remissaoType === 'externa') {
-        if (urlExterna) {
-          // Abrir em nova aba do browser
-          window.open(urlExterna, '_blank');
-          this.presentToast('Abrindo link externo...');
-        }
-        event.preventDefault();
-        return;
-      }
 
       // Se é uma remissão inline, usar o parser antigo
       if (remissaoType === 'inline') {

@@ -7,12 +7,13 @@
     </ion-buttons>
     <ion-title class="titulo-personalizado">Regimento Comentado</ion-title>
     <ion-buttons slot="end">
-      <ion-button 
+      <ion-button
         *ngIf="navigationHistory.length > 1 && currentHistoryIndex > 0"
-        (click)="navigateBack()" 
+        (click)="navigateBack()"
         class="back-button"
         fill="clear"
-        color="light">
+        color="light"
+      >
         <ion-icon name="arrow-undo" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -28,16 +29,17 @@
       (ionClear)="clearSearch()"
       debounce="300"
       (keyup.enter)="search()"
-      class="searchbar-shrink searchbar-no-icon">
+      class="searchbar-shrink searchbar-no-icon"
+    >
     </ion-searchbar>
-  
+
     <ion-buttons slot="end">
       <ion-button shape="round" (click)="search()" class="search-btn">
         <ion-icon slot="icon-only" name="search"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  
+
   <ion-toolbar class="ion-padding-top">
     <ion-segment [(ngModel)]="searchBy">
       <ion-segment-button value="keyword">
@@ -50,9 +52,13 @@
   </ion-toolbar>
   <ion-toolbar class="ion-padding-top">
     <div class="header-links">
-      <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
+      <a (click)="openModal('abreviaturas')" class="header-link"
+        >Abreviaturas</a
+      >
       <a (click)="openModal('indice')" class="header-link">Sumário</a>
-      <a (click)="openPdfDirectly('resumos')" class="header-link">Resumos temáticos</a>
+      <a (click)="openPdfDirectly('resumos')" class="header-link"
+        >Resumos temáticos</a
+      >
       <a (click)="openPdfDirectly('esquemas')" class="header-link">Esquemas</a>
     </div>
   </ion-toolbar>
@@ -106,9 +112,7 @@
                       class="text-justify"
                     ></h5>
 
-                                        <ng-container
-                      *ngFor="let remissao of paragrafo.remissoes"
-                    >
+                    <ng-container *ngFor="let remissao of paragrafo.remissoes">
                       <!-- Remissões Internas (com destinos) -->
                       <div
                         class="remissao-container mt-3 mb-4 pl-4"
@@ -129,10 +133,15 @@
                               name="link-outline"
                               class="remissao-icon"
                             ></ion-icon>
-                            <span *ngIf="remissao.destinos && remissao.destinos.length > 0">
-                              {{ remissao.destinos.length === 1 ? 'Clique para navegar' : 'Clique para escolher destino' }}
+                            <span
+                              *ngIf="remissao.destinos && remissao.destinos.length > 0"
+                            >
+                              {{ remissao.destinos.length === 1 ? 'Clique paranavegar' 
+                              : 'Clique para escolher destino' }}
                             </span>
-                            <span *ngIf="!remissao.destinos || remissao.destinos.length === 0">
+                            <span
+                              *ngIf="!remissao.destinos || remissao.destinos.length === 0"
+                            >
                               Processando...
                             </span>
                           </div>
@@ -146,9 +155,6 @@
                       >
                         <div
                           class="remissao-content"
-                          [attr.data-remissao-id]="remissao.id"
-                          [attr.data-remissao-type]="'externa'"
-                          [attr.data-url-externa]="remissao.url_externa"
                           [class.clickable]="remissao.url_externa"
                           [class.not-clickable]="!remissao.url_externa"
                         >
@@ -156,18 +162,12 @@
                             class="remissao-text"
                             [innerHTML]="highlightAndSanitize(remissao.conteudo)"
                           ></div>
-                          <div class="remissao-indicator">
-                            <ion-icon
-                              name="open-outline"
-                              class="remissao-icon"
-                            ></ion-icon>
-                            <span *ngIf="remissao.url_externa">
-                              Clique para abrir link externo
-                            </span>
-                            <span *ngIf="!remissao.url_externa">
-                              Link não disponível
-                            </span>
-                          </div>
+                          <ion-icon
+                            *ngIf="remissao.url_externa"
+                            name="open-outline"
+                            class="remissao-icon"
+                            (click)="openExternalLink(remissao.url_externa)"
+                          ></ion-icon>
                         </div>
                       </div>
                     </ng-container>
