@@ -147,6 +147,35 @@ ion-content {
     background-color: transparent;
   }
 }
+
+// Botão voltar
+.back-button {
+  --background: rgba(56, 128, 255, 0.2);
+  --border-radius: 50%;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  
+  &:hover {
+    --background: rgba(56, 128, 255, 0.3);
+  }
+  
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+// Destaque para remissão ativa (quando volta)
+.remissao-active {
+  background-color: rgba(56, 128, 255, 0.15) !important;
+  border-left: 4px solid #3880ff !important;
+  animation: pulse-highlight 2s ease-in-out;
+}
+
+@keyframes pulse-highlight {
+  0% { background-color: rgba(56, 128, 255, 0.1); }
+  50% { background-color: rgba(56, 128, 255, 0.3); }
+  100% { background-color: rgba(56, 128, 255, 0.15); }
+}
   margin-bottom: 12px;
   border-radius: 5px;
   padding: 5px;

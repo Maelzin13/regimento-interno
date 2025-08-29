@@ -657,6 +657,12 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         // Converter os destinos da API para o formato esperado
         const destinosRemissao = this.convertApiDestinosToRemissaoDestinos(remissao.destinos);
 
+        // Salvar posição atual no histórico antes de navegar
+        this.content.getScrollElement().then(scrollElement => {
+          const currentPosition = scrollElement.scrollTop;
+          this.saveToHistory(null, currentPosition, remissaoId, conteudo, null, null);
+        });
+
         if (destinosRemissao.length === 1) {
           // Se tem só um destino, navega direto
           const destino = destinosRemissao[0];
@@ -674,6 +680,12 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         const destinosRemissao = this.parseRemissaoCompleta(conteudo);
 
         if (destinosRemissao.length > 0) {
+          // Salvar posição atual no histórico antes de navegar
+          this.content.getScrollElement().then(scrollElement => {
+            const currentPosition = scrollElement.scrollTop;
+            this.saveToHistory(null, currentPosition, remissaoId, conteudo, null, null);
+          });
+
           if (destinosRemissao.length === 1) {
             const destino = destinosRemissao[0];
             this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
@@ -764,7 +776,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
               }, 3000);
 
               // Feedback para o usuário
-              this.presentToast('Retornando à remissão original');
+              this.presentToast(`Retornando à remissão: ${previousPosition.remissaoText || 'original'}`);
             }
           }
 
