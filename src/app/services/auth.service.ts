@@ -142,7 +142,7 @@ export class AuthService {
 
     // iOS — Generic OAuth2 + PKCE (sem browser externo do app)
     const config = {
-      appId: environment.googleOAuth.clientId,
+      appId: '202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com', // iOS client ID específico
       authorizationBaseUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
       accessTokenEndpoint: 'https://oauth2.googleapis.com/token',
       resourceUrl: 'https://openidconnect.googleapis.com/v1/userinfo',

@@ -11,8 +11,8 @@ const FIREBASE_CONFIG = {
 
 // Configurações do Google OAuth
 const GOOGLE_OAUTH_CONFIG = {
-  clientId: '202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com', // Substitua pela sua client ID
-  serverClientId: '202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com', // Substitua pela sua server client ID
+  clientId: '202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com', // iOS client ID
+  serverClientId: '202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com', // Web client ID para backend
 };
 
 export const environment = {

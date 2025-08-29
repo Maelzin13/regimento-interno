@@ -21,6 +21,8 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLName</key>
+			<string>Google OAuth</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q</string>

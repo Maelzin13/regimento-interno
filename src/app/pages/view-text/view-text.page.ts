@@ -63,7 +63,6 @@ interface ApiDestino {
   };
 }
 
-// Interface para representar a estrutura de remissão da API
 interface ApiRemissao {
   id: number;
   conteudo: string;
@@ -132,7 +131,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     private alertController: AlertController,
     private modalController: ModalController,
     private toastController: ToastController,
-    private loadingController: LoadingController,
+    private loadingController: LoadingController
   ) { }
 
   async ngOnInit() {
@@ -141,7 +140,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.bookId = this.route.snapshot.paramMap.get('id');
     this.loadSearchHistory();
     await this.loadBook();
-
   }
 
   getSearchPlaceholder(): string {
@@ -192,35 +190,31 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     // aqui entra sua lógica específica para artigos
   }
 
-  async loadBook(forceRefresh: boolean = false) {
-    let loader: HTMLIonLoadingElement | null = null;
+  async loadBook() {
+    const loader = await this.loadingController.create({
+      message: 'Carregando regimento...',
+      spinner: 'circles',
+      cssClass: 'loading-regimento'
+    });
     try {
-      loader = await this.loadingController.create({
-        message: 'Carregando regimento...',
-        spinner: 'circles',
-        cssClass: 'loading-regimento'
-      });
       await loader.present();
 
       // Aqui NÃO limpe this.book, mantenha o anterior!
       // Só limpa caches internos, se quiser
-      this.elementosCache.clear();
       this.contentCache.clear();
+      this.elementosCache.clear();
       this.remissoesCache.clear();
 
-      // Aguarde o novo livro
-      const books: any = await this.bookService.getBookById(this.bookId);
-      // Só sobrescreva depois que o request chegar
-      this.book = books.livro ?? books;
-      console.log('Livro carregado:', this.book);
+      let Allbooks: any = null;
+      Allbooks = await this.bookService.getBookById(this.bookId);
       
-      // Processar remissões de forma otimizada
+      this.book = Allbooks.livro;
       this.processRemissoes();
       
       // Otimizar performance
       this.optimizePerformance();
       
-      this.primeiroParagrafo = books.primeiro?.conteudo ?? '';
+      this.primeiroParagrafo = this.book.primeiro?.conteudo ?? ''
 
       this.route.queryParams.subscribe(params => {
         if (params && params['artigo']) {
@@ -234,7 +228,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.presentToast('Erro ao carregar o regimento. Tente novamente.');
       console.error('Erro ao carregar o livro:', error);
     } finally {
-      loader?.dismiss();
+      loader.dismiss();
     }
   }
 
@@ -2382,6 +2376,4 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.comentarioCache.clear();
     }
   }
-
-
 }

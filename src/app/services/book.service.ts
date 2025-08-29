@@ -25,35 +25,10 @@ export class BookService {
   }
 
 
-  async getBookById(id: number, forceRefresh = false) {
-    const cacheKey = `book_${id}`;
-    if (!forceRefresh) {
-      // 1. Verifica cache em memória
-      if (this.bookCache[id]) return this.bookCache[id];
-      // 2. Verifica localStorage
-      const localData = localStorage.getItem(cacheKey);
-      if (localData) {
-        try {
-          const data = JSON.parse(localData);
-          // Valide se não está velho demais (exemplo: 1h)
-          if (Date.now() - data.timestamp < 1000 * 60 * 60) {
-            this.bookCache[id] = data.value;
-            return data.value;
-          }
-        } catch (e) {}
-      }
-    }
-  
-    // 3. Busca do backend
+  async getBookById(id: number) {
     const response: any = await firstValueFrom(
       this.http.get(`${this.apiservice.baseUrl}/books/${id}`)
     );
-    // Salva em memória e no localStorage
-    this.bookCache[id] = response.data;
-    localStorage.setItem(cacheKey, JSON.stringify({
-      timestamp: Date.now(),
-      value: response.data
-    }));
   
     return response.data;
   }
