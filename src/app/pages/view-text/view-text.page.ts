@@ -220,9 +220,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       // Otimizar performance
       this.optimizePerformance();
       
-      // Debug: Verificar se há remissões
-      this.debugRemissoesCount();
-      
       this.primeiroParagrafo = books.primeiro?.conteudo ?? '';
 
       this.route.queryParams.subscribe(params => {
@@ -572,21 +569,18 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     this.handleRemissaoClick = (event: any) => {
       const target = event.target as HTMLElement;
-      
-      console.log('Clique detectado em:', target);
-      console.log('Target classList:', target.classList);
 
       // A remissão pode estar em qualquer nível dentro do .remissao-content
       const remissaoElement = target.closest('.remissao-content') as HTMLElement;
-      
-      console.log('Remissão element encontrado:', remissaoElement);
 
       if (remissaoElement) {
-        console.log('Processando remissão:', {
-          id: remissaoElement.getAttribute('data-remissao-id'),
-          type: remissaoElement.getAttribute('data-remissao-type'),
-          content: remissaoElement.textContent?.substring(0, 50)
-        });
+        const remissaoType = remissaoElement.getAttribute('data-remissao-type');
+        const urlExterna = remissaoElement.getAttribute('data-url-externa');
+
+        // Se é remissão externa sem link, não processar
+        if (remissaoType === 'externa' && !urlExterna) {
+          return;
+        }
 
         // Feedback visual no clique
         const container = remissaoElement.closest('.remissao-container') as HTMLElement;
@@ -601,12 +595,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         }
 
         // Processar a remissão
-        console.log('Chamando handleRemissaoContent...');
-        alert('Clique detectado! Processando remissão...');
         this.handleRemissaoContent(remissaoElement, event);
         event.preventDefault();
-      } else {
-        console.log('Nenhum elemento .remissao-content encontrado');
       }
     };
 
@@ -614,39 +604,26 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   handleRemissaoContent(remissaoElement: HTMLElement, event: Event) {
-    console.log('=== handleRemissaoContent INICIADO ===');
-    
     const conteudo = remissaoElement.textContent || '';
-    console.log(conteudo);
     const remissaoId = remissaoElement.getAttribute('data-remissao-id');
     const remissaoType = remissaoElement.getAttribute('data-remissao-type');
     const urlExterna = remissaoElement.getAttribute('data-url-externa');
 
-    console.log('handleRemissaoContent chamado:', {
-      conteudo: conteudo.substring(0, 50),
-      remissaoId,
-      remissaoType,
-      urlExterna
-    });
-
     // Verificação rápida: se não começa com "Art.", ignora
     if (!conteudo.trim().startsWith('Art')) {
-      console.log('Conteúdo não começa com Art:', conteudo.trim());
-      // Vou permitir que qualquer remissão seja processada para debug
-      console.log('Permitindo processamento mesmo sem Art...');
+      return;
     }
 
     // Salva posição antes de navegar
     this.content.getScrollElement().then(scrollElement => {
       const currentPosition = scrollElement.scrollTop;
 
-      // Se é uma remissão externa, abrir link
+      // Se é uma remissão externa, abrir link em nova aba do browser
       if (remissaoType === 'externa') {
         if (urlExterna) {
+          // Abrir em nova aba do browser
           window.open(urlExterna, '_blank');
           this.presentToast('Abrindo link externo...');
-        } else {
-          this.presentToast('Link externo não disponível.');
         }
         event.preventDefault();
         return;
@@ -2400,44 +2377,5 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
   }
 
-  // Método para debug da contagem de remissões
-  private debugRemissoesCount() {
-    const book = this.book;
-    if (!book || !book.titulos) {
-      console.log('Debug: Nenhum livro carregado');
-      return;
-    }
 
-    let totalRemissoes = 0;
-    let remissoesInternas = 0;
-    let remissoesExternas = 0;
-
-    for (const titulo of book.titulos) {
-      for (const capitulo of titulo.capitulos || []) {
-        for (const secao of capitulo.secaos || []) {
-          for (const artigo of secao.artigos || []) {
-            for (const paragrafo of artigo.paragrafos || []) {
-              if (paragrafo.remissoes && paragrafo.remissoes.length > 0) {
-                totalRemissoes += paragrafo.remissoes.length;
-                
-                for (const remissao of paragrafo.remissoes) {
-                  if (remissao.tipo === 'interna') {
-                    remissoesInternas++;
-                  } else if (remissao.tipo === 'externa') {
-                    remissoesExternas++;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    console.log('Debug: Contagem de remissões:', {
-      total: totalRemissoes,
-      internas: remissoesInternas,
-      externas: remissoesExternas
-    });
-  }
 }

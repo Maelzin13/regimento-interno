@@ -129,6 +129,24 @@ ion-content {
   50% { background-color: rgba(56, 128, 255, 0.3); }
   100% { background-color: rgba(56, 128, 255, 0.1); }
 }
+
+// Classes para remissões externas
+.remissao-content.clickable {
+  cursor: pointer;
+  
+  &:hover {
+    background-color: rgba(56, 128, 255, 0.1);
+  }
+}
+
+.remissao-content.not-clickable {
+  cursor: default;
+  opacity: 0.7;
+  
+  &:hover {
+    background-color: transparent;
+  }
+}
   margin-bottom: 12px;
   border-radius: 5px;
   padding: 5px;

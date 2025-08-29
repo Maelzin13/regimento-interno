@@ -102,13 +102,8 @@
                       <!-- Remissões Internas (com destinos) -->
                       <div
                         class="remissao-container mt-3 mb-4 pl-4"
-                        *ngIf="remissao.conteudo"
-                        style="border: 2px solid green; background-color: #f0f8f0; padding: 10px;"
+                        *ngIf="remissao.conteudo && remissao.tipo === 'interna'"
                       >
-                        <!-- Debug: Mostrar informações da remissão -->
-                        <div style="background-color: #fff3cd; padding: 5px; margin: 5px 0; border-radius: 3px; font-size: 0.8em;">
-                          <strong>Debug:</strong> ID: {{ remissao.id }} | Tipo: {{ remissao.tipo }} | Destinos: {{ remissao.destinos?.length || 0 }}
-                        </div>
                         <div
                           class="remissao-content"
                           [attr.data-remissao-id]="remissao.id"
@@ -144,6 +139,8 @@
                           [attr.data-remissao-id]="remissao.id"
                           [attr.data-remissao-type]="'externa'"
                           [attr.data-url-externa]="remissao.url_externa"
+                          [class.clickable]="remissao.url_externa"
+                          [class.not-clickable]="!remissao.url_externa"
                         >
                           <div
                             class="remissao-text"
