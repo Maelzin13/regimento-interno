@@ -3,7 +3,6 @@ import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { HighlightPipe } from 'src/app/pipes/highlight.pipe';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
@@ -68,7 +67,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   // Adicionar propriedades para histórico de navegação
   navigationHistory: HistoryEntry[] = [];
   currentHistoryIndex: number = -1;
-  private remissaoListenerAttached = false;
   private handleRemissaoClick: any;
   private showReturnIndicatorTimeout: any;
 
@@ -77,7 +75,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   private comentarioCache = new Map<string, SafeHtml>();
   // Cache para elementos específicos encontrados (artigos, parágrafos, incisos)
   private elementosCache: Map<string, HTMLElement | null> = new Map();
-  private highlightPipe: HighlightPipe = new HighlightPipe();
 
   constructor(
     private route: ActivatedRoute,
@@ -95,7 +92,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
     this.loadSearchHistory();
-    // await this.loadBook();
+    await this.loadBook();
 
   }
 
@@ -148,7 +145,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   async loadBook(forceRefresh: boolean = false) {
-    // Mostra loader, mas NÃO zera o livro em tela
     let loader: HTMLIonLoadingElement | null = null;
     try {
       loader = await this.loadingController.create({
@@ -166,14 +162,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
       // Aguarde o novo livro
       const books: any = await this.bookService.getBookById(this.bookId);
-
       // Só sobrescreva depois que o request chegar
       this.book = books.livro ?? books;
+      console.log('Livro carregado:', this.book);
       this.primeiroParagrafo = books.primeiro?.conteudo ?? '';
 
-      if (this.book) this.buildArtigoNumeroParaIdMap();
-
-      // Scroll/artigo, etc.
       this.route.queryParams.subscribe(params => {
         if (params && params['artigo']) {
           setTimeout(() => {
@@ -185,46 +178,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     } catch (error) {
       this.presentToast('Erro ao carregar o regimento. Tente novamente.');
       console.error('Erro ao carregar o livro:', error);
-      // Em caso de erro, o this.book anterior permanece!
     } finally {
       loader?.dismiss();
-    }
-  }
-
-  private artigoNumeroParaId: Record<string, string> = {};
-
-  private buildArtigoNumeroParaIdMap() {
-    this.artigoNumeroParaId = {};
-    const book = this.filteredBook || this.book;
-    try {
-      if (!book || !Array.isArray(book.titulos)) {
-        console.warn('Livro não carregado corretamente ou não possui títulos:', book);
-        return;
-      }
-
-      book.titulos.forEach((titulo: any) => {
-        titulo.capitulos?.forEach((capitulo: any) => {
-          capitulo.secaos?.forEach((secao: any) => {
-            secao.artigos?.forEach((artigo: any) => {
-              const match = artigo.conteudo.match(/Art\.?\s*(\d+)[º°]?/i);
-              if (match && match[1]) {
-                const numero = match[1];
-                this.artigoNumeroParaId[numero] = artigo.id;
-
-                const artigoElement = document.getElementById(`artigo-${artigo.id}`);
-                if (artigoElement) {
-                  const texto = artigoElement.textContent || '';
-                  if (!texto.includes(`Art. ${numero}`)) {
-                    console.warn(`Artigo ${numero} (ID ${artigo.id}) não contém o texto esperado:`, texto.substring(0, 100));
-                  }
-                }
-              }
-            });
-          });
-        });
-      });
-    } catch (error) {
-      console.error('Erro ao construir mapa de artigos:', error);
     }
   }
 
@@ -237,21 +192,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.clearSearch();
       return;
     }
-
-    // NÃO executar busca automática - apenas armazenar o valor
-    // A busca será executada apenas quando o usuário clicar em "Buscar" ou pressionar Enter
   }
-
-  // Função para executar a busca quando solicitado pelo usuário
-  /*async executeSearch() {
-    if (!this.query.trim()) {
-      this.presentToast('Digite algo para buscar');
-      return;
-    }
-
-    // Executar a busca
-    await this.search();
-  }*/
 
     clearSearch() {
       this.query = '';
@@ -261,16 +202,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.currentResultIndex = -1;
       this.isSearching = false;
 
-      // Cancela busca em andamento
-      // (se houver debounce ou subscrição em Observable, cancelar aqui)
-
       setTimeout(() => {
         this.searchInput?.nativeElement?.focus();
       }, 50);
     }
-
-
-
 
   // Função para forçar limpeza dos highlights
   forceClearHighlights() {
@@ -491,8 +426,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   // Função para calcular a posição relativa de um elemento no documento
   private calculatePosition(element: any): number {
-    // Usar o ID do elemento como base para a posição
-    // Elementos com IDs menores aparecem primeiro no documento
     return element.id || 0;
   }
 
@@ -528,33 +461,33 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   highlightAndSanitize(text: string): SafeHtml {
     let highlighted = this.formatNotas(text);
     if (this.query) {
-      highlighted = this.highlightPipe.transform(text, this.query, this.searchType);
+      // Aplicar highlight manualmente sem usar o pipe
+      const query = this.query.trim();
+      if (query) {
+        let regex: RegExp;
+        if (this.searchType === 'exact') {
+          regex = new RegExp(`\\b${this.escapeRegExp(query)}\\b`, 'gi');
+        } else {
+          regex = new RegExp(this.escapeRegExp(query), 'gi');
+        }
+        highlighted = highlighted.replace(regex, (match) =>
+          `<mark class="search-highlight">${match}</mark>`
+        );
+      }
     }
     return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(highlighted));
   }
 
   ngAfterViewInit() {
-    // Garantir que o mapa de artigos está construído
-    setTimeout(() => {
-      this.buildArtigoNumeroParaIdMap();
-    }, 1000);
-
     if (!this.notaListenerAttached) {
       this.listenNotaClicks();
       this.notaListenerAttached = true;
     }
 
-    if (!this.remissaoListenerAttached) {
-      this.setupRemissaoLinks();
-      this.remissaoListenerAttached = true;
-    }
-
-    // Adicionar listener para remissões inline
     this.setupInlineRemissoesLinks();
 
     this.setupScrollListener();
 
-    // Limpar o cache de remissões para forçar uma nova formatação
     this.remissoesCache.clear();
   }
 
@@ -582,6 +515,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         }
 
         // Passamos o remissaoElement para o handler
+         console.log('remissaoElement', remissaoElement);
         this.handleRemissaoContent(remissaoElement, event);
         event.preventDefault();
       }
@@ -592,6 +526,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   handleRemissaoContent(remissaoElement: HTMLElement, event: Event) {
     const conteudo = remissaoElement.textContent || '';
+
+    console.log('conteudo', conteudo);
 
     // Verificação rápida: se não começa com "Art.", ignora
     if (!conteudo.trim().startsWith('Art')) {
@@ -613,18 +549,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         if (destinosRemissao.length === 1) {
           // Se tem só um destino, navega direto
           const destino = destinosRemissao[0];
-
-          // Salvamos informações adicionais sobre a remissão para melhorar a navegação
-          this.saveToHistory(null, currentPosition, remissaoId, conteudo, destino.paragrafo, destino.inciso);
+          
 
           this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
           event.preventDefault();
           return;
         } else {
-          // Se tem múltiplos destinos, mostra modal para escolha
-          this.saveToHistory(null, currentPosition, remissaoId, conteudo, null, null);
 
-          // Modal para escolher entre múltiplos destinos
           this.showDestinationChoiceModal(destinosRemissao);
           event.preventDefault();
           return;
@@ -638,7 +569,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   // Modal para múltiplos artigos
   async showArtigosChoiceModal(artigos: string[]) {
-    // Convertendo artigos simples para o formato RemissaoDestino
     const destinos: RemissaoDestino[] = artigos.map(artigo => ({
       artigo,
       origem: { text: `Art. ${artigo}` }
@@ -1493,9 +1423,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         if (!remissaoText.trim().startsWith('Art')) {
           return;
         }
-
-
-
         // Salvar posição atual da rolagem para permitir voltar
         this.content.getScrollElement().then(scrollElement => {
           const currentPosition = scrollElement.scrollTop;

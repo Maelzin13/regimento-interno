@@ -3,7 +3,7 @@ import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { HighlightPipe } from 'src/app/pipes/highlight.pipe';
+
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
@@ -74,7 +74,6 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
   private comentarioCache = new Map<string, SafeHtml>();
   // Cache para elementos específicos encontrados (artigos, parágrafos, incisos)
   private elementosCache: Map<string, HTMLElement | null> = new Map();
-  private highlightPipe: HighlightPipe = new HighlightPipe();
 
   constructor(
     private route: ActivatedRoute,
@@ -483,7 +482,19 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
   highlightAndSanitize(text: string): SafeHtml {
     let highlighted = this.formatNotas(text);
     if (this.query) {
-      highlighted = this.highlightPipe.transform(text, this.query, this.searchType);
+      // Aplicar highlight manualmente sem usar o pipe
+      const query = this.query.trim();
+      if (query) {
+        let regex: RegExp;
+        if (this.searchType === 'exact') {
+          regex = new RegExp(`\\b${this.escapeRegExp(query)}\\b`, 'gi');
+        } else {
+          regex = new RegExp(this.escapeRegExp(query), 'gi');
+        }
+        highlighted = highlighted.replace(regex, (match) =>
+          `<mark class="search-highlight">${match}</mark>`
+        );
+      }
     }
     return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(highlighted));
   }

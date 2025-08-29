@@ -28,7 +28,6 @@
     </ion-buttons>
   </ion-toolbar>
   
-  <!-- TOOLBAR: SEGMENTO -->
   <ion-toolbar class="ion-padding-top">
     <ion-segment [(ngModel)]="searchBy">
       <ion-segment-button value="keyword">
@@ -39,8 +38,7 @@
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-  <br>
-  <ion-toolbar>
+  <ion-toolbar class="ion-padding-top">
     <div class="header-links">
       <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
       <a (click)="openModal('indice')" class="header-link">Sumário</a>
@@ -99,7 +97,7 @@
                     ></h5>
 
                     <ng-container
-                      *ngFor="let remissao of paragrafo.remissoes; trackBy: trackByRemissaoId"
+                      *ngFor="let remissao of paragrafo.remissoes"
                     >
                       <div
                         class="remissao-container mt-3 mb-4 pl-4"

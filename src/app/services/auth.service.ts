@@ -17,6 +17,7 @@ import { UserModel } from '../models/userModel';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { GenericOAuth2 } from '@capacitor-community/generic-oauth2';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 @Injectable({
   providedIn: 'root',
@@ -56,11 +57,14 @@ export class AuthService {
         .post(`${this.apiService.baseUrl}/login`, { email, password })
         .toPromise();
 
+        console.log(response)
+
       const token = response.access_token;
       this.saveAuthToken(token);
 
       return token;
-    } catch (error: unknown) {
+    } catch (error: any) {
+      console.error('💥 Erro no login:', error);
       const message =
         error instanceof Error
           ? error.message
@@ -111,11 +115,73 @@ export class AuthService {
   async googleLogin(): Promise<any> {
     try {
       const platform = Capacitor.getPlatform();
+      console.log('🚀 Iniciando googleLogin para plataforma:', platform);
+  
+      // =========================
+      // Android (Capacitor Firebase Authentication)
+      // =========================
+      if (platform === 'android') {
+        console.log('📱 Android detectado, usando plugin nativo...');
+        
+        try {
+          // Primeiro, tente usar o plugin nativo do Capacitor Firebase Authentication
+          console.log('🔧 Chamando FirebaseAuthentication.signInWithGoogle()...');
+          const result = await FirebaseAuthentication.signInWithGoogle();
+          
+          console.log('✅ Resultado do login Google:', result);
+          console.log('🔑 ID Token:', result.credential?.idToken ? 'Presente' : 'Ausente');
+          console.log('📧 Email:', result.user?.email);
+          
+          if (!result.credential?.idToken) {
+            throw new Error('Não foi possível obter o token de autenticação (Android)');
+          }
+
+          // Envie o idToken para seu backend
+          console.log('🌐 Enviando token para backend:', `${this.apiService.baseUrl}/auth/social-login/google`);
+          
+          const response: any = await this.http
+            .post(`${this.apiService.baseUrl}/auth/social-login/google`, { 
+              id_token: result.credential.idToken 
+            })
+            .toPromise();
+
+          console.log('✅ Resposta do backend:', response);
+          
+          this.saveAuthToken(response.token);
+          localStorage.setItem('authUser', JSON.stringify(response.user));
+          this.userChanged.next(response.user);
+          return response;
+        } catch (pluginError: any) {
+          console.error('❌ Erro no plugin nativo:', pluginError);
+          console.error('📋 Detalhes do erro:', {
+            message: pluginError?.message || 'Erro desconhecido',
+            stack: pluginError?.stack || 'Stack não disponível',
+            name: pluginError?.name || 'Nome não disponível'
+          });
+          
+          // Fallback: Use o Firebase Web SDK com configuração específica para Android
+          console.log('🔄 Tentando fallback com Firebase Web SDK...');
+          
+          // Configure o Firebase para Android
+          const provider = new GoogleAuthProvider();
+          provider.setCustomParameters({
+            prompt: 'select_account'
+          });
+          
+          // Use signInWithRedirect em vez de popup para Android
+          console.log('🔄 Usando signInWithRedirect...');
+          await signInWithRedirect(auth, provider);
+          
+          // O resultado será tratado em handleRedirectCallback
+          return { pending: true };
+        }
+      }
   
       // =========================
       // iOS (Generic OAuth2 + PKCE)
       // =========================
       if (platform === 'ios') {
+        console.log('🍎 iOS detectado, usando GenericOAuth2...');
         const config = {
           appId: '202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com',
           authorizationBaseUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -188,6 +254,7 @@ export class AuthService {
       // Web (Firebase)
       // ============
       if (platform === 'web') {
+        console.log('🌐 Web detectado, usando Firebase Web SDK...');
         // 1) Persistência local para manter o usuário logado entre reloads
         await setPersistence(auth, browserLocalPersistence);
   
@@ -240,19 +307,16 @@ export class AuthService {
         return response;
       }
   
-      // ===============
-      // Android (Firebase Redirect)
-      // ===============
-      const provider = new GoogleAuthProvider();
-      // NÃO force o chooser:
-      // provider.setCustomParameters({ prompt: 'select_account' });
-      const lastEmail = localStorage.getItem('lastGoogleEmail');
-      if (lastEmail) provider.setCustomParameters({ login_hint: lastEmail });
-  
-      await signInWithRedirect(auth, provider);
-      return null; // o fluxo continua em handleRedirectCallback()
+      throw new Error('Plataforma não suportada para login Google');
   
     } catch (error: any) {
+      console.error('💥 Erro geral no login Google:', error);
+      console.error('📋 Detalhes completos:', {
+        message: error?.message || 'Erro desconhecido',
+        stack: error?.stack || 'Stack não disponível',
+        name: error?.name || 'Nome não disponível',
+        platform: Capacitor.getPlatform()
+      });
       throw new Error('Erro ao fazer login com Google: ' + (error?.message || error));
     }
   }
@@ -262,29 +326,50 @@ export class AuthService {
    */
   async handleRedirectCallback(): Promise<void> {
     try {
+      console.log('🔄 handleRedirectCallback iniciado...');
+      
       const result = await getRedirectResult(auth);
-      if (!result || !result.user) return;
-  
+      console.log('📋 Resultado do redirect:', result);
+      
+      if (!result || !result.user) {
+        console.log('❌ Nenhum resultado de redirect encontrado');
+        return;
+      }
+
+      console.log('✅ Usuário encontrado no redirect:', result.user.email);
+      
       // Guarde o e-mail para login_hint em próximos logins
       const email = result.user?.email;
       if (email) localStorage.setItem('lastGoogleEmail', email);
-  
+
       // Extraia o access_token OAuth do Google
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const accessToken = credential?.accessToken;
+      
+      console.log('🔑 Access Token:', accessToken ? 'Presente' : 'Ausente');
+      
       if (!accessToken) throw new Error('AccessToken não encontrado (Android)');
-  
+
+      console.log('🌐 Enviando access_token para backend...');
+      
       const response: any = await this.http
         .post(`${this.apiService.baseUrl}/auth/social-login/google`, { token: accessToken })
         .toPromise();
-  
+
+      console.log('✅ Resposta do backend (redirect):', response);
+
       this.saveAuthToken(response.token);
       localStorage.setItem('authUser', JSON.stringify(response.user));
       this.userChanged.next(response.user);
-  
+
       this.router.navigate(['/home']);
     } catch (error: any) {
-      console.error('Erro no retorno do login Google:', error?.message || error);
+      console.error('💥 Erro no retorno do login Google:', error);
+      console.error('📋 Detalhes do erro (redirect):', {
+        message: error?.message || 'Erro desconhecido',
+        stack: error?.stack || 'Stack não disponível',
+        name: error?.name || 'Nome não disponível'
+      });
     }
   }
 

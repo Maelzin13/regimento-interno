@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "202495948548-2r1pda6evn6beqv7i37vlcsdpskbgmio.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.regimento.app",
+            "certificate_hash": "12ed89f2e94adf0494d5f8b5c2258404dc2b1b06"
+          }
+        },
+        {
           "client_id": "202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "202495948548-4aqp78neosutm4dflj9hfa814dnfv9ev.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.regimento.app"
+              }
             }
           ]
         }

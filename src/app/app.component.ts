@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 import { ToastController } from '@ionic/angular';
 import { NetworkService } from './services/network.service';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +16,7 @@ export class AppComponent {
     private toastController: ToastController,
     private networkService: NetworkService
   ) {
+    this.initializeApp();
     this.networkService.isOnline$.subscribe((isOnline) => {
       if (this.wasOnline !== null && this.wasOnline !== isOnline) {
         if (!isOnline) {
@@ -22,6 +25,36 @@ export class AppComponent {
       }
       this.wasOnline = isOnline;
     });
+  }
+
+  async initializeApp() {
+    // Inicializar plugin do Firebase Authentication no Android
+    if (Capacitor.getPlatform() === 'android') {
+      try {
+        console.log('🔧 Inicializando Firebase Authentication para Android...');
+        
+        // Verificar se o plugin está disponível
+        if (FirebaseAuthentication) {
+          console.log('✅ Plugin Firebase Authentication disponível');
+          
+          // Configurar listeners para mudanças de estado de autenticação
+          FirebaseAuthentication.addListener('authStateChange', (change) => {
+            console.log('🔄 Auth state changed:', change);
+          });
+          
+          // Verificar se há usuário logado
+          const result = await FirebaseAuthentication.getCurrentUser();
+          console.log('👤 Usuário atual:', result);
+          
+        } else {
+          console.error('❌ Plugin Firebase Authentication não disponível');
+        }
+      } catch (error) {
+        console.error('❌ Erro ao inicializar Firebase Authentication:', error);
+      }
+    } else {
+      console.log('📱 Plataforma não é Android, pulando inicialização do plugin nativo');
+    }
   }
 
   async showOfflineToast() {

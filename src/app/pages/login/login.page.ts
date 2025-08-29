@@ -24,6 +24,7 @@ export class LoginPage implements OnInit {
   async ngOnInit() {
     const loading = await this.presentLoading('Verificando sessão...');
     this.authService.handleRedirectCallback();
+    
     try {
       this.nameApp = config.appName;
 
@@ -78,7 +79,7 @@ export class LoginPage implements OnInit {
 
   async socialLogin(provider: 'google') {
     const loading = await this.presentLoading(
-      `Conectando com ${provider === 'google' ? 'Google' : 'Google'}...`
+      `Conectando com ${provider}...`
     );
 
     try {

@@ -3,9 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ViewTextPage } from './view-text.page';
-import { HighlightPipe } from 'src/app/pipes/highlight.pipe';
 import { ViewTextPageRoutingModule } from './view-text-routing.module';
 import { RegimentoModalModule } from '../../Modals/regimento-modal/regimento-modal.module';
+
 
 @NgModule({
   imports: [
@@ -15,6 +15,6 @@ import { RegimentoModalModule } from '../../Modals/regimento-modal/regimento-mod
     ViewTextPageRoutingModule,
     RegimentoModalModule
   ],
-  declarations: [ViewTextPage, HighlightPipe]
+  declarations: [ViewTextPage]
 })
 export class ViewTextPageModule {}

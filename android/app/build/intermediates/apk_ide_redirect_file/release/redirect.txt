@@ -1,2 +1,0 @@
-#- File Locator -
-listingFile=../../../../../../../KEYREGIMENTO/release/output-metadata.json

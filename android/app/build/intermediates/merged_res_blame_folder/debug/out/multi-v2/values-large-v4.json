@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.regimento.app-mergeDebugResources-3:/values-large-v4/values-large-v4.xml",
+            "outputFile": "com.regimento.app-mergeDebugResources-36:/values-large-v4/values-large-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Ismael\\.gradle\\caches\\transforms-3\\5ab5a976858504390a1af3458f9d8eb9\\transformed\\appcompat-1.6.1\\res\\values-large-v4\\values-large-v4.xml",
+                    "source": "/Users/ismaeldias/.gradle/caches/transforms-3/ad242b0fb3103ceead502f6a654df263/transformed/appcompat-1.6.1/res/values-large-v4/values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",

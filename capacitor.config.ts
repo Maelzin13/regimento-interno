@@ -26,6 +26,10 @@ const config: CapacitorConfig = {
           'com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q',
       },
     },
+    FirebaseAuthentication: {
+      skipNativeAuth: false,
+      providers: ['google.com'],
+    },
   },
 };
 
