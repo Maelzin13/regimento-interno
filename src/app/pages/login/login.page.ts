@@ -68,8 +68,7 @@ export class LoginPage implements OnInit {
     const loading = await this.presentLoading('Entrando...');
     try {
       const token = await this.authService.login(this.email, this.password);
-      // authService.login já retorna o token, mas quem salva é o saveAuthToken aqui:
-      this.authService.saveAuthToken(token);
+      // authService.login já salva o token internamente, não precisa chamar saveAuthToken
 
       const userProfile = await this.authService.fetchProfile();
       localStorage.setItem('authUser', JSON.stringify(userProfile));

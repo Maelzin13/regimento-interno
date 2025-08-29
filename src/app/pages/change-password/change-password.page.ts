@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController, ToastController } from '@ionic/angular';
 import { ChangePasswordService } from 'src/app/services/change-password.service';
 
@@ -7,7 +7,7 @@ import { ChangePasswordService } from 'src/app/services/change-password.service'
   templateUrl: './change-password.page.html',
   styleUrls: ['./change-password.page.scss'],
 })
-export class ChangePasswordPage implements OnInit {
+export class ChangePasswordPage {
   passwordForm: {
     current_password: any;
     new_password: any;
@@ -37,8 +37,6 @@ export class ChangePasswordPage implements OnInit {
     private toastController: ToastController,
     private changePasswordService: ChangePasswordService
   ) {}
-
-  ngOnInit() {}
 
   async presentToast(message: string, color: string) {
     const toast = await this.toastController.create({

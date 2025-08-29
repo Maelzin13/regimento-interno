@@ -1,14 +1,15 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { environment } from '../environments/environment';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyA76-1Beau7Zc1HATQXPwS0Z1zWgrEIw4c',
-  authDomain: 'regimento-interno-comentado.firebaseapp.com',
-  projectId: 'regimento-interno-comentado',
-  storageBucket: 'regimento-interno-comentado.firebasestorage.app',
-  messagingSenderId: '202495948548',
-  appId: '1:202495948548:web:0182a0168649faec970251',
-  measurementId: 'G-2SSKFE05MP',
+  apiKey: environment.firebase.apiKey,
+  authDomain: environment.firebase.authDomain,
+  projectId: environment.firebase.projectId,
+  storageBucket: environment.firebase.storageBucket,
+  messagingSenderId: environment.firebase.messagingSenderId,
+  appId: environment.firebase.appId,
+  measurementId: environment.firebase.measurementId,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);

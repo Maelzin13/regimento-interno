@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +11,9 @@ export class PaymentService {
 
   async getPayments() {
     try {
-      const response: any = await this.http
-        .get(`${this.apiservice.baseUrl}/pagamentos`)
-        .toPromise();
+      const response: any = await firstValueFrom(
+        this.http.get(`${this.apiservice.baseUrl}/pagamentos`)
+      );
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar pagamentos', error);

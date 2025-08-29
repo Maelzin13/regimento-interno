@@ -13,8 +13,7 @@ const config: CapacitorConfig = {
     },
     GoogleAuth: {
       scopes: ['profile', 'email'],
-      serverClientId:
-        '202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com',
+      serverClientId: '202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com',
       forceCodeForRefreshToken: true,
     },
     GenericOauth2: {
@@ -22,8 +21,7 @@ const config: CapacitorConfig = {
         scheme: 'com.regimento.app',
       },
       ios: {
-        scheme:
-          'com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q',
+        scheme: 'com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q',
       },
     },
     FirebaseAuthentication: {

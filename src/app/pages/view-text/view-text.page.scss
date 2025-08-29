@@ -98,6 +98,37 @@ ion-content {
 
 .artigo-container {
   background-color: #f1f1f1;
+
+// Estilos otimizados para remissões
+.remissao-container {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(56, 128, 255, 0.05);
+  }
+}
+
+.remissao-content {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 8px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(56, 128, 255, 0.1);
+  }
+}
+
+.remissao-highlight {
+  background-color: rgba(56, 128, 255, 0.2) !important;
+  animation: pulse 1.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { background-color: rgba(56, 128, 255, 0.1); }
+  50% { background-color: rgba(56, 128, 255, 0.3); }
+  100% { background-color: rgba(56, 128, 255, 0.1); }
+}
   margin-bottom: 12px;
   border-radius: 5px;
   padding: 5px;

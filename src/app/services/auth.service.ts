@@ -6,20 +6,21 @@ import { ApiService } from './api.service';
 import { Capacitor } from '@capacitor/core';
 import { UserModel } from '../models/userModel';
 import { HttpClient } from '@angular/common/http';
-import { CookieService } from 'ngx-cookie-service';
+import { firstValueFrom } from 'rxjs';
+import { TokenStorageService } from './token-storage.service';
 import { GenericOAuth2 } from '@capacitor-community/generic-oauth2';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private tokenKey = 'authToken';
   userChanged = new BehaviorSubject<UserModel | null>(null);
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private apiService: ApiService,
-    private cookieService: CookieService
+    private tokenStorage: TokenStorageService
   ) {}
 
   getBaseUrl(): string {
@@ -31,44 +32,68 @@ export class AuthService {
     return user ? JSON.parse(user) : null;
   }
 
-  getAuthToken(): string | null {
-    return localStorage.getItem('authToken');
+  async getAuthToken(): Promise<string | null> {
+    return this.tokenStorage.getToken();
   }
 
-  saveAuthToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
-    this.cookieService.set(this.tokenKey, token);
+  private decodeJwt<T=any>(jwt: string): T | null {
+    try {
+      const [, payload] = jwt.split('.');
+      return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    } catch { 
+      return null; 
+    }
+  }
+
+  async isTokenValid(): Promise<boolean> {
+    const token = await this.getAuthToken();
+    if (!token) return false;
+    
+    const payload: any = this.decodeJwt(token);
+    if (!payload?.exp) return true; // se backend não envia exp
+    return Date.now() < payload.exp * 1000;
   }
   
   async login(email: string, password: string): Promise<string> {
-    const resp: any = await this.http
-      .post(`${this.apiService.baseUrl}/login`, { email, password })
-      .toPromise();
+    const resp: any = await firstValueFrom(
+      this.http.post(`${this.apiService.baseUrl}/login`, { email, password })
+    );
 
     const token = resp.access_token;
-    this.saveAuthToken(token);
+    await this.tokenStorage.setToken(token);
+    localStorage.setItem('authUser', JSON.stringify(resp.user ?? null));
+    this.userChanged.next(resp.user ?? null);
     return token;
   }
 
   async register(user: UserModel): Promise<string> {
-    const resp: any = await this.http
-      .post(`${this.apiService.baseUrl}/register`, {
+    const resp: any = await firstValueFrom(
+      this.http.post(`${this.apiService.baseUrl}/register`, {
         name: user.name,
         email: user.email,
         password: user.password,
       })
-      .toPromise();
+    );
 
     const token = resp.access_token;
-    this.saveAuthToken(token);
+    await this.tokenStorage.setToken(token);
+    localStorage.setItem('authUser', JSON.stringify(resp.user ?? null));
+    this.userChanged.next(resp.user ?? null);
     return token;
   }
 
   async fetchProfile(): Promise<any> {
+    if (!(await this.isTokenValid())) {
+      await this.logout();
+      throw new Error('Token expirado');
+    }
+    
     try {
-      return await this.http.get(`${this.apiService.baseUrl}/profile`).toPromise();
+      return await firstValueFrom(this.http.get(`${this.apiService.baseUrl}/profile`));
     } catch (error: any) {
-      if (error.status === 401) this.logout();
+      if (error.status === 401) {
+        await this.logout();
+      }
       throw new Error('Erro ao buscar perfil do usuário.');
     }
   }
@@ -100,13 +125,15 @@ export class AuthService {
       const tokenForBackend = googleIdToken ?? googleAccessTok;
     
       // 3) Envie exatamente no campo "token" (o backend exige isso)
-      const response: any = await this.http.post(
-        `${this.apiService.baseUrl}/auth/social-login/google`,
-        { token: tokenForBackend }  // 👈 NADA de getIdToken() do Firebase aqui
-      ).toPromise();
+      const response: any = await firstValueFrom(
+        this.http.post(
+          `${this.apiService.baseUrl}/auth/social-login/google`,
+          { token: tokenForBackend }  // 👈 NADA de getIdToken() do Firebase aqui
+        )
+      );
     
       // persistência/estado
-      this.saveAuthToken(response.token);
+      await this.tokenStorage.setToken(response.token);
       localStorage.setItem('authUser', JSON.stringify(response.user));
       this.userChanged.next(response.user);
       return response;
@@ -115,16 +142,16 @@ export class AuthService {
 
     // iOS — Generic OAuth2 + PKCE (sem browser externo do app)
     const config = {
-      appId: '202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com',
+      appId: environment.googleOAuth.clientId,
       authorizationBaseUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
-      accessTokenEndpoint: 'https://www.googleapis.com/oauth2/v4/token',
-      resourceUrl: 'https://www.googleapis.com/userinfo/v2/me',
-      scope: 'email profile openid',
+      accessTokenEndpoint: 'https://oauth2.googleapis.com/token',
+      resourceUrl: 'https://openidconnect.googleapis.com/v1/userinfo',
+      scope: 'openid email profile',
       redirectUrl: 'com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q:/oauth2redirect',
       responseType: 'code',
       pkceEnabled: true,
       logsEnabled: true,
-      additionalParameters: { access_type: 'offline' }
+      additionalParameters: { access_type: 'offline', prompt: 'consent' } // garante refresh_token na 1ª vez
     } as const;
 
     // Silent refresh (se tiver)
@@ -136,18 +163,22 @@ export class AuthService {
         refresh_token: storedRefresh
       });
       try {
-        const refreshed: any = await this.http.post(
-          config.accessTokenEndpoint, body.toString(),
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-        ).toPromise();
+        const refreshed: any = await firstValueFrom(
+          this.http.post(
+            config.accessTokenEndpoint, body.toString(),
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+          )
+        );
 
         if (refreshed?.access_token) {
-          const resp: any = await this.http.post(
-            `${this.apiService.baseUrl}/auth/social-login/google`,
-            { token: refreshed.access_token, kind: 'google_access_token' }
-          ).toPromise();
+          const resp: any = await firstValueFrom(
+            this.http.post(
+              `${this.apiService.baseUrl}/auth/social-login/google`,
+              { token: refreshed.access_token, kind: 'google_access_token' }
+            )
+          );
 
-          this.saveAuthToken(resp.token);
+          await this.tokenStorage.setToken(resp.token);
           localStorage.setItem('authUser', JSON.stringify(resp.user));
           this.userChanged.next(resp.user);
           return resp;
@@ -167,12 +198,14 @@ export class AuthService {
       localStorage.setItem('google_refresh_token', result.refresh_token);
     }
 
-    const response: any = await this.http.post(
-      `${this.apiService.baseUrl}/auth/social-login/google`,
-      { token: accessToken, kind: 'google_access_token' }
-    ).toPromise();
+    const response: any = await firstValueFrom(
+      this.http.post(
+        `${this.apiService.baseUrl}/auth/social-login/google`,
+        { token: accessToken, kind: 'google_access_token' }
+      )
+    );
 
-    this.saveAuthToken(response.token);
+    await this.tokenStorage.setToken(response.token);
     localStorage.setItem('authUser', JSON.stringify(response.user));
     this.userChanged.next(response.user);
     return response;
@@ -186,22 +219,14 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    try {
-      await FirebaseAuthentication.signOut().catch(() => {});
-      this.cookieService.delete(this.tokenKey);
-      this.cookieService.deleteAll('/');
-      localStorage.clear();
-      sessionStorage.clear();
-      this.userChanged.next(null);
-      await this.router.navigateByUrl('/login', { replaceUrl: true });
-      window.location.reload();
-    } catch (e) {
-      this.cookieService.deleteAll('/');
-      localStorage.clear();
-      sessionStorage.clear();
-      this.userChanged.next(null);
-      await this.router.navigateByUrl('/login', { replaceUrl: true });
-      window.location.reload();
-    }
+    try { 
+      await FirebaseAuthentication.signOut().catch(() => {}); 
+    } catch {}
+    
+    await this.tokenStorage.removeToken();
+    localStorage.removeItem('authUser');
+    sessionStorage.clear();
+    this.userChanged.next(null);
+    await this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 }

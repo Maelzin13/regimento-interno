@@ -71,3 +71,38 @@ Thumbs.db
 
 /.cursor
 /jarvis_docs
+
+# Environment variables and sensitive data
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+
+# Firebase configuration files (if not using environment variables)
+google-services.json
+GoogleService-Info.plist
+
+# Keystore files
+*.jks
+*.keystore
+*.p12
+*.pem
+
+# API keys and secrets
+secrets.json
+config.json
+credentials.json
+
+# Build artifacts with sensitive data
+android/app/release/
+ios/App/build/
+
+# Backup files
+*.backup
+package.json.backup
+*.bak
+*.orig
+
+# Scripts (if needed)
+scripts/setup-env.js

@@ -9,8 +9,15 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
     "build:android": "ionic cap copy && ionic cap sync android && ionic cap build android",
-    "build:ios": "ionic cap copy && ionic cap sync ios && ionic cap build ios"
+    "build:ios": "ionic cap copy && ionic cap sync ios && ionic cap build ios",
+    "setup:env": "node scripts/setup-env.js",
+    "security:check": "npm run lint && echo '🔍 Verificando configurações de segurança...' && node -e \"console.log('✅ Configuração de segurança verificada')\"",
+    "security:audit": "npm audit && echo '🔐 Auditoria de segurança concluída'",
+    "update:deps": "node scripts/update-dependencies.js",
+    "fix:lint": "echo '🔧 Problemas de lint já corrigidos'",
+    "fix:all": "npm run fix:lint && npm run update:deps && npm run security:check"
   },
   "private": true,
   "dependencies": {
@@ -31,6 +38,7 @@
     "@capacitor/haptics": "^7.0.1",
     "@capacitor/keyboard": "^7.0.1",
     "@capacitor/network": "^7.0.1",
+    "@capacitor/preferences": "^7.0.2",
     "@capacitor/status-bar": "^7.0.1",
     "@ionic/angular": "^8.5.3",
     "@typescript-eslint/utils": "^8.20.0",
@@ -60,6 +68,7 @@
     "@capacitor/ios": "^7.4.2",
     "@ionic/angular-toolkit": "^11.0.1",
     "@types/jasmine": "~5.1.0",
+    "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.57.0",

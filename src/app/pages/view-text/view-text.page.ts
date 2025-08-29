@@ -29,6 +29,54 @@ interface RemissaoDestino {
   };
 }
 
+// Interface para representar a estrutura de destino da API
+interface ApiDestino {
+  id: number;
+  remissao_id: number;
+  artigo_id: number;
+  paragrafo_id?: number;
+  inciso_key?: string;
+  alinea_key?: string;
+  paragrafo_key?: string;
+  ordem: number;
+  created_at: string;
+  updated_at: string;
+  artigo: {
+    id: number;
+    conteudo: string;
+    numero?: string;
+    ordem: number;
+    secao_id: number;
+    created_at?: string;
+    updated_at?: string;
+  };
+  paragrafo?: {
+    id: number;
+    conteudo: string;
+    tipo: string;
+    nivel: number;
+    ordem: number;
+    artigo_id: number;
+    paragrafo_id?: number;
+    created_at: string;
+    updated_at: string;
+  };
+}
+
+// Interface para representar a estrutura de remissão da API
+interface ApiRemissao {
+  id: number;
+  conteudo: string;
+  tipo: string;
+  observacao?: string;
+  url_externa?: string;
+  paragrafo_de_id: number;
+  paragrafo_para_id?: number;
+  created_at: string;
+  updated_at: string;
+  destinos: ApiDestino[];
+}
+
 @Component({
   selector: 'app-view-text',
   templateUrl: './view-text.page.html',
@@ -165,6 +213,16 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       // Só sobrescreva depois que o request chegar
       this.book = books.livro ?? books;
       console.log('Livro carregado:', this.book);
+      
+      // Processar remissões de forma otimizada
+      this.processRemissoes();
+      
+      // Otimizar performance
+      this.optimizePerformance();
+      
+      // Debug: Verificar se há remissões
+      this.debugRemissoesCount();
+      
       this.primeiroParagrafo = books.primeiro?.conteudo ?? '';
 
       this.route.queryParams.subscribe(params => {
@@ -459,8 +517,18 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   highlightAndSanitize(text: string): SafeHtml {
+    // Verificar cache primeiro
+    const cacheKey = `${text}_${this.query}_${this.searchType}`;
+    if (this.contentCache.has(cacheKey)) {
+      return this.contentCache.get(cacheKey)!;
+    }
+
     let highlighted = this.formatNotas(text);
+    
+    // Processar remissões inline apenas se necessário
     if (this.query) {
+      highlighted = this.processInlineRemissoes(highlighted);
+      
       // Aplicar highlight manualmente sem usar o pipe
       const query = this.query.trim();
       if (query) {
@@ -475,7 +543,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         );
       }
     }
-    return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(highlighted));
+
+    const result = this.sanitizer.bypassSecurityTrustHtml(highlighted);
+    
+    // Armazenar em cache
+    this.contentCache.set(cacheKey, result);
+    
+    return result;
   }
 
   ngAfterViewInit() {
@@ -484,7 +558,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.notaListenerAttached = true;
     }
 
-    this.setupInlineRemissoesLinks();
+    // Configurar listeners para remissões
+    this.setupRemissaoLinks();
 
     this.setupScrollListener();
 
@@ -497,11 +572,22 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     this.handleRemissaoClick = (event: any) => {
       const target = event.target as HTMLElement;
+      
+      console.log('Clique detectado em:', target);
+      console.log('Target classList:', target.classList);
 
       // A remissão pode estar em qualquer nível dentro do .remissao-content
       const remissaoElement = target.closest('.remissao-content') as HTMLElement;
+      
+      console.log('Remissão element encontrado:', remissaoElement);
 
       if (remissaoElement) {
+        console.log('Processando remissão:', {
+          id: remissaoElement.getAttribute('data-remissao-id'),
+          type: remissaoElement.getAttribute('data-remissao-type'),
+          content: remissaoElement.textContent?.substring(0, 50)
+        });
+
         // Feedback visual no clique
         const container = remissaoElement.closest('.remissao-container') as HTMLElement;
         if (container) {
@@ -514,10 +600,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           }, 1500);
         }
 
-        // Passamos o remissaoElement para o handler
-         console.log('remissaoElement', remissaoElement);
+        // Processar a remissão
+        console.log('Chamando handleRemissaoContent...');
+        alert('Clique detectado! Processando remissão...');
         this.handleRemissaoContent(remissaoElement, event);
         event.preventDefault();
+      } else {
+        console.log('Nenhum elemento .remissao-content encontrado');
       }
     };
 
@@ -525,44 +614,102 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   handleRemissaoContent(remissaoElement: HTMLElement, event: Event) {
+    console.log('=== handleRemissaoContent INICIADO ===');
+    
     const conteudo = remissaoElement.textContent || '';
+    console.log(conteudo);
+    const remissaoId = remissaoElement.getAttribute('data-remissao-id');
+    const remissaoType = remissaoElement.getAttribute('data-remissao-type');
+    const urlExterna = remissaoElement.getAttribute('data-url-externa');
 
-    console.log('conteudo', conteudo);
+    console.log('handleRemissaoContent chamado:', {
+      conteudo: conteudo.substring(0, 50),
+      remissaoId,
+      remissaoType,
+      urlExterna
+    });
 
     // Verificação rápida: se não começa com "Art.", ignora
     if (!conteudo.trim().startsWith('Art')) {
-      return;
+      console.log('Conteúdo não começa com Art:', conteudo.trim());
+      // Vou permitir que qualquer remissão seja processada para debug
+      console.log('Permitindo processamento mesmo sem Art...');
     }
-
-    // Obtém o ID da remissão para rastreamento
-    const remissaoId = remissaoElement.getAttribute('data-remissao-id');
 
     // Salva posição antes de navegar
     this.content.getScrollElement().then(scrollElement => {
       const currentPosition = scrollElement.scrollTop;
 
-      // Processa a remissão para identificar os possíveis destinos
-      const destinosRemissao = this.parseRemissaoCompleta(conteudo);
+      // Se é uma remissão externa, abrir link
+      if (remissaoType === 'externa') {
+        if (urlExterna) {
+          window.open(urlExterna, '_blank');
+          this.presentToast('Abrindo link externo...');
+        } else {
+          this.presentToast('Link externo não disponível.');
+        }
+        event.preventDefault();
+        return;
+      }
 
-      if (destinosRemissao.length > 0) {
+      // Se é uma remissão inline, usar o parser antigo
+      if (remissaoType === 'inline') {
+        const destinosRemissao = this.parseRemissaoCompleta(conteudo);
+
+        if (destinosRemissao.length > 0) {
+          if (destinosRemissao.length === 1) {
+            const destino = destinosRemissao[0];
+            this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
+            event.preventDefault();
+            return;
+          } else {
+            this.showDestinationChoiceModal(destinosRemissao);
+            event.preventDefault();
+            return;
+          }
+        } else {
+          this.presentToast('Não foi possível identificar a referência na remissão.');
+        }
+        return;
+      }
+
+      // Buscar a remissão na estrutura de dados usando o ID
+      const remissao = this.findRemissaoById(remissaoId);
+      
+      if (remissao && remissao.destinos && remissao.destinos.length > 0) {
+        // Converter os destinos da API para o formato esperado
+        const destinosRemissao = this.convertApiDestinosToRemissaoDestinos(remissao.destinos);
 
         if (destinosRemissao.length === 1) {
           // Se tem só um destino, navega direto
           const destino = destinosRemissao[0];
-          
-
           this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
           event.preventDefault();
           return;
-        } else {
-
+        } else if (destinosRemissao.length > 1) {
+          // Se tem múltiplos destinos, mostra modal para escolha
           this.showDestinationChoiceModal(destinosRemissao);
           event.preventDefault();
           return;
         }
       } else {
-        // Não encontrou nenhum destino com o parser
-        this.presentToast('Não foi possível identificar a referência na remissão.');
+        // Fallback: usar o parser antigo se não encontrar destinos na API
+        const destinosRemissao = this.parseRemissaoCompleta(conteudo);
+
+        if (destinosRemissao.length > 0) {
+          if (destinosRemissao.length === 1) {
+            const destino = destinosRemissao[0];
+            this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
+            event.preventDefault();
+            return;
+          } else {
+            this.showDestinationChoiceModal(destinosRemissao);
+            event.preventDefault();
+            return;
+          }
+        } else {
+          this.presentToast('Não foi possível identificar a referência na remissão.');
+        }
       }
     });
   }
@@ -2001,6 +2148,178 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     return element || null;
   }
 
+  // Método para encontrar uma remissão pelo ID na estrutura de dados
+  private findRemissaoById(remissaoId: string | null): ApiRemissao | null {
+    if (!remissaoId) return null;
+
+    const book = this.filteredBook || this.book;
+    if (!book || !book.titulos) return null;
+
+    for (const titulo of book.titulos) {
+      for (const capitulo of titulo.capitulos || []) {
+        for (const secao of capitulo.secaos || []) {
+          for (const artigo of secao.artigos || []) {
+            for (const paragrafo of artigo.paragrafos || []) {
+              for (const remissao of paragrafo.remissoes || []) {
+                if (remissao.id.toString() === remissaoId) {
+                  return remissao;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  // Método para converter destinos da API para o formato esperado
+  private convertApiDestinosToRemissaoDestinos(apiDestinos: ApiDestino[]): RemissaoDestino[] {
+    return apiDestinos.map(destino => {
+      // Extrair o número do artigo do conteúdo usando o método robusto
+      const artigoNumero = this.extractArtigoNumber(destino.artigo.conteudo) || destino.artigo.id.toString();
+
+      // Extrair informações do parágrafo se existir
+      let paragrafo: string | undefined;
+      if (destino.paragrafo) {
+        const paragrafoMatch = destino.paragrafo.conteudo.match(/§\s*(\d+)[º°]?/i);
+        paragrafo = paragrafoMatch ? paragrafoMatch[1] : undefined;
+      }
+
+      // Extrair informações do inciso se existir
+      let inciso: string | undefined;
+      if (destino.paragrafo && destino.paragrafo.tipo) {
+        const incisoMatch = destino.paragrafo.tipo.match(/^([IVX]+)\s*[-–]/i);
+        inciso = incisoMatch ? incisoMatch[1] : undefined;
+      }
+
+      return {
+        artigo: artigoNumero,
+        paragrafo,
+        inciso,
+        origem: {
+          text: destino.artigo.conteudo
+        }
+      };
+    });
+  }
+
+  // Método para extrair número do artigo de forma mais robusta
+  private extractArtigoNumber(artigoContent: string): string {
+    // Padrões para extrair o número do artigo
+    const patterns = [
+      /Art\.?\s*(\d+)[º°]?/i,           // Art. 123 ou Art 123
+      /Artigo\s*(\d+)[º°]?/i,           // Artigo 123
+      /Arts\.?\s*(\d+)[º°]?/i,          // Arts. 123
+      /Artigos\s*(\d+)[º°]?/i           // Artigos 123
+    ];
+
+    for (const pattern of patterns) {
+      const match = artigoContent.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+
+    // Se não encontrou nenhum padrão, retorna o ID como fallback
+    return '';
+  }
+
+  // Método para processar remissões inline que ainda podem estar no texto
+  private processInlineRemissoes(content: string): string {
+    // Se já temos este conteúdo em cache, retorne-o
+    if (this.remissoesCache.has(content)) {
+      return this.remissoesCache.get(content)!;
+    }
+
+    // Cópia do conteúdo original para trabalhar
+    let formattedContent = content;
+
+    // Detecta padrões de remissão inline que ainda não foram processados pela API
+    try {
+      // Padrão otimizado para detectar apenas referências que começam com "Art." (A maiúsculo)
+      const combinedPattern = /\b(Art\.?\s+\d+[º°]?(?:\s*,\s*§\s*\d+[º°]?)?(?:\s*,\s*(?:inciso\s+)?[IVX]+)?)/gi;
+
+      // Função para substituir com marcação HTML
+      const replaceWithLink = (match: string): string => {
+        // Verificar se a remissão realmente começa com "Art." (A maiúsculo)
+        if (!match.trim().startsWith('Art')) {
+          return match;
+        }
+
+        // Gera um ID único para esta remissão
+        const remissaoId = 'inline-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+
+        // Extrai informações sobre artigos, parágrafos e incisos
+        const destinosRemissao = this.parseRemissaoCompleta(match);
+
+        // Preparar atributos data-* para facilitar a navegação
+        let dataArtigos = '';
+        let dataParagrafos = '';
+        let dataIncisos = '';
+
+        if (destinosRemissao.length > 0) {
+          // Extrair artigos, parágrafos e incisos únicos
+          const artigos = [...new Set(destinosRemissao.map(d => d.artigo))];
+          const paragrafos = [...new Set(destinosRemissao.filter(d => d.paragrafo).map(d => d.paragrafo))];
+          const incisos = [...new Set(destinosRemissao.filter(d => d.inciso).map(d => d.inciso))];
+
+          // Construir os atributos data-*
+          dataArtigos = artigos.join(',');
+          dataParagrafos = paragrafos.join(',');
+          dataIncisos = incisos.join(',');
+        } else {
+          // Tentar extrair manualmente apenas se começar com "Art"
+          const artigoMatch = match.match(/\b(\d+)[º°]?\b/g);
+          if (artigoMatch) {
+            dataArtigos = artigoMatch.join(',');
+          }
+
+          const paragrafoMatch = match.match(/§\s*(\d+)[º°]?\b/g);
+          if (paragrafoMatch) {
+            dataParagrafos = paragrafoMatch.map(p => p.replace(/§\s*/, '')).join(',');
+          }
+
+          const incisoMatch = match.match(/\b([IVX]+)\b/g);
+          if (incisoMatch) {
+            dataIncisos = incisoMatch.join(',');
+          }
+        }
+
+        // Construir os atributos data-*
+        const dataAtributos = [
+          `data-remissao-id="${remissaoId}"`,
+          dataArtigos ? `data-artigos="${dataArtigos}"` : '',
+          dataParagrafos ? `data-paragrafos="${dataParagrafos}"` : '',
+          dataIncisos ? `data-incisos="${dataIncisos}"` : '',
+          'data-remissao-type="inline"'
+        ].filter(attr => attr).join(' ');
+
+        // Determinar se a remissão está dentro de parênteses
+        const isInParentheses = /\([^)]*$/.test(formattedContent.substring(0, formattedContent.indexOf(match))) &&
+                               /^[^(]*\)/.test(formattedContent.substring(formattedContent.indexOf(match) + match.length));
+
+        // Adicionar classe especial para remissões dentro de parênteses
+        const extraClass = isInParentheses ? 'remissao-parentese' : '';
+
+        // Retorna o HTML com a classe remissao-inline de forma segura
+        return `<span class="remissao-inline ${extraClass}" role="link" tabindex="0" ${dataAtributos}>${match}</span>`;
+      };
+
+      // Aplicar substituições apenas para padrões que começam com "Art."
+      formattedContent = formattedContent.replace(combinedPattern, replaceWithLink);
+
+      // Adicionar ao cache
+      this.remissoesCache.set(content, formattedContent);
+    } catch (error) {
+      console.error('Erro ao processar remissões inline:', error);
+      return content;
+    }
+
+    return formattedContent;
+  }
+
   // Método para obter contexto do resultado atual
   getCurrentResultContext(): string {
     if (this.currentResultIndex < 0 || this.currentResultIndex >= this.searchResults.length) {
@@ -2034,6 +2353,91 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       setTimeout(() => {
         this.clearSearch();
       }, 2000);
+    });
+  }
+
+  // Método para processar remissões de forma otimizada
+  private processRemissoes() {
+    const book = this.book;
+    if (!book || !book.titulos) return;
+
+    // Cache para remissões processadas
+    this.remissoesCache.clear();
+    
+    // Processar apenas quando necessário
+    if (this.query) {
+      this.processRemissoesForSearch();
+    }
+  }
+
+  // Método para processar remissões apenas durante busca
+  private processRemissoesForSearch() {
+    // Limpar cache de remissões inline para forçar reprocessamento
+    this.remissoesCache.clear();
+  }
+
+  // Método para limpar todos os caches
+  private clearAllCaches() {
+    this.contentCache.clear();
+    this.remissoesCache.clear();
+    this.comentarioCache.clear();
+    this.elementosCache.clear();
+  }
+
+  // Método para otimizar performance
+  private optimizePerformance() {
+    // Limpar caches antigos periodicamente
+    if (this.contentCache.size > 100) {
+      this.contentCache.clear();
+    }
+    
+    if (this.remissoesCache.size > 50) {
+      this.remissoesCache.clear();
+    }
+    
+    if (this.comentarioCache.size > 100) {
+      this.comentarioCache.clear();
+    }
+  }
+
+  // Método para debug da contagem de remissões
+  private debugRemissoesCount() {
+    const book = this.book;
+    if (!book || !book.titulos) {
+      console.log('Debug: Nenhum livro carregado');
+      return;
+    }
+
+    let totalRemissoes = 0;
+    let remissoesInternas = 0;
+    let remissoesExternas = 0;
+
+    for (const titulo of book.titulos) {
+      for (const capitulo of titulo.capitulos || []) {
+        for (const secao of capitulo.secaos || []) {
+          for (const artigo of secao.artigos || []) {
+            for (const paragrafo of artigo.paragrafos || []) {
+              if (paragrafo.remissoes && paragrafo.remissoes.length > 0) {
+                totalRemissoes += paragrafo.remissoes.length;
+                
+                for (const remissao of paragrafo.remissoes) {
+                  if (remissao.tipo === 'interna') {
+                    remissoesInternas++;
+                  } else if (remissao.tipo === 'externa') {
+                    remissoesExternas++;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    console.log('Debug: Contagem de remissões:', {
+      total: totalRemissoes,
+      internas: remissoesInternas,
+      externas: remissoesExternas
     });
   }
 }

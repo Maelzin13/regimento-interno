@@ -96,16 +96,24 @@
                       class="text-justify"
                     ></h5>
 
-                    <ng-container
+                                        <ng-container
                       *ngFor="let remissao of paragrafo.remissoes"
                     >
+                      <!-- Remissões Internas (com destinos) -->
                       <div
                         class="remissao-container mt-3 mb-4 pl-4"
-                        *ngIf="remissao.conteudo && remissao.conteudo.trim().startsWith('Art')"
+                        *ngIf="remissao.conteudo"
+                        style="border: 2px solid green; background-color: #f0f8f0; padding: 10px;"
                       >
+                        <!-- Debug: Mostrar informações da remissão -->
+                        <div style="background-color: #fff3cd; padding: 5px; margin: 5px 0; border-radius: 3px; font-size: 0.8em;">
+                          <strong>Debug:</strong> ID: {{ remissao.id }} | Tipo: {{ remissao.tipo }} | Destinos: {{ remissao.destinos?.length || 0 }}
+                        </div>
                         <div
                           class="remissao-content"
                           [attr.data-remissao-id]="remissao.id"
+                          [attr.data-remissao-type]="'interna'"
+                          [attr.data-destinos-count]="remissao.destinos?.length || 0"
                         >
                           <div
                             class="remissao-text"
@@ -116,7 +124,42 @@
                               name="link-outline"
                               class="remissao-icon"
                             ></ion-icon>
-                            <span>Clique para navegar</span>
+                            <span *ngIf="remissao.destinos && remissao.destinos.length > 0">
+                              {{ remissao.destinos.length === 1 ? 'Clique para navegar' : 'Clique para escolher destino' }}
+                            </span>
+                            <span *ngIf="!remissao.destinos || remissao.destinos.length === 0">
+                              Processando...
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Remissões Externas (com URL) -->
+                      <div
+                        class="remissao-container mt-3 mb-4 pl-4"
+                        *ngIf="remissao.conteudo && remissao.tipo === 'externa'"
+                      >
+                        <div
+                          class="remissao-content"
+                          [attr.data-remissao-id]="remissao.id"
+                          [attr.data-remissao-type]="'externa'"
+                          [attr.data-url-externa]="remissao.url_externa"
+                        >
+                          <div
+                            class="remissao-text"
+                            [innerHTML]="highlightAndSanitize(remissao.conteudo)"
+                          ></div>
+                          <div class="remissao-indicator">
+                            <ion-icon
+                              name="open-outline"
+                              class="remissao-icon"
+                            ></ion-icon>
+                            <span *ngIf="remissao.url_externa">
+                              Clique para abrir link externo
+                            </span>
+                            <span *ngIf="!remissao.url_externa">
+                              Link não disponível
+                            </span>
                           </div>
                         </div>
                       </div>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { ToastController } from '@ionic/angular';
 import { NetworkService } from './services/network.service';
+import { ConfigService } from './services/config.service';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 @Component({
@@ -14,7 +15,8 @@ export class AppComponent {
 
   constructor(
     private toastController: ToastController,
-    private networkService: NetworkService
+    private networkService: NetworkService,
+    private configService: ConfigService
   ) {
     this.initializeApp();
     this.networkService.isOnline$.subscribe((isOnline) => {
@@ -28,6 +30,9 @@ export class AppComponent {
   }
 
   async initializeApp() {
+    // Validar configuração primeiro
+    this.configService.logConfigStatus();
+    
     // Inicializar plugin do Firebase Authentication no Android
     if (Capacitor.getPlatform() === 'android') {
       try {

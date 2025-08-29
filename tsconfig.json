@@ -24,6 +24,7 @@
       "es2015.iterable",
       "dom"
     ],
+
     "useDefineForClassFields": false,
     "skipLibCheck": true
   },
