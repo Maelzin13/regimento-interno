@@ -1,8 +1,10 @@
+// src/app/pages/login/login.page.ts
 import config from 'capacitor.config';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { ToastController, LoadingController } from '@ionic/angular';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +16,9 @@ export class LoginPage implements OnInit {
   email: string = '';
   password: string = '';
 
+  // ✅ só habilita social login em plataformas nativas
+  readonly isNative = Capacitor.getPlatform() !== 'web';
+
   constructor(
     private router: Router,
     private authService: AuthService,
@@ -23,12 +28,14 @@ export class LoginPage implements OnInit {
 
   async ngOnInit() {
     const loading = await this.presentLoading('Verificando sessão...');
-    this.authService.handleRedirectCallback();
-    
+
     try {
       this.nameApp = config.appName;
 
-      // Limpa qualquer dado residual do localStorage e sessionStorage
+      // ⛔️ REMOVIDO: fluxo Web do Firebase
+      // this.authService.handleRedirectCallback();
+
+      // Se não há token salvo, “zera” a sessão e segue
       if (!this.authService.getAuthToken()) {
         localStorage.clear();
         sessionStorage.clear();
@@ -37,7 +44,7 @@ export class LoginPage implements OnInit {
         return;
       }
 
-      // Verifica se o token é válido
+      // Valida token da API
       try {
         const user = await this.authService.fetchProfile();
         localStorage.setItem('authUser', JSON.stringify(user));
@@ -45,7 +52,7 @@ export class LoginPage implements OnInit {
         await loading.dismiss();
         this.router.navigate(['/home']);
       } catch (error) {
-        // Se houver erro na validação do token, limpa tudo
+        // Token inválido → limpa e mantém na tela de login
         localStorage.clear();
         sessionStorage.clear();
         this.authService.userChanged.next(null);
@@ -61,6 +68,7 @@ export class LoginPage implements OnInit {
     const loading = await this.presentLoading('Entrando...');
     try {
       const token = await this.authService.login(this.email, this.password);
+      // authService.login já retorna o token, mas quem salva é o saveAuthToken aqui:
       this.authService.saveAuthToken(token);
 
       const userProfile = await this.authService.fetchProfile();
@@ -78,17 +86,22 @@ export class LoginPage implements OnInit {
   }
 
   async socialLogin(provider: 'google') {
-    const loading = await this.presentLoading(
-      `Conectando com ${provider}...`
-    );
+    if (!this.isNative) {
+      // ✅ Web desabilitado
+      this.presentToast('Login com Google disponível apenas em iOS/Android.');
+      return;
+    }
 
+    const loading = await this.presentLoading(`Conectando com ${provider}...`);
     try {
+      // ✅ googleLogin usa somente plugins nativos (Android: @capacitor-firebase/authentication; iOS: Generic OAuth2)
       const response = await this.authService.googleLogin();
 
       if (response?.user && response?.token) {
-        this.authService.saveAuthToken(response.token);
-        localStorage.setItem('authUser', JSON.stringify(response.user));
-        this.authService.userChanged.next(response.user);
+        // googleLogin já salva token/usuário internamente, mas se quiser manter:
+        // this.authService.saveAuthToken(response.token);
+        // localStorage.setItem('authUser', JSON.stringify(response.user));
+        // this.authService.userChanged.next(response.user);
 
         await loading.dismiss();
         this.router.navigate(['/home']);
@@ -102,7 +115,7 @@ export class LoginPage implements OnInit {
   }
 
   async forgotPassword() {
-    
+    // TODO: implementar fluxo de recuperação (via sua API/Firebase, conforme escolha)
   }
 
   async presentLoading(message: string = 'Carregando...') {

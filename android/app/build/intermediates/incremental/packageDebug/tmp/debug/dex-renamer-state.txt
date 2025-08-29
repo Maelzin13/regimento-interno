@@ -1,4 +1,4 @@
-#Thu Aug 28 19:36:33 BRT 2025
+#Thu Aug 28 22:27:41 BRT 2025
 base.0=/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/build/intermediates/dex/debug/mergeLibDexDebug/10/classes.dex
 base.10=/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex

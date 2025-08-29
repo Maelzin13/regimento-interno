@@ -47,5 +47,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>google</string>
+		<string>com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q</string>
+	</array>
 </dict>
 </plist>

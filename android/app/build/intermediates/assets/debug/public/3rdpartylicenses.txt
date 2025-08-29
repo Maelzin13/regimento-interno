@@ -478,8 +478,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 @ionic/core/components
 
-firebase/app
-
 firebase/auth
 
 idb
