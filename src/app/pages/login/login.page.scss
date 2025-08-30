@@ -3,7 +3,7 @@
   ion-title {
     text-align: center;
     font-weight: bold;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
 }
 
@@ -12,56 +12,238 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem 1rem;
+  padding: 1rem;
 }
 
 .center-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: 1rem;
   height: 100%;
+  min-height: 100vh;
 }
 
 .login-card {
   width: 100%;
-  max-width: 400px;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 350px;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   background: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);
+  margin: 0 auto;
 }
 
 .separator {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   .line {
     flex: 1;
     height: 1px;
     background-color: #ccc;
-    margin: 0 10px;
+    margin: 0 8px;
   }
   .separator-text {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #666;
-  }
-}
-
-.login-card {
-  max-width: 400px;
-  margin: 0 auto;
-
-  @media (max-width: 320px) {
-    padding: 10px;
+    white-space: nowrap;
   }
 }
 
 .forgot-password-btn {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #666;
   text-align: center;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
 }
+
+// Otimizações específicas para Android
+.platform-android {
+  .login-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  ion-item {
+    --border-radius: 6px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    margin-bottom: 0.75rem;
+    
+    ion-input {
+      font-size: 0.95rem;
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+    }
+    
+    ion-icon {
+      font-size: 1.2rem;
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+// Breakpoints específicos para Android
+// Galaxy A03s e dispositivos similares (320px - 360px)
+@media (max-width: 360px) {
+  .center-container {
+    padding: 0.5rem;
+  }
+  
+  .login-card {
+    padding: 1rem;
+    max-width: 300px;
+    border-radius: 8px;
+  }
+  
+  .transparent-header ion-title {
+    font-size: 1.2rem;
+  }
+  
+  ion-item {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    
+    ion-input {
+      font-size: 0.9rem;
+      --padding-top: 10px;
+      --padding-bottom: 10px;
+    }
+    
+    ion-icon {
+      font-size: 1.1rem;
+    }
+  }
+  
+  .login-btn, .social-btn {
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    font-size: 0.9rem;
+  }
+  
+  .separator {
+    margin: 1rem 0;
+    
+    .separator-text {
+      font-size: 0.75rem;
+    }
+  }
+  
+  .forgot-password-btn {
+    font-size: 0.75rem;
+  }
+}
+
+// Dispositivos Android médios (361px - 480px)
+@media (min-width: 361px) and (max-width: 480px) {
+  .center-container {
+    padding: 0.75rem;
+  }
+  
+  .login-card {
+    padding: 1.25rem;
+    max-width: 320px;
+  }
+  
+  .transparent-header ion-title {
+    font-size: 1.3rem;
+  }
+  
+  ion-item {
+    ion-input {
+      font-size: 0.92rem;
+    }
+  }
+  
+  .login-btn, .social-btn {
+    font-size: 0.92rem;
+  }
+}
+
+// Dispositivos Android grandes (481px - 768px)
+@media (min-width: 481px) and (max-width: 768px) {
+  .login-card {
+    max-width: 400px;
+    padding: 1.75rem;
+  }
+  
+  .transparent-header ion-title {
+    font-size: 1.5rem;
+  }
+  
+  ion-item {
+    ion-input {
+      font-size: 1rem;
+    }
+  }
+  
+  .login-btn, .social-btn {
+    font-size: 1rem;
+  }
+}
+
+// Tablets e dispositivos grandes (769px+)
+@media (min-width: 769px) {
+  .login-card {
+    max-width: 450px;
+    padding: 2rem;
+  }
+  
+  .transparent-header ion-title {
+    font-size: 1.6rem;
+  }
+}
+
+// Otimizações para orientação landscape em dispositivos pequenos
+@media (max-width: 480px) and (orientation: landscape) {
+  .center-container {
+    padding: 0.5rem;
+    min-height: auto;
+  }
+  
+  .login-card {
+    max-width: 90vw;
+    padding: 1rem;
+    margin: 0.5rem auto;
+  }
+  
+  .transparent-header ion-title {
+    font-size: 1.1rem;
+  }
+  
+  ion-item {
+    margin-bottom: 0.5rem;
+    
+    ion-input {
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+    }
+  }
+  
+  .login-btn, .social-btn {
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+  }
+  
+  .separator {
+    margin: 0.75rem 0;
+  }
+}
+
+// Otimizações para alta densidade de pixels
+@media (-webkit-min-device-pixel-ratio: 2.5), (min-resolution: 240dpi) {
+  .login-card {
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+  
+  ion-item {
+    --border-radius: 4px;
+  }
+}
+
 
 

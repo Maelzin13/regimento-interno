@@ -14,21 +14,57 @@
   --ion-color-primary-shade: #1a8a8b;
   --ion-color-primary-tint: #36a5a6;
 
+  // Tamanhos de fonte otimizados para Android
   --font-xs: 0.75rem;
   --font-sm: 0.875rem;
   --font-md: 1rem;
-  --font-lg: 1.25rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.25rem;
 
-  // Espaçamentos
+  // Espaçamentos otimizados para Android
   --space-xs: 0.5rem;
-  --space-sm: 1rem;
-  --space-md: 1.5rem;
-  --space-lg: 2rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
 
   // Tamanhos responsivos de container
   --card-max-width: 400px;
   --card-max-width-md: 500px;
   --card-max-width-lg: 600px;
+
+  // Altura da tab bar otimizada para Android
+  --tab-bar-height: 60px;
+  --tab-bar-padding: 8px 0;
+}
+
+// Configurações específicas para Android
+.platform-android {
+  --ion-safe-area-top: env(safe-area-inset-top);
+  --ion-safe-area-bottom: env(safe-area-inset-bottom);
+  
+  // Otimizações para Galaxy A03s e dispositivos similares
+  ion-tab-bar {
+    height: var(--tab-bar-height);
+    padding: var(--tab-bar-padding);
+    
+    ion-tab-button {
+      font-size: 0.75rem;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
+      
+      ion-icon {
+        font-size: 1.5rem;
+        margin-bottom: 2px;
+      }
+      
+      ion-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        margin-top: 2px;
+      }
+    }
+  }
 }
 
 ion-content {
@@ -46,6 +82,7 @@ ion-accordion::part(header) ion-icon {
 #toolbar {
   --background: linear-gradient(to bottom right, #6b7280, #10b981);
   color: white;
+  --min-height: 56px;
 }
 
 .login-btn {
@@ -54,6 +91,9 @@ ion-accordion::part(header) ion-icon {
   border-radius: 25px;
   font-weight: bold;
   transition: transform 0.2s;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  font-size: 1rem;
 }
 
 .login-btn:hover {
@@ -84,6 +124,9 @@ ion-accordion::part(header) ion-icon {
   border-radius: 25px;
   font-weight: bold;
   transition: all 0.3s;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  font-size: 0.95rem;
 }
 
 .social-btn:hover {
@@ -116,104 +159,257 @@ ion-accordion::part(header) ion-icon {
 
 .menu-content {
   --background: var(--bg-color);
-  padding: 2.5rem 1rem;
+  padding: 1.5rem 1rem;
 }
 
 .menu-item {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .menu-item-livro {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1rem;
-  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 .menu-box {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 12px;
   width: 100%;
-  max-width: 140px;
-  height: 120px;
+  max-width: 120px;
+  height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   ion-icon {
-    font-size: 2.4rem;
-    margin-bottom: 8px;
+    font-size: 2rem;
+    margin-bottom: 6px;
     color: var(--ion-color-primary);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); // sutil para destaque
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
   span {
     color: var(--ion-color-primary);
+    font-size: 0.8rem;
+    line-height: 1.2;
   }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 23px 30px rgba(0, 0, 0, 0.18),
-      0 -12px 22px rgba(255, 255, 255, 0.65);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   }
 }
 
-@media (max-width: 320px) {
+// Breakpoints específicos para Android
+// Galaxy A03s e dispositivos similares (320px - 360px)
+@media (max-width: 360px) {
   .login-card {
     padding: 1rem;
+    margin: 0.5rem;
     font-size: 0.85rem;
   }
 
   .menu-box {
-    max-width: 120px;
-    height: 100px;
-    font-size: 0.85rem;
+    max-width: 100px;
+    height: 90px;
+    font-size: 0.75rem;
+    
+    ion-icon {
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+    
+    span {
+      font-size: 0.7rem;
+    }
+  }
+  
+  ion-tab-bar {
+    height: 55px;
+    
+    ion-tab-button {
+      font-size: 0.7rem;
+      
+      ion-icon {
+        font-size: 1.3rem;
+      }
+      
+      ion-label {
+        font-size: 0.65rem;
+      }
+    }
+  }
+  
+  .menu-content {
+    padding: 1rem 0.5rem;
+  }
+  
+  .menu-item, .menu-item-livro {
+    margin-bottom: 0.5rem;
   }
 }
 
-/* Telas médias: smartphones comuns */
-@media (min-width: 321px) and (max-width: 480px) {
+// Dispositivos Android médios (361px - 480px)
+@media (min-width: 361px) and (max-width: 480px) {
   .login-card {
+    padding: 1.25rem;
+    margin: 1rem;
+  }
+
+  .menu-box {
+    max-width: 110px;
+    height: 95px;
+    font-size: 0.8rem;
+    
+    ion-icon {
+      font-size: 1.9rem;
+    }
+    
+    span {
+      font-size: 0.75rem;
+    }
+  }
+  
+  ion-tab-bar {
+    height: 58px;
+    
+    ion-tab-button {
+      font-size: 0.72rem;
+      
+      ion-icon {
+        font-size: 1.4rem;
+      }
+      
+      ion-label {
+        font-size: 0.68rem;
+      }
+    }
+  }
+}
+
+// Dispositivos Android grandes (481px - 768px)
+@media (min-width: 481px) and (max-width: 768px) {
+  .login-card {
+    max-width: 480px;
     padding: 1.5rem;
   }
 
   .menu-box {
     max-width: 130px;
     height: 110px;
+    font-size: 0.9rem;
+    
+    ion-icon {
+      font-size: 2.2rem;
+    }
+    
+    span {
+      font-size: 0.85rem;
+    }
+  }
+  
+  ion-tab-bar {
+    height: 62px;
+    
+    ion-tab-button {
+      font-size: 0.75rem;
+      
+      ion-icon {
+        font-size: 1.5rem;
+      }
+      
+      ion-label {
+        font-size: 0.7rem;
+      }
+    }
   }
 }
 
-/* Telas grandes: tablets em modo retrato */
-@media (min-width: 481px) and (max-width: 768px) {
+// Tablets e dispositivos grandes (769px+)
+@media (min-width: 769px) {
   .login-card {
-    max-width: 480px;
+    max-width: 600px;
+    padding: 2rem;
   }
 
   .menu-box {
     max-width: 150px;
-    height: 130px;
+    height: 120px;
+    font-size: 1rem;
+    
+    ion-icon {
+      font-size: 2.5rem;
+    }
+    
+    span {
+      font-size: 0.9rem;
+    }
+  }
+  
+  ion-tab-bar {
+    height: 65px;
+    
+    ion-tab-button {
+      font-size: 0.8rem;
+      
+      ion-icon {
+        font-size: 1.6rem;
+      }
+      
+      ion-label {
+        font-size: 0.75rem;
+      }
+    }
   }
 }
 
-/* Telas muito grandes (tablet paisagem ou desktop) */
-@media (min-width: 769px) {
-  .login-card {
-    max-width: 600px;
-  }
-
+// Otimizações específicas para alta densidade (Galaxy A03s tem ~270 DPI)
+@media (-webkit-min-device-pixel-ratio: 2.5), (min-resolution: 240dpi) {
   .menu-box {
-    max-width: 180px;
-    height: 140px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+  
+  ion-tab-button {
+    --border-radius: 6px;
+  }
+}
+
+// Otimizações para orientação landscape em dispositivos pequenos
+@media (max-width: 480px) and (orientation: landscape) {
+  .login-card {
+    max-width: 90vw;
+    margin: 0.5rem auto;
+  }
+  
+  .menu-content {
+    padding: 1rem;
+  }
+  
+  .menu-box {
+    max-width: 100px;
+    height: 80px;
+    
+    ion-icon {
+      font-size: 1.6rem;
+    }
+    
+    span {
+      font-size: 0.7rem;
+    }
   }
 }
 
@@ -224,10 +420,10 @@ ion-accordion::part(header) ion-icon {
 
 /* compensa o espaço que o ícone ocupava */
 .searchbar-no-icon {
-  --padding-start: 12px;      /* ajuste fino se precisar */
+  --padding-start: 12px;
 }
 
 /* (opcional) se ainda sobrar margem interna no container do searchbar */
 .searchbar-no-icon::part(container) {
-  padding-inline-start: 12px; /* alguns temas usam esse padding */
+  padding-inline-start: 12px;
 }

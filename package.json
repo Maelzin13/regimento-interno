@@ -39,7 +39,7 @@
     "@capacitor/keyboard": "^7.0.1",
     "@capacitor/network": "^7.0.1",
     "@capacitor/preferences": "^7.0.2",
-    "@capacitor/status-bar": "^7.0.1",
+    "@capacitor/status-bar": "^7.0.2",
     "@ionic/angular": "^8.5.3",
     "@typescript-eslint/utils": "^8.20.0",
     "axios": "^1.7.8",

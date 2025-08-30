@@ -4,12 +4,30 @@ const config: CapacitorConfig = {
   appId: 'com.regimento.app',
   appName: 'Regimento Interno Comentado',
   webDir: 'www',
+  server: {
+    androidScheme: 'https'
+  },
+  android: {
+    backgroundColor: '#ffffff',
+    allowMixedContent: false,
+    captureInput: true,
+    webContentsDebuggingEnabled: false
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 0,
+      backgroundColor: '#ffffff',
+      showSpinner: false,
+      androidSpinnerStyle: 'small',
+      iosSpinnerStyle: 'small',
+      spinnerColor: '#1e999a',
+      splashFullScreen: true,
+      splashImmersive: true
     },
     Keyboard: {
       resize: 'body',
+      style: 'default',
+      resizeOnFullScreen: true
     },
     GoogleAuth: {
       scopes: ['profile', 'email'],

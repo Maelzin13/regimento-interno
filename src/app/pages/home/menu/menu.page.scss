@@ -1,44 +1,51 @@
 .menu-content {
-  padding: 1.5rem 1rem;
+  padding: 1rem 0.75rem;
 }
 
 .menu-item {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .menu-box {
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   width: 100%;
-  max-width: 140px;
-  height: 120px;
+  max-width: 120px;
+  height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 
   ion-icon {
-    font-size: 2.4rem;
-    margin-bottom: 8px;
+    font-size: 2rem;
+    margin-bottom: 6px;
     color: var(--ion-color-primary);
   }
 
   span {
     color: var(--ion-color-primary);
+    font-size: 0.8rem;
+    line-height: 1.2;
   }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -49,9 +56,206 @@
   right: 0;
   margin: 0 auto;
   width: 90%;
-  max-width: 300px;
+  max-width: 280px;
   font-weight: 600;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
   z-index: 10;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+// Otimizações específicas para Android
+.platform-android {
+  .menu-box {
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .logout-button {
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Breakpoints específicos para Android
+// Galaxy A03s e dispositivos similares (320px - 360px)
+@media (max-width: 360px) {
+  .menu-content {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .menu-item {
+    margin-bottom: 0.5rem;
+  }
+  
+  .menu-box {
+    max-width: 100px;
+    height: 90px;
+    font-size: 0.75rem;
+    
+    ion-icon {
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+    
+    span {
+      font-size: 0.7rem;
+    }
+  }
+  
+  .logout-button {
+    width: 85%;
+    max-width: 250px;
+    font-size: 0.9rem;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+  }
+}
+
+// Dispositivos Android médios (361px - 480px)
+@media (min-width: 361px) and (max-width: 480px) {
+  .menu-content {
+    padding: 1rem 0.75rem;
+  }
+  
+  .menu-box {
+    max-width: 110px;
+    height: 95px;
+    font-size: 0.8rem;
+    
+    ion-icon {
+      font-size: 1.9rem;
+      margin-bottom: 5px;
+    }
+    
+    span {
+      font-size: 0.75rem;
+    }
+  }
+  
+  .logout-button {
+    width: 88%;
+    max-width: 260px;
+    font-size: 0.92rem;
+  }
+}
+
+// Dispositivos Android grandes (481px - 768px)
+@media (min-width: 481px) and (max-width: 768px) {
+  .menu-content {
+    padding: 1.25rem 1rem;
+  }
+  
+  .menu-box {
+    max-width: 130px;
+    height: 110px;
+    font-size: 0.9rem;
+    
+    ion-icon {
+      font-size: 2.2rem;
+      margin-bottom: 7px;
+    }
+    
+    span {
+      font-size: 0.85rem;
+    }
+  }
+  
+  .logout-button {
+    width: 90%;
+    max-width: 300px;
+    font-size: 1rem;
+  }
+}
+
+// Tablets e dispositivos grandes (769px+)
+@media (min-width: 769px) {
+  .menu-content {
+    padding: 1.5rem 1.25rem;
+  }
+  
+  .menu-box {
+    max-width: 150px;
+    height: 120px;
+    font-size: 1rem;
+    
+    ion-icon {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+    
+    span {
+      font-size: 0.9rem;
+    }
+  }
+  
+  .logout-button {
+    width: 90%;
+    max-width: 320px;
+    font-size: 1.05rem;
+  }
+}
+
+// Otimizações para orientação landscape em dispositivos pequenos
+@media (max-width: 480px) and (orientation: landscape) {
+  .menu-content {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .menu-box {
+    max-width: 100px;
+    height: 80px;
+    
+    ion-icon {
+      font-size: 1.6rem;
+      margin-bottom: 3px;
+    }
+    
+    span {
+      font-size: 0.7rem;
+    }
+  }
+  
+  .logout-button {
+    bottom: calc(env(safe-area-inset-bottom, 16px) + 60px);
+    width: 85%;
+    max-width: 240px;
+    font-size: 0.85rem;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+  }
+}
+
+// Otimizações para alta densidade de pixels
+@media (-webkit-min-device-pixel-ratio: 2.5), (min-resolution: 240dpi) {
+  .menu-box {
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .logout-button {
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Melhorias de acessibilidade
+.menu-box {
+  &:focus {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.logout-button {
+  &:focus {
+    outline: 2px solid var(--ion-color-danger);
+    outline-offset: 2px;
+  }
 }

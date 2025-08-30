@@ -3,5 +3,15 @@
   "integrations": {
     "capacitor": {}
   },
-  "type": "angular"
+  "type": "angular",
+  "platforms": {
+    "android": {
+      "minSdkVersion": 22,
+      "targetSdkVersion": 33,
+      "allowBackup": true,
+      "fullBackupContent": true,
+      "allowClearTextTraffic": false,
+      "usesCleartextTraffic": false
+    }
+  }
 }

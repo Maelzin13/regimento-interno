@@ -1,1 +1,168 @@
- 
+// Otimizações específicas para Android
+.platform-android {
+  ion-tab-bar {
+    --background: #ffffff;
+    --border: 1px solid #e0e0e0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    
+    ion-tab-button {
+      --color: #666;
+      --color-selected: var(--ion-color-primary);
+      --ripple-color: var(--ion-color-primary);
+      
+      ion-icon {
+        transition: transform 0.2s ease;
+      }
+      
+      &.tab-selected {
+        ion-icon {
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+}
+
+// Breakpoints específicos para Android
+// Galaxy A03s e dispositivos similares (320px - 360px)
+@media (max-width: 360px) {
+  ion-tab-bar {
+    height: 55px;
+    
+    ion-tab-button {
+      font-size: 0.7rem;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
+      
+      ion-icon {
+        font-size: 1.3rem;
+        margin-bottom: 2px;
+      }
+      
+      ion-label {
+        font-size: 0.65rem;
+        font-weight: 500;
+        margin-top: 2px;
+      }
+    }
+  }
+}
+
+// Dispositivos Android médios (361px - 480px)
+@media (min-width: 361px) and (max-width: 480px) {
+  ion-tab-bar {
+    height: 58px;
+    
+    ion-tab-button {
+      font-size: 0.72rem;
+      --padding-top: 5px;
+      --padding-bottom: 5px;
+      
+      ion-icon {
+        font-size: 1.4rem;
+        margin-bottom: 3px;
+      }
+      
+      ion-label {
+        font-size: 0.68rem;
+        font-weight: 500;
+        margin-top: 3px;
+      }
+    }
+  }
+}
+
+// Dispositivos Android grandes (481px - 768px)
+@media (min-width: 481px) and (max-width: 768px) {
+  ion-tab-bar {
+    height: 62px;
+    
+    ion-tab-button {
+      font-size: 0.75rem;
+      --padding-top: 6px;
+      --padding-bottom: 6px;
+      
+      ion-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+      }
+      
+      ion-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        margin-top: 4px;
+      }
+    }
+  }
+}
+
+// Tablets e dispositivos grandes (769px+)
+@media (min-width: 769px) {
+  ion-tab-bar {
+    height: 65px;
+    
+    ion-tab-button {
+      font-size: 0.8rem;
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+      
+      ion-icon {
+        font-size: 1.6rem;
+        margin-bottom: 5px;
+      }
+      
+      ion-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-top: 5px;
+      }
+    }
+  }
+}
+
+// Otimizações para orientação landscape em dispositivos pequenos
+@media (max-width: 480px) and (orientation: landscape) {
+  ion-tab-bar {
+    height: 50px;
+    
+    ion-tab-button {
+      font-size: 0.65rem;
+      --padding-top: 3px;
+      --padding-bottom: 3px;
+      
+      ion-icon {
+        font-size: 1.2rem;
+        margin-bottom: 1px;
+      }
+      
+      ion-label {
+        font-size: 0.6rem;
+        margin-top: 1px;
+      }
+    }
+  }
+}
+
+// Otimizações para alta densidade de pixels
+@media (-webkit-min-device-pixel-ratio: 2.5), (min-resolution: 240dpi) {
+  ion-tab-bar {
+    --border: 0.5px solid #e0e0e0;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.08);
+  }
+  
+  ion-tab-button {
+    --border-radius: 6px;
+  }
+}
+
+// Melhorias de acessibilidade
+ion-tab-button {
+  &:focus {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+} 
