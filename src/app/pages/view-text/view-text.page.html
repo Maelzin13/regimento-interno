@@ -18,13 +18,27 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-toolbar class="search-toolbar">
+  <ion-toolbar>
+    <div class="toolbar-row">
+      <div class="label">Busca por:</div>
+
+      <ion-segment [(ngModel)]="searchBy" value="keyword" class="seg">
+        <ion-segment-button value="keyword">
+          <ion-label>Palavra-chave</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="artigo">
+          <ion-label>Artigo</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </ion-toolbar> 
+
+  <ion-toolbar class="search-toolbar ion-padding-top">
     <ion-searchbar
       slot="start"
-      color="light"
+      color="medium"
       animated="true"
       [placeholder]="getSearchPlaceholder()"
-      show-clear-button="always"
       [(ngModel)]="query"
       (ionClear)="clearSearch()"
       debounce="300"
@@ -39,18 +53,7 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-
-  <ion-toolbar class="ion-padding-top">
-    <ion-segment [(ngModel)]="searchBy">
-      <ion-segment-button value="keyword">
-        <ion-label>Palavra-chave</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="artigo">
-        <ion-label>Artigo</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
-  <ion-toolbar class="ion-padding-top">
+  <ion-toolbar>
     <div class="header-links">
       <a (click)="openModal('abreviaturas')" class="header-link"
         >Abreviaturas</a

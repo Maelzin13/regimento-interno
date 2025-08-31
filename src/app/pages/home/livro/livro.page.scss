@@ -1,14 +1,26 @@
 :root {
-  --accent: #1e999a;
-  --ion-color-success: #1e999a; // integra com Ionic tokens
+  --card-bg: #ffffff;
+  --text-color: #ffffff;
+  --text-muted: #e0e0e0;
+  --accent-color: #1e999a;
 }
 
 ion-content {
-  --background: var(--ion-color-light);
   height: 100vh;
   overflow: hidden !important;
   --overflow: hidden;
   --padding-top: 0;
+}
+
+.menu-item-livro {
+  background-color: #f8f9fa;
+  border: 1px solid #1e999a;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 ion-card {
@@ -30,15 +42,7 @@ ion-card {
   }
 }
 
-
-.card-content-custom{
-  --border-color: rgba(30,153,154,.25);
-  --color: var(--brand-ink);
-  --border-radius: 14px;
-  height: 44px;
-  font-weight: 600;
-  letter-spacing: .2px; 
-
+ion-card-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -49,120 +53,146 @@ ion-card {
   padding: 20px;
 }
 
-/* Section */
-.section { margin-top: 20px; }
-.section-title {
-  display: flex; align-items: center; gap: 8px;
-  color: #0f172a; font-weight: 700; font-size: 16px; margin: 8px 4px 12px;
-  ion-icon { font-size: 18px; color: #0f172a; }
+ion-card-content{
+    padding-inline-start: 20px;
+    padding-inline-end: 20px;
+    padding-top: 48px;
+    padding-bottom: 36px;
+    font-size: 1rem;
+    line-height: 1.4;
 }
 
-/* Grids */
-.cards-grid ion-col { margin-bottom: 12px; }
 
-/* Mini cards (Agora) */
-.mini-card {
-  height: 104px; border-radius: 14px; background: #fff;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,.05);
-  transition: transform .15s ease, box-shadow .15s ease;
-  cursor: pointer;
-
-  ion-icon { font-size: 26px; color: var(--accent); }
-  h3 { font-size: 13px; font-weight: 600; color: #0f172a; line-height: 1.15; padding: 0 8px; }
-
-  &:active { transform: translateY(1px); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  ion-content { --background: #fff; }
-  .hero-card, .mini-card, .doc-card { background: #fff; box-shadow: none; }
-  .section-title, .hero-card ion-card-title, .doc-info h4, .mini-card h3 { color: #000; }
-  .hero-card ion-card-subtitle { color: #94a3b8; }
-}
-
-:root {
-  --brand: #1e999a;
-  --brand-ink: #0f595a;
-  --ion-color-primary: var(--brand);
-  --ion-color-primary-contrast: #ffffff;
-}
-
-/* dark mode opcional */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ion-text-color: #eaeff0;
-  }
-}
-
-ion-content {
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 12px;
-}
-
-.pill-card{
-  scroll-snap-align: start;
-  text-align: left;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  background: var(--ion-card-background, #f7f9fb);
-  border: 1px solid rgba(30,153,154,.18);
-  border-radius: 14px;
-  text-decoration: none;
-  min-height: 56px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.04);
-  transition: transform .15s ease, box-shadow .2s ease;
-  color: var(--ion-text-color);
-}
-
-.section { margin-block: 12px; }
-
-.section-title {
+.section-label {
+  color: var(--accent-color);
+  font-weight: 600;
+  font-size: 19px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 8px 2px 10px;
-  h2 {
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: .2px;
-    color: var(--ion-text-color);
-    margin: 0;
+
+  ion-icon {
+    margin-right: 8px;
+    font-size: 1.4rem;
   }
-  ion-icon { font-size: 18px; color: var(--brand); }
 }
 
-/* Quick actions (3 botões) */
-.quick-actions ion-button {
-  --border-color: rgba(30,153,154,.25);
-  --color: var(--brand-ink);
-  --border-radius: 14px;
-  height: 44px;
-  font-weight: 600;
-  letter-spacing: .2px;
+.dashboard-title {
+  display: flex;
+  font-weight: 500;
+  color: black;
+  
+  ion-icon {
+    color: black;
+    margin-right: 8px;
+    font-size: 20px;
+  }
 }
 
-/* container ocupa 100% da largura, snap por página */
-.page-snap{
-  display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory;
-  padding-bottom:6px; -webkit-overflow-scrolling:touch;
+.menu-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: 1px solid #1e999a;
+  border-radius: 10px;
+  padding: 15px;
+  height: 100%;
+  min-height: 120px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  
+  &:hover, &:active {
+    background-color: #e9f5ff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
 }
-.page-snap::-webkit-scrollbar{ display:none; }
 
-.page{
-  flex: 0 0 100%; scroll-snap-align:start;
-  display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+.menu-box-compact {
+  min-height: 90px;
+  padding: 10px;
 }
 
-.page-card{
-  display:flex; align-items:center; gap:8px;
-  padding:14px; min-height:64px; border-radius:12px;
-  border:1px solid rgba(30,153,154,.18);
-  background: var(--ion-card-background, #f7f9fb);
-  text-align:left; text-decoration:none; color:var(--ion-text-color);
+.text-center {
+  text-align: center;
 }
-.page-card ion-icon{ font-size:18px; color:var(--brand); }
+
+.icon-large {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.icon-small {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.menu-text {
+  font-size: 13px;
+  line-height: 1.4;
+  margin-top: 5px;
+  color: #1e999a;
+  word-break: break-word;
+}
+
+.menu-box-compact .menu-text {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.locked-item {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.locked-text {
+  color: var(--ion-color-medium);
+}
+
+.lock-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lock-icon {
+  position: absolute;
+  bottom: 0;
+  right: -5px;
+  font-size: 14px;
+  background: #fff;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.content-center {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.single-item {
+  margin-bottom: 30px;
+}
+
+.single-book {
+  min-height: 180px;
+  padding: 25px;
+  
+  .icon-large {
+    font-size: 60px;
+    margin-bottom: 20px;
+  }
+  
+  .menu-text {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+}
+
+.link-text {
+  color: #1e999a
+}

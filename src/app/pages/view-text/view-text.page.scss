@@ -18,6 +18,12 @@
   transition: background 0.2s;
 }
 
+.search-toolbar {
+  --min-height: 56px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
 .result-focus {
   outline: 2px solid #3880ff;
   background-color: #fff3cd !important;
@@ -456,6 +462,7 @@ mark.highlight-search {
     text-decoration: none;
     cursor: pointer;
     font-weight: 500;
+    font-size: 0.9rem;
 
     &:hover {
       text-decoration: underline;
@@ -834,21 +841,8 @@ ion-segment {
   --background: #d9e6dfa8;
 }
 
-/* Deixa o toolbar de busca compacto e com paddings controlados */
-.search-toolbar {
-  --min-height: 56px;
-  --padding-start: 8px;
-  --padding-end: 8px;
-}
 
 /* Faz o searchbar “caber” ao lado do botão no iOS */
-.searchbar-shrink {
-  width: 100%;
-  --border-radius: 9999px;
-  --box-shadow: none;
-}
-/* O input interno do ion-searchbar pode encolher sem empurrar o botão */
-.search-toolbar ::part(input) { min-width: 0; }
 
 /* Botão de busca compacto, sem estourar altura do toolbar */
 .search-btn {
@@ -875,4 +869,48 @@ ion-segment {
 /* Opcional: melhora a integração com safe-area no iOS */
 :host {
   --ion-safe-area-top: env(safe-area-inset-top);
+}
+
+/* Linha responsiva no toolbar */
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* segment cresce e encosta à direita quando houver espaço */
+.toolbar-row .seg {
+  margin-left: auto;
+}
+
+/* mobile: empilha e ocupa 100% */
+@media (max-width: 480px) {
+  .toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  .toolbar-row .seg {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* título compacto sem usar <ion-title> (evita ocupar a barra toda) */
+.toolbar-row .label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* opcional: deixa o segment mais “apertado” no iOS/Android */
+ion-segment {
+  --indicator-color: var(--ion-color-primary);
+  --border-radius: 12px;
+}
+ion-segment-button {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --padding-top: 6px;
+  --padding-bottom: 6px;
 }

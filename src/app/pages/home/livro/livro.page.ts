@@ -19,8 +19,9 @@ export class LivroPage implements OnInit {
 
   textos = [
     {
-      title: 'Constituição Federal',
-      link: 'https://www.planalto.gov.br/ccivil_03/constituicao/ConstituicaoCompilado.htm',
+      title: 'Atos da Mesa',
+      description:
+        'Atos diretamente relacionados ao processo legislativo strictu sensu.',
     },
     {
       title: 'Regimento do Senado',
@@ -31,17 +32,16 @@ export class LivroPage implements OnInit {
       link: 'https://www25.senado.leg.br/documents/59501/97171143/RCCN.pdf',
     },
     {
-      title: 'Resolução n. 1/2002 do Congresso Nacional',
-      link: 'https://legis.senado.leg.br/norma/561120/publicacao/27423643',
+      title: 'Constituição Federal',
+      link: 'https://www.planalto.gov.br/ccivil_03/constituicao/ConstituicaoCompilado.htm',
     },
     {
       title: 'Lei Complementar 95/1998',
       link: 'https://www.planalto.gov.br/ccivil_03/leis/lcp/Lcp95compilado.htm',
     },
     {
-      title: 'Atos da Mesa',
-      description:
-        'Atos diretamente relacionados ao processo legislativo strictu sensu.',
+      title: 'Resolução n. 1/2002 do Congresso Nacional',
+      link: 'https://legis.senado.leg.br/norma/561120/publicacao/27423643',
     },
     {
       title: 'Código de Ética e Decoro Parlamentar',
