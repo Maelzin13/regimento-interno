@@ -2,7 +2,6 @@ import { ModalController } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { AuthService } from 'src/app/services/auth.service';
 import { BookService } from 'src/app/services/book.service';
 import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
@@ -45,7 +44,7 @@ export class LivroPage implements OnInit {
     },
     {
       title: 'Código de Ética e Decoro Parlamentar',
-      link: 'https://www.planalto.gov.br/ccivil_03/leis/lcp/Lcp95compilado.htm',
+      link: 'https://www2.camara.leg.br/legin/fed/rescad/2001/resolucaodacamaradosdeputados-25-10-outubro-2001-320496-norma-pl.html',
     },
   ];
 
