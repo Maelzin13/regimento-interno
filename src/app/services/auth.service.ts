@@ -1,12 +1,12 @@
 
 import { BehaviorSubject } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Capacitor } from '@capacitor/core';
 import { UserModel } from '../models/userModel';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
 import { GenericOAuth2 } from '@capacitor-community/generic-oauth2';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
