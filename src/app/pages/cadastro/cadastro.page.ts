@@ -1,15 +1,14 @@
 import { Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
-import { ToastController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-cadastro',
   templateUrl: './cadastro.page.html',
   styleUrls: ['./cadastro.page.scss'],
 })
-export class CadastroPage implements OnInit {
-  nameApp: any;
+export class CadastroPage {
   name: string = '';
   email: string = '';
   password: string = '';
@@ -19,42 +18,39 @@ export class CadastroPage implements OnInit {
     private router: Router,
     private authService: AuthService,
     private toastController: ToastController,
-    private loadingController: LoadingController
   ) {}
 
-  async ngOnInit() {
-  }
 
 
   async register() {
     if (!this.name || !this.email || !this.password || !this.password_confirmation) {
-      this.presentToast('Preencha todos os campos.');
+      this.presentToastDanger('Preencha todos os campos.');
       return;
     }
-
+  
     if (this.password !== this.password_confirmation) {
-      this.presentToast('As senhas não coincidem.');
+      this.presentToastDanger('As senhas não coincidem.');
       return;
     }
-
-    const loading = await this.presentLoading('Criando conta...');
+  
     try {
-
-      const userProfile = await this.authService.fetchProfile();
-      localStorage.setItem('authUser', JSON.stringify(userProfile));
-      this.authService.userChanged.next(userProfile);
-
-      await loading.dismiss();
-      this.resetForm();
-      this.router.navigate(['/home']);
-    } catch (error: any) {
-      await loading.dismiss();
-      this.presentToast(error.message || 'Erro ao cadastrar usuário.');
+      const res = await this.authService.register({
+        name: this.name,
+        email: this.email,
+        password: this.password,
+        password_confirmation: this.password_confirmation
+      });
+  
+      if (res?.access_token) {
+        this.presentToastSuccess(res.message);
+        this.resetForm();
+        this.router.navigate(['/login']);
+      }
+    } catch (err: any) {
+      console.error('Erro ao registrar:', err);
+      const msg = this.formatValidationError(err);
+      await this.presentToastDanger(msg);
     }
-  }
-
-  goToLogin() {
-    this.router.navigate(['/login']);
   }
 
   resetForm() {
@@ -64,22 +60,57 @@ export class CadastroPage implements OnInit {
     this.password_confirmation = '';
   }
 
-  async presentLoading(message: string = 'Carregando...') {
-    const loading = await this.loadingController.create({
-      message,
-      spinner: 'bubbles',
-      translucent: true,
-      backdropDismiss: false,
-    });
-    await loading.present();
-    return loading;
+  private formatValidationError(err: any): string {
+    const parts: string[] = [];
+  
+    // Mensagens por campo (errors: { email: ["..."], password: ["..."] })
+    if (err?.errors && typeof err.errors === 'object') {
+      for (const field of Object.keys(err.errors)) {
+        const fieldMsgs = Array.isArray(err.errors[field]) ? err.errors[field] : [String(err.errors[field])];
+        // Ex.: "email: Já está em uso"
+        parts.push(`${field}: ${fieldMsgs.join(', ')}`);
+      }
+    }
+  
+    // Requisitos de senha (lista)
+    if (Array.isArray(err?.requirements) && err.requirements.length) {
+      parts.push(`Requisitos da senha:\n- ${err.requirements.join('\n- ')}`);
+    }
+  
+    // Exemplo de senha
+    if (err?.example) {
+      parts.push(`Exemplo: ${err.example}`);
+    }
+  
+    // Mensagem genérica
+    if (err?.message) {
+      parts.push(err.message);
+    }
+  
+    // Fallback caso nada tenha vindo estruturado
+    if (!parts.length) {
+      parts.push('Erro ao processar a solicitação.');
+    }
+  
+    // Junta tudo com quebras de linha
+    return parts.join('\n');
   }
 
-  async presentToast(message: string) {
+  async presentToastDanger(message: any) {
     const toast = await this.toastController.create({
       message,
-      duration: 3000,
+      duration: 6000,
       color: 'danger',
+      position: 'middle',
+    });
+    toast.present();
+  }
+
+  async presentToastSuccess(message: any) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 6000,
+      color: 'success',
       position: 'middle',
     });
     toast.present();

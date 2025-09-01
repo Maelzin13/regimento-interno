@@ -21,7 +21,7 @@
         </ion-item>
 
         <br>
-        <ion-button fill="clear" class="forgot-password-btn" (click)="forgotPassword()">
+        <ion-button fill="clear" class="forgot-password-btn" routerLink="/forgot-password">
           Esqueceu sua senha?
         </ion-button>
         <br>
@@ -46,6 +46,14 @@
             </ion-col>
           </ion-row>
         </ion-grid>
+         <div class="separator">
+          <div class="line"></div>
+         </div>
+        <div class="ion-text-center ion-margin-top">
+          <ion-button fill="clear" class="forgot-password-btn" routerLink="/cadastro">
+            Não tem uma conta? Cadastre-se
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>

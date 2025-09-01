@@ -10,7 +10,6 @@ import { HttpClient } from '@angular/common/http';
 import { TokenStorageService } from './token-storage.service';
 import { GenericOAuth2 } from '@capacitor-community/generic-oauth2';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
-import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -66,20 +65,12 @@ export class AuthService {
     return token;
   }
 
-  async register(user: UserModel): Promise<string> {
-    const resp: any = await firstValueFrom(
-      this.http.post(`${this.apiService.baseUrl}/register`, {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-      })
-    );
-
-    const token = resp.access_token;
-    await this.tokenStorage.setToken(token);
-    localStorage.setItem('authUser', JSON.stringify(resp.user ?? null));
-    this.userChanged.next(resp.user ?? null);
-    return token;
+  async register(user: any): Promise<any> {
+    try {
+      return await firstValueFrom(this.http.post(`${this.apiService.baseUrl}/register`, user));
+    } catch (e: any) {
+      throw (e?.error ?? { message: 'Erro inesperado.' });
+    }
   }
 
   async fetchProfile(): Promise<any> {

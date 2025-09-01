@@ -3,7 +3,7 @@ import config from 'capacitor.config';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
-import { ToastController, LoadingController } from '@ionic/angular';
+import { ToastController, LoadingController, NavController } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 
 @Component({
@@ -20,6 +20,7 @@ export class LoginPage implements OnInit {
   readonly isNative = Capacitor.getPlatform() !== 'web';
 
   constructor(
+    private navCtrl: NavController,
     private router: Router,
     private authService: AuthService,
     private toastController: ToastController,
@@ -114,7 +115,11 @@ export class LoginPage implements OnInit {
   }
 
   async forgotPassword() {
-    // TODO: implementar fluxo de recuperação (via sua API/Firebase, conforme escolha)
+    this.navCtrl.navigateRoot('/forgot-password');
+  }
+
+  goToCadastro() {
+    this.navCtrl.navigateRoot('/cadastro');
   }
 
   async presentLoading(message: string = 'Carregando...') {
