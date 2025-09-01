@@ -54,5 +54,14 @@
 		<string>google</string>
 		<string>com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q</string>
 	</array>
-</dict>
+
+
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>google</string>
+  <string>com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q</string>
+  <!-- úteis em alguns devices p/ fallback -->
+  <string>googlechrome</string>
+  <string>com.google.sso</string>
+</array>
 </plist>
