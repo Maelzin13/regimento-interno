@@ -617,6 +617,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.content.getScrollElement().then(scrollElement => {
       const currentPosition = scrollElement.scrollTop;
 
+      console.log('currentPosition', currentPosition);
+
       // Se é uma remissão inline, usar o parser antigo
       if (remissaoType === 'inline') {
         const destinosRemissao = this.parseRemissaoCompleta(conteudo);
