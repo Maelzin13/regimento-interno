@@ -14,7 +14,7 @@
           <ion-row [routerLink]="['/view-text', book.id]">
             <ion-col class="menu-item-livro">
               <div>
-                <h2> <strong>Regimento interno Comentado</strong></h2>
+                <h2> <strong>Regimento Interno Comentado da Câmara dos Deputados</strong></h2>
                 <p class="auxiliares-text">1ª Edição 2025</p>
               </div>
             </ion-col>
@@ -24,7 +24,7 @@
     </section>
 
     <div class="dashboard-title">
-      <span>Acontece na Câmara Agora</span>
+      <span style="display: flex; align-items: center; justify-content: center;">Acontece na Câmara Agora</span>
     </div>
 
     <ion-grid>
@@ -48,22 +48,27 @@
     </ion-grid>
 
     <div class="dashboard-title">
-      <span>Textos Auxiliares</span>
+      <span style="display: flex; align-items: center; justify-content: center;">Textos Auxiliares</span>
     </div>
 
     <ion-grid>
       <ion-row>
         <ion-col size="4" *ngFor="let texto of textos" class="menu-item">
-          <div class="textos-auxiliares-box text-center" (click)="openDescricaoModal(texto)" *ngIf="!texto.link; else externalLink">
-            <ion-icon name="document-text-outline" color="primary" class="icon-large"></ion-icon>
-            <div class="auxiliares-text">{{ cleanHTML(texto.title) }}</div>
+          <div class="textos-auxiliares-box text-center" (click)="openDescricaoModal(texto)" *ngIf="!texto.link; else externalLink" style="text-decoration: none;">
+            <div class="auxiliares-text" style="color: #1e999a;">{{ cleanHTML(texto.title) }}</div>
           </div>
           <ng-template #externalLink>
             <a class="textos-auxiliares-box text-center" [href]="texto.link" target="_blank" style="text-decoration: none;">
-              <ion-icon name="document-text-outline" color="primary" class="icon-large"></ion-icon>
               <div class="auxiliares-text">{{ cleanHTML(texto.title) }}</div>
             </a>
           </ng-template>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <a class="textos-auxiliares-box text-center" href='https://www.planalto.gov.br/ccivil_03/constituicao/ConstituicaoCompilado.htms' target="_blank" style="text-decoration: none;">
+            <div class="auxiliares-text">Constituição Federal</div>
+          </a>
         </ion-col>
       </ion-row>
     </ion-grid>

@@ -18,8 +18,8 @@ export class LivroPage implements OnInit {
 
   textos = [
     {
-      title: 'Constituição Federal',
-      link: 'https://www.planalto.gov.br/ccivil_03/constituicao/ConstituicaoCompilado.htm',
+      title: 'Código de Ética e Decoro Parlamentar',
+      link: 'https://www2.camara.leg.br/legin/fed/rescad/2001/resolucaodacamaradosdeputados-25-10-outubro-2001-320496-norma-pl.html',
     },
     {
       title: 'Regimento do Senado',
@@ -41,11 +41,7 @@ export class LivroPage implements OnInit {
       title: 'Atos da Mesa',
       description:
         'Atos diretamente relacionados ao processo legislativo strictu sensu.',
-    },
-    {
-      title: 'Código de Ética e Decoro Parlamentar',
-      link: 'https://www2.camara.leg.br/legin/fed/rescad/2001/resolucaodacamaradosdeputados-25-10-outubro-2001-320496-norma-pl.html',
-    },
+    }
   ];
 
   constructor(
