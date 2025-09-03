@@ -7,12 +7,11 @@
 
 .menu-item-livro {
   background-color: #f0fdf4;
-  //border: 1px solid #4ade80;
   border-radius: 10px;
   margin-bottom: 0.75rem;
   padding: 37px;
   transition: all 0.3s ease;
-  // box-shadow: 3px 2px 6px #5ead77;
+  box-shadow: 3px 2px 6px #9ba59e;
     
   h2 {
     color: #4ade80;
@@ -58,22 +57,19 @@ ion-card-content{
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f0fdf4;
-  //border: 1px solid #4ade80;
+  background-color: #f8f9fa;
   border-radius: 10px;
-  color: #329632;
   padding: 10px;
   height: 100%;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  //box-shadow: 3px 2px 6px #5ead77;
+  box-shadow: 3px 2px 6px #9ba59e;
+  
+  &:hover, &:active {
+    background-color: #e9f5ff;
+    box-shadow: 3px 2px 6px #9ba59e;
+  }
 }
 
-.textos-auxiliares-box:hover,
-.textos-auxiliares-box:active {
-  background-color: #e0f2fe;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
 .text-center {
   text-align: center;
 }
@@ -86,6 +82,7 @@ ion-card-content{
 .auxiliares-text {
   font-size: 15px;
   line-height: 1.4;
+  font-weight: bolder;
   word-break: break-word;
 }
 

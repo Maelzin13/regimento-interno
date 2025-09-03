@@ -16,22 +16,16 @@ export class AppComponent {
 
   constructor(
     private platform: Platform,
-    private toastController: ToastController,
-    private networkService: NetworkService,
     private configService: ConfigService,
+    private networkService: NetworkService,
+    private toastController: ToastController,
   ) {
     this.initializeApp();
     this.platform.ready().then(async () => {
-      if (Capacitor.isNativePlatform()) {
-        // NÃO sobrepor a WebView (evita passar por cima do toolbar)
+      if (Capacitor.getPlatform() === 'android') {
         await StatusBar.setOverlaysWebView({ overlay: false });
-  
-        // Ajuste cor para combinar com o seu toolbar
         await StatusBar.setBackgroundColor({ color: '#00000000' });
-  
-        // Ícones da status bar (LIGHT = ícones claros; DARK = ícones escuros)
-        await StatusBar.setStyle({ style: Style.Light }); // se o fundo for escuro
-        // await StatusBar.setStyle({ style: Style.DARK }); // se o fundo for claro
+        await StatusBar.setStyle({ style: Style.Light });
       }
     });
     this.networkService.isOnline$.subscribe((isOnline) => {
@@ -47,8 +41,6 @@ export class AppComponent {
   async initializeApp() {
     // Validar configuração primeiro
     this.configService.logConfigStatus();
-    
-    // Inicializar plugin do Firebase Authentication no Android
     if (Capacitor.getPlatform() === 'android') {
       try {
         console.log('🔧 Inicializando Firebase Authentication para Android...');
