@@ -24,7 +24,7 @@ PODS:
     - Capacitor
   - CapacitorPreferences (7.0.2):
     - Capacitor
-  - CapacitorStatusBar (7.0.1):
+  - CapacitorStatusBar (7.0.2):
     - Capacitor
   - FirebaseAppCheckInterop (11.11.0)
   - FirebaseAuth (11.7.0):
@@ -131,7 +131,7 @@ SPEC CHECKSUMS:
   CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
   CapacitorNetwork: 07ec4c69c1bb696f41c23e00d31bda1bbb221bba
   CapacitorPreferences: b583b5deb74e564c35968189d25d32c0fd41200d
-  CapacitorStatusBar: 275cbf2f4dfc00388f519ef80c7ec22edda342c9
+  CapacitorStatusBar: 5526833b87fa9c96a2a90c1322bb1f663c04505f
   FirebaseAppCheckInterop: f23709c9ce92d810aa53ff4ce12ad3e666a3c7be
   FirebaseAuth: 77e25aa24f3e1c626c5babd3338551fc1669ee0e
   FirebaseAuthInterop: ac22ed402c2f4e3a8c63ebd3278af9a06073c1be

@@ -53,15 +53,59 @@
 	<array>
 		<string>google</string>
 		<string>com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q</string>
+		<string>googlechrome</string>
+		<string>com.google.sso</string>
 	</array>
-
-
-<key>LSApplicationQueriesSchemes</key>
-<array>
-  <string>google</string>
-  <string>com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q</string>
-  <!-- úteis em alguns devices p/ fallback -->
-  <string>googlechrome</string>
-  <string>com.google.sso</string>
-</array>
+	<!-- Configurações para desabilitar zoom e melhorar UX -->
+	<key>UIWebViewAllowsInlineMediaPlayback</key>
+	<true/>
+	<key>UIWebViewAllowsPictureInPictureMediaPlayback</key>
+	<false/>
+	<key>UIWebViewAllowsAirPlayForMediaPlayback</key>
+	<false/>
+	<key>UIWebViewAllowsBackForwardNavigationGestures</key>
+	<false/>
+	<key>UIWebViewAllowsLinkPreview</key>
+	<false/>
+	<key>UIWebViewAllowsMagnification</key>
+	<false/>
+	<key>UIWebViewAllowsScrolling</key>
+	<true/>
+	<key>UIWebViewAllowsSelection</key>
+	<false/>
+	<key>UIWebViewAllowsTextSelection</key>
+	<false/>
+	<key>UIWebViewAllowsZooming</key>
+	<false/>
+	<key>UIWebViewAllowsZoomingIn</key>
+	<false/>
+	<key>UIWebViewAllowsZoomingOut</key>
+	<false/>
+	<key>UIWebViewAllowsDoubleTapToZoom</key>
+	<false/>
+	<key>UIWebViewAllowsPinchToZoom</key>
+	<false/>
+	<key>UIWebViewAllowsTwoFingerTapToZoom</key>
+	<false/>
+	<!-- Configurações para notificações push -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>firebase.googleapis.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<false/>
+				<key>NSExceptionMinimumTLSVersion</key>
+				<string>TLSv1.2</string>
+			</dict>
+		</dict>
+	</dict>
+</dict>
 </plist>
