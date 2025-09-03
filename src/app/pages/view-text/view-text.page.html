@@ -53,18 +53,14 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-toolbar>
+  <ion-toolbar class="tools-compact">
     <div class="header-links">
-      <a (click)="openModal('abreviaturas')" class="header-link"
-        >Abreviaturas</a
-      >
+      <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
       <a (click)="openModal('indice')" class="header-link">Sumário</a>
-      <a (click)="openPdfDirectly('resumos')" class="header-link"
-        >Resumos temáticos</a
-      >
+      <a (click)="openPdfDirectly('resumos')" class="header-link">Resumos temáticos</a>
       <a (click)="openPdfDirectly('esquemas')" class="header-link">Esquemas</a>
     </div>
-  </ion-toolbar>
+  </ion-toolbar>  
 </ion-header>
 
 <ion-content fullscreen class="ion-padding">

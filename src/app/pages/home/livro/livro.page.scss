@@ -7,7 +7,6 @@
 
 .menu-item-livro {
   background-color: #f0fdf4;
-  border: 1px solid;
   //border: 1px solid #4ade80;
   border-radius: 10px;
   margin-bottom: 0.75rem;
@@ -63,9 +62,8 @@ ion-card-content{
   //border: 1px solid #4ade80;
   border-radius: 10px;
   color: #329632;
-  padding: 15px;
+  padding: 10px;
   height: 100%;
-  min-height: 50px;
   transition: all 0.3s ease;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   //box-shadow: 3px 2px 6px #5ead77;
@@ -86,9 +84,8 @@ ion-card-content{
 }
 
 .auxiliares-text {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.4;
-  margin-top: 5px;
   word-break: break-word;
 }
 
