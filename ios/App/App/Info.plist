@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
+	<string>pt-BR</string>
 	<key>CFBundleDisplayName</key>
 	<string>Regimento Interno Comentado</string>
 	<key>CFBundleExecutable</key>
@@ -104,6 +104,20 @@
 				<false/>
 				<key>NSExceptionMinimumTLSVersion</key>
 				<string>TLSv1.2</string>
+			</dict>
+		</dict>
+	</dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key><false/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>regimentocd.com.br</key>
+			<dict>
+				<key>NSIncludesSubdomains</key><true/>
+				<key>NSExceptionRequiresForwardSecrecy</key><false/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key><false/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key><string>TLSv1.2</string>
 			</dict>
 		</dict>
 	</dict>
