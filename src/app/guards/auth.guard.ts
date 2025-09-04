@@ -7,7 +7,7 @@ export class AuthGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
-    const user = this.auth.getUser();
+    const user = await this.auth.getUser();
     const isTokenValid = await this.auth.isTokenValid();
     
     if (!user || !isTokenValid) {

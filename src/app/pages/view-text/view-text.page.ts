@@ -3,6 +3,7 @@ import { UserModel } from 'src/app/models/userModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
@@ -128,6 +129,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     private sanitizer: DomSanitizer,
     private bookService: BookService,
     private authService: AuthService,
+    private storage: StorageService,
     private alertController: AlertController,
     private modalController: ModalController,
     private toastController: ToastController,
@@ -138,7 +140,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     const user = await this.authService.getUser();
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
-    this.loadSearchHistory();
+    await this.loadSearchHistory();
     await this.loadBook();
   }
 
@@ -456,7 +458,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.contentCache.clear();
 
     // Adicionar à histórico de pesquisa
-    this.addToSearchHistory(this.query);
+    await this.addToSearchHistory(this.query);
 
     // Exibir resultado da busca
     if (this.totalResults > 0) {
@@ -1298,20 +1300,20 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   // Gerenciamento do histórico de pesquisa
-  loadSearchHistory() {
-    const history = localStorage.getItem('searchHistory');
+  async loadSearchHistory() {
+    const history = await this.storage.get<string[]>('searchHistory');
     if (history) {
-      this.searchHistory = JSON.parse(history);
+      this.searchHistory = history;
     }
   }
 
-  addToSearchHistory(query: string) {
+  async addToSearchHistory(query: string) {
     if (!this.searchHistory.includes(query)) {
       this.searchHistory.unshift(query);
       if (this.searchHistory.length > 10) {
         this.searchHistory.pop();
       }
-      localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+      await this.storage.set('searchHistory', this.searchHistory);
     }
   }
 
@@ -1323,9 +1325,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.search();
   }
 
-  clearSearchHistory() {
+  async clearSearchHistory() {
     this.searchHistory = [];
-    localStorage.removeItem('searchHistory');
+    await this.storage.remove('searchHistory');
   }
 
   async showSearchOptions() {

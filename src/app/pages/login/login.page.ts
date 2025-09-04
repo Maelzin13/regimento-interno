@@ -1,10 +1,10 @@
-// src/app/pages/login/login.page.ts
 import config from 'capacitor.config';
 import { Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
 import { ToastController, LoadingController, NavController } from '@ionic/angular';
-import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +23,7 @@ export class LoginPage implements OnInit {
     private navCtrl: NavController,
     private router: Router,
     private authService: AuthService,
+    private storage: StorageService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) {}
@@ -33,12 +34,9 @@ export class LoginPage implements OnInit {
     try {
       this.nameApp = config.appName;
 
-      // ⛔️ REMOVIDO: fluxo Web do Firebase
-      // this.authService.handleRedirectCallback();
-
-      // Se não há token salvo, “zera” a sessão e segue
+      // Se não há token salvo, "zera" a sessão e segue
       if (!this.authService.getAuthToken()) {
-        localStorage.clear();
+        await this.storage.clear();
         sessionStorage.clear();
         this.authService.userChanged.next(null);
         await loading.dismiss();
@@ -48,13 +46,13 @@ export class LoginPage implements OnInit {
       // Valida token da API
       try {
         const user = await this.authService.fetchProfile();
-        localStorage.setItem('authUser', JSON.stringify(user));
+        await this.storage.set('authUser', user);
         this.authService.userChanged.next(user);
         await loading.dismiss();
         this.router.navigate(['/home']);
       } catch (error) {
         // Token inválido → limpa e mantém na tela de login
-        localStorage.clear();
+        await this.storage.clear();
         sessionStorage.clear();
         this.authService.userChanged.next(null);
         await loading.dismiss();
@@ -72,7 +70,7 @@ export class LoginPage implements OnInit {
       // authService.login já salva o token internamente, não precisa chamar saveAuthToken
 
       const userProfile = await this.authService.fetchProfile();
-      localStorage.setItem('authUser', JSON.stringify(userProfile));
+      await this.storage.set('authUser', userProfile);
       this.authService.userChanged.next(userProfile);
 
       await loading.dismiss();
