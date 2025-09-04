@@ -27,6 +27,16 @@ export class CadastroPage {
       this.presentToastDanger('Preencha todos os campos.');
       return;
     }
+
+    if(!this.email.includes('@')) {
+      this.presentToastDanger('Email inválido.');
+      return;
+    }
+
+    if(this.password.length < 8) {
+      this.presentToastDanger('Senha deve ter no mínimo 8 caracteres.');
+      return;
+    }
   
     if (this.password !== this.password_confirmation) {
       this.presentToastDanger('As senhas não coincidem.');
