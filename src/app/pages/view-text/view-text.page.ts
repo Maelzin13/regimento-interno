@@ -135,7 +135,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   ) { }
 
   async ngOnInit() {
-    const user =  this.authService.getUser();
+    const user = await this.authService.getUser();
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
     this.loadSearchHistory();

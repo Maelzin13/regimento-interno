@@ -51,8 +51,8 @@ export class LivroPage implements OnInit {
     private toastCtrl: ToastController
   ) {}
 
-  ngOnInit() {
-    const user = this.authService.getUser();
+  async ngOnInit() {
+    const user = await this.authService.getUser();
     this.user = user;
     this.bookService
       .getAllBooks()

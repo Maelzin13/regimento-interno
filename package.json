@@ -41,6 +41,7 @@
     "@capacitor/preferences": "^7.0.2",
     "@capacitor/status-bar": "^7.0.2",
     "@ionic/angular": "^8.5.3",
+    "@ionic/storage-angular": "^4.0.0",
     "@typescript-eslint/utils": "^8.20.0",
     "axios": "^1.7.8",
     "bootstrap": "^5.3.3",

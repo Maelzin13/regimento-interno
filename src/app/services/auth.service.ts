@@ -1,13 +1,12 @@
-
-import { BehaviorSubject } from 'rxjs';
-import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Capacitor } from '@capacitor/core';
-import { UserModel } from '../models/userModel';
 import { HttpClient } from '@angular/common/http';
+import { UserModel } from 'src/app/models/userModel';
+import { firstValueFrom, BehaviorSubject } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
+import { StorageService } from './storage.service';
 import { GenericOAuth2 } from '@capacitor-community/generic-oauth2';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
@@ -16,19 +15,19 @@ export class AuthService {
   userChanged = new BehaviorSubject<UserModel | null>(null);
 
   constructor(
-    private http: HttpClient,
     private router: Router,
+    private http: HttpClient,
     private apiService: ApiService,
-    private tokenStorage: TokenStorageService
+    private tokenStorage: TokenStorageService,
+    private storage: StorageService
   ) {}
 
   getBaseUrl(): string {
     return this.apiService.baseUrl;
   }
 
-  getUser(): UserModel | null {
-    const user = localStorage.getItem('authUser');
-    return user ? JSON.parse(user) : null;
+  async getUser(): Promise<UserModel | null> {
+    return await this.storage.get<UserModel>('authUser');
   }
 
   async getAuthToken(): Promise<string | null> {
@@ -49,7 +48,7 @@ export class AuthService {
     if (!token) return false;
     
     const payload: any = this.decodeJwt(token);
-    if (!payload?.exp) return true; // se backend não envia exp
+    if (!payload?.exp) return true;
     return Date.now() < payload.exp * 1000;
   }
   
@@ -60,7 +59,7 @@ export class AuthService {
 
     const token = resp.access_token;
     await this.tokenStorage.setToken(token);
-    localStorage.setItem('authUser', JSON.stringify(resp.user ?? null));
+    await this.storage.set('authUser', resp.user ?? null);
     this.userChanged.next(resp.user ?? null);
     return token;
   }
@@ -116,16 +115,36 @@ export class AuthService {
       const tokenForBackend = googleIdToken ?? googleAccessTok;
     
       // 3) Envie exatamente no campo "token" (o backend exige isso)
-      const response: any = await firstValueFrom(
-        this.http.post(
-          `${this.apiService.baseUrl}/auth/social-login/google`,
-          { token: tokenForBackend }  // 👈 NADA de getIdToken() do Firebase aqui
-        )
-      );
+      let response: any;
+      try {
+        response = await firstValueFrom(
+          this.http.post(
+            `${this.apiService.baseUrl}/auth/social-login/google`,
+            { token: tokenForBackend },  // 👈 NADA de getIdToken() do Firebase aqui
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              }
+            }
+          )
+        );
+      } catch (error: any) {
+        console.error('Erro na requisição para o backend (Android):', error);
+        if (error.status === 0) {
+          throw new Error('Erro de conectividade. Verifique sua conexão com a internet.');
+        } else if (error.status === 401) {
+          throw new Error('Token inválido ou expirado.');
+        } else if (error.status >= 500) {
+          throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+        } else {
+          throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
+        }
+      }
     
       // persistência/estado
       await this.tokenStorage.setToken(response.token);
-      localStorage.setItem('authUser', JSON.stringify(response.user));
+      await this.storage.set('authUser', response.user);
       this.userChanged.next(response.user);
       return response;
     }
@@ -146,7 +165,7 @@ export class AuthService {
     } as const;
 
     // Silent refresh (se tiver)
-    const storedRefresh = localStorage.getItem('google_refresh_token');
+    const storedRefresh = await this.storage.get<string>('google_refresh_token');
     if (storedRefresh) {
       const body = new URLSearchParams({
         client_id: config.appId,
@@ -170,7 +189,7 @@ export class AuthService {
           );
 
           await this.tokenStorage.setToken(resp.token);
-          localStorage.setItem('authUser', JSON.stringify(resp.user));
+          await this.storage.set('authUser', resp.user);
           this.userChanged.next(resp.user);
           return resp;
         }
@@ -181,23 +200,53 @@ export class AuthService {
     }
 
     // Fluxo interativo
-    const result: any = await GenericOAuth2.authenticate(config);
+    let result: any;
+    try {
+      result = await GenericOAuth2.authenticate(config);
+    } catch (error: any) {
+      console.error('Erro no GenericOAuth2.authenticate:', error);
+      throw new Error(`Erro na autenticação OAuth2: ${error.message || 'Erro desconhecido'}`);
+    }
+    
     const accessToken = result?.access_token || result?.accessToken;
-    if (!accessToken) throw new Error('Não foi possível obter o access_token no iOS');
-
-    if (result?.refresh_token) {
-      localStorage.setItem('google_refresh_token', result.refresh_token);
+    if (!accessToken) {
+      console.error('Resultado do OAuth2:', result);
+      throw new Error('Não foi possível obter o access_token no iOS');
     }
 
-    const response: any = await firstValueFrom(
-      this.http.post(
-        `${this.apiService.baseUrl}/auth/social-login/google`,
-        { token: accessToken, kind: 'google_access_token' }
-      )
-    );
+    if (result?.refresh_token) {
+      await this.storage.set('google_refresh_token', result.refresh_token);
+    }
+
+    let response: any;
+    try {
+      response = await firstValueFrom(
+        this.http.post(
+          `${this.apiService.baseUrl}/auth/social-login/google`,
+          { token: accessToken, kind: 'google_access_token' },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          }
+        )
+      );
+    } catch (error: any) {
+      console.error('Erro na requisição para o backend:', error);
+      if (error.status === 0) {
+        throw new Error('Erro de conectividade. Verifique sua conexão com a internet.');
+      } else if (error.status === 401) {
+        throw new Error('Token inválido ou expirado.');
+      } else if (error.status >= 500) {
+        throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+      } else {
+        throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
+      }
+    }
 
     await this.tokenStorage.setToken(response.token);
-    localStorage.setItem('authUser', JSON.stringify(response.user));
+    await this.storage.set('authUser', response.user);
     this.userChanged.next(response.user);
     return response;
   }
@@ -215,7 +264,8 @@ export class AuthService {
     } catch {}
     
     await this.tokenStorage.removeToken();
-    localStorage.removeItem('authUser');
+    await this.storage.remove('authUser');
+    await this.storage.remove('google_refresh_token');
     sessionStorage.clear();
     this.userChanged.next(null);
     await this.router.navigateByUrl('/login', { replaceUrl: true });

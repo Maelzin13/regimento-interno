@@ -5,12 +5,17 @@ const config: CapacitorConfig = {
   appName: 'Regimento Interno Comentado',
   webDir: 'www',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    iosScheme: 'https'
   },
   android: {
     backgroundColor: '#ffffff',
     allowMixedContent: false,
     captureInput: true,
+    webContentsDebuggingEnabled: false
+  },
+  ios: {
+    backgroundColor: '#ffffff',
     webContentsDebuggingEnabled: false
   },
   plugins: {
