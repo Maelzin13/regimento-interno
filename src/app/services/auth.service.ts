@@ -9,6 +9,7 @@ import { TokenStorageService } from './token-storage.service';
 import { StorageService } from './storage.service';
 import { GenericOAuth2 } from '@capacitor-community/generic-oauth2';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { SignInWithApple } from '@capacitor-community/apple-sign-in';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -252,6 +253,76 @@ export class AuthService {
   }
 
   /**
+   * Apple Sign In apenas para iOS
+   */
+  async appleLogin(): Promise<any> {
+    const platform = Capacitor.getPlatform();
+    if (platform !== 'ios') {
+      throw new Error('Apple Sign In disponível somente em iOS.');
+    }
+
+    try {
+      // 1) Login nativo com Apple
+      const result = await SignInWithApple.authorize();
+
+      if (!result.response?.identityToken) {
+        throw new Error('Apple não retornou o identityToken necessário.');
+      }
+
+      const identityToken = result.response.identityToken;
+      const authorizationCode = result.response.authorizationCode;
+
+      // 2) Envie o token para o backend
+      let response: any;
+      try {
+        response = await firstValueFrom(
+          this.http.post(
+            `${this.apiService.baseUrl}/auth/social-login/apple`,
+            { 
+              token: identityToken,
+              authorizationCode: authorizationCode,
+              user: result.response.user || null
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              }
+            }
+          )
+        );
+      } catch (error: any) {
+        console.error('Erro na requisição para o backend (Apple):', error);
+        if (error.status === 0) {
+          throw new Error('Erro de conectividade. Verifique sua conexão com a internet.');
+        } else if (error.status === 401) {
+          throw new Error('Token inválido ou expirado.');
+        } else if (error.status >= 500) {
+          throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+        } else {
+          throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
+        }
+      }
+
+      // 3) Persistência/estado
+      await this.tokenStorage.setToken(response.token);
+      await this.storage.set('authUser', response.user);
+      this.userChanged.next(response.user);
+      return response;
+
+    } catch (error: any) {
+      console.error('Erro no Apple Sign In:', error);
+      if (error.message?.includes('canceled') || error.message?.includes('cancelled')) {
+        throw new Error('Login cancelado pelo usuário.');
+      } else if (error.message?.includes('not available')) {
+        throw new Error('Apple Sign In não está disponível neste dispositivo.');
+      } else {
+        throw new Error(`Erro no Apple Sign In: ${error.message || 'Erro desconhecido'}`);
+      }
+    }
+  }
+
+  /**
    * Nativo não usa redirects do Firebase Web. Mantemos NO-OP só por compatibilidade.
    */
   async handleRedirectCallback(): Promise<void> {
@@ -262,6 +333,9 @@ export class AuthService {
     try { 
       await FirebaseAuthentication.signOut().catch(() => {}); 
     } catch {}
+    
+    // Apple Sign In não tem método signOut nativo
+    // O logout é feito apenas removendo os tokens locais
     
     await this.tokenStorage.removeToken();
     await this.storage.remove('authUser');

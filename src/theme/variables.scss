@@ -1,5 +1,6 @@
 :root {
   --google-red: #db4437;
+  --apple-black: #000000;
   --color-plan: #eab308;
   --link-color: #2563eb;
   --facebook-blue: #3b5998;
@@ -135,6 +136,11 @@ ion-accordion::part(header) ion-icon {
 
 .google-btn {
   --background: var(--google-red);
+  --color: white;
+}
+
+.apple-btn {
+  --background: var(--apple-black);
   --color: white;
 }
 

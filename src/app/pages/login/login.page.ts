@@ -18,6 +18,8 @@ export class LoginPage implements OnInit {
 
   // ✅ só habilita social login em plataformas nativas
   readonly isNative = Capacitor.getPlatform() !== 'web';
+  // ✅ Apple Sign In apenas no iOS
+  readonly isIOS = Capacitor.getPlatform() === 'ios';
 
   constructor(
     private navCtrl: NavController,
@@ -83,24 +85,33 @@ export class LoginPage implements OnInit {
     }
   }
 
-  async socialLogin(provider: 'google') {
+  async socialLogin(provider: 'google' | 'apple') {
     if (!this.isNative) {
       // ✅ Web desabilitado
-      this.presentToast('Login com Google disponível apenas em iOS/Android.');
+      this.presentToast(`Login com ${provider} disponível apenas em iOS/Android.`);
+      return;
+    }
+
+    // ✅ Apple Sign In apenas no iOS
+    if (provider === 'apple' && !this.isIOS) {
+      this.presentToast('Apple Sign In disponível apenas em iOS.');
       return;
     }
 
     const loading = await this.presentLoading(`Conectando com ${provider}...`);
     try {
-      // ✅ googleLogin usa somente plugins nativos (Android: @capacitor-firebase/authentication; iOS: Generic OAuth2)
-      const response = await this.authService.googleLogin();
+      let response: any;
+      
+      if (provider === 'google') {
+        // ✅ googleLogin usa somente plugins nativos (Android: @capacitor-firebase/authentication; iOS: Generic OAuth2)
+        response = await this.authService.googleLogin();
+      } else if (provider === 'apple') {
+        // ✅ appleLogin usa @capacitor-community/apple-sign-in (apenas iOS)
+        response = await this.authService.appleLogin();
+      }
 
       if (response?.user && response?.token) {
-        // googleLogin já salva token/usuário internamente, mas se quiser manter:
-        // this.authService.saveAuthToken(response.token);
-        // localStorage.setItem('authUser', JSON.stringify(response.user));
-        // this.authService.userChanged.next(response.user);
-
+        // socialLogin já salva token/usuário internamente
         await loading.dismiss();
         this.router.navigate(['/home']);
       } else {

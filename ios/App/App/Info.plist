@@ -55,6 +55,7 @@
 		<string>com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q</string>
 		<string>googlechrome</string>
 		<string>com.google.sso</string>
+		<string>appleid</string>
 	</array>
 	<!-- Configurações para desabilitar zoom e melhorar UX -->
 	<key>UIWebViewAllowsInlineMediaPlayback</key>
