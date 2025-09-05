@@ -15,6 +15,14 @@
         </div>
       </ion-col>
 
+      <ion-col size="6" class="menu-item" *ngIf="user?.is_admin">
+        <div class="menu-box" routerLink="/questao-ordem-nova">
+          <ion-icon name="newspaper-outline" color="primary"></ion-icon>
+          <span>Questões novas e atualizações</span>
+        </div>
+      </ion-col>
+
+
       <ion-col size="6" class="menu-item" *ngIf="user?.subscription_status === 'active'">
         <div class="menu-box" routerLink="/home/menu/planos">
           <ion-icon name="card-outline" color="primary"></ion-icon>
