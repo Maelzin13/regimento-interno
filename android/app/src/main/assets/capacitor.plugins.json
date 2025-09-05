@@ -1,5 +1,9 @@
 [
 	{
+		"pkg": "@capacitor-community/apple-sign-in",
+		"classpath": "com.getcapacitor.community.applesignin.SignInWithApple"
+	},
+	{
 		"pkg": "@capacitor-community/generic-oauth2",
 		"classpath": "com.getcapacitor.community.genericoauth2.GenericOAuth2Plugin"
 	},
