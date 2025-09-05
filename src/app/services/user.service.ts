@@ -1,14 +1,20 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError, firstValueFrom } from 'rxjs';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private apiservice: ApiService, private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private apiservice: ApiService,
+    private authService: AuthService
+  ) {}
 
   async getAllUsers() {
     try {
@@ -66,6 +72,17 @@ export class UserService {
           })
         )
       );
+
+      // Fazer logout após exclusão bem-sucedida
+      await this.authService.logout();
+
+      // Excluir dados do Firebase (se aplicável)
+      try {
+        await FirebaseAuthentication.deleteUser();
+      } catch (error) {
+        console.warn('Não foi possível excluir usuário do Firebase:', error);
+      }
+
     } catch (error: any) {
       throw new Error(error.message || 'Erro desconhecido ao excluir a conta.');
     }

@@ -5,6 +5,8 @@ PODS:
     - Capacitor
   - CapacitorBrowser (7.0.1):
     - Capacitor
+  - CapacitorCommunityAppleSignIn (7.0.1):
+    - Capacitor
   - CapacitorCommunityGenericOauth2 (6.1.0):
     - Capacitor
     - OAuthSwift (= 2.2.0)
@@ -74,6 +76,7 @@ DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
+  - "CapacitorCommunityAppleSignIn (from `../../node_modules/@capacitor-community/apple-sign-in`)"
   - "CapacitorCommunityGenericOauth2 (from `../../node_modules/@capacitor-community/generic-oauth2`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorFirebaseAuthentication (from `../../node_modules/@capacitor-firebase/authentication`)"
@@ -103,6 +106,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/app"
   CapacitorBrowser:
     :path: "../../node_modules/@capacitor/browser"
+  CapacitorCommunityAppleSignIn:
+    :path: "../../node_modules/@capacitor-community/apple-sign-in"
   CapacitorCommunityGenericOauth2:
     :path: "../../node_modules/@capacitor-community/generic-oauth2"
   CapacitorCordova:
@@ -124,6 +129,7 @@ SPEC CHECKSUMS:
   Capacitor: 156d98aba46ec01dde72c4bbb92fa626837cad29
   CapacitorApp: d63334c052278caf5d81585d80b21905c6f93f39
   CapacitorBrowser: 081852cf532acf77b9d2953f3a88fe5b9711fb06
+  CapacitorCommunityAppleSignIn: b95415441e6c4223783a543f3a736ea4eabf8524
   CapacitorCommunityGenericOauth2: a30d35d43010aca671e8c5b5d3da45b9386eafae
   CapacitorCordova: 5e58d04631bc5094894ac106e2bf1da18a9e6151
   CapacitorFirebaseAuthentication: 7043f8e03813762af1b037da82c67963fa5768e0
@@ -143,6 +149,6 @@ SPEC CHECKSUMS:
   OAuthSwift: 75efbb5bd9a4b2b71a37bd7e986bf3f55ddd54c6
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
 
-PODFILE CHECKSUM: 6e78774e80270810dc65045da4ebfa9310150c59
+PODFILE CHECKSUM: 13af21c4918fb7877556e7fd8bd32157045e8c34
 
 COCOAPODS: 1.16.2

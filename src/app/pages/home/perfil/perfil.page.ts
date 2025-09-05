@@ -79,10 +79,31 @@ export class PerfilPage implements OnInit {
     return this.user?.provider === 'google';
   }
 
+  private isAppleUser(): boolean {
+    const provider = (this.user?.provider || '').toLowerCase();
+    return provider === 'apple' || provider === 'apple_native' || provider === 'apple_simple';
+  }
+
+  get canEditProfile(): boolean {
+    return !this.isGoogleUser() && !this.isAppleUser();
+  }
+
+  get canDeleteAccount(): boolean {
+    return true; // Todos podem excluir conta, mas com avisos diferentes
+  }
+
   async deleteAccount() {
+    let message = 'Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.';
+    
+    if (this.isAppleUser()) {
+      message = '⚠️ ATENÇÃO: Esta é uma conta Apple. A exclusão removerá todos os dados permanentemente e você precisará criar uma nova conta Apple para acessar novamente.';
+    } else if (this.isGoogleUser()) {
+      message = '⚠️ ATENÇÃO: Esta é uma conta Google. A exclusão removerá todos os dados permanentemente.';
+    }
+
     const confirmAlert = await this.alertController.create({
       header: 'Confirmar Exclusão',
-      message: 'Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.',
+      message: message,
       buttons: [
         {
           text: 'Cancelar',
@@ -90,11 +111,13 @@ export class PerfilPage implements OnInit {
           cssClass: 'secondary'
         },
         {
-          text: 'Confirmar',
+          text: 'Excluir',
           role: 'destructive',
           handler: async () => {
             if (this.isGoogleUser()) {
               await this.deleteGoogleAccount();
+            } else if (this.isAppleUser()) {
+              await this.deleteAppleAccount();
             } else {
               await this.deleteTraditionalAccount();
             }
@@ -121,6 +144,23 @@ export class PerfilPage implements OnInit {
     } catch (error: any) {
       await loading.dismiss();
       await this.showToast(error.message, 'danger');
+    }
+  }
+
+  private async deleteAppleAccount() {
+    const loading = await this.loadingController.create({
+      message: 'Excluindo conta Apple...'
+    });
+    await loading.present();
+
+    try {
+      await this.userService.deleteAccount();
+      await loading.dismiss();
+      await this.showToast('Conta Apple excluída com sucesso!', 'success');
+      // O logout já foi feito no deleteAccount do UserService
+    } catch (error: any) {
+      await loading.dismiss();
+      await this.showToast(error.message || 'Erro ao excluir conta Apple', 'danger');
     }
   }
 

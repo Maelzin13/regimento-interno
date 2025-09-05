@@ -115,11 +115,26 @@ export class LoginPage implements OnInit {
         await loading.dismiss();
         this.router.navigate(['/home']);
       } else {
-        throw new Error(`Login com ${provider} falhou.`);
+        throw new Error(`Login com ${provider} falhou - resposta inválida.`);
       }
     } catch (error: any) {
       await loading.dismiss();
-      this.presentToast(error.message || `Erro ao conectar com ${provider}`);
+      console.error(`Erro no login ${provider}:`, error);
+      
+      // Tratamento específico de erros
+      let errorMessage = error.message || `Erro ao conectar com ${provider}`;
+      
+      if (error.message?.includes('timeout')) {
+        errorMessage = 'Login demorou muito para responder. Tente novamente.';
+      } else if (error.message?.includes('cancelled') || error.message?.includes('canceled')) {
+        errorMessage = 'Login foi cancelado pelo usuário.';
+      } else if (error.message?.includes('já está em andamento')) {
+        errorMessage = 'Login já está em andamento. Aguarde...';
+      } else if (error.message?.includes('conectividade')) {
+        errorMessage = 'Erro de conexão. Verifique sua internet.';
+      }
+      
+      this.presentToast(errorMessage);
     }
   }
 

@@ -14,6 +14,7 @@ import { SignInWithApple } from '@capacitor-community/apple-sign-in';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   userChanged = new BehaviorSubject<UserModel | null>(null);
+  private isAppleLoginInProgress = false;
 
   constructor(
     private router: Router,
@@ -116,32 +117,34 @@ export class AuthService {
       const tokenForBackend = googleIdToken ?? googleAccessTok;
     
       // 3) Envie exatamente no campo "token" (o backend exige isso)
-      let response: any;
-      try {
-        response = await firstValueFrom(
-          this.http.post(
-            `${this.apiService.baseUrl}/auth/social-login/google`,
-            { token: tokenForBackend },  // 👈 NADA de getIdToken() do Firebase aqui
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              }
-            }
-          )
-        );
-      } catch (error: any) {
-        console.error('Erro na requisição para o backend (Android):', error);
-        if (error.status === 0) {
-          throw new Error('Erro de conectividade. Verifique sua conexão com a internet.');
-        } else if (error.status === 401) {
-          throw new Error('Token inválido ou expirado.');
-        } else if (error.status >= 500) {
-          throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
-        } else {
-          throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
-        }
+          let response: any;
+    try {
+      response = await firstValueFrom(
+        this.http.post(
+          `${this.apiService.baseUrl}/auth/social-login/google`,
+          { token: tokenForBackend },  // 👈 NADA de getIdToken() do Firebase aqui
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+          }
+        )
+      );
+    } catch (error: any) {
+      console.error('Erro na requisição para o backend (Android):', error);
+      if (error.status === 0) {
+        throw new Error('Erro de conectividade. Verifique sua conexão com a internet.');
+      } else if (error.status === 401) {
+        throw new Error('Token inválido ou expirado.');
+      } else if (error.status >= 500) {
+        throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+      } else if (error.name === 'TimeoutError') {
+        throw new Error('Timeout na requisição. Tente novamente.');
+      } else {
+        throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
       }
+    }
     
       // persistência/estado
       await this.tokenStorage.setToken(response.token);
@@ -229,7 +232,7 @@ export class AuthService {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json'
-            }
+            },
           }
         )
       );
@@ -241,6 +244,8 @@ export class AuthService {
         throw new Error('Token inválido ou expirado.');
       } else if (error.status >= 500) {
         throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+      } else if (error.name === 'TimeoutError') {
+        throw new Error('Timeout na requisição. Tente novamente.');
       } else {
         throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
       }
@@ -253,74 +258,164 @@ export class AuthService {
   }
 
   /**
-   * Apple Sign In apenas para iOS
+   * Apple Sign In apenas para iOS - versão simplificada para evitar loops
    */
   async appleLogin(): Promise<any> {
     const platform = Capacitor.getPlatform();
     if (platform !== 'ios') {
       throw new Error('Apple Sign In disponível somente em iOS.');
     }
+  
+    // Flag para evitar múltiplas chamadas simultâneas
+    if (this.isAppleLoginInProgress) {
+      throw new Error('Apple Sign-In já está em andamento. Aguarde...');
+    }
+
+    this.isAppleLoginInProgress = true;
+    
+    try {
+      console.log('Iniciando Apple Sign-In...');
+      
+      // Usar apenas o método simples para evitar loops
+      const result = await this.appleLoginSimple();
+      this.isAppleLoginInProgress = false;
+      return result;
+      
+    } catch (error: any) {
+      this.isAppleLoginInProgress = false;
+      console.error('Apple Sign-In falhou:', error);
+      throw new Error(`Apple Sign-In falhou: ${error.message || 'Erro desconhecido'}`);
+    }
+  }
+
+  /**
+   * Apple Sign-In com configuração seguindo documentação oficial
+   */
+  private async appleLoginSimple(): Promise<any> {
+    const options = {
+      clientId: 'com.regimento.appservice',
+      redirectURI: 'https://regimento-interno-comentado.firebaseapp.com/__/auth/handler',
+      scopes: 'email name',
+      state: '12345',
+      nonce: this.generateNonce()
+    };
+
+    console.log('Tentando Apple Sign-In com opções:', options);
 
     try {
-      // 1) Login nativo com Apple
-      const result = await SignInWithApple.authorize();
+      // Adicionar timeout para evitar travamento
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Apple Sign-In timeout após 30 segundos')), 30000);
+      });
 
-      if (!result.response?.identityToken) {
-        throw new Error('Apple não retornou o identityToken necessário.');
+      const result = await Promise.race([
+        SignInWithApple.authorize(options),
+        timeoutPromise
+      ]) as any;
+
+      console.log('Apple Sign-In result:', result);
+
+      if (!result.response) {
+        throw new Error('Resposta do Apple Sign-In está vazia.');
       }
 
-      const identityToken = result.response.identityToken;
-      const authorizationCode = result.response.authorizationCode;
+      // Extrair dados da resposta
+      const { identityToken, authorizationCode, user, email, givenName, familyName } = result.response;
+      
+      if (!identityToken) {
+        throw new Error('Token de identidade não foi retornado pelo Apple Sign-In.');
+      }
 
-      // 2) Envie o token para o backend
-      let response: any;
-      try {
-        response = await firstValueFrom(
-          this.http.post(
-            `${this.apiService.baseUrl}/auth/social-login/apple`,
-            { 
-              token: identityToken,
-              authorizationCode: authorizationCode,
-              user: result.response.user || null
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              }
-            }
-          )
-        );
-      } catch (error: any) {
-        console.error('Erro na requisição para o backend (Apple):', error);
-        if (error.status === 0) {
-          throw new Error('Erro de conectividade. Verifique sua conexão com a internet.');
-        } else if (error.status === 401) {
-          throw new Error('Token inválido ou expirado.');
-        } else if (error.status >= 500) {
-          throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
-        } else {
-          throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
+      // Extrair email do identityToken se não estiver disponível na resposta
+      let userEmail = email;
+      if (!userEmail && identityToken) {
+        try {
+          const tokenPayload = this.decodeJwt(identityToken);
+          userEmail = tokenPayload?.email || null;
+          console.log('Email extraído do identityToken:', userEmail);
+        } catch (error) {
+          console.warn('Não foi possível extrair email do identityToken:', error);
         }
       }
 
-      // 3) Persistência/estado
+      // Construir nome completo se disponível
+      let fullName: string | undefined;
+      if (givenName || familyName) {
+        fullName = [givenName, familyName].filter(Boolean).join(' ');
+      }
+
+      console.log('Dados extraídos:', { fullName, email: userEmail, user, identityToken: identityToken.substring(0, 20) + '...' });
+
+      // Enviar para backend usando uma abordagem alternativa
+      // Como o backend não consegue processar o identityToken do Apple,
+      // vamos enviar os dados essenciais de forma que o backend possa processar
+      const backendData = { 
+        // Enviar o token para validação (se o backend conseguir)
+        token: identityToken,
+        // Dados essenciais extraídos do token
+        email: userEmail,
+        name: fullName,
+        user_id: user,
+        provider: 'apple',
+        client: 'apple_native',
+        // Dados adicionais para compatibilidade
+        authorizationCode: authorizationCode,
+        // Informações do token para debug
+        token_info: {
+          iss: 'https://appleid.apple.com',
+          aud: 'com.regimento.app',
+          sub: user,
+          email: userEmail,
+          email_verified: true,
+          is_private_email: true,
+          exp: Math.floor(Date.now() / 1000) + 3600 // 1 hora a partir de agora
+        }
+      };
+
+      console.log('Enviando dados para backend (abordagem alternativa):', backendData);
+
+      const response: any = await firstValueFrom(
+        this.http.post(
+          `${this.apiService.baseUrl}/auth/social-login/apple`,
+          backendData,
+          { 
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          }
+        )
+      );
+
+      // Persistência local
       await this.tokenStorage.setToken(response.token);
       await this.storage.set('authUser', response.user);
       this.userChanged.next(response.user);
       return response;
 
     } catch (error: any) {
-      console.error('Erro no Apple Sign In:', error);
-      if (error.message?.includes('canceled') || error.message?.includes('cancelled')) {
-        throw new Error('Login cancelado pelo usuário.');
-      } else if (error.message?.includes('not available')) {
-        throw new Error('Apple Sign In não está disponível neste dispositivo.');
+      console.error('Erro no Apple Sign-In simples:', error);
+      
+      // Tratamento específico de erros
+      if (error.message?.includes('timeout')) {
+        throw new Error('Apple Sign-In demorou muito para responder. Tente novamente.');
+      } else if (error.message?.includes('cancelled') || error.message?.includes('canceled')) {
+        throw new Error('Login com Apple foi cancelado pelo usuário.');
+      } else if (error.status === 401) {
+        throw new Error('Token inválido ou expirado. Tente novamente.');
+      } else if (error.status >= 500) {
+        throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
       } else {
-        throw new Error(`Erro no Apple Sign In: ${error.message || 'Erro desconhecido'}`);
+        throw new Error(`Erro no Apple Sign-In: ${error.message || 'Erro desconhecido'}`);
       }
     }
   }
+
+  /**
+   * Gera um nonce aleatório para o Apple Sign-In
+   */
+  private generateNonce(): string {
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  }  
 
   /**
    * Nativo não usa redirects do Firebase Web. Mantemos NO-OP só por compatibilidade.
@@ -343,5 +438,28 @@ export class AuthService {
     sessionStorage.clear();
     this.userChanged.next(null);
     await this.router.navigateByUrl('/login', { replaceUrl: true });
+  }
+
+
+  /**
+   * Verificar se o usuário pode editar dados (não é Apple)
+   */
+  async canEditProfile(): Promise<boolean> {
+    const user = await this.getUser();
+    if (!user) return false;
+    
+    // Usuários Apple não podem editar dados
+    return user.provider !== 'apple' && user.provider !== 'apple_native' && user.provider !== 'apple_simple';
+  }
+
+  /**
+   * Verificar se o usuário pode excluir conta
+   */
+  async canDeleteAccount(): Promise<boolean> {
+    const user = await this.getUser();
+    if (!user) return false;
+    
+    // Todos os usuários podem excluir conta, mas com avisos diferentes
+    return true;
   }
 }

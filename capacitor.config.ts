@@ -51,6 +51,12 @@ const config: CapacitorConfig = {
       skipNativeAuth: false,
       providers: ['google.com', 'apple.com'],
     },
+    SignInWithApple: {
+      clientId: 'com.regimento.appservice',
+      redirectURI: 'https://regimento-interno-comentado.firebaseapp.com/__/auth/handler',
+      scopes: 'email name',
+      state: 'apple-signin-state'
+    },
   },
 };
 
