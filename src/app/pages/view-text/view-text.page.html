@@ -19,31 +19,31 @@
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
-    <div class="toolbar-row">
-      <div class="label">Busca por:</div>
-
-      <ion-segment [(ngModel)]="searchBy" value="keyword" class="seg">
-        <ion-segment-button value="keyword">
+    <div class="search-row">
+      <span class="search-label">Busca por:</span>
+  
+      <ion-radio-group [(ngModel)]="searchBy" class="radio-inline">
+        <ion-item lines="none" class="radio-item">
+          <ion-radio slot="start" value="keyword"></ion-radio>
           <ion-label>Palavra-chave</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="artigo">
+        </ion-item>
+  
+        <ion-item lines="none" class="radio-item">
+          <ion-radio slot="start" value="artigo"></ion-radio>
           <ion-label>Artigo</ion-label>
-        </ion-segment-button>
-      </ion-segment>
+        </ion-item>
+      </ion-radio-group>
     </div>
-  </ion-toolbar> 
-
-  <ion-toolbar class="search-toolbar ion-padding-top">
+  </ion-toolbar>
+  
+  <ion-toolbar >
     <ion-searchbar
+      #searchInput
       slot="start"
-      color="medium"
-      animated="true"
-      [placeholder]="getSearchPlaceholder()"
+      class="custom"
+      searchIcon="none"
       [(ngModel)]="query"
       (ionClear)="clearSearch()"
-      debounce="300"
-      (keyup.enter)="search()"
-      class="searchbar-shrink searchbar-no-icon"
     >
     </ion-searchbar>
 
@@ -53,7 +53,7 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-toolbar class="tools-compact">
+  <ion-toolbar>
     <div class="header-links">
       <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
       <a (click)="openModal('indice')" class="header-link">Sumário</a>
@@ -174,15 +174,13 @@
                     <ng-container
                       *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId"
                     >
-                      <p class="comentario mt-4">
-                        <span class="comentario-tipo font-semibold"
-                          >{{ comentario.tipo | titlecase }}</span
-                        >
-                        <span
-                          [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)"
-                          (click)="toggleComment(comentario.id)"
-                        ></span>
-                      </p>
+                      <div class="comentario mt-4">
+                          <strong>{{ comentario.tipo | titlecase }}</strong>
+                          <div
+                            [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)"
+                            (click)="toggleComment(comentario.id)"
+                          ></div>
+                      </div>
                     </ng-container>
                   </div>
                 </div>

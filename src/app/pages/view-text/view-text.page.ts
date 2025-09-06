@@ -144,54 +144,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     await this.loadBook();
   }
 
-  getSearchPlaceholder(): string {
-    switch (this.selectedFilter) {
-      case 'keyword':
-        return 'Digite a palavra-chave';
-      case 'article':
-        return 'Digite o número do artigo';
-      default:
-        return 'Selecione sua busca...';
-    }
-  }
-
-
-  onFilterChange(event: any) {
-    this.selectedFilter = event.detail.value;
-    console.log('Filtro selecionado:', this.selectedFilter);
-  }
-
-  getPlaceholder(): string {
-    return this.searchBy === 'keyword'
-      ? 'Digite a busca por palavra-chave...'
-      : 'Digite o artigo...';
-  }
-
-  onSearchTypeChange(event: any) {
-    this.searchBy = event.detail.value;
-    this.query = ''; // limpa a busca ao trocar o tipo
-  }
-
-  executeSearch() {
-    if (!this.query) return;
-
-    if (this.searchBy === 'keyword') {
-      this.searchByKeyword(this.query);
-    } else if (this.searchBy === 'artigo') {
-      this.searchByArtigo(this.query);
-    }
-  }
-
-  searchByKeyword(query: string) {
-    console.log('Buscando por palavra-chave:', query);
-    // aqui entra sua lógica usando bookService
-  }
-
-  searchByArtigo(query: string) {
-    console.log('Buscando por artigo:', query);
-    // aqui entra sua lógica específica para artigos
-  }
-
   async loadBook() {
     const loader = await this.loadingController.create({
       message: 'Carregando regimento...',

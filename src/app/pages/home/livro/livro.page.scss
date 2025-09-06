@@ -12,24 +12,6 @@ ion-content {
   --padding-top: 0;
 }
 
-.menu-item-livro {
-  background-color: #eaf5ee;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 0.75rem;
-  margin-top: 1.5rem;
-  padding: 37px;
-  min-height: 50px;
-  box-shadow: 3px 2px 6px #9ba59e;
-  h2 {
-    color: #4ade80;
-  }
-}
-
 ion-card-content{
   padding-inline-start: 20px;
   padding-inline-end: 20px;
@@ -39,29 +21,22 @@ ion-card-content{
   line-height: 1.4;
 }
 
-
-.section-label {
-  color: var(--accent-color);
-  font-weight: 600;
-  font-size: 1.2rem;
+.menu-item-livro {
+  background-color: #f8f9fa;
+  border-radius: 10px;
   display: flex;
-  align-items: center;
-
-  ion-icon {
-    margin-right: 8px;
-    font-size: 1.4rem;
-  }
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 37px;
+  color: #1e999a;
+  box-shadow: 3px 2px 6px 1px #9ba59e;
 }
 
 .dashboard-title {
   display: flex;
   font-weight: 500;
   color: black;
-  
-  ion-icon {
-    margin-right: 8px;
-    font-size: 20px;
-  }
 }
 
 .textos-auxiliares-box {
@@ -92,59 +67,13 @@ ion-card-content{
 }
 
 .auxiliares-text {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.4;
   word-break: break-word;
 }
 
-.locked-item {
-  opacity: 0.7;
-  cursor: pointer;
-}
-
-.locked-text {
-  color: var(--ion-color-medium);
-}
-
-.lock-container {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.lock-icon {
-  position: absolute;
-  bottom: 0;
-  right: -5px;
-  font-size: 14px;
-  background: #fff;
-  border-radius: 50%;
-  padding: 2px;
-}
-
-.content-center {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.single-item {
-  margin-bottom: 30px;
-}
-
-.single-book {
-  min-height: 180px;
-  padding: 25px;
-  
-  .icon-large {
-    font-size: 60px;
-    margin-bottom: 20px;
-  }
-  
-  .menu-text {
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.5;
-  }
+.auxiliares-text-solo {
+  font-size: 16px;
+  line-height: 1.4;
+  word-break: break-word;
 }

@@ -8,6 +8,84 @@
   --search-gap: 4px;
 }
 
+/* Linha única */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  white-space: nowrap;            /* evita quebrar “Palavra-chave” */
+}
+
+.search-label {
+  font-weight: 600;
+}
+
+/* Radios lado a lado */
+.radio-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+/* Faz ion-item não ocupar 100% e ficar em linha */
+.radio-item {
+  --inner-padding-start: 2px;
+  --inner-padding-end: 2px;
+  --background: none;
+  display: inline-flex !important;
+  align-items: center;
+  width: auto !important;
+  flex: 0 0 auto;
+}
+
+.radio-item ion-label {
+  margin-left: 6px;
+  white-space: nowrap;            /* “Palavra-chave” não quebra */
+}
+
+/* Estilo de “checkbox” nos radios */
+ion-radio::part(container) {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid ;
+}
+
+ion-radio::part(mark) {
+  background: none;
+  transform: none;
+  border-radius: 0;
+  width: 6px;
+  height: 10px;
+  border-width: 0 2px 2px 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
+ion-radio.radio-checked::part(container) {
+  background: #1e999a;
+  border-color: #1e999a;
+}
+
+ion-radio.radio-checked::part(mark) {
+  border-color: #fff;
+  transform: rotate(45deg);
+}
+
+/* opcional: se a tela for muito estreita, permitir scroll horizontal sem quebrar */
+@media (max-width: 360px) {
+  .search-row { overflow-x: auto; }
+}
+
+ion-searchbar.custom {
+  --color: #fff;
+  min-height: 20px;
+  --icon-color: #fff;
+  --background: #818080;
+  --placeholder-color: #fff;
+  --clear-button-color: #fff;
+}
+
 .search-highlight, mark.search-highlight {
   background-color: var(--search-highlight);
   border-radius: 4px;
@@ -16,12 +94,6 @@
   font-weight: 600;
   box-shadow: 0 0 4px var(--search-highlight);
   transition: background 0.2s;
-}
-
-.search-toolbar {
-  --min-height: 56px;
-  --padding-start: 8px;
-  --padding-end: 8px;
 }
 
 .result-focus {
@@ -75,19 +147,12 @@ ion-content {
 
 .comentario {
   padding: var(--search-padding);
-  border-left: 4px solid #329632;
-  margin-bottom: 12px;
+  margin-left: 10px;
   border-radius: 5px;
   font-style: italic;
   contain: content;
   will-change: transform, opacity;
 
-  .comentario-tipo {
-    color: #329632;
-    font-weight: 500;
-    display: block;
-    margin-bottom: 4px;
-  }
 
   strong {
     color: #329632;
@@ -451,12 +516,6 @@ mark.highlight-search {
   transition: all 0.3s ease !important;
 }
 
-ion-toolbar.tools-compact {
-  /* remove “empurrões” laterais padrão do toolbar */
-  --padding-start: 0;
-  --padding-end: 0;
-}
-
 .header-links {
   /* força ocupar a largura toda do conteúdo do toolbar */
   width: 100%;
@@ -465,8 +524,6 @@ ion-toolbar.tools-compact {
   align-items: center;
   flex-wrap: wrap;             /* pode quebrar em 2 linhas no mobile */
   gap: 12px;
-  padding: 6px 8px;
-  margin: 0;                   /* zera margens para não “desalinha” */
 }
 
 .header-link {
@@ -480,8 +537,10 @@ ion-toolbar.tools-compact {
   &:hover { text-decoration: underline; }
 }
 
+
+
 /* ajustes finos para telas pequenas */
-@media (max-width: 480px) {
+@media (max-width: 768px) and (max-width: 480px) {
   .header-links { gap: 8px; }
   .header-link { font-size: 0.85rem; }
 }
@@ -867,19 +926,6 @@ ion-segment {
   height: 40px;
   width: 40px;
   margin-left: 8px;
-}
-
-/* Mantém seus links centralizados como antes */
-.header-links {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 8px 0 12px;
-  .header-link {
-    color: var(--ion-color-primary);
-    text-decoration: none;
-    font-weight: 500;
-  }
 }
 
 /* Opcional: melhora a integração com safe-area no iOS */
