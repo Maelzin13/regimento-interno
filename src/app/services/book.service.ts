@@ -88,7 +88,6 @@ export class BookService {
   }
 
   async getNotesById(id: number) {
-    console.log('id', id);
     const response: any = await firstValueFrom(
       this.http.get(`${this.apiservice.baseUrl}/notas/${id}`)
     );

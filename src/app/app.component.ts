@@ -43,29 +43,17 @@ export class AppComponent {
     this.configService.logConfigStatus();
     if (Capacitor.getPlatform() === 'android') {
       try {
-        console.log('🔧 Inicializando Firebase Authentication para Android...');
-        
-        // Verificar se o plugin está disponível
         if (FirebaseAuthentication) {
-          console.log('✅ Plugin Firebase Authentication disponível');
-          
           // Configurar listeners para mudanças de estado de autenticação
           FirebaseAuthentication.addListener('authStateChange', (change) => {
-            console.log('🔄 Auth state changed:', change);
           });
-          
           // Verificar se há usuário logado
           const result = await FirebaseAuthentication.getCurrentUser();
-          console.log('👤 Usuário atual:', result);
           
-        } else {
-          console.error('❌ Plugin Firebase Authentication não disponível');
-        }
+        } 
       } catch (error) {
         console.error('❌ Erro ao inicializar Firebase Authentication:', error);
       }
-    } else {
-      console.log('📱 Plataforma não é Android, pulando inicialização do plugin nativo');
     }
   }
 

@@ -69,12 +69,6 @@ export class ConfigService {
    * Log de configuração (sem expor dados sensíveis)
    */
   logConfigStatus(): void {
-    const validation = this.validateConfig();
-    
-    if (validation.isValid) {
-      console.log('✅ Configuração válida');
-    } else {
-      console.warn('⚠️ Configuração incompleta. Chaves faltando:', validation.missingKeys);
-    }
+    this.validateConfig();
   }
 }

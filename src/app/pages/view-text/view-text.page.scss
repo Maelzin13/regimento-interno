@@ -7,7 +7,6 @@
   --search-padding: 10px;
   --search-gap: 4px;
 }
-
 /* Linha única */
 .search-row {
   display: flex;
@@ -19,14 +18,12 @@
 .search-label {
   font-weight: 600;
 }
-
 /* Radios lado a lado */
 .radio-inline {
   display: inline-flex;
   align-items: center;
   gap: .75rem;
 }
-
 /* Faz ion-item não ocupar 100% e ficar em linha */
 .radio-item {
   --inner-padding-start: 2px;
@@ -42,7 +39,6 @@
   margin-left: 6px;
   white-space: nowrap;            /* “Palavra-chave” não quebra */
 }
-
 /* Estilo de “checkbox” nos radios */
 ion-radio::part(container) {
   width: 18px;
@@ -71,7 +67,6 @@ ion-radio.radio-checked::part(mark) {
   border-color: #fff;
   transform: rotate(45deg);
 }
-
 /* opcional: se a tela for muito estreita, permitir scroll horizontal sem quebrar */
 @media (max-width: 360px) {
   .search-row { overflow-x: auto; }
@@ -115,57 +110,87 @@ ion-content {
   -webkit-font-smoothing: antialiased;
 }
 
-.main-title,
-.titulo,
-.capitulo,
-.secao,
-.artigo-container {
+.main-title {
+  font-family: 'ClearSans', serif;
+  font-size: 14pt;
   contain: content;
   will-change: transform;
 }
 
 .titulo { 
-  font-size: 1.4rem; 
+  font-family: 'ClearSans', serif;
+  font-size: 15pt;
   font-weight: bold;
   margin-top: 20px;
   margin-bottom: 15px;
 }
 
 .capitulo { 
-  font-size: 1.2rem; 
+  font-family: 'ClearSans-Light', serif;
+  font-size: 12pt; 
   font-weight: 500;
   margin-top: 18px;
   margin-bottom: 12px;
 }
 
 .secao { 
-  font-size: 1rem; 
-  font-style: italic;
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt; 
   margin-top: 16px;
   margin-bottom: 10px;
 }
 
+.artigo {
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt; 
+  font-weight: 500;
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+
+.paragrafo {
+  font-family: 'Cambria (Corpo)', serif;
+  font-size: 11pt; 
+  font-weight: 500;
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+
+.remissao {
+  font-family: 'Times New Roman', serif;
+  font-size: 11pt;
+  font-style: italic;
+  margin-bottom: 8px;
+  padding-right: 28px;
+  position: relative;
+  color: #329632;
+}
+
 .comentario {
+  font-family: 'Times New Roman', serif;
+  font-size: 11pt;
   padding: var(--search-padding);
   margin-left: 10px;
   border-radius: 5px;
   font-style: italic;
   contain: content;
   will-change: transform, opacity;
+  color: #329632;
+}
 
+.comentario-tipo {
+  font-weight: bold;
+  font-style: italic;
+  display: inline-block;
+  color: #329632;
+}
 
-  strong {
-    color: #329632;
-    font-weight: 600;
-  }
-
-  .nota-ref {
-    color: var(--ion-color-primary);
-    cursor: pointer;
-    font-size: 0.75em;
-    user-select: none;
-    text-decoration: underline;
-  }
+.ver-mais, .ver-menos {
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 6px;
 }
 
 .artigo-container {
@@ -254,17 +279,6 @@ ion-content {
   contain: content;
 }
 
-.comentario {
-  color: #329632;
-}
-
-.comentario-tipo {
-  font-weight: bold;
-  font-style: italic;
-  display: inline-block;
-  color: #329632;
-}
-
 .remissao-container {
   border-left: 3px solid var(--ion-color-success);
   background-color: rgba(var(--ion-color-success-rgb), 0.05);
@@ -294,14 +308,6 @@ ion-content {
   }
 }
 
-.remissao-text {
-  font-weight: 500;
-  margin-bottom: 8px;
-  padding-right: 28px;
-  position: relative;
-  color: #329632;
-}
-
 .remissao-indicator {
   display: flex;
   align-items: center;
@@ -326,8 +332,6 @@ ion-content {
   transform: translateY(-2px);
   transition: all 0.3s ease;
 }
-
-
 
 .remissao-inline,
 .remissoes {
@@ -457,7 +461,6 @@ ion-content {
   margin: 0;
 }
 
-
 .search-history {
   margin: var(--search-padding) 0;
   padding: 0 var(--search-padding);
@@ -489,7 +492,6 @@ ion-content {
   font-weight: 600 !important;
   color: #000 !important;
 }
-
 // Estilos específicos para a tag mark
 mark.highlight-search {
   background-color: rgba(255, 230, 0, 0.8) !important;
@@ -502,7 +504,6 @@ mark.highlight-search {
   position: relative !important;
   z-index: 10 !important;
 }
-
 // Estilos para highlights permanentes (não removidos automaticamente)
 .permanent-highlight {
   background-color: rgba(255, 230, 0, 0.9) !important;
@@ -536,22 +537,17 @@ mark.highlight-search {
 
   &:hover { text-decoration: underline; }
 }
-
-
-
 /* ajustes finos para telas pequenas */
 @media (max-width: 768px) and (max-width: 480px) {
   .header-links { gap: 8px; }
   .header-link { font-size: 0.85rem; }
 }
-
 // Efeito hover para highlights permanentes
 .permanent-highlight:hover {
   background-color: rgba(255, 200, 0, 1) !important;
   box-shadow: 0 0 12px rgba(255, 200, 0, 0.8) !important;
   transform: scale(1.02) !important;
 }
-
 // Flash highlight para navegação (temporário)
 .flash-highlight {
   background-color: rgba(255, 100, 100, 0.3) !important;
@@ -617,7 +613,6 @@ mark.highlight-search {
     animation: remissao-pulse 1.5s ease-in-out;
   }
 }
-
 // Animação de pulso para remissões clicadas
 @keyframes remissao-pulse {
   0% {
@@ -636,7 +631,6 @@ mark.highlight-search {
     box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
   }
 }
-
 // Destaque especial para remissões dentro de parênteses
 .remissao-parentese {
   background-color: rgba(var(--ion-color-success-rgb), 0.05);
@@ -647,7 +641,6 @@ mark.highlight-search {
     background-color: rgba(var(--ion-color-success-rgb), 0.1);
   }
 }
-
 // Melhorar o destaque dos elementos específicos
 .elemento-especifico-highlight {
   animation: elemento-especifico-animation 3s ease-in-out;
@@ -659,7 +652,6 @@ mark.highlight-search {
   padding: 4px 8px;
   margin: 4px -8px;
 }
-
 // Nova barra de navegação de resultados
 .search-navigation-bar {
   position: fixed;
@@ -834,7 +826,6 @@ mark.highlight-search {
     border-color: rgba(255, 255, 255, 0.4);
   }
 }
-
 // Responsividade para telas menores
 @media (max-width: 480px) {
   .search-navigation-bar {
@@ -911,14 +902,6 @@ mark.highlight-search {
     box-shadow: 0 0 0 rgba(var(--ion-color-success-rgb), 0);
   }
 }
-
-ion-segment {
-  --background: #d9e6dfa8;
-}
-
-
-/* Faz o searchbar “caber” ao lado do botão no iOS */
-
 /* Botão de busca compacto, sem estourar altura do toolbar */
 .search-btn {
   --padding-start: 8px;
@@ -927,12 +910,10 @@ ion-segment {
   width: 40px;
   margin-left: 8px;
 }
-
 /* Opcional: melhora a integração com safe-area no iOS */
 :host {
   --ion-safe-area-top: env(safe-area-inset-top);
 }
-
 /* Linha responsiva no toolbar */
 .toolbar-row {
   display: flex;
@@ -940,12 +921,10 @@ ion-segment {
   gap: 10px;
   width: 100%;
 }
-
 /* segment cresce e encosta à direita quando houver espaço */
 .toolbar-row .seg {
   margin-left: auto;
 }
-
 /* mobile: empilha e ocupa 100% */
 @media (max-width: 480px) {
   .toolbar-row {
@@ -958,18 +937,17 @@ ion-segment {
     width: 100%;
   }
 }
-
 /* título compacto sem usar <ion-title> (evita ocupar a barra toda) */
 .toolbar-row .label {
   font-size: 0.9rem;
   font-weight: 600;
 }
-
 /* opcional: deixa o segment mais “apertado” no iOS/Android */
 ion-segment {
   --indicator-color: var(--ion-color-primary);
   --border-radius: 12px;
 }
+
 ion-segment-button {
   --padding-start: 10px;
   --padding-end: 10px;

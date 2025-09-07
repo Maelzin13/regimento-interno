@@ -11,13 +11,7 @@
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "build:android": "ionic cap copy && ionic cap sync android && ionic cap build android",
-    "build:ios": "ionic cap copy && ionic cap sync ios && ionic cap build ios",
-    "setup:env": "node scripts/setup-env.js",
-    "security:check": "npm run lint && echo '🔍 Verificando configurações de segurança...' && node -e \"console.log('✅ Configuração de segurança verificada')\"",
-    "security:audit": "npm audit && echo '🔐 Auditoria de segurança concluída'",
-    "update:deps": "node scripts/update-dependencies.js",
-    "fix:lint": "echo '🔧 Problemas de lint já corrigidos'",
-    "fix:all": "npm run fix:lint && npm run update:deps && npm run security:check"
+    "build:ios": "ionic cap copy && ionic cap sync ios && ionic cap build ios"
   },
   "private": true,
   "dependencies": {

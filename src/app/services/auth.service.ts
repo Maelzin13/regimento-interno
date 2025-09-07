@@ -198,7 +198,6 @@ export class AuthService {
           return resp;
         }
       } catch {
-        console.log('Não foi possível obter o access_token no iOS');
         throw new Error('Não foi possível obter o access_token no iOS');
       }
     }
@@ -274,8 +273,6 @@ export class AuthService {
     this.isAppleLoginInProgress = true;
     
     try {
-      console.log('Iniciando Apple Sign-In...');
-      
       // Usar apenas o método simples para evitar loops
       const result = await this.appleLoginSimple();
       this.isAppleLoginInProgress = false;
@@ -300,8 +297,6 @@ export class AuthService {
       nonce: this.generateNonce()
     };
 
-    console.log('Tentando Apple Sign-In com opções:', options);
-
     try {
       // Adicionar timeout para evitar travamento
       const timeoutPromise = new Promise((_, reject) => {
@@ -312,8 +307,6 @@ export class AuthService {
         SignInWithApple.authorize(options),
         timeoutPromise
       ]) as any;
-
-      console.log('Apple Sign-In result:', result);
 
       if (!result.response) {
         throw new Error('Resposta do Apple Sign-In está vazia.');
@@ -332,7 +325,6 @@ export class AuthService {
         try {
           const tokenPayload = this.decodeJwt(identityToken);
           userEmail = tokenPayload?.email || null;
-          console.log('Email extraído do identityToken:', userEmail);
         } catch (error) {
           console.warn('Não foi possível extrair email do identityToken:', error);
         }
@@ -343,8 +335,6 @@ export class AuthService {
       if (givenName || familyName) {
         fullName = [givenName, familyName].filter(Boolean).join(' ');
       }
-
-      console.log('Dados extraídos:', { fullName, email: userEmail, user, identityToken: identityToken.substring(0, 20) + '...' });
 
       // Enviar para backend usando uma abordagem alternativa
       // Como o backend não consegue processar o identityToken do Apple,
@@ -371,8 +361,6 @@ export class AuthService {
           exp: Math.floor(Date.now() / 1000) + 3600 // 1 hora a partir de agora
         }
       };
-
-      console.log('Enviando dados para backend (abordagem alternativa):', backendData);
 
       const response: any = await firstValueFrom(
         this.http.post(

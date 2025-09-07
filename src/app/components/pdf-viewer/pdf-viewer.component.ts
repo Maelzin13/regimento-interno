@@ -47,15 +47,8 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
     private toastController: ToastController
   ) {}
 
-  ngOnInit(): void {
-    // Testar acesso aos PDFs para debug
-    this.pdfViewerService.testPdfAccess().then(() => {
-      console.log('Teste de acesso aos PDFs concluído');
-    }).catch(error => {
-      console.error('Erro no teste de acesso aos PDFs:', error);
-    });
-    
-    this.loadPdf();
+  async ngOnInit(): Promise<void> {
+    await this.loadPdf();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -97,8 +90,6 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
     this.isMobile = this.pdfViewerService.isMobileDevice();
     
     try {
-      console.log(`Carregando PDF: ${this.pdfName}, remoto: ${this.useRemoteUrl}`);
-      
       // Verificar se o PDF existe
       const pdfExists = await this.pdfViewerService.checkPdfExists(this.pdfName, this.useRemoteUrl);
       
@@ -107,11 +98,9 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
         
         // Se estamos usando URL local, tentar URL remota
         if (!this.useRemoteUrl) {
-          console.log('PDF local não encontrado, tentando remoto...');
           const remoteExists = await this.pdfViewerService.checkPdfExists(this.pdfName, true);
           
           if (remoteExists) {
-            console.log('PDF remoto encontrado, usando URL remota.');
             this.useRemoteUrl = true;
           } else {
             throw new Error('PDF não encontrado localmente nem remotamente.');
@@ -124,7 +113,6 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
       // Carregar PDF como blob e obter URL de objeto
       this.currentBlobUrl = await this.pdfViewerService.getPdfAsBlobUrl(this.pdfName, this.useRemoteUrl);
       this.pdfSrc = this.currentBlobUrl;
-      console.log('PDF carregado como blob URL:', this.pdfSrc);
       
       // Ajustar escala para dispositivos móveis
       if (this.isMobile) {
@@ -144,15 +132,12 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onPdfLoaded(event: any): void {
-    console.log('PDF carregado com sucesso:', event);
-    this.isLoading = false;
     this.hasError = false;
+    this.isLoading = false;
     this.totalPages = event.numPages;
     
     // Fechar o loading
-    this.loadingController.dismiss().catch(() => {
-      console.log('Loading já foi fechado');
-    });
+    this.loadingController.dismiss().catch(() => {});
   }
 
   onPdfError(error: any): void {
@@ -170,22 +155,17 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
     this.errorMessage = 'Erro ao renderizar o PDF. Verifique se o arquivo existe e está acessível.';
     
     // Fechar o loading
-    this.loadingController.dismiss().catch(() => {
-      console.log('Loading já foi fechado');
-    });
+    this.loadingController.dismiss().catch(() => {});
     
     // Mostrar mensagem de erro
     this.showErrorToast('Erro ao renderizar o PDF. Tentando alternativa...');
     
     // Tentar usar URL remota se estiver usando local
     if (!this.useRemoteUrl && this.retryCount < 1) {
-      console.log('Tentando carregar PDF remoto como fallback...');
       this.retryCount++;
       this.useRemoteUrl = true;
       this.loadPdf();
     } else if (this.retryCount < 2) {
-      // Se já tentou remoto, tentar método alternativo
-      console.log('Tentando método alternativo...');
       this.retryCount++;
       this.tryAlternativeMethod();
     }
@@ -196,16 +176,12 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
    */
   private async tryAlternativeMethod(): Promise<void> {
     try {
-      console.log('Usando método alternativo para carregar PDF...');
-      
       // Tentar carregar diretamente como URL
       this.pdfSrc = this.pdfViewerService.getPdfUrlAsString(this.pdfName, this.useRemoteUrl);
-      console.log('Tentando carregar como URL direta:', this.pdfSrc);
       
       // Aguardar um pouco para ver se carrega
       setTimeout(() => {
         if (this.hasError) {
-          console.log('Método alternativo falhou, tentando abrir em nova aba...');
           this.openInNewTab();
         }
       }, 5000);
@@ -258,7 +234,7 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
   onIframeLoad(): void {
     this.isLoading = false;
     this.loadingController.dismiss().catch(() => {
-      console.log('Loading já foi fechado');
+      
     });
   }
 

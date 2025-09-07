@@ -22,12 +22,10 @@ export class PdfViewerPageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('PdfViewerPage inicializada');
     
     // Obter o nome do PDF da rota
     this.route.params.subscribe(params => {
       this.pdfName = params['name'];
-      console.log(`Nome do PDF da rota: ${this.pdfName}`);
       this.setPageTitle();
     });
 
@@ -36,7 +34,6 @@ export class PdfViewerPageComponent implements OnInit {
       if (params['remote'] !== undefined) {
         this.useRemoteUrl = params['remote'] === 'true';
       }
-      console.log(`Usando URL remota: ${this.useRemoteUrl}`);
       
       // Mostrar toast informativo
       if (this.useRemoteUrl) {
@@ -58,7 +55,6 @@ export class PdfViewerPageComponent implements OnInit {
       default:
         this.pageTitle = 'Visualizador de PDF';
     }
-    console.log(`Título da página definido: ${this.pageTitle}`);
   }
   
   async showToast(message: string) {

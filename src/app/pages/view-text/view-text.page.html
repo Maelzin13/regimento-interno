@@ -35,8 +35,8 @@
       </ion-radio-group>
     </div>
   </ion-toolbar>
-  
-  <ion-toolbar >
+
+  <ion-toolbar>
     <ion-searchbar
       #searchInput
       slot="start"
@@ -55,12 +55,16 @@
   </ion-toolbar>
   <ion-toolbar>
     <div class="header-links">
-      <a (click)="openModal('abreviaturas')" class="header-link">Abreviaturas</a>
+      <a (click)="openModal('abreviaturas')" class="header-link"
+        >Abreviaturas</a
+      >
       <a (click)="openModal('indice')" class="header-link">Sumário</a>
-      <a (click)="openPdfDirectly('resumos')" class="header-link">Resumos temáticos</a>
+      <a (click)="openPdfDirectly('resumos')" class="header-link"
+        >Resumos temáticos</a
+      >
       <a (click)="openPdfDirectly('esquemas')" class="header-link">Esquemas</a>
     </div>
-  </ion-toolbar>  
+  </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen class="ion-padding">
@@ -99,6 +103,7 @@
                 >
                   <h5
                     [id]="'artigo-' + artigo.id"
+                    class="artigo"
                     [innerHTML]="highlightAndSanitize(artigo.conteudo)"
                   ></h5>
 
@@ -107,12 +112,11 @@
                   >
                     <h5
                       [id]="'paragrafo-' + paragrafo.id"
+                      class="paragrafo"
                       [innerHTML]="highlightAndSanitize(paragrafo.conteudo)"
-                      class="text-justify"
                     ></h5>
 
                     <ng-container *ngFor="let remissao of paragrafo.remissoes">
-                      <!-- Remissões Internas (com destinos) -->
                       <div
                         class="remissao-container mt-3 mb-4 pl-4"
                         *ngIf="remissao.conteudo && remissao.tipo === 'interna'"
@@ -124,7 +128,7 @@
                           [attr.data-destinos-count]="remissao.destinos?.length || 0"
                         >
                           <div
-                            class="remissao-text"
+                            class="remissao"
                             [innerHTML]="highlightAndSanitize(remissao.conteudo)"
                           ></div>
                           <div class="remissao-indicator">
@@ -158,7 +162,7 @@
                           [class.not-clickable]="!remissao.url_externa"
                         >
                           <div
-                            class="remissao-text"
+                            class="remissao"
                             [innerHTML]="highlightAndSanitize(remissao.conteudo)"
                           ></div>
                           <ion-icon
@@ -174,12 +178,23 @@
                     <ng-container
                       *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId"
                     >
-                      <div class="comentario mt-4">
-                          <strong>{{ comentario.tipo | titlecase }}</strong>
-                          <div
-                            [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)"
-                            (click)="toggleComment(comentario.id)"
-                          ></div>
+                      <div class="comentario">
+                        <strong>{{ comentario.tipo | titlecase }}</strong>
+
+                        <div class="conteudo-comentario">
+                          <ng-container *ngIf="!isCommentExpanded(comentario.id); else expanded">
+                            {{ getResumoComentario(comentario.conteudo) }}
+                            <a class="ver-mais" (click)="toggleComment(comentario.id)">
+                              Ver mais
+                            </a>
+                          </ng-container>
+                          <ng-template #expanded>
+                            {{ getTextoCompletoComentario(comentario.conteudo)}}
+                            <a class="ver-menos" (click)="toggleComment(comentario.id)">
+                              Ver menos
+                            </a>
+                          </ng-template>
+                        </div>
                       </div>
                     </ng-container>
                   </div>
