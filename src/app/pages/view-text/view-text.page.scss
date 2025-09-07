@@ -179,18 +179,61 @@ ion-content {
 }
 
 .comentario-tipo {
+  color: #329632;
   font-weight: bold;
   font-style: italic;
   display: inline-block;
-  color: #329632;
+  text-decoration: underline;
 }
 
-.ver-mais, .ver-menos {
-  color: #007bff;
-  text-decoration: underline;
+/* Container que recebe .collapsed (padrão) e .expanded */
+.conteudo-comentario {
+  position: relative;
+}
+
+/* Estilo do conteúdo rico vindo do Quill */
+.rich-text p {
+  margin: 0 0 .75rem 0; /* controle consistente de margens */
+  text-align: justify;   /* mantém a classe ql-align-justify visualmente */
+}
+
+.rich-text p:empty,
+.rich-text p:has(br:only-child) {
+  display: none;
+}
+
+
+/* Estado colapsado: 3 linhas, com overflow escondido */
+.conteudo-comentario.collapsed .rich-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;       /* qtd de linhas visíveis */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Gradiente de fade-out no fim (opcional, dá um toque de UX) */
+.conteudo-comentario.collapsed::after {
+  content: '';
+  position: absolute;
+  bottom: 2rem; /* ajusta conforme espaço do link "Ver mais" */
+  left: 0;
+  right: 0;
+  height: 3rem;
+  pointer-events: none;
+}
+
+/* Estado expandido: mostra tudo */
+.conteudo-comentario.expanded .rich-text {
+  display: block;
+  -webkit-line-clamp: initial;
+  overflow: visible;
+}
+
+a.ver-mais, a.ver-menos {
+  display: inline-block;
+  margin-top: .5rem;
   cursor: pointer;
-  font-weight: 500;
-  margin-left: 6px;
+  text-decoration: underline;
 }
 
 .artigo-container {

@@ -1425,39 +1425,30 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     window.location.href = url;
   }
 
-  toggleComment(commentId: string) {
-    if (this.expandedComments.has(commentId)) {
-      this.expandedComments.delete(commentId);
+  toggleComment(commentId: string | number) {
+    const id = String(commentId);
+    if (this.expandedComments.has(id)) {
+      this.expandedComments.delete(id);
     } else {
-      this.expandedComments.add(commentId);
+      this.expandedComments.add(id);
     }
   }
-
+  
   toggleAllComments() {
     this.allCommentsExpanded = !this.allCommentsExpanded;
-
     if (this.allCommentsExpanded) {
-      // Adiciona todos os comentários ao set
-      this.expandedComments = new Set(this.getAllCommentIds());
+      this.expandedComments = new Set(this.getAllCommentIds().map(id => String(id)));
     } else {
-      // Limpa todos (recolhe todos)
       this.expandedComments.clear();
     }
   }
-
-  isCommentExpanded(commentId: string): boolean {
+  
+  isCommentExpanded(commentId: string | number): boolean {
     if (this.allCommentsExpanded) return true;
-    return this.expandedComments.has(commentId);
+    return this.expandedComments.has(String(commentId));
   }
-
-  processComentarioContentAsPlainText(content: string): string {
-    const div = document.createElement('div');
-    div.innerHTML = content;
-    return div.textContent || '';
-  }
-
-  getAllCommentIds(): string[] {
-    const ids: string[] = [];
+  getAllCommentIds(): Array<string | number> {
+    const ids: Array<string | number> = [];
     const iterate = (book: any) => {
       book?.titulos?.forEach((titulo: any) => {
         titulo.capitulos?.forEach((capitulo: any) => {
@@ -1465,7 +1456,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
             secao.artigos?.forEach((artigo: any) => {
               artigo.paragrafos?.forEach((paragrafo: any) => {
                 paragrafo.comentarios?.forEach((comentario: any) => {
-                  if (comentario.id) ids.push(comentario.id);
+                  if (comentario?.id != null) ids.push(comentario.id);
                 });
               });
             });
@@ -1476,23 +1467,24 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     iterate(this.filteredBook || this.book);
     return ids;
   }
-
-  getResumoComentario(content: string): string {
-    const plain = this.processComentarioContentAsPlainText(content).trim();
-    const limit = 150;
-    const primeiraQuebra = plain.indexOf('\n');
   
-    if (primeiraQuebra !== -1 && primeiraQuebra < limit) {
-      return plain.substring(0, primeiraQuebra) + '...';
-    }
-  
-    return plain.length > limit ? plain.substring(0, limit) + '...' : plain;
+  /** Opcional: remove <p> “embrulho” único no início/fim, se existir */
+  private stripSingleOuterP(html: string): string {
+    const trimmed = html.trim();
+    // remove um <p> externo simples (mantém <p> internos)
+    return trimmed
+      .replace(/^<p([^>]*)>\s*/i, '<div$1>')
+      .replace(/\s*<\/p>\s*$/i, '</div>');
   }
   
-  getTextoCompletoComentario(content: string): string {
-    return this.processComentarioContentAsPlainText(content);
-  }
+  safeHtml(html: string): SafeHtml {
+    // Se não quiser trocar <p> externo, basta sanitizar direto:
+    // return this.sanitizer.bypassSecurityTrustHtml(html);
   
+    // Se quiser normalizar para evitar um <p> externo extra:
+    const normalized = this.stripSingleOuterP(html || '');
+    return this.sanitizer.bypassSecurityTrustHtml(normalized);
+  }
 
   // Funções de rastreamento para otimizar a renderização de listas
   trackByTituloId(index: number, item: any): number {
