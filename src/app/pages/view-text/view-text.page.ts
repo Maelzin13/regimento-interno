@@ -185,16 +185,15 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   clearSearch() {
     this.query = '';
-    this.filteredBook = null;
+    this.filteredBook = null;    // mantém árvore completa
     this.searchResults = [];
     this.totalResults = 0;
     this.currentResultIndex = -1;
     this.isSearching = false;
-
-    setTimeout(() => {
-      this.searchInput?.nativeElement?.focus();
-    }, 50);
+    this.forceClearHighlights();
+    setTimeout(() => this.searchInput?.nativeElement?.focus(), 50);
   }
+  
 
   // Função para forçar limpeza dos highlights
   forceClearHighlights() {
@@ -287,205 +286,127 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     const re = new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(q)}[º°]?\\b`, 'i');
     return re.test(artigoContent);
   }
-  
 
   async search() {
     if (!this.query || !this.book) {
-      this.filteredBook = null;
-      this.searchResults = [];
-      this.totalResults = 0;
+      this.clearSearch();
       return;
     }
-
+  
     this.isSearching = true;
+  
+    // Normalização + flags
     const queryLower = this.query.toLowerCase().trim();
-    const searchBy = this.searchBy;
-    const searchType = this.searchType;
-
-
-    // Para busca por artigo, limpar a entrada do usuário
-    let processedQuery = queryLower;
-    if (searchBy === 'artigo') {
-      // Remover "Art.", "Artigo", "Arts.", "Artigos" da entrada do usuário
-      processedQuery = queryLower
-        .replace(/^(Art\.?\s*|Artigo\s*|Arts\.?\s*|Artigos\s*)/i, '')
-        .trim();
-
-      // Se após a limpeza não sobrou nada, usar a query original
-      if (!processedQuery) {
-        processedQuery = queryLower;
-      }
-    }
-
-    // Salvando posição atual antes da busca
+    const searchBy = this.searchBy; // 'keyword' | 'artigo'
+    const searchType = this.searchType; // 'contains' | 'exact'
+  
+    // Salva a posição de rolagem atual (para “voltar” depois se quiser)
     this.saveCurrentPosition();
-
-
-    const clone = this.book;
+  
+    // 🔴 NUNCA troque o objeto exibido pela tela:
+    // this.filteredBook = null; // mantém a árvore original SEM cortes
+    this.filteredBook = null;
+  
+    // Zera resultados e total
     this.searchResults = [];
-
-    const textMatches = (text: string) => {
-      if (!text) return false;
-      const textLower = text.toLowerCase();
-
-      if (searchType === 'exact') {
-        const normalizedText = this.normalizeText(textLower);
-        const normalizedQuery = this.normalizeText(queryLower);
-
-        const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'i');
-        return wordBoundaryRegex.test(normalizedText);
-      } else {
-        return textLower.includes(queryLower);
-      }
-    };
-
-    // Função para verificar se o artigo contém a busca
-    const checkArtigoMatch = (artigoContent: string) => {
-      if (!artigoContent) return false;
-      const contentLower = artigoContent.toLowerCase();
-
-      // Para busca de artigo, sempre usar termo exato
-      const artigoPatterns = [
-        // Padrão básico: "Art. X" ou "Artigo X"
-        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\b`, 'i'),
-        // Padrão com alíneas: "Art. X-A", "Art. X-B", etc.
-        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z]\\b`, 'i'),
-        // Padrão com múltiplas alíneas: "Art. X-A, X-B, X-C"
-        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z](?:\\s*,\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z])*\\b`, 'i'),
-      ];
-      return artigoPatterns.some(pattern => pattern.test(contentLower));
-    };
-
-    // Processar a estrutura do livro de forma mais eficiente
-    let titulosFiltrados = [];
-
-    for (const titulo of clone.titulos) {
-      let capitulosFiltrados = [];
-
-      for (const capitulo of titulo.capitulos || []) {
-        let secoesFiltradas = [];
-
-        for (const secao of capitulo.secaos || []) {
-          let artigosFiltrados = [];
-
-          for (const artigo of secao.artigos || []) {
-            let artigoMatches = false;
-            let paragrafosFiltrados = [];
-
-            // Buscar por palavras-chave
-            if (searchBy === 'keyword') {
-              // Verificar se o artigo contém a busca
-              if (textMatches(artigo.conteudo)) {
-                artigoMatches = true;
-                this.searchResults.push({
-                  type: 'artigo',
-                  id: artigo.id,
-                  content: artigo.conteudo,
-                  path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
-                  parent: secao,
-                  position: this.calculatePosition(artigo)
-                });
+    this.totalResults = 0;
+  
+    // --- BUSCA POR PALAVRA-CHAVE (apenas marcação + navegação) ---
+    if (searchBy === 'keyword') {
+      // coletores
+      const addMatch = (type: 'artigo' | 'paragrafo', node: any, path: string) => {
+        this.searchResults.push({
+          type,
+          id: node.id,
+          content: node.conteudo,
+          path,
+          position: node.id || 0
+        });
+      };
+  
+      // varre a árvore COMPLETA (SEM filtrar o que será renderizado)
+      for (const titulo of this.book.titulos || []) {
+        for (const capitulo of titulo.capitulos || []) {
+          for (const secao of capitulo.secaos || []) {
+            for (const artigo of secao.artigos || []) {
+              // match em artigo
+              if (this.matchesText(artigo.conteudo, queryLower, searchType)) {
+                addMatch('artigo', artigo, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`);
               }
-
-              // Verificar parágrafos do artigo
-              for (const paragrafo of artigo.paragrafos || []) {
-                if (textMatches(paragrafo.conteudo)) {
-                  paragrafosFiltrados.push(paragrafo);
-                  this.searchResults.push({
-                    type: 'paragrafo',
-                    id: paragrafo.id,
-                    content: paragrafo.conteudo,
-                    path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`,
-                    parent: artigo,
-                    position: this.calculatePosition(paragrafo)
-                  });
+              // match em parágrafos
+              for (const p of artigo.paragrafos || []) {
+                if (this.matchesText(p.conteudo, queryLower, searchType)) {
+                  addMatch('paragrafo', p, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`);
                 }
               }
             }
-            // Buscar por artigos específicos
-            else if (searchBy === 'artigo') {
-              if (this.checkArtigoMatchByNumero(artigo, processedQuery) || this.checkArtigoMatchByContent(artigo.conteudo, processedQuery)) {
-                artigoMatches = true;
-                this.searchResults.push({
-                  type: 'artigo',
-                  id: artigo.id,
-                  content: artigo.conteudo,
-                  path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
-                  parent: secao,
-                  position: this.calculatePosition(artigo)
-                });
-              }
-            }
-
-            // Adicionar artigo se encontrou correspondência ou se tem parágrafos filtrados
-            if (artigoMatches || paragrafosFiltrados.length > 0) {
-              artigosFiltrados.push({
-                ...artigo,
-                paragrafos: paragrafosFiltrados.length > 0 ? paragrafosFiltrados : artigo.paragrafos
-              });
-            }
-          }
-
-          // Adicionar seção se tem artigos filtrados
-          if (artigosFiltrados.length > 0) {
-            secoesFiltradas.push({
-              ...secao,
-              artigos: artigosFiltrados
-            });
           }
         }
-
-        // Adicionar capítulo se tem seções filtradas
-        if (secoesFiltradas.length > 0) {
-          capitulosFiltrados.push({
-            ...capitulo,
-            secaos: secoesFiltradas
-          });
-        }
       }
-
-      // Adicionar título se tem capítulos filtrados
-      if (capitulosFiltrados.length > 0) {
-        titulosFiltrados.push({
-          ...titulo,
-          capitulos: capitulosFiltrados
-        });
+  
+      // ordena, contabiliza e navega
+      this.sortSearchResults();
+      this.totalResults = this.searchResults.length;
+      this.isSearching = false;
+  
+      // Limpa cache para forçar re-render e aplicar destaques
+      this.contentCache.clear();
+  
+      if (this.totalResults > 0) {
+        this.currentResultIndex = 0;
+        this.navigateToResult(0);
+        this.presentToast(`Encontrados ${this.totalResults} resultados para "${this.query}"`);
+        setTimeout(() => this.forceHighlightsRefresh(), 300);
+      } else {
+        this.presentToast(`Nenhum resultado encontrado para "${this.query}"`);
       }
+  
+      return;
     }
-
-    // Atualizar o livro filtrado
-    this.filteredBook = {
-      ...clone,
-      titulos: titulosFiltrados
-    };
-
-    this.totalResults = this.searchResults.length;
-    this.isSearching = false;
-
-    // Ordenar resultados por posição no documento
-    this.sortSearchResults();
-
-    // Limpar cache de conteúdo para forçar re-renderização com novos destaques
-    this.contentCache.clear();
-
-    // Adicionar à histórico de pesquisa
-    await this.addToSearchHistory(this.query);
-
-    // Exibir resultado da busca
-    if (this.totalResults > 0) {
+  
+    // --- BUSCA POR ARTIGO (apenas rolagem + “flash highlight”, sem highlight global) ---
+    if (searchBy === 'artigo') {
+      const processed = queryLower
+        .replace(/^(art\.?\s*|artigo\s*|arts?\.?\s*|artigos?\s*)/i, '')
+        .trim();
+  
+      this.isSearching = false;
+  
+      if (!processed) {
+        this.presentToast('Informe o número do artigo.');
+        return;
+      }
+  
+      // Não queremos pintar o documento inteiro quando for busca por artigo:
+      // deixa para o “flash highlight” do scrollToArtigo.
+      const artigoNumero = processed.replace(/[^\dA-Za-z-]/g, '').toUpperCase();
+  
+      // limpa highlights antigos e navega
+      this.forceClearHighlights();
+      this.scrollToArtigo(artigoNumero, undefined, undefined, false);
+  
+      // Atualiza contadores de navegação apenas para UX (1 resultado “virtual”)
+      this.searchResults = [{ type: 'artigo', id: artigoNumero, content: '', path: '', position: 0 }];
+      this.totalResults = 1;
       this.currentResultIndex = 0;
-      this.navigateToResult(0);
-      this.presentToast(`Encontrados ${this.totalResults} resultados para "${this.query}"`);
-
-      // Garantir que os destaques sejam aplicados após o DOM ser atualizado
-      setTimeout(() => {
-        this.forceHighlightsRefresh();
-      }, 500);
-    } else {
-      this.presentToast(`Nenhum resultado encontrado para "${this.query}"`);
+      return;
     }
   }
 
+
+  private matchesText(text: string, queryLower: string, searchType: 'contains' | 'exact'): boolean {
+    if (!text) return false;
+    const textLower = text.toLowerCase();
+    if (searchType === 'exact') {
+      const normalizedText = this.normalizeText(textLower);
+      const normalizedQuery = this.normalizeText(queryLower);
+      const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'i');
+      return wordBoundaryRegex.test(normalizedText);
+    }
+    return textLower.includes(queryLower);
+  }
+  
+  
   // Função para calcular a posição relativa de um elemento no documento
   private calculatePosition(element: any): number {
     return element.id || 0;
@@ -535,17 +456,16 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   highlightAndSanitize(text: string): SafeHtml {
-    const cacheKey = `${text}_${this.query}_${this.searchType}`;
+    const cacheKey = `${text}_${this.query}_${this.searchType}_${this.searchBy}`;
     if (this.contentCache.has(cacheKey)) return this.contentCache.get(cacheKey)!;
   
-    // 1) formata notas
+    // 1) notas
     let html = this.formatNotas(text);
-  
-    // 2) processa remissões inline (gera spans) — ANTES do highlight
+    // 2) remissões inline antes do highlight
     html = this.processInlineRemissoes(html);
   
-    // 3) highlight só em TEXT NODES (nunca em atributos/tags)
-    if (this.query?.trim()) {
+    // 🔵 Só destacar quando a busca for POR PALAVRA-CHAVE
+    if (this.query?.trim() && this.searchBy === 'keyword') {
       const wholeWord = this.searchType === 'exact';
       html = this.highlightHtmlSafe(html, this.query.trim(), wholeWord);
     }
@@ -2093,26 +2013,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     return formattedContent;
-  }
-
-  // Método para obter contexto do resultado atual
-  getCurrentResultContext(): string {
-    if (this.currentResultIndex < 0 || this.currentResultIndex >= this.searchResults.length) {
-      return '';
-    }
-
-    const result = this.searchResults[this.currentResultIndex];
-    if (!result) return '';
-
-    // Extrair informações relevantes do resultado
-    const type = result.type === 'artigo' ? 'Artigo' : 'Parágrafo';
-    const path = result.path || '';
-
-    // Limitar o tamanho do contexto para não ficar muito longo
-    const maxLength = 50;
-    const context = `${type}: ${path}`;
-
-    return context.length > maxLength ? context.substring(0, maxLength) + '...' : context;
   }
 
   // Método para manter a posição atual (salvar no histórico)

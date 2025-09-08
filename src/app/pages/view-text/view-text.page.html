@@ -226,14 +226,7 @@
 
 <!-- Barra de navegação de resultados melhorada -->
 <div class="search-navigation-bar" *ngIf="totalResults > 0">
-  <!-- Tooltip de contexto -->
-  <div class="navigation-tooltip" *ngIf="currentResultIndex >= 0">
-    <span class="tooltip-text">{{ getCurrentResultContext() }}</span>
-  </div>
-
-  <!-- Controles de navegação -->
   <div class="navigation-controls">
-    <!-- Navegação com setas -->
     <div class="navigation-arrows">
       <button
         class="nav-arrow-btn"
