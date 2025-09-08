@@ -997,3 +997,44 @@ ion-segment-button {
   --padding-top: 6px;
   --padding-bottom: 6px;
 }
+
+// Botão flutuante de retorno no lado esquerdo da tela
+.return-indicator {
+  position: fixed;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  background-color: rgba(56, 128, 255, 0.9);
+  color: white;
+  border-radius: 25px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  &:hover {
+    background-color: rgba(56, 128, 255, 1);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+  
+  ion-icon {
+    font-size: 20px;
+  }
+  
+  span {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+}

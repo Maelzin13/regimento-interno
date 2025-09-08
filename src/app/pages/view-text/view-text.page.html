@@ -6,17 +6,6 @@
       </ion-button>
     </ion-buttons>
     <ion-title class="titulo-personalizado">Regimento Comentado</ion-title>
-    <ion-buttons slot="end">
-      <ion-button
-        *ngIf="navigationHistory.length > 1 && currentHistoryIndex > 0"
-        (click)="navigateBack()"
-        class="back-button"
-        fill="clear"
-        color="light"
-      >
-        <ion-icon name="arrow-undo" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <div class="search-row">
@@ -83,18 +72,12 @@
             [innerHTML]="highlightAndSanitize(titulo.conteudo)"
           ></h2>
 
-          <ng-container
-            *ngFor="let capitulo of titulo.capitulos; trackBy: trackByCapituloId"
-          >
-            <h3
-              class="capitulo"
+          <ng-container *ngFor="let capitulo of titulo.capitulos; trackBy: trackByCapituloId">
+            <h3 class="capitulo"
               [innerHTML]="highlightAndSanitize(capitulo.conteudo)"
             ></h3>
-            <ng-container
-              *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId"
-            >
-              <h4
-                class="secao"
+            <ng-container *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId">
+              <h4 class="secao"
                 [innerHTML]="highlightAndSanitize(secao.conteudo)"
               ></h4>
               <div class="artigo-container">
@@ -131,23 +114,6 @@
                             class="remissao"
                             [innerHTML]="highlightAndSanitize(remissao.conteudo)"
                           ></div>
-                          <div class="remissao-indicator">
-                            <ion-icon
-                              name="link-outline"
-                              class="remissao-icon"
-                            ></ion-icon>
-                            <span
-                              *ngIf="remissao.destinos && remissao.destinos.length > 0"
-                            >
-                              {{ remissao.destinos.length === 1 ? 'Clique paranavegar' 
-                              : 'Clique para escolher destino' }}
-                            </span>
-                            <span
-                              *ngIf="!remissao.destinos || remissao.destinos.length === 0"
-                            >
-                              Processando...
-                            </span>
-                          </div>
                         </div>
                       </div>
 
