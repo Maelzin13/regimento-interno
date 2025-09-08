@@ -325,14 +325,20 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   /** Busca por palavra-chave: coleta resultados de todos os tipos de conteúdo */
   private async runKeywordSearch(query: string, searchType: 'contains' | 'exact') {
     const q = query.toLowerCase().trim();
+    let totalOccurrences = 0;
 
     const add = (type: string, node: any, path: string, content?: string) => {
+      const text = content || node.conteudo;
+      const occurrences = this.countOccurrences(text, q, searchType);
+      totalOccurrences += occurrences;
+      
       this.searchResults.push({ 
         type, 
         id: node.id, 
-        content: content || node.conteudo, 
+        content: text, 
         path, 
-        position: node.id || 0 
+        position: node.id || 0,
+        occurrences: occurrences
       });
     };
 
@@ -386,7 +392,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     this.sortSearchResults();
-    this.totalResults = this.searchResults.length;
+    this.totalResults = totalOccurrences; // Usar o total de ocorrências em vez do número de elementos
     this.isSearching = false;
 
     // força re-render para aplicar destaque apenas em keyword
@@ -437,6 +443,24 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       return wordBoundaryRegex.test(normalizedText);
     }
     return textLower.includes(queryLower);
+  }
+
+  private countOccurrences(text: string, queryLower: string, searchType: 'contains' | 'exact'): number {
+    if (!text) return 0;
+    const textLower = text.toLowerCase();
+    
+    if (searchType === 'exact') {
+      const normalizedText = this.normalizeText(textLower);
+      const normalizedQuery = this.normalizeText(queryLower);
+      const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'gi');
+      const matches = normalizedText.match(wordBoundaryRegex);
+      return matches ? matches.length : 0;
+    } else {
+      // Para busca "contains", contar todas as ocorrências (incluindo dentro de palavras)
+      const regex = new RegExp(this.escapeRegExp(queryLower), 'gi');
+      const matches = textLower.match(regex);
+      return matches ? matches.length : 0;
+    }
   }
 
   // Função para ordenar os resultados de forma mais lógica
@@ -1111,19 +1135,32 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   // Métodos para navegação nos resultados
   navigateToResult(index: number) {
     this.currentResultIndex = index;
-    const result = this.searchResults[index];
     
-    if (!result) {
+    // Calcular qual elemento e qual ocorrência dentro desse elemento
+    let currentIndex = 0;
+    let targetElement: any = null;
+    let targetOccurrence = 0;
+    
+    for (const result of this.searchResults) {
+      if (currentIndex + result.occurrences > index) {
+        targetElement = result;
+        targetOccurrence = index - currentIndex;
+        break;
+      }
+      currentIndex += result.occurrences;
+    }
+    
+    if (!targetElement) {
       console.log('Nenhum resultado encontrado para o índice:', index);
       return;
     }
 
-    console.log('Navegando para resultado:', result);
+    console.log('Navegando para resultado:', targetElement, 'ocorrência:', targetOccurrence);
 
     // Encontrar o elemento baseado no tipo e ID
     let element: HTMLElement | null = null;
 
-    switch (result.type) {
+    switch (targetElement.type) {
       case 'titulo':
         element = document.querySelector(`h2.titulo`);
         break;
@@ -1134,20 +1171,20 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         element = document.querySelector(`h4.secao`);
         break;
       case 'artigo':
-        element = document.getElementById(`artigo-${result.id}`);
+        element = document.getElementById(`artigo-${targetElement.id}`);
         break;
       case 'paragrafo':
-        element = document.getElementById(`paragrafo-${result.id}`);
+        element = document.getElementById(`paragrafo-${targetElement.id}`);
         break;
       case 'comentario':
         // Para comentários, precisamos encontrar o container do comentário
-        element = document.querySelector(`[data-comentario-id="${result.id}"]`) as HTMLElement;
+        element = document.querySelector(`[data-comentario-id="${targetElement.id}"]`) as HTMLElement;
         if (!element) {
           // Fallback: procurar por elementos que contenham o conteúdo do comentário
           const allElements = document.querySelectorAll('*');
           for (let i = 0; i < allElements.length; i++) {
             const el = allElements[i];
-            if (el.textContent && el.textContent.includes(result.content.substring(0, 50))) {
+            if (el.textContent && el.textContent.includes(targetElement.content.substring(0, 50))) {
               element = el as HTMLElement;
               break;
             }
@@ -1156,7 +1193,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         break;
       case 'remissao':
         // Para remissões, procurar pelo elemento com data-remissao-id
-        element = document.querySelector(`[data-remissao-id="${result.id}"]`) as HTMLElement;
+        element = document.querySelector(`[data-remissao-id="${targetElement.id}"]`) as HTMLElement;
         break;
     }
 
@@ -1175,8 +1212,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       }, 2000);
 
       // Se for um comentário, expandir automaticamente
-      if (result.type === 'comentario') {
-        this.expandedComments.add(String(result.id));
+      if (targetElement.type === 'comentario') {
+        this.expandedComments.add(String(targetElement.id));
       }
     } else {
       console.log('Nenhum elemento encontrado para navegação');
