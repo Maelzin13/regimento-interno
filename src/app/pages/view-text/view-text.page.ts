@@ -322,24 +322,62 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.isSearching = false;
   }
 
-  /** Busca por palavra-chave: só coleta resultados + highlight + navegação */
+  /** Busca por palavra-chave: coleta resultados de todos os tipos de conteúdo */
   private async runKeywordSearch(query: string, searchType: 'contains' | 'exact') {
     const q = query.toLowerCase().trim();
 
-    const add = (type: 'artigo' | 'paragrafo', node: any, path: string) => {
-      this.searchResults.push({ type, id: node.id, content: node.conteudo, path, position: node.id || 0 });
+    const add = (type: string, node: any, path: string, content?: string) => {
+      this.searchResults.push({ 
+        type, 
+        id: node.id, 
+        content: content || node.conteudo, 
+        path, 
+        position: node.id || 0 
+      });
     };
 
     for (const titulo of this.book.titulos || []) {
+      // Buscar em títulos
+      if (this.matchesText(titulo.conteudo, q, searchType)) {
+        add('titulo', titulo, titulo.conteudo);
+      }
+
       for (const capitulo of titulo.capitulos || []) {
+        // Buscar em capítulos
+        if (this.matchesText(capitulo.conteudo, q, searchType)) {
+          add('capitulo', capitulo, `${titulo.conteudo} > ${capitulo.conteudo}`);
+        }
+
         for (const secao of capitulo.secaos || []) {
+          // Buscar em seções
+          if (this.matchesText(secao.conteudo, q, searchType)) {
+            add('secao', secao, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`);
+          }
+
           for (const artigo of secao.artigos || []) {
+            // Buscar em artigos
             if (this.matchesText(artigo.conteudo, q, searchType)) {
-              add('artigo', artigo, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`);
+              add('artigo', artigo, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`);
             }
+
             for (const p of artigo.paragrafos || []) {
+              // Buscar em parágrafos
               if (this.matchesText(p.conteudo, q, searchType)) {
-                add('paragrafo', p, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`);
+                add('paragrafo', p, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > ${p.conteudo}`);
+              }
+
+              // Buscar em comentários
+              for (const comentario of p.comentarios || []) {
+                if (this.matchesText(comentario.conteudo, q, searchType)) {
+                  add('comentario', comentario, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Comentário`, comentario.conteudo);
+                }
+              }
+
+              // Buscar em remissões
+              for (const remissao of p.remissoes || []) {
+                if (this.matchesText(remissao.conteudo, q, searchType)) {
+                  add('remissao', remissao, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Remissão`, remissao.conteudo);
+                }
               }
             }
           }
@@ -403,11 +441,25 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   // Função para ordenar os resultados de forma mais lógica
   private sortSearchResults() {
-    // Ordenar por posição no documento (usando a propriedade position calculada)
+    // Ordenar por prioridade de tipo e depois por posição no documento
     this.searchResults.sort((a, b) => {
-      // Primeiro por tipo: artigos vêm antes de parágrafos
-      if (a.type !== b.type) {
-        return a.type === 'artigo' ? -1 : 1;
+      // Definir prioridade dos tipos (menor número = maior prioridade)
+      const typePriority: { [key: string]: number } = {
+        'titulo': 1,
+        'capitulo': 2,
+        'secao': 3,
+        'artigo': 4,
+        'paragrafo': 5,
+        'comentario': 6,
+        'remissao': 7
+      };
+
+      const priorityA = typePriority[a.type] || 999;
+      const priorityB = typePriority[b.type] || 999;
+
+      // Primeiro ordenar por prioridade de tipo
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
       }
 
       // Se são do mesmo tipo, ordenar por posição no documento
@@ -416,8 +468,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
       return posA - posB;
     });
-
-
   }
 
   // Método auxiliar para normalizar texto (remover acentos e caracteres especiais)
@@ -1061,15 +1111,87 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   // Métodos para navegação nos resultados
   navigateToResult(index: number) {
     this.currentResultIndex = index;
-    setTimeout(() => {
-      const highlights = document.querySelectorAll('.search-highlight');
-      if (highlights.length > 0 && highlights[index]) {
-        const el = highlights[index] as HTMLElement;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('result-focus');
-        setTimeout(() => el.classList.remove('result-focus'), 1200);
+    const result = this.searchResults[index];
+    
+    if (!result) {
+      console.log('Nenhum resultado encontrado para o índice:', index);
+      return;
+    }
+
+    console.log('Navegando para resultado:', result);
+
+    // Encontrar o elemento baseado no tipo e ID
+    let element: HTMLElement | null = null;
+
+    switch (result.type) {
+      case 'titulo':
+        element = document.querySelector(`h2.titulo`);
+        break;
+      case 'capitulo':
+        element = document.querySelector(`h3.capitulo`);
+        break;
+      case 'secao':
+        element = document.querySelector(`h4.secao`);
+        break;
+      case 'artigo':
+        element = document.getElementById(`artigo-${result.id}`);
+        break;
+      case 'paragrafo':
+        element = document.getElementById(`paragrafo-${result.id}`);
+        break;
+      case 'comentario':
+        // Para comentários, precisamos encontrar o container do comentário
+        element = document.querySelector(`[data-comentario-id="${result.id}"]`) as HTMLElement;
+        if (!element) {
+          // Fallback: procurar por elementos que contenham o conteúdo do comentário
+          const allElements = document.querySelectorAll('*');
+          for (let i = 0; i < allElements.length; i++) {
+            const el = allElements[i];
+            if (el.textContent && el.textContent.includes(result.content.substring(0, 50))) {
+              element = el as HTMLElement;
+              break;
+            }
+          }
+        }
+        break;
+      case 'remissao':
+        // Para remissões, procurar pelo elemento com data-remissao-id
+        element = document.querySelector(`[data-remissao-id="${result.id}"]`) as HTMLElement;
+        break;
+    }
+
+    if (element) {
+      console.log('Elemento encontrado e destacado:', element);
+      
+      // Garantir que o elemento está visível
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Adicionar destaque visual
+      element.classList.add('result-focus');
+      
+      // Remover destaque após um tempo
+      setTimeout(() => {
+        element?.classList.remove('result-focus');
+      }, 2000);
+
+      // Se for um comentário, expandir automaticamente
+      if (result.type === 'comentario') {
+        this.expandedComments.add(String(result.id));
       }
-    }, 300);
+    } else {
+      console.log('Nenhum elemento encontrado para navegação');
+      
+      // Fallback: tentar encontrar por highlights
+      setTimeout(() => {
+        const highlights = document.querySelectorAll('.search-highlight');
+        if (highlights.length > 0 && highlights[index]) {
+          const el = highlights[index] as HTMLElement;
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('result-focus');
+          setTimeout(() => el.classList.remove('result-focus'), 1200);
+        }
+      }, 300);
+    }
   }
   // Força a atualização dos destaques
   forceHighlightsRefresh() {

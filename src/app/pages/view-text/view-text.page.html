@@ -142,7 +142,7 @@
                     </ng-container>
 
                     <ng-container *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId">
-                      <div class="comentario">
+                      <div class="comentario" [attr.data-comentario-id]="comentario.id">
                         <strong>{{ comentario.tipo | titlecase }}</strong>
                     
                         <div class="conteudo-comentario"
@@ -150,12 +150,12 @@
                              [class.collapsed]="!isCommentExpanded(comentario.id)">
                     
                           <ng-container *ngIf="!isCommentExpanded(comentario.id); else expanded">
-                            <div class="rich-text" [innerHTML]="safeHtml(comentario.conteudo)"></div>
+                            <div class="rich-text" [innerHTML]="highlightAndSanitize(comentario.conteudo)"></div>
                             <a class="ver-mais" (click)="toggleComment(comentario.id)">Ver mais</a>
                           </ng-container>
                     
                           <ng-template #expanded>
-                            <div class="rich-text" [innerHTML]="safeHtml(comentario.conteudo)"></div>
+                            <div class="rich-text" [innerHTML]="highlightAndSanitize(comentario.conteudo)"></div>
                             <a class="ver-menos" (click)="toggleComment(comentario.id)">Ver menos</a>
                           </ng-template>
                     

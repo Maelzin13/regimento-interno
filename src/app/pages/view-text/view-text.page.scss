@@ -590,6 +590,68 @@ mark.highlight-search {
   box-shadow: 0 0 12px rgba(255, 200, 0, 0.8) !important;
   transform: scale(1.02) !important;
 }
+
+// Destaque para resultado focado na navegação
+.result-focus {
+  background-color: rgba(56, 128, 255, 0.2) !important;
+  border: 2px solid #3880ff !important;
+  border-radius: 6px !important;
+  padding: 4px !important;
+  box-shadow: 0 0 15px rgba(56, 128, 255, 0.4) !important;
+  animation: result-focus-pulse 2s ease-in-out !important;
+}
+
+@keyframes result-focus-pulse {
+  0% {
+    background-color: rgba(56, 128, 255, 0.1);
+    box-shadow: 0 0 10px rgba(56, 128, 255, 0.3);
+  }
+  50% {
+    background-color: rgba(56, 128, 255, 0.3);
+    box-shadow: 0 0 20px rgba(56, 128, 255, 0.6);
+  }
+  100% {
+    background-color: rgba(56, 128, 255, 0.2);
+    box-shadow: 0 0 15px rgba(56, 128, 255, 0.4);
+  }
+}
+
+// Estilos para highlights de busca (baseado no modelo da web)
+.search-highlight {
+  background-color: rgba(255, 230, 0, 0.8) !important;
+  color: #000 !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 6px rgba(255, 230, 0, 0.5) !important;
+  text-decoration: none !important;
+  z-index: 10 !important;
+  position: relative !important;
+}
+
+// Destaque para o highlight atual na navegação
+.search-highlight.current {
+  background-color: rgba(255, 230, 0, 1) !important;
+  border: 2px solid #3880ff !important;
+  box-shadow: 0 0 15px rgba(56, 128, 255, 0.6) !important;
+  animation: highlight-pulse 1.5s ease-in-out !important;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    background-color: rgba(255, 230, 0, 0.8);
+    box-shadow: 0 0 6px rgba(255, 230, 0, 0.5);
+  }
+  50% {
+    background-color: rgba(255, 230, 0, 1);
+    box-shadow: 0 0 20px rgba(56, 128, 255, 0.8);
+  }
+  100% {
+    background-color: rgba(255, 230, 0, 1);
+    box-shadow: 0 0 15px rgba(56, 128, 255, 0.6);
+  }
+}
+
 // Flash highlight para navegação (temporário)
 .flash-highlight {
   background-color: rgba(255, 100, 100, 0.3) !important;
