@@ -31,7 +31,7 @@ export class LivroPage implements OnInit {
     },
     {
       title: 'Resolução n. 1/2002 do C.N',
-      link: 'https://legis.senado.leg.br/norma/561120/publicacao/27423643',
+      link: 'https://www2.camara.leg.br/legin/fed/rescon/2002/resolucao-1-8-maio-2002-497942-norma-pl.html',
     },
     {
       title: 'Lei Complementar 95/1998',
