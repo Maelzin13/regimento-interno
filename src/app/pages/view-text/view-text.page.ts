@@ -1,6 +1,6 @@
 import { ModalPage } from '../modal/modal.page';
+import { ActivatedRoute } from '@angular/router';
 import { UserModel } from 'src/app/models/userModel';
-import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -92,7 +92,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   searchHistory: string[] = [];
   isSearching: boolean = false;
   user: UserModel | null = null;
-  allCommentsExpanded = false;
+  allCommentsExpanded = true;
   lastScrollPosition: number = 0;
   currentResultIndex: number = -1;
   currentHistoryIndex: number = -1;
@@ -118,9 +118,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private bookService: BookService,
-    private authService: AuthService,
     private storage: StorageService,
+    private authService: AuthService,
+    private bookService: BookService,
     private alertController: AlertController,
     private modalController: ModalController,
     private toastController: ToastController,
@@ -1800,68 +1800,44 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     return artigoElement;
   }
-  // Modal para escolha de destino complexo (artigo, parágrafo, inciso)
+  
   async showDestinationChoiceModal(destinos: RemissaoDestino[]) {
-    const inputs = destinos.map((destino, index) => {
-      let label = '';
-
-      // Formatar a label de acordo com o tipo de destino
-      if (destino.artigo === 'contexto') {
-        // Para elementos que dependem do contexto atual
-        if (destino.paragrafo && destino.inciso) {
-          label = `§ ${destino.paragrafo}, inciso ${destino.inciso} (no artigo atual)`;
-        } else if (destino.paragrafo) {
-          label = `§ ${destino.paragrafo} (no artigo atual)`;
-        } else if (destino.inciso) {
-          label = `Inciso ${destino.inciso} (no artigo atual)`;
-        }
-      } else {
-        // Para referências diretas a artigos
-        label = `Art. ${destino.artigo}`;
-        if (destino.paragrafo) {
-          label += `, § ${destino.paragrafo}`;
-        }
-        if (destino.inciso) {
-          label += `, inciso ${destino.inciso}`;
-        }
-      }
-
-      // Se tiver texto de origem, adiciona como descrição
-      // Isso é útil quando há múltiplas opções semelhantes
-      if (destino.origem?.text) {
-        const origemText = destino.origem.text.trim();
-        if (origemText) {
-          // label += ` (${origemText})`;
-          label;
-        }
-      }
-
-      return {
-        type: 'radio' as 'radio',
-        label: label,
-        value: index.toString()
-      };
-    });
-
     const alert = await this.alertController.create({
-      header: 'Escolha o destino para navegar',
-      inputs: inputs,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Ir',
-          handler: (value) => {
-            const index = parseInt(value, 10);
-            if (isNaN(index) || index < 0 || index >= destinos.length) return;
-
-            const destino = destinos[index];
-            this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
-          }
+      header: 'Escolha o destino',
+      inputs: destinos.map((destino, index) => ({
+        type: 'radio',
+        label: this.formatDestinoLabel(destino),
+        value: String(index),
+        handler: () => {
+          // Navega imediatamente
+          this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
+  
+          // Fecha o modal logo após selecionar
+          setTimeout(() => alert.dismiss(), 100);
         }
-      ]
+      })),
+      buttons: [{ text: 'Cancelar', role: 'cancel' }]
     });
+  
     await alert.present();
   }
+  
+  // helper só pra montar label bonitinha
+  private formatDestinoLabel(destino: RemissaoDestino): string {
+    if (destino.artigo === 'contexto') {
+      if (destino.paragrafo && destino.inciso) return `§ ${destino.paragrafo}, inciso ${destino.inciso} (no artigo atual)`;
+      if (destino.paragrafo) return `§ ${destino.paragrafo} (no artigo atual)`;
+      if (destino.inciso) return `Inciso ${destino.inciso} (no artigo atual)`;
+      return '(no artigo atual)';
+    }
+    let label = `Art. ${destino.artigo}`;
+    if (destino.paragrafo) label += `, § ${destino.paragrafo}`;
+    if (destino.inciso) label += `, inciso ${destino.inciso}`;
+    return label;
+  }
+  
+  
+
   // Função auxiliar para obter elementos do cache com segurança de tipo
   private getElementFromCache(key: string): HTMLElement | null {
     const element = this.elementosCache.get(key);

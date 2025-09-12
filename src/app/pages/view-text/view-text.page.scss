@@ -109,14 +109,14 @@ ion-content {
 
 .main-title {
   font-family: "ClearSans", serif;
-  font-size: 14pt;
+  font-size: 16pt;
   contain: content;
   will-change: transform;
 }
 
 .titulo {
   font-family: "ClearSans", serif;
-  font-size: 15pt;
+  font-size: 17pt;
   font-weight: bold;
   margin-top: 20px;
   margin-bottom: 15px;
@@ -124,7 +124,7 @@ ion-content {
 
 .capitulo {
   font-family: "ClearSans-Light", serif;
-  font-size: 12pt;
+  font-size: 14pt;
   font-weight: 500;
   margin-top: 18px;
   margin-bottom: 12px;
@@ -132,14 +132,14 @@ ion-content {
 
 .secao {
   font-family: "Times New Roman", serif;
-  font-size: 12pt;
+  font-size: 14pt;
   margin-top: 16px;
   margin-bottom: 10px;
 }
 
 .artigo {
   font-family: "Times New Roman", serif;
-  font-size: 12pt;
+  font-size: 14pt;
   font-weight: 500;
   margin-top: 18px;
   margin-bottom: 12px;
@@ -147,7 +147,7 @@ ion-content {
 
 .paragrafo {
   font-family: "Cambria (Corpo)", serif;
-  font-size: 11pt;
+  font-size: 13pt;
   font-weight: 500;
   margin-top: 18px;
   margin-bottom: 12px;
@@ -155,7 +155,7 @@ ion-content {
 
 .remissao {
   font-family: "Times New Roman", serif;
-  font-size: 11pt;
+  font-size: 13pt;
   font-style: italic;
   margin-bottom: 8px;
   padding-right: 28px;
@@ -165,7 +165,7 @@ ion-content {
 
 .comentario {
   font-family: "Times New Roman", serif;
-  font-size: 11pt;
+  font-size: 13pt;
   padding: var(--search-padding);
   margin-left: 10px;
   margin-top: 6px;
@@ -189,6 +189,24 @@ ion-content {
   position: relative;
 }
 
+/* Encosta o botão no conteúdo, sem “respiro” fantasma do último <p> */
+.conteudo-comentario .rich-text > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Se houver um <p> cujo único filho é <br>, zera o espaço */
+.conteudo-comentario .rich-text p > br:only-child {
+  display: none;
+}
+
+/* Garante distância mínima controlada para o botão */
+.conteudo-comentario a.ver-mais,
+.conteudo-comentario a.ver-menos {
+  display: inline-block;
+  margin-top: .25rem;
+}
+
+
 /* Estilo do conteúdo rico vindo do Quill */
 .rich-text p {
   margin: 0 0 0.75rem 0; /* controle consistente de margens */
@@ -204,6 +222,7 @@ ion-content {
 .conteudo-comentario.collapsed .rich-text {
   display: -webkit-box;
   -webkit-line-clamp: 2; /* qtd de linhas visíveis */
+  line-clamp: 2; /* compatibilidade padrão */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -223,6 +242,7 @@ ion-content {
 .conteudo-comentario.expanded .rich-text {
   display: block;
   -webkit-line-clamp: initial;
+  line-clamp: initial; /* compatibilidade padrão */
   overflow: visible;
 }
 
