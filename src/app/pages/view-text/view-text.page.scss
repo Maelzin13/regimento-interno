@@ -7,6 +7,23 @@
   --search-padding: 10px;
   --search-gap: 4px;
 }
+
+/* Classes para justificação de texto */
+.text-justify {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+}
+
+/* Melhoria para dispositivos móveis */
+@media (max-width: 768px) {
+  .text-justify {
+    text-justify: inter-character;
+    word-spacing: 0.1em;
+  }
+}
 /* Linha única */
 .search-row {
   display: flex;
@@ -75,12 +92,12 @@ ion-radio.radio-checked::part(mark) {
 }
 
 ion-searchbar.custom {
-  --color: #fff;
+  --color: #000;
   min-height: 20px;
-  --icon-color: #fff;
-  --background: #818080;
-  --placeholder-color: #fff;
-  --clear-button-color: #fff;
+  --icon-color: #000;
+  --background: #ffffff;
+  --placeholder-color: #000;
+  --clear-button-color: #000;
 }
 
 .search-highlight,
@@ -112,14 +129,18 @@ ion-content {
   font-size: 16pt;
   contain: content;
   will-change: transform;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .titulo {
   font-family: "ClearSans", serif;
-  font-size: 17pt;
+  font-size: 15pt;
   font-weight: bold;
   margin-top: 20px;
   margin-bottom: 15px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .capitulo {
@@ -128,6 +149,8 @@ ion-content {
   font-weight: 500;
   margin-top: 18px;
   margin-bottom: 12px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .secao {
@@ -135,6 +158,8 @@ ion-content {
   font-size: 14pt;
   margin-top: 16px;
   margin-bottom: 10px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .artigo {
@@ -143,6 +168,8 @@ ion-content {
   font-weight: 500;
   margin-top: 18px;
   margin-bottom: 12px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .paragrafo {
@@ -151,6 +178,8 @@ ion-content {
   font-weight: 500;
   margin-top: 18px;
   margin-bottom: 12px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .remissao {
@@ -161,6 +190,8 @@ ion-content {
   padding-right: 28px;
   position: relative;
   color: #329632;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .comentario {
@@ -174,6 +205,8 @@ ion-content {
   contain: content;
   will-change: transform, opacity;
   color: #329632;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .comentario-tipo {
@@ -211,6 +244,7 @@ ion-content {
 .rich-text p {
   margin: 0 0 0.75rem 0; /* controle consistente de margens */
   text-align: justify; /* mantém a classe ql-align-justify visualmente */
+  text-justify: inter-word; /* melhora a justificação */
 }
 
 .rich-text p:empty,
