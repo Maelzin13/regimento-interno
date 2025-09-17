@@ -987,8 +987,9 @@ int layout select_dialog_singlechoice_material 0x7f0b002d
 int layout splash_screen_view 0x7f0b002e
 int layout support_simple_spinner_dropdown_item 0x7f0b002f
 int mipmap ic_launcher 0x7f0c0000
-int mipmap ic_launcher_foreground 0x7f0c0001
-int mipmap ic_launcher_round 0x7f0c0002
+int mipmap ic_launcher_background 0x7f0c0001
+int mipmap ic_launcher_foreground 0x7f0c0002
+int mipmap ic_launcher_round 0x7f0c0003
 int raw firebase_common_keep 0x7f0d0000
 int string abc_action_bar_home_description 0x7f0e0000
 int string abc_action_bar_up_description 0x7f0e0001

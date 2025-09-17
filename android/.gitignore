@@ -5,6 +5,8 @@
 *.aar
 *.ap_
 *.aab
+android/local.properties
+
 
 # Files for the ART/Dalvik VM
 *.dex

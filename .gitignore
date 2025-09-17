@@ -103,7 +103,7 @@ package.json.backup
 
 # Scripts (if needed)
 scripts/setup-env.js
-
+android/local.properties
 # Logs
 logs
 npm-debug.log*

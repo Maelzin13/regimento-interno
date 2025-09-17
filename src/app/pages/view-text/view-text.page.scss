@@ -135,9 +135,9 @@ ion-content {
 
 .titulo {
   font-family: "ClearSans", serif;
-  font-size: 15pt;
+  font-size: 13pt;
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 5px;
   margin-bottom: 15px;
   text-align: justify;
   text-justify: inter-word;
@@ -147,7 +147,7 @@ ion-content {
   font-family: "ClearSans-Light", serif;
   font-size: 14pt;
   font-weight: 500;
-  margin-top: 18px;
+  margin-top: 5px;
   margin-bottom: 12px;
   text-align: justify;
   text-justify: inter-word;
@@ -156,7 +156,7 @@ ion-content {
 .secao {
   font-family: "Times New Roman", serif;
   font-size: 14pt;
-  margin-top: 16px;
+  margin-top: 5px;
   margin-bottom: 10px;
   text-align: justify;
   text-justify: inter-word;
@@ -166,7 +166,7 @@ ion-content {
   font-family: "Times New Roman", serif;
   font-size: 14pt;
   font-weight: 500;
-  margin-top: 18px;
+  margin-top: 5px;
   margin-bottom: 12px;
   text-align: justify;
   text-justify: inter-word;
@@ -176,7 +176,7 @@ ion-content {
   font-family: "Cambria (Corpo)", serif;
   font-size: 13pt;
   font-weight: 500;
-  margin-top: 18px;
+  margin-top: 5px;
   margin-bottom: 12px;
   text-align: justify;
   text-justify: inter-word;
@@ -186,7 +186,7 @@ ion-content {
   font-family: "Times New Roman", serif;
   font-size: 13pt;
   font-style: italic;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   padding-right: 28px;
   position: relative;
   color: #329632;
@@ -199,7 +199,7 @@ ion-content {
   font-size: 13pt;
   padding: var(--search-padding);
   margin-left: 10px;
-  margin-top: 6px;
+  margin-top: 5px;
   border-radius: 5px;
   font-style: italic;
   contain: content;
@@ -314,7 +314,7 @@ a.ver-menos {
       background-color: rgba(56, 128, 255, 0.15);
     }
   }
-  margin-bottom: 12px;
+  margin-bottom: 5px;
   border-radius: 5px;
   padding: 5px;
   contain: content;
@@ -449,7 +449,7 @@ a.ver-menos {
 
 .remissoes {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   padding: 8px 10px;
   border-radius: 6px;
   position: relative;
