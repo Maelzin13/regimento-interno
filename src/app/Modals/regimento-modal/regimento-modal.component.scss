@@ -28,9 +28,17 @@ ion-header {
     text-decoration: underline;
   }
 
-  /* TÍTULO */
+   /* TÍTULO */
   .nivel-1 a {
-    text-decoration: underline; 
+    color: var(--ion-color-primary);
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px; 
+  }
+  .nivel-1 a:hover {
+    text-decoration-style: solid;  
+    text-decoration-color: var(--ion-color-primary);
   }
 
   /* CAPÍTULO */
