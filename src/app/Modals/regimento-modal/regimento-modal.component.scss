@@ -17,40 +17,69 @@ ion-header {
   font-family: 'Roboto', sans-serif;
   color: #333333;
   line-height: 1.6;
-  
-  h3 {
-    color: #1E999A;
-    margin-bottom: 16px;
+  p { margin-bottom: 8px; }
+}
+
+
+.sumario-html {
+  a {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: underline; 
+  }
+
+  .nivel-1 a {
+    text-decoration: underline; 
+  }
+
+  .nivel-2 a,
+  .nivel-3 a {
+    text-decoration: none;  
+  }
+
+  .nivel-1 {
+    border-left: 4px solid var(--ion-color-primary);
+    padding-left: 12px; margin: 18px 0 10px;
     font-weight: 600;
+    color: var(--ion-color-primary);
   }
-  
-  ul {
-    padding-left: 20px;
-    margin-bottom: 16px;
-    
-    li {
-      margin-bottom: 8px;
-    }
+
+  .nivel-2 {
+    border-left: 3px solid #1aa3a3;
+    padding-left: 12px; margin: 8px 0;
+    font-weight: 500;
+    color: #000; 
   }
-  
-  p {
-    margin-bottom: 8px;
+
+  .nivel-3 {
+    border-left: 2px solid #5aa;
+    padding-left: 12px; margin: 6px 0;
+    font-style: italic;
+    color: var(--ion-color-primary);
   }
 }
 
-// Responsividade
+
+.sumario-html ul,
+.sumario-html li {
+  list-style: none !important;
+  margin: 0;
+  padding-left: 0;
+}
+
+.sumario-html .lista-capitulos,
+.sumario-html .lista-secoes {
+  list-style: none !important;
+  padding-left: 12px;
+  margin: 0;
+}
+
+
+/* Responsivo (se necessário para outros controles) */
 @media (max-width: 768px) {
   .pdf-controls {
     padding: 5px;
-    
-    ion-button {
-      --padding-start: 5px;
-      --padding-end: 5px;
-    }
-    
-    span {
-      margin: 0 5px;
-      font-size: 14px;
-    }
+    ion-button { --padding-start: 5px; --padding-end: 5px; }
+    span { margin: 0 5px; font-size: 14px; }
   }
-} 
+}

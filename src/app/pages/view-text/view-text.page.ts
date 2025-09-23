@@ -1408,8 +1408,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     const modal = await this.modalController.create({
       component: RegimentoModalComponent,
       componentProps: {
-        type: type
-      }
+        type: type,
+        bookId: this.bookId,
+      },
     });
     return await modal.present();
   }
