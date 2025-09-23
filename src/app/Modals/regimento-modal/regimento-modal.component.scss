@@ -25,39 +25,57 @@ ion-header {
   a {
     cursor: pointer;
     color: inherit;
-    text-decoration: underline; 
+    text-decoration: underline;
   }
 
+  /* TÍTULO */
   .nivel-1 a {
     text-decoration: underline; 
   }
 
-  .nivel-2 a,
-  .nivel-3 a {
+  /* CAPÍTULO */
+  .nivel-2 a {
     text-decoration: none;  
+    color: #000;
+  }
+  .nivel-2 a:hover {
+    text-decoration: underline; 
+    color: #1e999a;
+  }
+
+  /* SEÇÃO */
+  .nivel-3 a {
+    text-decoration: none; 
+    color: var(--ion-color-primary); 
+  }
+  .nivel-3 a:hover {
+    text-decoration: underline; 
+    color: #1e999a;  
   }
 
   .nivel-1 {
     border-left: 4px solid var(--ion-color-primary);
-    padding-left: 12px; margin: 18px 0 10px;
+    padding-left: 12px;
+    margin: 18px 0 10px;
     font-weight: 600;
     color: var(--ion-color-primary);
   }
 
   .nivel-2 {
     border-left: 3px solid #1aa3a3;
-    padding-left: 12px; margin: 8px 0;
+    padding-left: 12px;
+    margin: 8px 0;
     font-weight: 500;
-    color: #000; 
   }
 
   .nivel-3 {
     border-left: 2px solid #5aa;
-    padding-left: 12px; margin: 6px 0;
+    padding-left: 12px;
+    margin: 6px 0;
     font-style: italic;
-    color: var(--ion-color-primary);
   }
 }
+
 
 
 .sumario-html ul,
