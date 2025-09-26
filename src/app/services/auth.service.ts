@@ -36,24 +36,24 @@ export class AuthService {
     return this.tokenStorage.getToken();
   }
 
-  private decodeJwt<T=any>(jwt: string): T | null {
+  private decodeJwt<T = any>(jwt: string): T | null {
     try {
       const [, payload] = jwt.split('.');
       return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    } catch { 
-      return null; 
+    } catch {
+      return null;
     }
   }
 
   async isTokenValid(): Promise<boolean> {
     const token = await this.getAuthToken();
     if (!token) return false;
-    
+
     const payload: any = this.decodeJwt(token);
     if (!payload?.exp) return true;
     return Date.now() < payload.exp * 1000;
   }
-  
+
   async login(email: string, password: string): Promise<string> {
     const resp: any = await firstValueFrom(
       this.http.post(`${this.apiService.baseUrl}/login`, { email, password })
@@ -68,9 +68,11 @@ export class AuthService {
 
   async register(user: any): Promise<any> {
     try {
-      return await firstValueFrom(this.http.post(`${this.apiService.baseUrl}/register`, user));
+      return await firstValueFrom(
+        this.http.post(`${this.apiService.baseUrl}/register`, user)
+      );
     } catch (e: any) {
-      throw (e?.error ?? { message: 'Erro inesperado.' });
+      throw e?.error ?? { message: 'Erro inesperado.' };
     }
   }
 
@@ -79,9 +81,11 @@ export class AuthService {
       await this.logout();
       throw new Error('Token expirado');
     }
-    
+
     try {
-      return await firstValueFrom(this.http.get(`${this.apiService.baseUrl}/profile`));
+      return await firstValueFrom(
+        this.http.get(`${this.apiService.baseUrl}/profile`)
+      );
     } catch (error: any) {
       if (error.status === 401) {
         await this.logout();
@@ -102,86 +106,96 @@ export class AuthService {
     if (platform === 'android') {
       // 1) Login nativo (sem browser)
       const result = await FirebaseAuthentication.signInWithGoogle();
-    
+
       // 2) Pegue o token CERTO para o backend
-      const googleIdToken   = result?.credential?.idToken;      // ✅ preferido
-      const googleAccessTok = result?.credential?.accessToken;  // fallback
-    
+      const googleIdToken = result?.credential?.idToken; // ✅ preferido
+      const googleAccessTok = result?.credential?.accessToken; // fallback
+
       if (!googleIdToken && !googleAccessTok) {
         // Se cair aqui, quase sempre é falta de SHA-1/SHA-256 no Firebase
         throw new Error(
           'Google não retornou idToken nem accessToken. Verifique SHA-1/SHA-256 no Firebase e o google-services.json.'
         );
       }
-    
+
       const tokenForBackend = googleIdToken ?? googleAccessTok;
-    
+
       // 3) Envie exatamente no campo "token" (o backend exige isso)
-          let response: any;
-    try {
-      response = await firstValueFrom(
-        this.http.post(
-          `${this.apiService.baseUrl}/auth/social-login/google`,
-          { token: tokenForBackend },  // 👈 NADA de getIdToken() do Firebase aqui
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-          }
-        )
-      );
-    } catch (error: any) {
-      console.error('Erro na requisição para o backend (Android):', error);
-      if (error.status === 0) {
-        throw new Error('Erro de conectividade. Verifique sua conexão com a internet.');
-      } else if (error.status === 401) {
-        throw new Error('Token inválido ou expirado.');
-      } else if (error.status >= 500) {
-        throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
-      } else if (error.name === 'TimeoutError') {
-        throw new Error('Timeout na requisição. Tente novamente.');
-      } else {
-        throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
+      let response: any;
+      try {
+        response = await firstValueFrom(
+          this.http.post(
+            `${this.apiService.baseUrl}/auth/social-login/google`,
+            { token: tokenForBackend }, // 👈 NADA de getIdToken() do Firebase aqui
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+              },
+            }
+          )
+        );
+      } catch (error: any) {
+        console.error('Erro na requisição para o backend (Android):', error);
+        if (error.status === 0) {
+          throw new Error(
+            'Erro de conectividade. Verifique sua conexão com a internet.'
+          );
+        } else if (error.status === 401) {
+          throw new Error('Token inválido ou expirado.');
+        } else if (error.status >= 500) {
+          throw new Error(
+            'Erro interno do servidor. Tente novamente mais tarde.'
+          );
+        } else if (error.name === 'TimeoutError') {
+          throw new Error('Timeout na requisição. Tente novamente.');
+        } else {
+          throw new Error(
+            `Erro na autenticação: ${
+              error.error?.message || error.message || 'Erro desconhecido'
+            }`
+          );
+        }
       }
-    }
-    
+
       // persistência/estado
       await this.tokenStorage.setToken(response.token);
       await this.storage.set('authUser', response.user);
       this.userChanged.next(response.user);
       return response;
     }
-    
 
     // iOS — Generic OAuth2 + PKCE (sem browser externo do app)
     const config = {
-      appId: '202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com', // iOS client ID específico
+      appId:
+        '202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com', // iOS client ID específico
       authorizationBaseUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
       accessTokenEndpoint: 'https://oauth2.googleapis.com/token',
       resourceUrl: 'https://openidconnect.googleapis.com/v1/userinfo',
       scope: 'openid email profile',
-      redirectUrl: 'com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q:/oauth2redirect',
+      redirectUrl:
+        'com.googleusercontent.apps.202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q:/oauth2redirect',
       responseType: 'code',
       pkceEnabled: true,
       logsEnabled: true,
-      additionalParameters: { access_type: 'offline', prompt: 'consent' } // garante refresh_token na 1ª vez
+      additionalParameters: { access_type: 'offline', prompt: 'consent' }, // garante refresh_token na 1ª vez
     } as const;
 
     // Silent refresh (se tiver)
-    const storedRefresh = await this.storage.get<string>('google_refresh_token');
+    const storedRefresh = await this.storage.get<string>(
+      'google_refresh_token'
+    );
     if (storedRefresh) {
       const body = new URLSearchParams({
         client_id: config.appId,
         grant_type: 'refresh_token',
-        refresh_token: storedRefresh
+        refresh_token: storedRefresh,
       });
       try {
         const refreshed: any = await firstValueFrom(
-          this.http.post(
-            config.accessTokenEndpoint, body.toString(),
-            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-          )
+          this.http.post(config.accessTokenEndpoint, body.toString(), {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          })
         );
 
         if (refreshed?.access_token) {
@@ -208,9 +222,11 @@ export class AuthService {
       result = await GenericOAuth2.authenticate(config);
     } catch (error: any) {
       console.error('Erro no GenericOAuth2.authenticate:', error);
-      throw new Error(`Erro na autenticação OAuth2: ${error.message || 'Erro desconhecido'}`);
+      throw new Error(
+        `Erro na autenticação OAuth2: ${error.message || 'Erro desconhecido'}`
+      );
     }
-    
+
     const accessToken = result?.access_token || result?.accessToken;
     if (!accessToken) {
       console.error('Resultado do OAuth2:', result);
@@ -230,7 +246,7 @@ export class AuthService {
           {
             headers: {
               'Content-Type': 'application/json',
-              'Accept': 'application/json'
+              Accept: 'application/json',
             },
           }
         )
@@ -238,15 +254,23 @@ export class AuthService {
     } catch (error: any) {
       console.error('Erro na requisição para o backend:', error);
       if (error.status === 0) {
-        throw new Error('Erro de conectividade. Verifique sua conexão com a internet.');
+        throw new Error(
+          'Erro de conectividade. Verifique sua conexão com a internet.'
+        );
       } else if (error.status === 401) {
         throw new Error('Token inválido ou expirado.');
       } else if (error.status >= 500) {
-        throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+        throw new Error(
+          'Erro interno do servidor. Tente novamente mais tarde.'
+        );
       } else if (error.name === 'TimeoutError') {
         throw new Error('Timeout na requisição. Tente novamente.');
       } else {
-        throw new Error(`Erro na autenticação: ${error.error?.message || error.message || 'Erro desconhecido'}`);
+        throw new Error(
+          `Erro na autenticação: ${
+            error.error?.message || error.message || 'Erro desconhecido'
+          }`
+        );
       }
     }
 
@@ -264,24 +288,25 @@ export class AuthService {
     if (platform !== 'ios') {
       throw new Error('Apple Sign In disponível somente em iOS.');
     }
-  
+
     // Flag para evitar múltiplas chamadas simultâneas
     if (this.isAppleLoginInProgress) {
       throw new Error('Apple Sign-In já está em andamento. Aguarde...');
     }
 
     this.isAppleLoginInProgress = true;
-    
+
     try {
       // Usar apenas o método simples para evitar loops
       const result = await this.appleLoginSimple();
       this.isAppleLoginInProgress = false;
       return result;
-      
     } catch (error: any) {
       this.isAppleLoginInProgress = false;
       console.error('Apple Sign-In falhou:', error);
-      throw new Error(`Apple Sign-In falhou: ${error.message || 'Erro desconhecido'}`);
+      throw new Error(
+        `Apple Sign-In falhou: ${error.message || 'Erro desconhecido'}`
+      );
     }
   }
 
@@ -291,32 +316,45 @@ export class AuthService {
   private async appleLoginSimple(): Promise<any> {
     const options = {
       clientId: 'com.regimento.appservice',
-      redirectURI: 'https://regimento-interno-comentado.firebaseapp.com/__/auth/handler',
+      redirectURI:
+        'https://regimento-interno-comentado.firebaseapp.com/__/auth/handler',
       scopes: 'email name',
       state: '12345',
-      nonce: this.generateNonce()
+      nonce: this.generateNonce(),
     };
 
     try {
       // Adicionar timeout para evitar travamento
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Apple Sign-In timeout após 30 segundos')), 30000);
+        setTimeout(
+          () => reject(new Error('Apple Sign-In timeout após 30 segundos')),
+          30000
+        );
       });
 
-      const result = await Promise.race([
+      const result = (await Promise.race([
         SignInWithApple.authorize(options),
-        timeoutPromise
-      ]) as any;
+        timeoutPromise,
+      ])) as any;
 
       if (!result.response) {
         throw new Error('Resposta do Apple Sign-In está vazia.');
       }
 
       // Extrair dados da resposta
-      const { identityToken, authorizationCode, user, email, givenName, familyName } = result.response;
-      
+      const {
+        identityToken,
+        authorizationCode,
+        user,
+        email,
+        givenName,
+        familyName,
+      } = result.response;
+
       if (!identityToken) {
-        throw new Error('Token de identidade não foi retornado pelo Apple Sign-In.');
+        throw new Error(
+          'Token de identidade não foi retornado pelo Apple Sign-In.'
+        );
       }
 
       // Extrair email do identityToken se não estiver disponível na resposta
@@ -326,7 +364,10 @@ export class AuthService {
           const tokenPayload = this.decodeJwt(identityToken);
           userEmail = tokenPayload?.email || null;
         } catch (error) {
-          console.warn('Não foi possível extrair email do identityToken:', error);
+          console.warn(
+            'Não foi possível extrair email do identityToken:',
+            error
+          );
         }
       }
 
@@ -339,7 +380,7 @@ export class AuthService {
       // Enviar para backend usando uma abordagem alternativa
       // Como o backend não consegue processar o identityToken do Apple,
       // vamos enviar os dados essenciais de forma que o backend possa processar
-      const backendData = { 
+      const backendData = {
         // Enviar o token para validação (se o backend conseguir)
         token: identityToken,
         // Dados essenciais extraídos do token
@@ -358,16 +399,19 @@ export class AuthService {
           email: userEmail,
           email_verified: true,
           is_private_email: true,
-          exp: Math.floor(Date.now() / 1000) + 3600 // 1 hora a partir de agora
-        }
+          exp: Math.floor(Date.now() / 1000) + 3600, // 1 hora a partir de agora
+        },
       };
 
       const response: any = await firstValueFrom(
         this.http.post(
           `${this.apiService.baseUrl}/auth/social-login/apple`,
           backendData,
-          { 
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
           }
         )
       );
@@ -377,21 +421,29 @@ export class AuthService {
       await this.storage.set('authUser', response.user);
       this.userChanged.next(response.user);
       return response;
-
     } catch (error: any) {
       console.error('Erro no Apple Sign-In simples:', error);
-      
+
       // Tratamento específico de erros
       if (error.message?.includes('timeout')) {
-        throw new Error('Apple Sign-In demorou muito para responder. Tente novamente.');
-      } else if (error.message?.includes('cancelled') || error.message?.includes('canceled')) {
+        throw new Error(
+          'Apple Sign-In demorou muito para responder. Tente novamente.'
+        );
+      } else if (
+        error.message?.includes('cancelled') ||
+        error.message?.includes('canceled')
+      ) {
         throw new Error('Login com Apple foi cancelado pelo usuário.');
       } else if (error.status === 401) {
         throw new Error('Token inválido ou expirado. Tente novamente.');
       } else if (error.status >= 500) {
-        throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+        throw new Error(
+          'Erro interno do servidor. Tente novamente mais tarde.'
+        );
       } else {
-        throw new Error(`Erro no Apple Sign-In: ${error.message || 'Erro desconhecido'}`);
+        throw new Error(
+          `Erro no Apple Sign-In: ${error.message || 'Erro desconhecido'}`
+        );
       }
     }
   }
@@ -402,8 +454,10 @@ export class AuthService {
   private generateNonce(): string {
     const array = new Uint8Array(16);
     crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-  }  
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join(
+      ''
+    );
+  }
 
   /**
    * Nativo não usa redirects do Firebase Web. Mantemos NO-OP só por compatibilidade.
@@ -413,13 +467,13 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    try { 
-      await FirebaseAuthentication.signOut().catch(() => {}); 
+    try {
+      await FirebaseAuthentication.signOut().catch(() => {});
     } catch {}
-    
+
     // Apple Sign In não tem método signOut nativo
     // O logout é feito apenas removendo os tokens locais
-    
+
     await this.tokenStorage.removeToken();
     await this.storage.remove('authUser');
     await this.storage.remove('google_refresh_token');
@@ -428,16 +482,19 @@ export class AuthService {
     await this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
-
   /**
    * Verificar se o usuário pode editar dados (não é Apple)
    */
   async canEditProfile(): Promise<boolean> {
     const user = await this.getUser();
     if (!user) return false;
-    
+
     // Usuários Apple não podem editar dados
-    return user.provider !== 'apple' && user.provider !== 'apple_native' && user.provider !== 'apple_simple';
+    return (
+      user.provider !== 'apple' &&
+      user.provider !== 'apple_native' &&
+      user.provider !== 'apple_simple'
+    );
   }
 
   /**
@@ -446,7 +503,7 @@ export class AuthService {
   async canDeleteAccount(): Promise<boolean> {
     const user = await this.getUser();
     if (!user) return false;
-    
+
     // Todos os usuários podem excluir conta, mas com avisos diferentes
     return true;
   }

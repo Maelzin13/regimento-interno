@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar id="toolbar">
     <ion-title>
-      {{ content[type].title || 'Sumário' }}
+      {{ content[type]?.title }}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()" color="primary">
@@ -12,12 +12,5 @@
 </ion-header>
 
 <ion-content fullscreen class="modal-content-container">
-  <ion-spinner *ngIf="loading" name="crescent" class="mx-auto my-4"></ion-spinner>
-  <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
-
-  <div
-    *ngIf="!loading && !errorMsg"
-    class="modal-content sumario-html"
-    [innerHTML]="content[type].content">
-  </div>
+  <div class="modal-content" [innerHTML]="content[type]?.content"></div>
 </ion-content>
