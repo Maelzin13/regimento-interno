@@ -8,7 +8,100 @@
   --search-gap: 4px;
 }
 
-.search-highlight, mark.search-highlight {
+/* Classes para justificação de texto */
+.text-justify {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+}
+
+/* Melhoria para dispositivos móveis */
+@media (max-width: 768px) {
+  .text-justify {
+    text-justify: inter-character;
+    word-spacing: 0.1em;
+  }
+}
+/* Linha única */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap; /* evita quebrar “Palavra-chave” */
+}
+
+.search-label {
+  font-weight: 600;
+}
+/* Radios lado a lado */
+.radio-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+/* Faz ion-item não ocupar 100% e ficar em linha */
+.radio-item {
+  --inner-padding-start: 2px;
+  --inner-padding-end: 2px;
+  --background: none;
+  display: inline-flex !important;
+  align-items: center;
+  width: auto !important;
+  flex: 0 0 auto;
+}
+
+.radio-item ion-label {
+  margin-left: 6px;
+  white-space: nowrap; /* “Palavra-chave” não quebra */
+}
+/* Estilo de “checkbox” nos radios */
+ion-radio::part(container) {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid;
+}
+
+ion-radio::part(mark) {
+  background: none;
+  transform: none;
+  border-radius: 0;
+  width: 6px;
+  height: 10px;
+  border-width: 0 2px 2px 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
+ion-radio.radio-checked::part(container) {
+  background: #1e999a;
+  border-color: #1e999a;
+}
+
+ion-radio.radio-checked::part(mark) {
+  border-color: #fff;
+  transform: rotate(45deg);
+}
+/* opcional: se a tela for muito estreita, permitir scroll horizontal sem quebrar */
+@media (max-width: 360px) {
+  .search-row {
+    overflow-x: auto;
+  }
+}
+
+ion-searchbar.custom {
+  --color: #000;
+  min-height: 20px;
+  --icon-color: #000;
+  --background: #ffffff;
+  --placeholder-color: #000;
+  --clear-button-color: #000;
+}
+
+.search-highlight,
+mark.search-highlight {
   background-color: var(--search-highlight);
   border-radius: 4px;
   padding: 0 2px;
@@ -18,22 +111,10 @@
   transition: background 0.2s;
 }
 
-.search-toolbar {
-  --min-height: 56px;
-  --padding-start: 8px;
-  --padding-end: 8px;
-}
-
 .result-focus {
   outline: 2px solid #3880ff;
   background-color: #fff3cd !important;
   transition: outline 0.3s, background 0.3s;
-}
-
-.law-text { color: #1e999a; }
-.comment-text { 
-  color: #92d050;
-  cursor: pointer; 
 }
 
 ion-content {
@@ -43,103 +124,206 @@ ion-content {
   -webkit-font-smoothing: antialiased;
 }
 
-.main-title,
-.titulo,
-.capitulo,
-.secao,
-.artigo-container {
+.main-title {
+  font-family: "ClearSans", serif;
+  font-size: 16pt;
   contain: content;
   will-change: transform;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
-.titulo { 
-  font-size: 1.4rem; 
+.titulo {
+  font-family: "ClearSans", serif;
+  font-size: 13pt;
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 5px;
   margin-bottom: 15px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
-.capitulo { 
-  font-size: 1.2rem; 
+.capitulo {
+  font-family: "ClearSans-Light", serif;
+  font-size: 14pt;
   font-weight: 500;
-  margin-top: 18px;
+  margin-top: 5px;
   margin-bottom: 12px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
-.secao { 
-  font-size: 1rem; 
-  font-style: italic;
-  margin-top: 16px;
+.secao {
+  font-family: "Times New Roman", serif;
+  font-size: 14pt;
+  margin-top: 5px;
   margin-bottom: 10px;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.artigo {
+  font-family: "Times New Roman", serif;
+  font-size: 14pt;
+  font-weight: 500;
+  margin-top: 5px;
+  margin-bottom: 12px;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.paragrafo {
+  font-family: "Cambria (Corpo)", serif;
+  font-size: 13pt;
+  font-weight: 500;
+  margin-top: 5px;
+  margin-bottom: 12px;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.remissao {
+  font-family: "Times New Roman", serif;
+  font-size: 13pt;
+  font-style: italic;
+  margin-bottom: 5px;
+  padding-right: 28px;
+  position: relative;
+  color: #329632;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .comentario {
+  font-family: "Times New Roman", serif;
+  font-size: 13pt;
   padding: var(--search-padding);
-  border-left: 4px solid #329632;
-  margin-bottom: 12px;
+  margin-left: 10px;
+  margin-top: 5px;
   border-radius: 5px;
+  font-style: italic;
   contain: content;
   will-change: transform, opacity;
+  color: #329632;
+  text-align: justify;
+  text-justify: inter-word;
+}
 
-  .comentario-tipo {
-    color: #329632;
-    font-weight: 500;
-    display: block;
-    margin-bottom: 4px;
-  }
+.comentario-tipo {
+  color: #329632;
+  font-weight: bold;
+  font-style: italic;
+  display: inline-block;
+  text-decoration: underline;
+}
 
-  strong {
-    color: #329632;
-    font-weight: 600;
-  }
+/* Container que recebe .collapsed (padrão) e .expanded */
+.conteudo-comentario {
+  position: relative;
+}
 
-  .nota-ref {
-    color: var(--ion-color-primary);
-    cursor: pointer;
-    font-size: 0.75em;
-    user-select: none;
-    text-decoration: underline;
-  }
+/* Encosta o botão no conteúdo, sem “respiro” fantasma do último <p> */
+.conteudo-comentario .rich-text > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Se houver um <p> cujo único filho é <br>, zera o espaço */
+.conteudo-comentario .rich-text p > br:only-child {
+  display: none;
+}
+
+/* Garante distância mínima controlada para o botão */
+.conteudo-comentario a.ver-mais,
+.conteudo-comentario a.ver-menos {
+  display: inline-block;
+  margin-top: .25rem;
+}
+
+
+/* Estilo do conteúdo rico vindo do Quill */
+.rich-text p {
+  margin: 0 0 0.75rem 0; /* controle consistente de margens */
+  text-align: justify; /* mantém a classe ql-align-justify visualmente */
+  text-justify: inter-word; /* melhora a justificação */
+}
+
+.rich-text p:empty,
+.rich-text p:has(br:only-child) {
+  display: none;
+}
+
+/* Estado colapsado: 3 linhas, com overflow escondido */
+.conteudo-comentario.collapsed .rich-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* qtd de linhas visíveis */
+  line-clamp: 2; /* compatibilidade padrão */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Gradiente de fade-out no fim (opcional, dá um toque de UX) */
+.conteudo-comentario.collapsed::after {
+  content: "";
+  position: absolute;
+  bottom: 2rem; /* ajusta conforme espaço do link "Ver mais" */
+  left: 0;
+  right: 0;
+  height: 3rem;
+  pointer-events: none;
+}
+
+/* Estado expandido: mostra tudo */
+.conteudo-comentario.expanded .rich-text {
+  display: block;
+  -webkit-line-clamp: initial;
+  line-clamp: initial; /* compatibilidade padrão */
+  overflow: visible;
+}
+
+a.ver-mais,
+a.ver-menos {
+  display: inline-block;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .artigo-container {
   background-color: #f1f1f1;
 
-// Estilos otimizados para remissões
-.remissao-container {
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background-color: rgba(56, 128, 255, 0.05);
+  @keyframes pulse {
+    0% {
+      background-color: rgba(56, 128, 255, 0.1);
+    }
+    50% {
+      background-color: rgba(56, 128, 255, 0.3);
+    }
+    100% {
+      background-color: rgba(56, 128, 255, 0.1);
+    }
   }
-}
 
-.remissao-content {
-  cursor: pointer;
-  border-radius: 4px;
-  padding: 8px;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background-color: rgba(56, 128, 255, 0.1);
+  @keyframes pulse-highlight {
+    0% {
+      background-color: rgba(56, 128, 255, 0.1);
+    }
+    50% {
+      background-color: rgba(56, 128, 255, 0.3);
+    }
+    100% {
+      background-color: rgba(56, 128, 255, 0.15);
+    }
   }
-}
-
-.remissao-highlight {
-  background-color: rgba(56, 128, 255, 0.2) !important;
-  animation: pulse 1.5s ease-in-out;
-}
-
-@keyframes pulse {
-  0% { background-color: rgba(56, 128, 255, 0.1); }
-  50% { background-color: rgba(56, 128, 255, 0.3); }
-  100% { background-color: rgba(56, 128, 255, 0.1); }
+  margin-bottom: 5px;
+  border-radius: 5px;
+  padding: 5px;
+  contain: content;
 }
 
 // Classes para remissões externas
 .remissao-content.clickable {
   cursor: pointer;
-  
+
   &:hover {
     background-color: rgba(56, 128, 255, 0.1);
   }
@@ -148,7 +332,7 @@ ion-content {
 .remissao-content.not-clickable {
   cursor: default;
   opacity: 0.7;
-  
+
   &:hover {
     background-color: transparent;
   }
@@ -160,53 +344,46 @@ ion-content {
   --border-radius: 50%;
   --padding-start: 8px;
   --padding-end: 8px;
-  
   &:hover {
     --background: rgba(56, 128, 255, 0.3);
   }
-  
   ion-icon {
     font-size: 20px;
   }
 }
 
-// Destaque para remissão ativa (quando volta)
-.remissao-active {
-  background-color: rgba(56, 128, 255, 0.15) !important;
-  border-left: 4px solid #3880ff !important;
-  animation: pulse-highlight 2s ease-in-out;
+.remissao-content {
+  padding: 8px;
+  cursor: pointer;
+  margin-left: 10px;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: var(--ion-color-success-shade);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:hover {
+    background-color: rgba(56, 128, 255, 0.1);
+  }
 }
 
-@keyframes pulse-highlight {
-  0% { background-color: rgba(56, 128, 255, 0.1); }
-  50% { background-color: rgba(56, 128, 255, 0.3); }
-  100% { background-color: rgba(56, 128, 255, 0.15); }
-}
-  margin-bottom: 12px;
-  border-radius: 5px;
-  padding: 5px;
-  contain: content;
-}
-
-.comentario {
-  color: #329632;
-}
-
-.comentario-tipo {
-  font-weight: bold;
-  font-style: italic;
-  display: inline-block;
-  color: #329632;
+.remissao-highlight {
+  background-color: rgba(56, 128, 255, 0.2) !important;
+  animation: pulse 1.5s ease-in-out;
 }
 
 .remissao-container {
+  transition: all 0.3s ease;
+  border-radius: 0 8px 8px 0;
   border-left: 3px solid var(--ion-color-success);
   background-color: rgba(var(--ion-color-success-rgb), 0.05);
-  padding: 12px;
-  border-radius: 0 8px 8px 0;
-  transition: all 0.3s ease;
-  margin: 10px 0;
-  
+
   &:hover {
     background-color: rgba(var(--ion-color-success-rgb), 0.1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -214,35 +391,26 @@ ion-content {
   }
 }
 
-.remissao-content {
-  cursor: pointer;
-  position: relative;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    color: var(--ion-color-success-shade);
-  }
-  
-  &:active {
-    transform: translateY(1px);
-  }
-}
-
-.remissao-text {
-  font-weight: 500;
-  margin-bottom: 8px;
-  padding-right: 28px;
-  position: relative;
-  color: #329632;
-}
-
 .remissao-indicator {
+  font-size: 0.85em;
+  margin-top: 4px;
+
+  font-size: 0.8rem;
+  color: #1e999a;
+  text-align: right;
+  opacity: 0.7;
+  font-style: italic;
   display: flex;
   align-items: center;
-  font-size: 0.85em;
-  color: var(--ion-color-medium);
-  margin-top: 4px;
-  
+  justify-content: flex-end;
+  pointer-events: none;
+
+  &::before {
+    content: "→";
+    margin-right: 4px;
+    font-size: 1em;
+  }
+
   .remissao-icon {
     margin-right: 6px;
     font-size: 1.2em;
@@ -255,13 +423,13 @@ ion-content {
   border-left: 4px solid var(--ion-color-warning);
   border-right: 4px solid var(--ion-color-warning);
   box-shadow: 0 0 15px rgba(var(--ion-color-warning-rgb), 0.4);
+  border-left: 4px solid #3880ff !important;
+  animation: pulse-highlight 2s ease-in-out;
   padding: 12px;
   border-radius: 6px;
   transform: translateY(-2px);
   transition: all 0.3s ease;
 }
-
-
 
 .remissao-inline,
 .remissoes {
@@ -272,7 +440,8 @@ ion-content {
   text-decoration: underline;
   transition: transform 250ms ease, background 250ms ease;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background: rgba(30, 153, 154, 0.13);
     transform: translateY(-1px);
   }
@@ -280,17 +449,17 @@ ion-content {
 
 .remissoes {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   padding: 8px 10px;
   border-radius: 6px;
   position: relative;
   background: rgba(30, 153, 154, 0.05);
-  box-shadow: 0 1px 6px rgba(30,153,154,0.07);
+  box-shadow: 0 1px 6px rgba(30, 153, 154, 0.07);
   border: 1px solid rgba(30, 153, 154, 0.15);
 
   &:active {
     transform: translateY(1px);
-    box-shadow: 0 1px 4px rgba(30,153,154,0.1);
+    box-shadow: 0 1px 4px rgba(30, 153, 154, 0.1);
   }
 
   &.flash-highlight {
@@ -300,27 +469,14 @@ ion-content {
 }
 
 @keyframes flash-animation {
-  0% { background: rgba(255, 254, 176, 0.9); }
-  40% { background: rgba(208, 255, 238, 0.7); }
-  100% { background: rgba(30, 153, 154, 0.05);}
-}
-
-.remissao-indicator {
-  font-size: 0.8rem;
-  color: #1e999a;
-  text-align: right;
-  margin-top: 2px;
-  opacity: 0.7;
-  font-style: italic;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  pointer-events: none;
-  
-  &::before {
-    content: '→';
-    margin-right: 4px;
-    font-size: 1em;
+  0% {
+    background: rgba(255, 254, 176, 0.9);
+  }
+  40% {
+    background: rgba(208, 255, 238, 0.7);
+  }
+  100% {
+    background: rgba(30, 153, 154, 0.05);
   }
 }
 
@@ -335,15 +491,19 @@ ion-content {
   align-items: center;
   gap: var(--search-gap);
   margin-bottom: var(--search-padding);
-  
-  ion-searchbar { flex: 1; }
-  
+
+  ion-searchbar {
+    flex: 1;
+  }
+
   ion-button {
     --padding-start: 8px;
     --padding-end: 8px;
     margin: 0;
-    
-    ion-icon { font-size: 1.2em; }
+
+    ion-icon {
+      font-size: 1.2em;
+    }
   }
 }
 
@@ -391,11 +551,10 @@ ion-content {
   margin: 0;
 }
 
-
 .search-history {
   margin: var(--search-padding) 0;
   padding: 0 var(--search-padding);
-  
+
   ion-chip {
     margin-right: 5px;
     margin-bottom: 5px;
@@ -423,7 +582,6 @@ ion-content {
   font-weight: 600 !important;
   color: #000 !important;
 }
-
 // Estilos específicos para a tag mark
 mark.highlight-search {
   background-color: rgba(255, 230, 0, 0.8) !important;
@@ -436,7 +594,6 @@ mark.highlight-search {
   position: relative !important;
   z-index: 10 !important;
 }
-
 // Estilos para highlights permanentes (não removidos automaticamente)
 .permanent-highlight {
   background-color: rgba(255, 230, 0, 0.9) !important;
@@ -451,30 +608,102 @@ mark.highlight-search {
 }
 
 .header-links {
+  /* força ocupar a largura toda do conteúdo do toolbar */
+  width: 100%;
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 16px;
-  margin-top: 10px;
-
-  .header-link {
-    color: var(--ion-color-primary);
-    text-decoration: none;
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 0.9rem;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+  justify-content: center; /* centro real */
+  align-items: center;
+  flex-wrap: wrap; /* pode quebrar em 2 linhas no mobile */
+  gap: 12px;
 }
 
+.header-link {
+  color: var(--ion-color-primary);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  line-height: 1;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+/* ajustes finos para telas pequenas */
+@media (max-width: 768px) and (max-width: 480px) {
+  .header-links {
+    gap: 8px;
+  }
+  .header-link {
+    font-size: 0.85rem;
+  }
+}
 // Efeito hover para highlights permanentes
 .permanent-highlight:hover {
   background-color: rgba(255, 200, 0, 1) !important;
   box-shadow: 0 0 12px rgba(255, 200, 0, 0.8) !important;
   transform: scale(1.02) !important;
+}
+
+// Destaque para resultado focado na navegação
+.result-focus {
+  background-color: rgba(56, 128, 255, 0.2) !important;
+  border: 2px solid #3880ff !important;
+  border-radius: 6px !important;
+  padding: 4px !important;
+  box-shadow: 0 0 15px rgba(56, 128, 255, 0.4) !important;
+  animation: result-focus-pulse 2s ease-in-out !important;
+}
+
+@keyframes result-focus-pulse {
+  0% {
+    background-color: rgba(56, 128, 255, 0.1);
+    box-shadow: 0 0 10px rgba(56, 128, 255, 0.3);
+  }
+  50% {
+    background-color: rgba(56, 128, 255, 0.3);
+    box-shadow: 0 0 20px rgba(56, 128, 255, 0.6);
+  }
+  100% {
+    background-color: rgba(56, 128, 255, 0.2);
+    box-shadow: 0 0 15px rgba(56, 128, 255, 0.4);
+  }
+}
+
+// Estilos para highlights de busca (baseado no modelo da web)
+.search-highlight {
+  background-color: rgba(255, 230, 0, 0.8) !important;
+  color: #000 !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 6px rgba(255, 230, 0, 0.5) !important;
+  text-decoration: none !important;
+  z-index: 10 !important;
+  position: relative !important;
+}
+
+// Destaque para o highlight atual na navegação
+.search-highlight.current {
+  background-color: rgba(255, 230, 0, 1) !important;
+  border: 2px solid #3880ff !important;
+  box-shadow: 0 0 15px rgba(56, 128, 255, 0.6) !important;
+  animation: highlight-pulse 1.5s ease-in-out !important;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    background-color: rgba(255, 230, 0, 0.8);
+    box-shadow: 0 0 6px rgba(255, 230, 0, 0.5);
+  }
+  50% {
+    background-color: rgba(255, 230, 0, 1);
+    box-shadow: 0 0 20px rgba(56, 128, 255, 0.8);
+  }
+  100% {
+    background-color: rgba(255, 230, 0, 1);
+    box-shadow: 0 0 15px rgba(56, 128, 255, 0.6);
+  }
 }
 
 // Flash highlight para navegação (temporário)
@@ -488,14 +717,26 @@ mark.highlight-search {
 }
 
 @keyframes flash-pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.7; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .flash-highlight {
@@ -503,8 +744,12 @@ mark.highlight-search {
 }
 
 @keyframes flash-highlight {
-  0% { background-color: rgba(var(--ion-color-warning-rgb), 0.5); }
-  100% { background-color: transparent; }
+  0% {
+    background-color: rgba(var(--ion-color-warning-rgb), 0.5);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 
 .remissao-inline {
@@ -518,31 +763,31 @@ mark.highlight-search {
   transition: all 0.2s ease;
   position: relative;
   border-radius: 3px;
-  
-  &:hover, &:focus {
+
+  &:hover,
+  &:focus {
     color: var(--ion-color-primary-shade);
     text-decoration-color: var(--ion-color-primary);
     background-color: rgba(var(--ion-color-primary-rgb), 0.08);
     box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.1);
   }
-  
+
   &:active {
     color: var(--ion-color-primary-tint);
     background-color: rgba(var(--ion-color-primary-rgb), 0.12);
   }
-  
+
   &.remissao-active {
     background-color: rgba(var(--ion-color-warning-rgb), 0.15);
     box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
     color: var(--ion-color-warning-shade);
     text-decoration-color: var(--ion-color-warning);
   }
-  
+
   &.remissao-pulsing {
     animation: remissao-pulse 1.5s ease-in-out;
   }
 }
-
 // Animação de pulso para remissões clicadas
 @keyframes remissao-pulse {
   0% {
@@ -553,7 +798,8 @@ mark.highlight-search {
   50% {
     transform: scale(1.1);
     background-color: rgba(var(--ion-color-warning-rgb), 0.3);
-    box-shadow: 0 0 0 4px rgba(var(--ion-color-warning-rgb), 0.4), 0 0 20px rgba(var(--ion-color-warning-rgb), 0.3);
+    box-shadow: 0 0 0 4px rgba(var(--ion-color-warning-rgb), 0.4),
+      0 0 20px rgba(var(--ion-color-warning-rgb), 0.3);
   }
   100% {
     transform: scale(1);
@@ -561,18 +807,16 @@ mark.highlight-search {
     box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
   }
 }
-
 // Destaque especial para remissões dentro de parênteses
 .remissao-parentese {
   background-color: rgba(var(--ion-color-success-rgb), 0.05);
   border-radius: 3px;
   padding: 0 3px;
-  
+
   &:hover {
     background-color: rgba(var(--ion-color-success-rgb), 0.1);
   }
 }
-
 // Melhorar o destaque dos elementos específicos
 .elemento-especifico-highlight {
   animation: elemento-especifico-animation 3s ease-in-out;
@@ -584,7 +828,6 @@ mark.highlight-search {
   padding: 4px 8px;
   margin: 4px -8px;
 }
-
 // Nova barra de navegação de resultados
 .search-navigation-bar {
   position: fixed;
@@ -602,7 +845,7 @@ mark.highlight-search {
   flex-direction: column;
   gap: 8px;
   animation: navigation-bar-entrance 0.3s ease-out;
-  
+
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     bottom: calc(80px + env(safe-area-inset-bottom));
   }
@@ -632,9 +875,9 @@ mark.highlight-search {
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
-  
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -4px;
     left: 10px;
@@ -670,21 +913,21 @@ mark.highlight-search {
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   &:hover:not(.disabled) {
     background-color: rgba(255, 255, 255, 0.1);
     color: #ffffff;
   }
-  
+
   &:active:not(.disabled) {
     transform: scale(0.95);
   }
-  
+
   &.disabled {
     opacity: 0.4;
     cursor: not-allowed;
   }
-  
+
   ion-icon {
     font-size: 18px;
   }
@@ -697,16 +940,16 @@ mark.highlight-search {
   color: #e0e0e0;
   font-weight: 500;
   font-size: 0.9rem;
-  
+
   .current-result {
     color: #ffffff;
     font-weight: 600;
   }
-  
+
   .separator {
     opacity: 0.6;
   }
-  
+
   .total-results {
     opacity: 0.8;
   }
@@ -728,11 +971,11 @@ mark.highlight-search {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   ion-icon {
     font-size: 16px;
   }
-  
+
   &:active {
     transform: scale(0.95);
   }
@@ -742,7 +985,7 @@ mark.highlight-search {
   background-color: transparent;
   color: #e0e0e0;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
+
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: #ffffff;
@@ -753,33 +996,32 @@ mark.highlight-search {
   background-color: #1a1a1a;
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  
+
   &:hover {
     background-color: #2a2a2a;
     border-color: rgba(255, 255, 255, 0.4);
   }
 }
-
 // Responsividade para telas menores
 @media (max-width: 480px) {
   .search-navigation-bar {
     min-width: 280px;
     padding: 10px 12px;
   }
-  
+
   .navigation-controls {
     gap: 12px;
   }
-  
+
   .action-btn {
     padding: 6px 8px;
     font-size: 0.8rem;
-    
+
     span {
       display: none; // Ocultar texto em telas muito pequenas
     }
   }
-  
+
   .navigation-tooltip {
     max-width: 150px;
     font-size: 0.75rem;
@@ -836,41 +1078,18 @@ mark.highlight-search {
     box-shadow: 0 0 0 rgba(var(--ion-color-success-rgb), 0);
   }
 }
-
-ion-segment {
-  --background: #d9e6dfa8;
-}
-
-
-/* Faz o searchbar “caber” ao lado do botão no iOS */
-
 /* Botão de busca compacto, sem estourar altura do toolbar */
 .search-btn {
   --padding-start: 8px;
   --padding-end: 8px;
   height: 40px;
-  width: 40px;
-  margin-left: 8px;
+  width: 60px;
+  background-color: #ffffff;
 }
-
-/* Mantém seus links centralizados como antes */
-.header-links {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 8px 0 12px;
-  .header-link {
-    color: var(--ion-color-primary);
-    text-decoration: none;
-    font-weight: 500;
-  }
-}
-
 /* Opcional: melhora a integração com safe-area no iOS */
 :host {
   --ion-safe-area-top: env(safe-area-inset-top);
 }
-
 /* Linha responsiva no toolbar */
 .toolbar-row {
   display: flex;
@@ -878,12 +1097,10 @@ ion-segment {
   gap: 10px;
   width: 100%;
 }
-
 /* segment cresce e encosta à direita quando houver espaço */
 .toolbar-row .seg {
   margin-left: auto;
 }
-
 /* mobile: empilha e ocupa 100% */
 @media (max-width: 480px) {
   .toolbar-row {
@@ -896,21 +1113,60 @@ ion-segment {
     width: 100%;
   }
 }
-
 /* título compacto sem usar <ion-title> (evita ocupar a barra toda) */
 .toolbar-row .label {
   font-size: 0.9rem;
   font-weight: 600;
 }
-
 /* opcional: deixa o segment mais “apertado” no iOS/Android */
 ion-segment {
   --indicator-color: var(--ion-color-primary);
   --border-radius: 12px;
 }
+
 ion-segment-button {
   --padding-start: 10px;
   --padding-end: 10px;
   --padding-top: 6px;
   --padding-bottom: 6px;
+}
+// Botão flutuante de retorno no lado esquerdo da tela
+.return-indicator {
+  position: fixed;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  background-color: rgba(56, 128, 255, 0.9);
+  color: white;
+  border-radius: 25px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    background-color: rgba(56, 128, 255, 1);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  span {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
 }

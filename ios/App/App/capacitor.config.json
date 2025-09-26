@@ -3,12 +3,17 @@
 	"appName": "Regimento Interno Comentado",
 	"webDir": "www",
 	"server": {
-		"androidScheme": "https"
+		"androidScheme": "https",
+		"iosScheme": "https"
 	},
 	"android": {
 		"backgroundColor": "#ffffff",
 		"allowMixedContent": false,
 		"captureInput": true,
+		"webContentsDebuggingEnabled": false
+	},
+	"ios": {
+		"backgroundColor": "#ffffff",
 		"webContentsDebuggingEnabled": false
 	},
 	"plugins": {
@@ -46,11 +51,19 @@
 		"FirebaseAuthentication": {
 			"skipNativeAuth": false,
 			"providers": [
-				"google.com"
+				"google.com",
+				"apple.com"
 			]
+		},
+		"SignInWithApple": {
+			"clientId": "com.regimento.appservice",
+			"redirectURI": "https://regimento-interno-comentado.firebaseapp.com/__/auth/handler",
+			"scopes": "email name",
+			"state": "apple-signin-state"
 		}
 	},
 	"packageClassList": [
+		"SignInWithApple",
 		"GenericOAuth2Plugin",
 		"FirebaseAuthenticationPlugin",
 		"AppPlugin",

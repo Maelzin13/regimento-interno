@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true" scroll-y="true">
+<ion-content>
   <div class="center-container">
     <ion-card class="login-card">
       <ion-card-content>
@@ -21,7 +21,7 @@
         </ion-item>
 
         <br>
-        <ion-button fill="clear" class="forgot-password-btn" (click)="forgotPassword()">
+        <ion-button fill="clear" class="forgot-password-btn" routerLink="/forgot-password">
           Esqueceu sua senha?
         </ion-button>
         <br>
@@ -44,8 +44,22 @@
                 Google
               </ion-button>
             </ion-col>
+            <ion-col size="12" class="ion-margin-bottom" *ngIf="isIOS">
+              <ion-button expand="block" class="social-btn apple-btn" (click)="socialLogin('apple')">
+                <ion-icon slot="start" name="logo-apple"></ion-icon>
+                Apple
+              </ion-button>
+            </ion-col>
           </ion-row>
         </ion-grid>
+         <div class="separator">
+          <div class="line"></div>
+         </div>
+        <div class="ion-text-center ion-margin-top">
+          <ion-button fill="clear" class="forgot-password-btn" routerLink="/cadastro">
+            Não tem uma conta? Cadastre-se
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>

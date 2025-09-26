@@ -1,7 +1,8 @@
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
-import { ModalController, NavParams } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth.service';
+import { ModalController, NavParams, AlertController, ToastController } from '@ionic/angular';
 import { DetailedUserModel } from 'src/app/models/detailedUserModel';
 
 @Component({
@@ -15,16 +16,28 @@ export class UserEditPage implements OnInit {
   successMessage = '';
   user: DetailedUserModel | null = null;
 
-  // Centraliza a regra: travar edição se provider === 'google'
+  // Centraliza a regra: travar edição se provider === 'google' ou 'apple'
   get isGoogle(): boolean {
     return (this.user?.provider || '').toLowerCase() === 'google';
+  }
+
+  get isApple(): boolean {
+    const provider = (this.user?.provider || '').toLowerCase();
+    return provider === 'apple' || provider === 'apple_native' || provider === 'apple_simple';
+  }
+
+  get canEdit(): boolean {
+    return !this.isGoogle && !this.isApple;
   }
 
   constructor(
     private navParams: NavParams,
     private route: ActivatedRoute,
     private userService: UserService,
-    public modalCtrl: ModalController
+    private authService: AuthService,
+    public modalCtrl: ModalController,
+    private alertController: AlertController,
+    private toastController: ToastController
   ) {}
 
   async ngOnInit() {
@@ -34,7 +47,6 @@ export class UserEditPage implements OnInit {
     try {
       const userData = await this.userService.getUsersById(userId);
       this.user = userData;
-      console.log(this.user);
     } catch (error) {
       console.error(error);
       this.errorMessage = 'Erro ao carregar informações do usuário.';
@@ -52,6 +64,11 @@ export class UserEditPage implements OnInit {
       return;
     }
 
+    if (this.isApple) {
+      this.errorMessage = 'Esta conta é do Apple. Edições devem ser feitas na sua Conta Apple.';
+      return;
+    }
+
     this.loading = true;
     this.successMessage = '';
     this.errorMessage = '';
@@ -65,6 +82,65 @@ export class UserEditPage implements OnInit {
       this.errorMessage = 'Erro ao salvar as alterações.';
     } finally {
       this.loading = false;
+    }
+  }
+
+  async deleteAccount() {
+    const alert = await this.alertController.create({
+      header: 'Excluir Conta',
+      message: this.isApple 
+        ? '⚠️ ATENÇÃO: Esta é uma conta Apple. A exclusão removerá todos os dados permanentemente e você precisará criar uma nova conta Apple para acessar novamente.'
+        : 'Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Excluir',
+          role: 'destructive',
+          handler: async () => {
+            await this.confirmDeleteAccount();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async confirmDeleteAccount() {
+    const loading = await this.toastController.create({
+      message: 'Excluindo conta...',
+      duration: 0,
+      position: 'middle'
+    });
+    await loading.present();
+
+    try {
+      await this.userService.deleteAccount();
+      
+      const successToast = await this.toastController.create({
+        message: 'Conta excluída com sucesso!',
+        duration: 3000,
+        color: 'success',
+        position: 'middle'
+      });
+      await successToast.present();
+
+      // O logout já foi feito no deleteAccount do UserService
+    } catch (error: any) {
+      console.error('Erro ao excluir conta:', error);
+      
+      const errorToast = await this.toastController.create({
+        message: error.message || 'Erro ao excluir conta. Tente novamente.',
+        duration: 3000,
+        color: 'danger',
+        position: 'middle'
+      });
+      await errorToast.present();
+    } finally {
+      await loading.dismiss();
     }
   }
 

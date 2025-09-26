@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -69,12 +69,6 @@ export class ConfigService {
    * Log de configuração (sem expor dados sensíveis)
    */
   logConfigStatus(): void {
-    const validation = this.validateConfig();
-    
-    if (validation.isValid) {
-      console.log('✅ Configuração válida');
-    } else {
-      console.warn('⚠️ Configuração incompleta. Chaves faltando:', validation.missingKeys);
-    }
+    this.validateConfig();
   }
 }

@@ -1,0 +1,67 @@
+<ion-header class="ion-no-border transparent">
+  <ion-toolbar id="toolbar">
+    <ion-buttons slot="start">
+      <ion-button routerLink="/login">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="titulo-personalizado">Cadastro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" scroll-y="true">
+  <div class="center-container">
+    <ion-card class="login-card">
+      <ion-card-content>
+
+        <!-- Nome -->
+        <ion-item lines="none">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-input type="text" placeholder="Nome completo" [(ngModel)]="name"
+            label="Nome" label-placement="floating" autocomplete="name" minlength="3" maxlength="50" [counter]="true">
+          </ion-input>
+        </ion-item>
+
+        <!-- Email -->
+        <ion-item lines="none" class="ion-margin-top">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-input
+            [(ngModel)]="email"
+            type="email"
+            label="Email"
+            labelPlacement="floating"
+            helperText="Digite um email válido"
+            errorText="Invalid email"
+            email
+          ></ion-input>
+        </ion-item>
+
+        <!-- Senha -->
+        <ion-item lines="none" class="ion-margin-top">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-input type="password" placeholder="Senha" [(ngModel)]="password"
+            label="Senha" label-placement="floating" minlength="8" maxlength="8" [counter]="true">
+          </ion-input>
+        </ion-item>
+
+        <!-- Confirmar Senha -->
+        <ion-item lines="none" class="ion-margin-top">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-input type="password" placeholder="Confirmar Senha" [(ngModel)]="password_confirmation"
+            label="Confirmar Senha" label-placement="floating" minlength="8" maxlength="8" [counter]="true">
+          </ion-input>
+        </ion-item>
+
+        <!-- Botão de cadastro -->
+        <ion-button expand="block" class="login-btn ion-margin-top" (click)="register()">
+          Cadastrar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+    <div class="ion-text-center ion-margin-top">
+      <ion-button fill="clear" class="forgot-password-btn" routerLink="/login">
+          Já tem uma conta? Entrar
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

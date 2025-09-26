@@ -9,11 +9,11 @@ import { RegimentoModalModule } from '../../Modals/regimento-modal/regimento-mod
 
 @NgModule({
   imports: [
-    CommonModule,
     FormsModule,
     IonicModule,
+    CommonModule,
+    RegimentoModalModule,
     ViewTextPageRoutingModule,
-    RegimentoModalModule
   ],
   declarations: [ViewTextPage]
 })

@@ -16,7 +16,7 @@ const GOOGLE_OAUTH_CONFIG = {
 };
 
 export const environment = {
-  production: false,
+  production: true,
   baseUrl: 'https://regimentocd.com.br',
   firebase: FIREBASE_CONFIG,
   googleOAuth: GOOGLE_OAUTH_CONFIG,

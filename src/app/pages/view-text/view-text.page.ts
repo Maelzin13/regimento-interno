@@ -1,8 +1,9 @@
 import { ModalPage } from '../modal/modal.page';
+import { ActivatedRoute } from '@angular/router';
 import { UserModel } from 'src/app/models/userModel';
-import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
@@ -17,7 +18,6 @@ interface HistoryEntry {
   paragrafo?: string | null;
   inciso?: string | null;
 }
-
 // Interface para representar o destino de uma remissão
 interface RemissaoDestino {
   artigo: string;
@@ -29,7 +29,6 @@ interface RemissaoDestino {
   };
 }
 
-// Interface para representar a estrutura de destino da API
 interface ApiDestino {
   id: number;
   remissao_id: number;
@@ -93,41 +92,35 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   searchHistory: string[] = [];
   isSearching: boolean = false;
   user: UserModel | null = null;
-  allCommentsExpanded = false;
+  allCommentsExpanded = true;
   lastScrollPosition: number = 0;
   currentResultIndex: number = -1;
-  searchBy: 'keyword' | 'artigo' = 'keyword';
-  @ViewChild(IonContent) content!: IonContent;
-  searchType: 'contains' | 'exact' = 'contains';
-  @ViewChild('searchInput') searchInput!: ElementRef;
-  showReturnIndicator: boolean = false;
-  selectedFilter: string = 'keyword';
-
-
-
-  // Propriedade para o debounce da rolagem
-  private scrollDebounceTimeout: any;
-  expandedComments: Set<string> = new Set();
-
-  private notasCache: Map<number, any> = new Map()
-
-  // Adicionar propriedades para histórico de navegação
-  navigationHistory: HistoryEntry[] = [];
   currentHistoryIndex: number = -1;
+  showReturnIndicator: boolean = false;
+  navigationHistory: HistoryEntry[] = [];
+  expandedComments: Set<string> = new Set();
+  searchBy: 'keyword' | 'artigo' = 'keyword';
+  searchType: 'contains' | 'exact' = 'contains';
+  @ViewChild(IonContent) content!: IonContent;
+  @ViewChild('searchInput') searchInput!: ElementRef;
+  
+  private scrollDebounceTimeout: any;
+  private notasCache: Map<number, any> = new Map()
   private handleRemissaoClick: any;
   private showReturnIndicatorTimeout: any;
-
+  private articleQueryNumero: string | null = null;
   private contentCache = new Map<string, SafeHtml>();
   private remissoesCache = new Map<string, string>();
   private comentarioCache = new Map<string, SafeHtml>();
-  // Cache para elementos específicos encontrados (artigos, parágrafos, incisos)
   private elementosCache: Map<string, HTMLElement | null> = new Map();
+  private artigoByNumero = new Map<string, { id: number; ref: any }>();
 
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private bookService: BookService,
+    private storage: StorageService,
     private authService: AuthService,
+    private bookService: BookService,
     private alertController: AlertController,
     private modalController: ModalController,
     private toastController: ToastController,
@@ -135,59 +128,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   ) { }
 
   async ngOnInit() {
-    const user =  this.authService.getUser();
+    const user = await this.authService.getUser();
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
-    this.loadSearchHistory();
+    await this.loadSearchHistory();
     await this.loadBook();
-  }
-
-  getSearchPlaceholder(): string {
-    switch (this.selectedFilter) {
-      case 'keyword':
-        return 'Digite a palavra-chave';
-      case 'article':
-        return 'Digite o número do artigo';
-      default:
-        return 'Selecione sua busca...';
-    }
-  }
-
-
-  onFilterChange(event: any) {
-    this.selectedFilter = event.detail.value;
-    console.log('Filtro selecionado:', this.selectedFilter);
-  }
-
-  getPlaceholder(): string {
-    return this.searchBy === 'keyword'
-      ? 'Digite a busca por palavra-chave...'
-      : 'Digite o artigo...';
-  }
-
-  onSearchTypeChange(event: any) {
-    this.searchBy = event.detail.value;
-    this.query = ''; // limpa a busca ao trocar o tipo
-  }
-
-  executeSearch() {
-    if (!this.query) return;
-
-    if (this.searchBy === 'keyword') {
-      this.searchByKeyword(this.query);
-    } else if (this.searchBy === 'artigo') {
-      this.searchByArtigo(this.query);
-    }
-  }
-
-  searchByKeyword(query: string) {
-    console.log('Buscando por palavra-chave:', query);
-    // aqui entra sua lógica usando bookService
-  }
-
-  searchByArtigo(query: string) {
-    console.log('Buscando por artigo:', query);
-    // aqui entra sua lógica específica para artigos
   }
 
   async loadBook() {
@@ -209,12 +154,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       Allbooks = await this.bookService.getBookById(this.bookId);
       
       this.book = Allbooks.livro;
+      this.buildIndices();
       this.processRemissoes();
       
       // Otimizar performance
       this.optimizePerformance();
+      this.primeiroParagrafo = Allbooks.primeiro?.conteudo ?? ''
       
-      this.primeiroParagrafo = this.book.primeiro?.conteudo ?? ''
 
       this.route.queryParams.subscribe(params => {
         if (params && params['artigo']) {
@@ -232,29 +178,36 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
   }
 
-  onSearchInput(event: any) {
-    const value = event.target.value;
-    this.query = value;
-
-    // Se o usuário apagou a busca, limpar os resultados e cache imediatamente
-    if (!value.trim()) {
-      this.clearSearch();
-      return;
+  clearSearch() {
+    this.query = '';
+    this.articleQueryNumero = null;
+    this.filteredBook = null;
+    this.searchResults = [];
+    this.totalResults = 0;
+    this.currentResultIndex = -1;
+    this.isSearching = false;
+    this.forceClearHighlights();
+    setTimeout(() => this.searchInput?.nativeElement?.focus(), 50);
+  }
+  
+  
+  private buildIndices(): void {
+    this.artigoByNumero.clear();
+    const book = this.book;
+    if (!book?.titulos) return;
+  
+    for (const titulo of book.titulos) {
+      for (const capitulo of titulo.capitulos || []) {
+        for (const secao of capitulo.secaos || []) {
+          for (const artigo of secao.artigos || []) {
+            const numeroNorm = this.normalizeNumero(artigo?.numero);
+            if (numeroNorm) this.artigoByNumero.set(numeroNorm, { id: artigo.id, ref: artigo });
+          }
+        }
+      }
     }
   }
-
-    clearSearch() {
-      this.query = '';
-      this.filteredBook = null;
-      this.searchResults = [];
-      this.totalResults = 0;
-      this.currentResultIndex = -1;
-      this.isSearching = false;
-
-      setTimeout(() => {
-        this.searchInput?.nativeElement?.focus();
-      }, 50);
-    }
+  
 
   // Função para forçar limpeza dos highlights
   forceClearHighlights() {
@@ -276,215 +229,261 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }, 100);
   }
 
+  // Utils: cria um <mark> sem quebrar estrutura
+  private highlightHtmlSafe(html: string, query: string, wholeWord: boolean): string {
+    if (!html || !query) return html;
+
+    // 1) Parseia para DOM independente
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+    const root = doc.body.firstElementChild as HTMLElement;
+    if (!root) return html;
+
+    // 2) Prepara regex (sem mexer em atributos)
+    const escaped = this.escapeRegExp(query);
+    const pattern = wholeWord ? new RegExp(`\\b${escaped}\\b`, 'gi') : new RegExp(escaped, 'gi');
+
+    // 3) Caminha só por TEXT NODES
+    const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node: any) => {
+        // ignora nós vazios e espaços
+        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        // evita marcar dentro de <script>, <style> etc.
+        const parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        const tag = parent.tagName.toLowerCase();
+        if (['script', 'style'].includes(tag)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    } as any);
+
+    const textNodes: Text[] = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+
+    // 4) Para cada text node, troca por fragmento com <mark>
+    for (const textNode of textNodes) {
+      const text = textNode.nodeValue || '';
+      if (!pattern.test(text)) { pattern.lastIndex = 0; continue; }
+
+      pattern.lastIndex = 0;
+      const frag = doc.createDocumentFragment();
+      let lastIdx = 0;
+      let m: RegExpExecArray | null;
+
+      while ((m = pattern.exec(text)) !== null) {
+        const start = m.index;
+        const end = start + m[0].length;
+
+        // trecho antes
+        if (start > lastIdx) frag.append(text.substring(lastIdx, start));
+
+        // o match
+        const mark = doc.createElement('mark');
+        mark.className = 'search-highlight';
+        mark.textContent = m[0];
+        frag.append(mark);
+
+        lastIdx = end;
+      }
+      // resto
+      if (lastIdx < text.length) frag.append(text.substring(lastIdx));
+
+      // swap
+      textNode.replaceWith(frag);
+    }
+
+    return root.innerHTML;
+  }
+
+  private checkArtigoMatchByContent(artigoContent: string, q: string): boolean {
+    if (!artigoContent || !q) return false;
+    const re = new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(q)}[º°]?\\b`, 'i');
+    return re.test(artigoContent);
+  }
+
   async search() {
-    if (!this.query || !this.book) {
-      this.filteredBook = null;
-      this.searchResults = [];
-      this.totalResults = 0;
+    if (!this.query || !this.book) { this.clearSearch(); return; }
+    this.isSearching = true;
+    this.saveCurrentPosition();
+    this.filteredBook = null;         // mantém árvore inteira visível
+    this.searchResults = [];
+    this.totalResults = 0;
+  
+    if (this.searchBy === 'keyword') {
+      await this.runKeywordSearch(this.query, this.searchType);
       return;
     }
-
-    this.isSearching = true;
-    const queryLower = this.query.toLowerCase().trim();
-    const searchBy = this.searchBy;
-    const searchType = this.searchType;
-
-
-    // Para busca por artigo, limpar a entrada do usuário
-    let processedQuery = queryLower;
-    if (searchBy === 'artigo') {
-      // Remover "Art.", "Artigo", "Arts.", "Artigos" da entrada do usuário
-      processedQuery = queryLower
-        .replace(/^(Art\.?\s*|Artigo\s*|Arts\.?\s*|Artigos\s*)/i, '')
-        .trim();
-
-      // Se após a limpeza não sobrou nada, usar a query original
-      if (!processedQuery) {
-        processedQuery = queryLower;
-      }
+  
+    if (this.searchBy === 'artigo') {
+      await this.runArticleSearch(this.query);
+      return;
     }
+  
+    this.isSearching = false;
+  }
 
-    // Salvando posição atual antes da busca
-    this.saveCurrentPosition();
+  /** Busca por palavra-chave: coleta resultados de todos os tipos de conteúdo */
+  private async runKeywordSearch(query: string, searchType: 'contains' | 'exact') {
+    const q = query.toLowerCase().trim();
+    let totalOccurrences = 0;
 
+    const add = (type: string, node: any, path: string, content?: string) => {
+      const text = content || node.conteudo;
+      const occurrences = this.countOccurrences(text, q, searchType);
+      totalOccurrences += occurrences;
+      
+      this.searchResults.push({ 
+        type, 
+        id: node.id, 
+        content: text, 
+        path, 
+        position: node.id || 0,
+        occurrences: occurrences
+      });
+    };
 
-    const clone = this.book;
-    this.searchResults = [];
-
-    const textMatches = (text: string) => {
-      if (!text) return false;
-      const textLower = text.toLowerCase();
-
-      if (searchType === 'exact') {
-        const normalizedText = this.normalizeText(textLower);
-        const normalizedQuery = this.normalizeText(queryLower);
-
-        const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'i');
-        return wordBoundaryRegex.test(normalizedText);
-      } else {
-        return textLower.includes(queryLower);
+    for (const titulo of this.book.titulos || []) {
+      // Buscar em títulos
+      if (this.matchesText(titulo.conteudo, q, searchType)) {
+        add('titulo', titulo, titulo.conteudo);
       }
-    };
-
-    // Função para verificar se o artigo contém a busca
-    const checkArtigoMatch = (artigoContent: string) => {
-      if (!artigoContent) return false;
-      const contentLower = artigoContent.toLowerCase();
-
-      // Para busca de artigo, sempre usar termo exato
-      const artigoPatterns = [
-        // Padrão básico: "Art. X" ou "Artigo X"
-        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\b`, 'i'),
-        // Padrão com alíneas: "Art. X-A", "Art. X-B", etc.
-        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z]\\b`, 'i'),
-        // Padrão com múltiplas alíneas: "Art. X-A, X-B, X-C"
-        new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z](?:\\s*,\\s*${this.escapeRegExp(processedQuery)}[º°]?\\s*[-–]\\s*[A-Z])*\\b`, 'i'),
-      ];
-      return artigoPatterns.some(pattern => pattern.test(contentLower));
-    };
-
-    // Processar a estrutura do livro de forma mais eficiente
-    let titulosFiltrados = [];
-
-    for (const titulo of clone.titulos) {
-      let capitulosFiltrados = [];
 
       for (const capitulo of titulo.capitulos || []) {
-        let secoesFiltradas = [];
+        // Buscar em capítulos
+        if (this.matchesText(capitulo.conteudo, q, searchType)) {
+          add('capitulo', capitulo, `${titulo.conteudo} > ${capitulo.conteudo}`);
+        }
 
         for (const secao of capitulo.secaos || []) {
-          let artigosFiltrados = [];
+          // Buscar em seções
+          if (this.matchesText(secao.conteudo, q, searchType)) {
+            add('secao', secao, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`);
+          }
 
           for (const artigo of secao.artigos || []) {
-            let artigoMatches = false;
-            let paragrafosFiltrados = [];
+            // Buscar em artigos
+            if (this.matchesText(artigo.conteudo, q, searchType)) {
+              add('artigo', artigo, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`);
+            }
 
-            // Buscar por palavras-chave
-            if (searchBy === 'keyword') {
-              // Verificar se o artigo contém a busca
-              if (textMatches(artigo.conteudo)) {
-                artigoMatches = true;
-                this.searchResults.push({
-                  type: 'artigo',
-                  id: artigo.id,
-                  content: artigo.conteudo,
-                  path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
-                  parent: secao,
-                  position: this.calculatePosition(artigo)
-                });
+            for (const p of artigo.paragrafos || []) {
+              // Buscar em parágrafos
+              if (this.matchesText(p.conteudo, q, searchType)) {
+                add('paragrafo', p, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > ${p.conteudo}`);
               }
 
-              // Verificar parágrafos do artigo
-              for (const paragrafo of artigo.paragrafos || []) {
-                if (textMatches(paragrafo.conteudo)) {
-                  paragrafosFiltrados.push(paragrafo);
-                  this.searchResults.push({
-                    type: 'paragrafo',
-                    id: paragrafo.id,
-                    content: paragrafo.conteudo,
-                    path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo}`,
-                    parent: artigo,
-                    position: this.calculatePosition(paragrafo)
-                  });
+              // Buscar em comentários
+              for (const comentario of p.comentarios || []) {
+                if (this.matchesText(comentario.conteudo, q, searchType)) {
+                  add('comentario', comentario, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Comentário`, comentario.conteudo);
+                }
+              }
+
+              // Buscar em remissões
+              for (const remissao of p.remissoes || []) {
+                if (this.matchesText(remissao.conteudo, q, searchType)) {
+                  add('remissao', remissao, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Remissão`, remissao.conteudo);
                 }
               }
             }
-            // Buscar por artigos específicos
-            else if (searchBy === 'artigo') {
-              if (checkArtigoMatch(artigo.conteudo)) {
-                artigoMatches = true;
-                this.searchResults.push({
-                  type: 'artigo',
-                  id: artigo.id,
-                  content: artigo.conteudo,
-                  path: `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo}`,
-                  parent: secao,
-                  position: this.calculatePosition(artigo)
-                });
-              }
-            }
-
-            // Adicionar artigo se encontrou correspondência ou se tem parágrafos filtrados
-            if (artigoMatches || paragrafosFiltrados.length > 0) {
-              artigosFiltrados.push({
-                ...artigo,
-                paragrafos: paragrafosFiltrados.length > 0 ? paragrafosFiltrados : artigo.paragrafos
-              });
-            }
-          }
-
-          // Adicionar seção se tem artigos filtrados
-          if (artigosFiltrados.length > 0) {
-            secoesFiltradas.push({
-              ...secao,
-              artigos: artigosFiltrados
-            });
           }
         }
-
-        // Adicionar capítulo se tem seções filtradas
-        if (secoesFiltradas.length > 0) {
-          capitulosFiltrados.push({
-            ...capitulo,
-            secaos: secoesFiltradas
-          });
-        }
-      }
-
-      // Adicionar título se tem capítulos filtrados
-      if (capitulosFiltrados.length > 0) {
-        titulosFiltrados.push({
-          ...titulo,
-          capitulos: capitulosFiltrados
-        });
       }
     }
 
-    // Atualizar o livro filtrado
-    this.filteredBook = {
-      ...clone,
-      titulos: titulosFiltrados
-    };
-
-    this.totalResults = this.searchResults.length;
+    this.sortSearchResults();
+    this.totalResults = totalOccurrences; // Usar o total de ocorrências em vez do número de elementos
     this.isSearching = false;
 
-    // Ordenar resultados por posição no documento
-    this.sortSearchResults();
-
-    // Limpar cache de conteúdo para forçar re-renderização com novos destaques
+    // força re-render para aplicar destaque apenas em keyword
     this.contentCache.clear();
 
-    // Adicionar à histórico de pesquisa
-    this.addToSearchHistory(this.query);
-
-    // Exibir resultado da busca
     if (this.totalResults > 0) {
       this.currentResultIndex = 0;
       this.navigateToResult(0);
-      this.presentToast(`Encontrados ${this.totalResults} resultados para "${this.query}"`);
-
-      // Garantir que os destaques sejam aplicados após o DOM ser atualizado
-      setTimeout(() => {
-        this.forceHighlightsRefresh();
-      }, 500);
+      this.presentToast(`Encontrados ${this.totalResults} resultados para "${query}"`);
+      setTimeout(() => this.forceHighlightsRefresh(), 250);
     } else {
-      this.presentToast(`Nenhum resultado encontrado para "${this.query}"`);
+      this.presentToast(`Nenhum resultado encontrado para "${query}"`);
     }
   }
 
-  // Função para calcular a posição relativa de um elemento no documento
-  private calculatePosition(element: any): number {
-    return element.id || 0;
+  /** Busca por artigo: usa o índice por numero e apenas rola+flash (sem highlight global) */
+  private async runArticleSearch(rawQuery: string) {
+    const numero = this.normalizeQueryNumero(rawQuery);
+    this.isSearching = false;
+  
+    if (!numero) { this.presentToast('Informe o número do artigo.'); return; }
+  
+    // guarda o contexto para o highlight e força re-render
+    this.articleQueryNumero = numero;
+    this.contentCache.clear();
+  
+    this.forceClearHighlights();
+  
+    const alvo = this.findArtigoByNumero(numero);
+    if (!alvo) { this.presentToast(`Artigo ${numero} não encontrado`); return; }
+  
+    this.searchResults = [{ type: 'artigo', id: alvo.id, content: '', path: '', position: alvo.id }];
+    this.totalResults = 1; this.currentResultIndex = 0;
+  
+    this.scrollToArtigo(numero, undefined, undefined, false);
+  
+    // dá um “tapinha” para garantir o estilo do <mark>
+    setTimeout(() => this.forceHighlightsRefresh(), 250);
+  }  
+
+  private matchesText(text: string, queryLower: string, searchType: 'contains' | 'exact'): boolean {
+    if (!text) return false;
+    const textLower = text.toLowerCase();
+    if (searchType === 'exact') {
+      const normalizedText = this.normalizeText(textLower);
+      const normalizedQuery = this.normalizeText(queryLower);
+      const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'i');
+      return wordBoundaryRegex.test(normalizedText);
+    }
+    return textLower.includes(queryLower);
+  }
+
+  private countOccurrences(text: string, queryLower: string, searchType: 'contains' | 'exact'): number {
+    if (!text) return 0;
+    const textLower = text.toLowerCase();
+    
+    if (searchType === 'exact') {
+      const normalizedText = this.normalizeText(textLower);
+      const normalizedQuery = this.normalizeText(queryLower);
+      const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'gi');
+      const matches = normalizedText.match(wordBoundaryRegex);
+      return matches ? matches.length : 0;
+    } else {
+      // Para busca "contains", contar todas as ocorrências (incluindo dentro de palavras)
+      const regex = new RegExp(this.escapeRegExp(queryLower), 'gi');
+      const matches = textLower.match(regex);
+      return matches ? matches.length : 0;
+    }
   }
 
   // Função para ordenar os resultados de forma mais lógica
   private sortSearchResults() {
-    // Ordenar por posição no documento (usando a propriedade position calculada)
+    // Ordenar por prioridade de tipo e depois por posição no documento
     this.searchResults.sort((a, b) => {
-      // Primeiro por tipo: artigos vêm antes de parágrafos
-      if (a.type !== b.type) {
-        return a.type === 'artigo' ? -1 : 1;
+      // Definir prioridade dos tipos (menor número = maior prioridade)
+      const typePriority: { [key: string]: number } = {
+        'titulo': 1,
+        'capitulo': 2,
+        'secao': 3,
+        'artigo': 4,
+        'paragrafo': 5,
+        'comentario': 6,
+        'remissao': 7
+      };
+
+      const priorityA = typePriority[a.type] || 999;
+      const priorityB = typePriority[b.type] || 999;
+
+      // Primeiro ordenar por prioridade de tipo
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
       }
 
       // Se são do mesmo tipo, ordenar por posição no documento
@@ -493,8 +492,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
       return posA - posB;
     });
-
-
   }
 
   // Método auxiliar para normalizar texto (remover acentos e caracteres especiais)
@@ -507,41 +504,98 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       .trim();
   }
 
-  highlightAndSanitize(text: string): SafeHtml {
-    // Verificar cache primeiro
-    const cacheKey = `${text}_${this.query}_${this.searchType}`;
-    if (this.contentCache.has(cacheKey)) {
-      return this.contentCache.get(cacheKey)!;
-    }
+  private normalizeNumero(n: string | undefined | null): string {
+    return (n ?? '')
+      .toString()
+      .trim()
+      .replace(/[º°]/g, '')
+      .replace(/\s+/g, '')
+      .toUpperCase();
+  }
+  
+  private normalizeQueryNumero(q: string): string {
+    return this.normalizeNumero(
+      q
+        .replace(/^(art\.?|artigo|arts\.?|artigos)\s*/i, '')
+        .replace(/[^\da-zA-Z-]/g, '')
+    );
+  }
 
-    let highlighted = this.formatNotas(text);
-    
-    // Processar remissões inline apenas se necessário
-    if (this.query) {
-      highlighted = this.processInlineRemissoes(highlighted);
-      
-      // Aplicar highlight manualmente sem usar o pipe
-      const query = this.query.trim();
-      if (query) {
-        let regex: RegExp;
-        if (this.searchType === 'exact') {
-          regex = new RegExp(`\\b${this.escapeRegExp(query)}\\b`, 'gi');
-        } else {
-          regex = new RegExp(this.escapeRegExp(query), 'gi');
-        }
-        highlighted = highlighted.replace(regex, (match) =>
-          `<mark class="search-highlight">${match}</mark>`
-        );
+  highlightAndSanitize(text: string): SafeHtml {
+    const cacheKey = `${text}_${this.query}_${this.searchType}_${this.searchBy}_${this.articleQueryNumero ?? ''}`;
+    if (this.contentCache.has(cacheKey)) return this.contentCache.get(cacheKey)!;
+  
+    let html = this.formatNotas(text);
+    html = this.processInlineRemissoes(html);
+  
+    if (this.query?.trim()) {
+      if (this.searchBy === 'keyword') {
+        const wholeWord = this.searchType === 'exact';
+        html = this.highlightHtmlSafe(html, this.query.trim(), wholeWord);
+      } else if (this.searchBy === 'artigo' && this.articleQueryNumero) {
+        // Destaca apenas rótulos de artigo: Art. 132 / Artigo 132 / Arts. 132 / Artigos 132
+        const num = this.articleQueryNumero.replace(/[º°]/g, '');
+        const rx = new RegExp(`\\b(?:Art\\.?|Artigo|Arts\\.?|Artigos)\\s*${this.escapeRegExp(num)}[º°]?\\b`, 'gi');
+        html = this.highlightHtmlSafeRegex(html, rx);
       }
     }
+  
+    const safe = this.sanitizer.bypassSecurityTrustHtml(html);
+    this.contentCache.set(cacheKey, safe);
+    return safe;
+  }  
+  /** Aplica <mark> usando um RegExp global/ignorando caixa, caminhando só por TextNodes */
+  private highlightHtmlSafeRegex(html: string, pattern: RegExp): string {
+    if (!html || !pattern) return html;
 
-    const result = this.sanitizer.bypassSecurityTrustHtml(highlighted);
-    
-    // Armazenar em cache
-    this.contentCache.set(cacheKey, result);
-    
-    return result;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+    const root = doc.body.firstElementChild as HTMLElement;
+    if (!root) return html;
+
+    const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node: any) => {
+        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        const p = node.parentElement; if (!p) return NodeFilter.FILTER_REJECT;
+        const tag = p.tagName.toLowerCase();
+        if (['script', 'style'].includes(tag)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    } as any);
+
+    const textNodes: Text[] = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+
+    for (const textNode of textNodes) {
+      const text = textNode.nodeValue || '';
+      pattern.lastIndex = 0;
+      if (!pattern.test(text)) continue;
+
+      pattern.lastIndex = 0;
+      const frag = doc.createDocumentFragment();
+      let lastIdx = 0;
+      let m: RegExpExecArray | null;
+
+      while ((m = pattern.exec(text)) !== null) {
+        const start = m.index;
+        const end = start + m[0].length;
+        if (start > lastIdx) frag.append(text.substring(lastIdx, start));
+
+        const mark = doc.createElement('mark');
+        mark.className = 'search-highlight';
+        mark.textContent = m[0];
+        frag.append(mark);
+
+        lastIdx = end;
+        if (pattern.lastIndex === m.index) pattern.lastIndex++; // evita loop com grupos vazios
+      }
+      if (lastIdx < text.length) frag.append(text.substring(lastIdx));
+      textNode.replaceWith(frag);
+    }
+
+    return root.innerHTML;
   }
+
 
   ngAfterViewInit() {
     if (!this.notaListenerAttached) {
@@ -598,7 +652,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   openExternalLink(url: string) {
-    console.log(url);
     window.open(url, '_blank');
   }
 
@@ -606,7 +659,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     const conteudo = remissaoElement.textContent || '';
     const remissaoId = remissaoElement.getAttribute('data-remissao-id');
     const remissaoType = remissaoElement.getAttribute('data-remissao-type');
-    const urlExterna = remissaoElement.getAttribute('data-url-externa');
 
     // Verificação rápida: se não começa com "Art.", ignora
     if (!conteudo.trim().startsWith('Art')) {
@@ -957,25 +1009,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   // Novo método para encontrar artigo diretamente na estrutura de dados
   private findArtigoByNumero(numeroArtigo: string): any {
-    const book = this.filteredBook || this.book;
-    if (!book || !book.titulos) return null;
-
-    for (const titulo of book.titulos) {
-      for (const capitulo of titulo.capitulos || []) {
-        for (const secao of capitulo.secaos || []) {
-          for (const artigo of secao.artigos || []) {
-            // Verifica se o conteúdo do artigo contém o número do artigo
-            const match = artigo.conteudo.match(/Art\.?\s*(\d+)[º°]?/i);
-            if (match && match[1] === numeroArtigo) {
-              return artigo;
-            }
-          }
-        }
-      }
-    }
-
-    return null;
+    const key = this.normalizeNumero(numeroArtigo);
+    const hit = this.artigoByNumero.get(key);
+    return hit?.ref ?? null;
   }
+  
 
   private listenNotaClicks() {
     document.addEventListener('click', async (event: any) => {
@@ -1026,31 +1064,27 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       console.warn('formatNotas recebeu conteúdo inválido:', content);
       return '';
     }
-
     const notaRegex = /###nota\s*(\d+)\s*###/gi;
-
     return content.replace(notaRegex, (_, num) => {
       return `
-        <div
-          class="nota-ref-container"
-          style="display: inline-block; vertical-align: baseline; margin-left: 3px; margin-top: 6px;"
+        <sup
+          class="nota-ref"
+          data-nota-id="${num}"
+          role="link"
+          tabindex="0"
+          style="
+            margin: 0 3px;
+            color: #007bff;
+            line-height: 1.71;
+            cursor: pointer;
+            font-size: 0.79em;
+            user-select: none;
+            vertical-align: super;
+            text-decoration: underline;
+          "
         >
-          <sup
-            class="nota-ref"
-            data-nota-id="${num}"
-            role="link"
-            tabindex="0"
-            style="
-              color: #007bff;
-              cursor: pointer;
-              font-size: 0.75em;
-              user-select: none;
-              text-decoration: underline;
-            "
-          >
-            ${num}
-          </sup>
-        </div>`;
+          ${num}
+        </sup>`;    
     });
   }
 
@@ -1070,117 +1104,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     await alert.present();
   }
 
-  // Método para identificar e formatar remissões dentro do texto
-  private formatRemissoes(content: string): string {
-    // Se já temos este conteúdo em cache, retorne-o
-    if (this.remissoesCache.has(content)) {
-      return this.remissoesCache.get(content)!;
-    }
-
-    // Cópia do conteúdo original para trabalhar
-    let formattedContent = content;
-
-    // Detecta padrões de remissão inline
-    try {
-      // Padrão otimizado para detectar apenas referências que começam com "Art." (A maiúsculo)
-      // Isso melhora significativamente a performance ao reduzir falsos positivos
-      const artigoPattern = /\b(Art\.?\s+\d+[º°]?(?:(?:\s*,\s*|\s+e\s+)\d+[º°]?)*(?:\s*,\s*§\s*\d+[º°]?)?(?:\s*,\s*[IVX]+)?)/gi;
-
-      // Padrão para detectar referências a parágrafos: "§ X" ou "§§ X, Y e Z"
-      const paragrafoPattern = /\b(§{1,2}\s+\d+[º°]?(?:(?:\s*,\s*|\s+e\s+)\d+[º°]?)*)/gi;
-
-      // Padrão para detectar referências a incisos: "inciso X" ou "incisos X, Y e Z"
-      const incisoPattern = /\b(inciso[s]?\s+[IVX]+(?:(?:\s*,\s*|\s+e\s+)[IVX]+)*)/gi;
-
-      // Padrão otimizado para detectar referências combinadas que começam com "Art."
-      const combinedPattern = /\b(Art\.?\s+\d+[º°]?(?:\s*,\s*§\s*\d+[º°]?)?(?:\s*,\s*(?:inciso\s+)?[IVX]+)?)/gi;
-
-      // Função para substituir com marcação HTML
-      const replaceWithLink = (match: string, p1: string): string => {
-        // Verificar se a remissão realmente começa com "Art." (A maiúsculo)
-        // Esta verificação adicional garante que apenas remissões válidas sejam processadas
-        if (!match.trim().startsWith('Art')) {
-          return match; // Retorna o texto original se não começar com "Art"
-        }
-
-        // Gera um ID único para esta remissão
-        const remissaoId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-
-        // Extrai informações sobre artigos, parágrafos e incisos
-        const destinosRemissao = this.parseRemissaoCompleta(match);
-
-        // Preparar atributos data-* para facilitar a navegação
-        let dataArtigos = '';
-        let dataParagrafos = '';
-        let dataIncisos = '';
-
-        if (destinosRemissao.length > 0) {
-          // Extrair artigos, parágrafos e incisos únicos
-          const artigos = [...new Set(destinosRemissao.map(d => d.artigo))];
-          const paragrafos = [...new Set(destinosRemissao.filter(d => d.paragrafo).map(d => d.paragrafo))];
-          const incisos = [...new Set(destinosRemissao.filter(d => d.inciso).map(d => d.inciso))];
-
-          // Construir os atributos data-*
-          dataArtigos = artigos.join(',');
-          dataParagrafos = paragrafos.join(',');
-          dataIncisos = incisos.join(',');
-
-        } else {
-          // Tentar extrair manualmente apenas se começar com "Art"
-          const artigoMatch = match.match(/\b(\d+)[º°]?\b/g);
-          if (artigoMatch) {
-            dataArtigos = artigoMatch.join(',');
-          }
-
-          const paragrafoMatch = match.match(/§\s*(\d+)[º°]?\b/g);
-          if (paragrafoMatch) {
-            dataParagrafos = paragrafoMatch.map(p => p.replace(/§\s*/, '')).join(',');
-          }
-
-          const incisoMatch = match.match(/\b([IVX]+)\b/g);
-          if (incisoMatch) {
-            dataIncisos = incisoMatch.join(',');
-          }
-        }
-
-        // Construir os atributos data-*
-        const dataAtributos = [
-          `data-remissao-id="${remissaoId}"`,
-          dataArtigos ? `data-artigos="${dataArtigos}"` : '',
-          dataParagrafos ? `data-paragrafos="${dataParagrafos}"` : '',
-          dataIncisos ? `data-incisos="${dataIncisos}"` : ''
-        ].filter(attr => attr).join(' ');
-
-        // Determinar se a remissão está dentro de parênteses
-        const isInParentheses = /\([^)]*$/.test(formattedContent.substring(0, formattedContent.indexOf(match))) &&
-                               /^[^(]*\)/.test(formattedContent.substring(formattedContent.indexOf(match) + match.length));
-
-        // Adicionar classe especial para remissões dentro de parênteses
-        const extraClass = isInParentheses ? 'remissao-parentese' : '';
-
-        // Retorna o HTML com a classe remissao-inline de forma segura
-        return `<span class="remissao-inline ${extraClass}" role="link" tabindex="0" ${dataAtributos}>${match}</span>`;
-      };
-
-      // Aplicar substituições apenas para padrões que começam com "Art."
-      // Usar apenas o combinedPattern para evitar duplicações
-      formattedContent = formattedContent.replace(combinedPattern, replaceWithLink);
-
-      // Adicionar ao cache
-      this.remissoesCache.set(content, formattedContent);
-    } catch (error) {
-      console.error('Erro ao formatar remissões:', error);
-      return content;
-    }
-
-    return formattedContent;
-  }
-
   // Método para escapar caracteres especiais em expressões regulares
   escapeRegExp(string: string): string {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
-
 
   async showModal(content: string) {
     const modal = await this.modalController.create({
@@ -1205,21 +1132,104 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   scrollToTop() {
     this.content.scrollToTop(500);
   }
-
   // Métodos para navegação nos resultados
   navigateToResult(index: number) {
     this.currentResultIndex = index;
-    setTimeout(() => {
-      const highlights = document.querySelectorAll('.search-highlight');
-      if (highlights.length > 0 && highlights[index]) {
-        const el = highlights[index] as HTMLElement;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('result-focus');
-        setTimeout(() => el.classList.remove('result-focus'), 1200);
+    
+    // Calcular qual elemento e qual ocorrência dentro desse elemento
+    let currentIndex = 0;
+    let targetElement: any = null;
+    let targetOccurrence = 0;
+    
+    for (const result of this.searchResults) {
+      if (currentIndex + result.occurrences > index) {
+        targetElement = result;
+        targetOccurrence = index - currentIndex;
+        break;
       }
-    }, 300);
-  }
+      currentIndex += result.occurrences;
+    }
+    
+    if (!targetElement) {
+      console.log('Nenhum resultado encontrado para o índice:', index);
+      return;
+    }
 
+    console.log('Navegando para resultado:', targetElement, 'ocorrência:', targetOccurrence);
+
+    // Encontrar o elemento baseado no tipo e ID
+    let element: HTMLElement | null = null;
+
+    switch (targetElement.type) {
+      case 'titulo':
+        element = document.querySelector(`h2.titulo`);
+        break;
+      case 'capitulo':
+        element = document.querySelector(`h3.capitulo`);
+        break;
+      case 'secao':
+        element = document.querySelector(`h4.secao`);
+        break;
+      case 'artigo':
+        element = document.getElementById(`artigo-${targetElement.id}`);
+        break;
+      case 'paragrafo':
+        element = document.getElementById(`paragrafo-${targetElement.id}`);
+        break;
+      case 'comentario':
+        // Para comentários, precisamos encontrar o container do comentário
+        element = document.querySelector(`[data-comentario-id="${targetElement.id}"]`) as HTMLElement;
+        if (!element) {
+          // Fallback: procurar por elementos que contenham o conteúdo do comentário
+          const allElements = document.querySelectorAll('*');
+          for (let i = 0; i < allElements.length; i++) {
+            const el = allElements[i];
+            if (el.textContent && el.textContent.includes(targetElement.content.substring(0, 50))) {
+              element = el as HTMLElement;
+              break;
+            }
+          }
+        }
+        break;
+      case 'remissao':
+        // Para remissões, procurar pelo elemento com data-remissao-id
+        element = document.querySelector(`[data-remissao-id="${targetElement.id}"]`) as HTMLElement;
+        break;
+    }
+
+    if (element) {
+      console.log('Elemento encontrado e destacado:', element);
+      
+      // Garantir que o elemento está visível
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Adicionar destaque visual
+      element.classList.add('result-focus');
+      
+      // Remover destaque após um tempo
+      setTimeout(() => {
+        element?.classList.remove('result-focus');
+      }, 2000);
+
+      // Se for um comentário, expandir automaticamente
+      if (targetElement.type === 'comentario') {
+        this.expandedComments.add(String(targetElement.id));
+      }
+    } else {
+      console.log('Nenhum elemento encontrado para navegação');
+      
+      // Fallback: tentar encontrar por highlights
+      setTimeout(() => {
+        const highlights = document.querySelectorAll('.search-highlight');
+        if (highlights.length > 0 && highlights[index]) {
+          const el = highlights[index] as HTMLElement;
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('result-focus');
+          setTimeout(() => el.classList.remove('result-focus'), 1200);
+        }
+      }, 300);
+    }
+  }
   // Força a atualização dos destaques
   forceHighlightsRefresh() {
     if (!this.query) return;
@@ -1275,7 +1285,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.presentToast('Já no primeiro resultado');
     }
   }
-
   // Salvar e restaurar posição da rolagem
   saveCurrentPosition() {
     this.content.getScrollElement().then(element => {
@@ -1294,22 +1303,21 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       }
     }
   }
-
   // Gerenciamento do histórico de pesquisa
-  loadSearchHistory() {
-    const history = localStorage.getItem('searchHistory');
+  async loadSearchHistory() {
+    const history = await this.storage.get<string[]>('searchHistory');
     if (history) {
-      this.searchHistory = JSON.parse(history);
+      this.searchHistory = history;
     }
   }
 
-  addToSearchHistory(query: string) {
+  async addToSearchHistory(query: string) {
     if (!this.searchHistory.includes(query)) {
       this.searchHistory.unshift(query);
       if (this.searchHistory.length > 10) {
         this.searchHistory.pop();
       }
-      localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+      await this.storage.set('searchHistory', this.searchHistory);
     }
   }
 
@@ -1321,73 +1329,19 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.search();
   }
 
-  clearSearchHistory() {
+  async clearSearchHistory() {
     this.searchHistory = [];
-    localStorage.removeItem('searchHistory');
-  }
-
-  async showSearchOptions() {
-    const alert = await this.alertController.create({
-      header: 'Opções de Busca',
-      subHeader: 'Escolha o tipo de busca',
-      inputs: [
-        /*{
-          name: 'searchOption',
-          type: 'radio',
-          label: 'Palavra-chave (contém)',
-          value: 'keyword_contains',
-          checked: this.searchBy === 'keyword' && this.searchType === 'contains'
-        },*/
-        {
-          name: 'searchOption',
-          type: 'radio',
-          label: 'Palavra-chave',
-          value: 'keyword_exact',
-          checked: this.searchBy === 'keyword' && this.searchType === 'exact'
-        },
-        {
-          name: 'searchOption',
-          type: 'radio',
-          label: 'Artigo',
-          value: 'artigo_exact',
-          checked: this.searchBy === 'artigo' && this.searchType === 'exact'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Pesquisar',
-          handler: (data) => {
-            if (data) {
-              // Separar o valor em tipo de busca e modo
-              const [searchBy, searchType] = data.split('_');
-              this.searchBy = searchBy;
-              this.searchType = searchType;
-
-              if (this.query) {
-                this.search();
-              }
-            }
-          }
-        }
-      ]
-    });
-
-    await alert.present();
+    await this.storage.remove('searchHistory');
   }
 
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom'
+      position: 'middle'
     });
     toast.present();
   }
-
   // Configura o listener de rolagem
   setupScrollListener() {
     this.content.ionScroll.subscribe(() => {
@@ -1420,87 +1374,31 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     window.location.href = url;
   }
 
-  toggleComment(commentId: string) {
-    if (this.expandedComments.has(commentId)) {
-      this.expandedComments.delete(commentId);
+  toggleComment(commentId: string | number) {
+    const id = String(commentId);
+    if (this.expandedComments.has(id)) {
+      this.expandedComments.delete(id);
     } else {
-      this.expandedComments.add(commentId);
+      this.expandedComments.add(id);
     }
   }
-
-  isCommentExpanded(commentId: string): boolean {
-    if (this.allCommentsExpanded) return true;
-    return this.expandedComments.has(commentId);
-  }
-
-  processComentarioContent(content: string): SafeHtml {
-    if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
-
-    let processedContent = content.replace(
-      /^([^:]+):(.*)$/gm,
-      (match, title, content) => {
-        return `<strong>${title}:</strong>${content}`;
-      }
-    );
-
-    processedContent = processedContent.replace(/\n/g, '<br>');
-
-    return this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(processedContent));
-  }
-
-  processComentarioContentFormated(content: string, commentId: string): SafeHtml {
-    if (!content) return this.sanitizer.bypassSecurityTrustHtml('');
-
-    // Gerar chave única para o cache baseado no conteúdo, ID do comentário e estado de expansão
-    const isExpanded = this.isCommentExpanded(commentId);
-    const cacheKey = `${content}_${commentId}_${isExpanded}`;
-
-    // Verificar se já temos o resultado em cache
-    if (this.comentarioCache.has(cacheKey)) {
-      return this.comentarioCache.get(cacheKey)!;
-    }
-
-    const processAndSanitize = (str: string) => this.sanitizer.bypassSecurityTrustHtml(this.formatNotas(str));
-
-    const colonIndex = content.indexOf(':');
-    if (colonIndex === -1) {
-      const result = processAndSanitize(content);
-      this.comentarioCache.set(cacheKey, result);
-      return result;
-    }
-
-    const beforeColon = content.substring(0, colonIndex + 1);
-    const afterColon = content.substring(colonIndex + 1);
-
-    let processedContent;
-    if (!isExpanded) {
-      processedContent = `<strong>${beforeColon}</strong><a class="ver-mais" (click)="toggleComment('${commentId}')">Ver mais</a>`;
-    } else {
-      processedContent = `<strong>${beforeColon}</strong>${afterColon}<a class="ver-menos" (click)="toggleComment('${commentId}')">Ver menos</a>`;
-    }
-
-    const result = processAndSanitize(processedContent);
-
-    // Armazenar em cache
-    this.comentarioCache.set(cacheKey, result);
-
-    return result;
-  }
-
+  
   toggleAllComments() {
     this.allCommentsExpanded = !this.allCommentsExpanded;
-
     if (this.allCommentsExpanded) {
-      // Adiciona todos os comentários ao set
-      this.expandedComments = new Set(this.getAllCommentIds());
+      this.expandedComments = new Set(this.getAllCommentIds().map(id => String(id)));
     } else {
-      // Limpa todos (recolhe todos)
       this.expandedComments.clear();
     }
   }
+  
+  isCommentExpanded(commentId: string | number): boolean {
+    if (this.allCommentsExpanded) return true;
+    return this.expandedComments.has(String(commentId));
+  }
 
-  getAllCommentIds(): string[] {
-    const ids: string[] = [];
+  getAllCommentIds(): Array<string | number> {
+    const ids: Array<string | number> = [];
     const iterate = (book: any) => {
       book?.titulos?.forEach((titulo: any) => {
         titulo.capitulos?.forEach((capitulo: any) => {
@@ -1508,7 +1406,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
             secao.artigos?.forEach((artigo: any) => {
               artigo.paragrafos?.forEach((paragrafo: any) => {
                 paragrafo.comentarios?.forEach((comentario: any) => {
-                  if (comentario.id) ids.push(comentario.id);
+                  if (comentario?.id != null) ids.push(comentario.id);
                 });
               });
             });
@@ -1519,174 +1417,22 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     iterate(this.filteredBook || this.book);
     return ids;
   }
-
-  // Função auxiliar para depuração
-  private debugArticleElements(targetArticle: string) {
-    const artigos = document.querySelectorAll('h5');
-
-    artigos.forEach((el, index) => {
-      const texto = el.textContent || '';
-      if (texto.includes(`Art. ${targetArticle}º`) || texto.includes(`Art.${targetArticle}º`)) {
-      }
-    });
+  /** Opcional: remove <p> “embrulho” único no início/fim, se existir */
+  private stripSingleOuterP(html: string): string {
+    const trimmed = html.trim();
+    // remove um <p> externo simples (mantém <p> internos)
+    return trimmed
+      .replace(/^<p([^>]*)>\s*/i, '<div$1>')
+      .replace(/\s*<\/p>\s*$/i, '</div>');
   }
-
-  // Método para configurar listeners para remissões inline
-  private setupInlineRemissoesLinks() {
-    // Usamos delegação de eventos para capturar cliques em remissões inline
-    document.addEventListener('click', (event: any) => {
-      const target = event.target;
-      if (target && target.classList && target.classList.contains('remissao-inline')) {
-        event.preventDefault();
-        event.stopPropagation(); // Impede propagação do evento que pode causar comportamentos inesperados
-
-        // Capturar o texto da remissão
-        const remissaoText = target.textContent || target.innerText;
-        if (!remissaoText) return;
-
-        // Verificação rápida: se não começa com "Art.", ignora
-        if (!remissaoText.trim().startsWith('Art')) {
-          return;
-        }
-        // Salvar posição atual da rolagem para permitir voltar
-        this.content.getScrollElement().then(scrollElement => {
-          const currentPosition = scrollElement.scrollTop;
-
-          // Adicionar um efeito visual ao clicar
-          target.classList.add('remissao-active');
-
-          // Fornecer feedback visual mais forte
-          target.classList.add('remissao-pulsing');
-
-          // Remover classes após um tempo
-          setTimeout(() => {
-            target.classList.remove('remissao-active');
-            target.classList.remove('remissao-pulsing');
-          }, 1500);
-
-          // Usar o parser avançado para identificar destinos
-          const destinosRemissao = this.parseRemissaoCompleta(remissaoText);
-
-          if (destinosRemissao.length > 0) {
-            // Verificar se temos dados de artigos nos atributos data-*
-            let artigos: string[] = [];
-            let paragrafo: string | undefined;
-            let inciso: string | undefined;
-
-            // Primeiro tenta obter dos atributos data-*
-            if (target.hasAttribute('data-artigos')) {
-              const artigosAttr = target.getAttribute('data-artigos');
-              if (artigosAttr) {
-                artigos = artigosAttr.split(',');
-              }
-            }
-
-            if (target.hasAttribute('data-paragrafos')) {
-              const paragrafosAttr = target.getAttribute('data-paragrafos');
-              if (paragrafosAttr && paragrafosAttr.length > 0) {
-                paragrafo = paragrafosAttr.split(',')[0];
-              }
-            }
-
-            if (target.hasAttribute('data-incisos')) {
-              const incisosAttr = target.getAttribute('data-incisos');
-              if (incisosAttr && incisosAttr.length > 0) {
-                inciso = incisosAttr.split(',')[0];
-              }
-            }
-
-            // Se não encontrou nos atributos, usa os resultados do parser
-            if (artigos.length === 0) {
-              artigos = destinosRemissao.map(d => d.artigo);
-            }
-
-            if (!paragrafo && destinosRemissao.some(d => d.paragrafo)) {
-              paragrafo = destinosRemissao.find(d => d.paragrafo)?.paragrafo;
-            }
-
-            if (!inciso && destinosRemissao.some(d => d.inciso)) {
-              inciso = destinosRemissao.find(d => d.inciso)?.inciso;
-            }
-
-            if (artigos.length === 1) {
-              // Se tem apenas um artigo, navega diretamente
-              const destino = destinosRemissao[0];
-
-              // Salvar no histórico o ID da remissão para poder destacá-la ao voltar
-              const remissaoId = target.getAttribute('data-remissao-id') || null;
-              this.saveToHistory(null, currentPosition, remissaoId, remissaoText, destino.paragrafo || paragrafo, destino.inciso || inciso);
-
-              this.scrollToArtigo(artigos[0], destino.paragrafo || paragrafo, destino.inciso || inciso, true);
-            } else if (artigos.length > 1) {
-              // Se tem múltiplos artigos, mostra modal para escolha
-              const remissaoId = target.getAttribute('data-remissao-id') || null;
-              this.saveToHistory(null, currentPosition, remissaoId, remissaoText, null, null);
-
-              if (inciso) {
-                // Se tem inciso específico, cria destinos com esse inciso
-                const destinosComInciso = artigos.map(artigo => ({
-                  artigo,
-                  paragrafo,
-                  inciso,
-                  origem: { text: remissaoText }
-                }));
-                this.showDestinationChoiceModal(destinosComInciso);
-              } else {
-                // Caso contrário, mostra modal simples de artigos
-                this.showArtigosChoiceModal(artigos);
-              }
-            }
-            return;
-          }
-
-          // Processar padrões de artigo apenas se começar com "Art"
-          const artigoMatch = remissaoText.match(/Art(?:igos?)?\.?\s+(\d+)[º°]?/i);
-          const multipleArtsMatch = remissaoText.match(/Arts\.?\s+(\d+)[º°]?(?:,\s*(\d+)[º°]?)*(?:\s+e\s+(\d+)[º°]?)?/i);
-
-          // Salvar no histórico o ID da remissão para poder destacar-la ao voltar
-          const remissaoId = target.getAttribute('data-remissao-id') || null;
-
-          if (multipleArtsMatch) {
-            // Extrai todos os números mencionados
-            const artigos: string[] = [];
-            const allNumbersPattern = /\b(\d+)[º°]?\b/g;
-            let numberMatch;
-
-            while ((numberMatch = allNumbersPattern.exec(remissaoText)) !== null) {
-              const num = numberMatch[1];
-              if (!artigos.includes(num)) {
-                artigos.push(num);
-              }
-            }
-
-            if (artigos.length > 1) {
-              // Salva a posição atual antes de mostrar modal
-              this.saveToHistory(null, currentPosition, remissaoId, remissaoText, null, null);
-
-              // Mostra modal para escolha se encontrou múltiplos artigos
-              this.showArtigosChoiceModal(artigos);
-            } else if (artigos.length === 1) {
-              // Navega diretamente para o artigo
-              this.saveToHistory(null, currentPosition, remissaoId, remissaoText, null, null);
-              this.scrollToArtigo(artigos[0], undefined, undefined, true);
-            }
-          } else if (artigoMatch && artigoMatch[1]) {
-            // Navega para o artigo mencionado
-            this.saveToHistory(null, currentPosition, remissaoId, remissaoText, null, null);
-            this.scrollToArtigo(artigoMatch[1], undefined, undefined, true);
-          } else {
-            // Se não conseguiu extrair o número do artigo, tenta como fallback
-            const numerosMatch = remissaoText.match(/\b(\d+)\b/);
-            if (numerosMatch && numerosMatch[1]) {
-              this.saveToHistory(null, currentPosition, remissaoId, remissaoText, null, null);
-              this.scrollToArtigo(numerosMatch[1], undefined, undefined, true);
-            } else {
-              this.presentToast('Não foi possível identificar o artigo referenciado');
-            }
-          }
-        });
-      }
-    });
+  
+  safeHtml(html: string): SafeHtml {
+    // Se não quiser trocar <p> externo, basta sanitizar direto:
+    // return this.sanitizer.bypassSecurityTrustHtml(html);
+  
+    // Se quiser normalizar para evitar um <p> externo extra:
+    const normalized = this.stripSingleOuterP(html || '');
+    return this.sanitizer.bypassSecurityTrustHtml(normalized);
   }
 
   // Funções de rastreamento para otimizar a renderização de listas
@@ -1949,7 +1695,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     return resultados;
   }
-
   // Identifica o elemento específico de um parágrafo ou inciso
   findElementoEspecifico(artigoId: string, paragrafo?: string, inciso?: string): HTMLElement | null {
 
@@ -2056,76 +1801,49 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     return artigoElement;
   }
-
-  // Modal para escolha de destino complexo (artigo, parágrafo, inciso)
+  
   async showDestinationChoiceModal(destinos: RemissaoDestino[]) {
-    const inputs = destinos.map((destino, index) => {
-      let label = '';
-
-      // Formatar a label de acordo com o tipo de destino
-      if (destino.artigo === 'contexto') {
-        // Para elementos que dependem do contexto atual
-        if (destino.paragrafo && destino.inciso) {
-          label = `§ ${destino.paragrafo}, inciso ${destino.inciso} (no artigo atual)`;
-        } else if (destino.paragrafo) {
-          label = `§ ${destino.paragrafo} (no artigo atual)`;
-        } else if (destino.inciso) {
-          label = `Inciso ${destino.inciso} (no artigo atual)`;
-        }
-      } else {
-        // Para referências diretas a artigos
-        label = `Art. ${destino.artigo}`;
-        if (destino.paragrafo) {
-          label += `, § ${destino.paragrafo}`;
-        }
-        if (destino.inciso) {
-          label += `, inciso ${destino.inciso}`;
-        }
-      }
-
-      // Se tiver texto de origem, adiciona como descrição
-      // Isso é útil quando há múltiplas opções semelhantes
-      if (destino.origem?.text) {
-        const origemText = destino.origem.text.trim();
-        if (origemText) {
-          // label += ` (${origemText})`;
-          label;
-        }
-      }
-
-      return {
-        type: 'radio' as 'radio',
-        label: label,
-        value: index.toString()
-      };
-    });
-
     const alert = await this.alertController.create({
-      header: 'Escolha o destino para navegar',
-      inputs: inputs,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Ir',
-          handler: (value) => {
-            const index = parseInt(value, 10);
-            if (isNaN(index) || index < 0 || index >= destinos.length) return;
-
-            const destino = destinos[index];
-            this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
-          }
+      header: 'Escolha o destino',
+      inputs: destinos.map((destino, index) => ({
+        type: 'radio',
+        label: this.formatDestinoLabel(destino),
+        value: String(index),
+        handler: () => {
+          // Navega imediatamente
+          this.scrollToArtigo(destino.artigo, destino.paragrafo, destino.inciso, true);
+  
+          // Fecha o modal logo após selecionar
+          setTimeout(() => alert.dismiss(), 100);
         }
-      ]
+      })),
+      buttons: [{ text: 'Cancelar', role: 'cancel' }]
     });
+  
     await alert.present();
   }
+  
+  // helper só pra montar label bonitinha
+  private formatDestinoLabel(destino: RemissaoDestino): string {
+    if (destino.artigo === 'contexto') {
+      if (destino.paragrafo && destino.inciso) return `§ ${destino.paragrafo}, inciso ${destino.inciso} (no artigo atual)`;
+      if (destino.paragrafo) return `§ ${destino.paragrafo} (no artigo atual)`;
+      if (destino.inciso) return `Inciso ${destino.inciso} (no artigo atual)`;
+      return '(no artigo atual)';
+    }
+    let label = `Art. ${destino.artigo}`;
+    if (destino.paragrafo) label += `, § ${destino.paragrafo}`;
+    if (destino.inciso) label += `, inciso ${destino.inciso}`;
+    return label;
+  }
+  
+  
 
   // Função auxiliar para obter elementos do cache com segurança de tipo
   private getElementFromCache(key: string): HTMLElement | null {
     const element = this.elementosCache.get(key);
     return element || null;
   }
-
   // Método para encontrar uma remissão pelo ID na estrutura de dados
   private findRemissaoById(remissaoId: string | null): ApiRemissao | null {
     if (!remissaoId) return null;
@@ -2151,38 +1869,25 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     return null;
   }
-
   // Método para converter destinos da API para o formato esperado
   private convertApiDestinosToRemissaoDestinos(apiDestinos: ApiDestino[]): RemissaoDestino[] {
-    return apiDestinos.map(destino => {
-      // Extrair o número do artigo do conteúdo usando o método robusto
-      const artigoNumero = this.extractArtigoNumber(destino.artigo.conteudo) || destino.artigo.id.toString();
-
-      // Extrair informações do parágrafo se existir
+    return apiDestinos.map(d => {
+      const numero = this.normalizeNumero(d.artigo?.numero) || this.extractArtigoNumber(d.artigo?.conteudo) || String(d.artigo?.id || '');
       let paragrafo: string | undefined;
-      if (destino.paragrafo) {
-        const paragrafoMatch = destino.paragrafo.conteudo.match(/§\s*(\d+)[º°]?/i);
-        paragrafo = paragrafoMatch ? paragrafoMatch[1] : undefined;
+      if (d.paragrafo?.conteudo) {
+        const m = d.paragrafo.conteudo.match(/§\s*(\d+)[º°]?/i);
+        paragrafo = m ? m[1] : undefined;
       }
-
-      // Extrair informações do inciso se existir
+  
       let inciso: string | undefined;
-      if (destino.paragrafo && destino.paragrafo.tipo) {
-        const incisoMatch = destino.paragrafo.tipo.match(/^([IVX]+)\s*[-–]/i);
-        inciso = incisoMatch ? incisoMatch[1] : undefined;
+      if (d.paragrafo?.tipo) {
+        const mi = d.paragrafo.tipo.match(/^([IVX]+)\s*[-–]/i);
+        inciso = mi ? mi[1] : undefined;
       }
-
-      return {
-        artigo: artigoNumero,
-        paragrafo,
-        inciso,
-        origem: {
-          text: destino.artigo.conteudo
-        }
-      };
+  
+      return { artigo: numero, paragrafo, inciso, origem: { text: d.artigo.conteudo } };
     });
   }
-
   // Método para extrair número do artigo de forma mais robusta
   private extractArtigoNumber(artigoContent: string): string {
     // Padrões para extrair o número do artigo
@@ -2203,7 +1908,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     // Se não encontrou nenhum padrão, retorna o ID como fallback
     return '';
   }
-
   // Método para processar remissões inline que ainda podem estar no texto
   private processInlineRemissoes(content: string): string {
     // Se já temos este conteúdo em cache, retorne-o
@@ -2298,42 +2002,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     return formattedContent;
   }
 
-  // Método para obter contexto do resultado atual
-  getCurrentResultContext(): string {
-    if (this.currentResultIndex < 0 || this.currentResultIndex >= this.searchResults.length) {
-      return '';
-    }
-
-    const result = this.searchResults[this.currentResultIndex];
-    if (!result) return '';
-
-    // Extrair informações relevantes do resultado
-    const type = result.type === 'artigo' ? 'Artigo' : 'Parágrafo';
-    const path = result.path || '';
-
-    // Limitar o tamanho do contexto para não ficar muito longo
-    const maxLength = 50;
-    const context = `${type}: ${path}`;
-
-    return context.length > maxLength ? context.substring(0, maxLength) + '...' : context;
-  }
-
-  // Método para manter a posição atual (salvar no histórico)
-  keepCurrentPosition() {
-    this.content.getScrollElement().then(scrollElement => {
-      const currentPosition = scrollElement.scrollTop;
-      this.lastScrollPosition = currentPosition;
-
-      // Feedback visual
-      this.presentToast('Posição atual mantida');
-
-      // Ocultar a barra de navegação após um tempo
-      setTimeout(() => {
-        this.clearSearch();
-      }, 2000);
-    });
-  }
-
   // Método para processar remissões de forma otimizada
   private processRemissoes() {
     const book = this.book;
@@ -2347,21 +2015,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.processRemissoesForSearch();
     }
   }
-
   // Método para processar remissões apenas durante busca
   private processRemissoesForSearch() {
-    // Limpar cache de remissões inline para forçar reprocessamento
     this.remissoesCache.clear();
   }
-
-  // Método para limpar todos os caches
-  private clearAllCaches() {
-    this.contentCache.clear();
-    this.remissoesCache.clear();
-    this.comentarioCache.clear();
-    this.elementosCache.clear();
-  }
-
   // Método para otimizar performance
   private optimizePerformance() {
     // Limpar caches antigos periodicamente

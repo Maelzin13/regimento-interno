@@ -18,7 +18,7 @@ export class MenuPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    const user = this.authService.getUser();
+    const user = await this.authService.getUser();
     this.user = user;
   }
 
