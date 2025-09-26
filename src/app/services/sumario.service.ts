@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError, lastValueFrom } from 'rxjs';
-import { ApiService } from '../services/api.service';
-import { AuthService } from '../services/auth.service';
+import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class SumarioService {

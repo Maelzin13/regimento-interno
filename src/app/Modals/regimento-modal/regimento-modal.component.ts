@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { ModalController, Platform } from '@ionic/angular';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { SumarioService } from 'src/app/service/sumario.service';
+import { SumarioService } from 'src/app/services/sumario.service';
 
 type Secao = { id: number; texto: string };
 type Capitulo = { id: number; texto: string; secoes?: Secao[] };
