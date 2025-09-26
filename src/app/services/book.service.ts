@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { StorageService } from './storage.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
@@ -8,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class BookService {
   private bookCache: { [id: number]: any } = {};
-  constructor(private http: HttpClient, private apiservice: ApiService) {}
+  constructor(private http: HttpClient, private apiservice: ApiService, private storage: StorageService) {}
 
   async getAllBooks() {
     const response: any = await firstValueFrom(
@@ -33,9 +34,9 @@ export class BookService {
     return response.data;
   }
   
-  clearBookCache(id: number) {
+  async clearBookCache(id: number) {
     delete this.bookCache[id];
-    localStorage.removeItem(`book_${id}`);
+    await this.storage.remove(`book_${id}`);
   }
 
   async updateBook(id: number, book: any) {
@@ -87,7 +88,6 @@ export class BookService {
   }
 
   async getNotesById(id: number) {
-    console.log('id', id);
     const response: any = await firstValueFrom(
       this.http.get(`${this.apiservice.baseUrl}/notas/${id}`)
     );

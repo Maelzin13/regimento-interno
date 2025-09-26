@@ -90,7 +90,11 @@ const routes: Routes = [
       import('./pages/questao-ordem-nova/questao-ordem-nova.module').then(
         (m) => m.QuestaoOrdemNovaPageModule
       ),
+  },  {
+    path: 'cadastro',
+    loadChildren: () => import('./pages/cadastro/cadastro.module').then( m => m.CadastroPageModule)
   },
+
 ];
 
 @NgModule({

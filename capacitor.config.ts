@@ -5,12 +5,17 @@ const config: CapacitorConfig = {
   appName: 'Regimento Interno Comentado',
   webDir: 'www',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    iosScheme: 'https'
   },
   android: {
     backgroundColor: '#ffffff',
     allowMixedContent: false,
     captureInput: true,
+    webContentsDebuggingEnabled: false
+  },
+  ios: {
+    backgroundColor: '#ffffff',
     webContentsDebuggingEnabled: false
   },
   plugins: {
@@ -44,7 +49,13 @@ const config: CapacitorConfig = {
     },
     FirebaseAuthentication: {
       skipNativeAuth: false,
-      providers: ['google.com'],
+      providers: ['google.com', 'apple.com'],
+    },
+    SignInWithApple: {
+      clientId: 'com.regimento.appservice',
+      redirectURI: 'https://regimento-interno-comentado.firebaseapp.com/__/auth/handler',
+      scopes: 'email name',
+      state: 'apple-signin-state'
     },
   },
 };

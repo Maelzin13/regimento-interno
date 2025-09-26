@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
 import {
   HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse
 } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
-import { TokenStorageService } from '../services/token-storage.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { TokenStorageService } from 'src/app/services/token-storage.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -27,9 +27,14 @@ export class AuthInterceptor implements HttpInterceptor {
           headers = headers.set('Content-Type', 'application/json');
         }
 
+        // Adicionar headers para melhor compatibilidade com iOS
+        headers = headers.set('X-Requested-With', 'XMLHttpRequest');
+        headers = headers.set('Cache-Control', 'no-cache');
+
         next.handle(req.clone({ headers }))
           .pipe(
             catchError((err: HttpErrorResponse) => {
+              console.error('Erro HTTP no interceptor:', err);
               if (err.status === 401) {
                 // Tratamento global de 401 - deslogar usuário
                 this.authService.logout();
@@ -38,6 +43,10 @@ export class AuthInterceptor implements HttpInterceptor {
             })
           )
           .subscribe(subscriber);
+      }).catch(error => {
+        console.error('Erro ao obter token no interceptor:', error);
+        // Continuar sem token se houver erro
+        next.handle(req).subscribe(subscriber);
       });
     });
   }

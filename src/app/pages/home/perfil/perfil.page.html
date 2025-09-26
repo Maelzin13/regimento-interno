@@ -19,10 +19,26 @@
     </ion-card-header>
 
     <ion-card-content class="btn-group">
-      <ion-button expand="block" class="primary-btn" (click)="editProfile(user.id)">
+      <!-- Botão Editar Perfil - apenas para usuários que podem editar -->
+      <ion-button 
+        *ngIf="canEditProfile" 
+        expand="block" 
+        class="primary-btn" 
+        (click)="editProfile(user.id)">
         <ion-icon slot="start" name="create-outline"></ion-icon>
         Editar Perfil
       </ion-button>
+
+      <!-- Mensagem para usuários que não podem editar -->
+      <div *ngIf="!canEditProfile" class="info-message">
+        <ion-icon name="information-circle-outline" color="warning"></ion-icon>
+        <p *ngIf="user?.provider === 'google'">
+          Esta conta é do Google. Edições devem ser feitas na sua Conta Google.
+        </p>
+        <p *ngIf="user?.provider === 'apple' || user?.provider === 'apple_native' || user?.provider === 'apple_simple'">
+          Esta conta é do Apple. Edições devem ser feitas na sua Conta Apple.
+        </p>
+      </div>
 
       <div *ngIf="user?.is_admin || user?.subscription_status === 'active'">
         <ion-button expand="block" class="secondary-btn" (click)="subscribe()">

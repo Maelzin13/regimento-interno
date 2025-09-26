@@ -11,13 +11,7 @@
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "build:android": "ionic cap copy && ionic cap sync android && ionic cap build android",
-    "build:ios": "ionic cap copy && ionic cap sync ios && ionic cap build ios",
-    "setup:env": "node scripts/setup-env.js",
-    "security:check": "npm run lint && echo '🔍 Verificando configurações de segurança...' && node -e \"console.log('✅ Configuração de segurança verificada')\"",
-    "security:audit": "npm audit && echo '🔐 Auditoria de segurança concluída'",
-    "update:deps": "node scripts/update-dependencies.js",
-    "fix:lint": "echo '🔧 Problemas de lint já corrigidos'",
-    "fix:all": "npm run fix:lint && npm run update:deps && npm run security:check"
+    "build:ios": "ionic cap copy && ionic cap sync ios && ionic cap build ios"
   },
   "private": true,
   "dependencies": {
@@ -30,6 +24,7 @@
     "@angular/platform-browser": "^18.0.0",
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/router": "^18.0.0",
+    "@capacitor-community/apple-sign-in": "^7.0.1",
     "@capacitor-community/generic-oauth2": "^6.1.0",
     "@capacitor-firebase/authentication": "^7.1.0",
     "@capacitor/android": "^7.2.0",
@@ -41,6 +36,7 @@
     "@capacitor/preferences": "^7.0.2",
     "@capacitor/status-bar": "^7.0.2",
     "@ionic/angular": "^8.5.3",
+    "@ionic/storage-angular": "^4.0.0",
     "@typescript-eslint/utils": "^8.20.0",
     "axios": "^1.7.8",
     "bootstrap": "^5.3.3",
@@ -75,6 +71,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.1",
     "eslint-plugin-prefer-arrow": "1.2.2",
+    "firebase-admin": "^13.5.0",
     "jasmine-core": "~5.1.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.4.0",

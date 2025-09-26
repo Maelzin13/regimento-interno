@@ -1,8 +1,8 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.regimento.app"
-4    android:versionCode="2"
-5    android:versionName="1.1" >
+4    android:versionCode="5"
+5    android:versionName="1.2" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="23"
@@ -19,16 +19,16 @@
 15        <intent>
 15-->[net.openid:appauth:0.9.1] /Users/ismaeldias/.gradle/caches/transforms-3/c27537908dd88a7067ba098a32878fa3/transformed/appauth-0.9.1/AndroidManifest.xml:25:9-31:18
 16            <action android:name="android.intent.action.VIEW" />
-16-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:17-69
-16-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:25-66
+16-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:17-69
+16-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:25-66
 17
 18            <category android:name="android.intent.category.BROWSABLE" />
-18-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:17-78
-18-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:27-75
+18-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:17-78
+18-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:27-75
 19
 20            <data android:scheme="https" />
-20-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:17-60
-20-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:23-57
+20-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
+20-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
 21        </intent>
 22    </queries>
 23
@@ -72,85 +72,85 @@
 38-->[androidx.core:core:1.12.0] /Users/ismaeldias/.gradle/caches/transforms-3/1660bc95ea2876cedd995c4eaa09eaed/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
 39
 40    <application
-40-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:4:5-47:19
+40-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:3:5-38:19
 41        android:allowBackup="true"
-41-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:5:9-35
+41-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:4:9-35
 42        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 42-->[androidx.core:core:1.12.0] /Users/ismaeldias/.gradle/caches/transforms-3/1660bc95ea2876cedd995c4eaa09eaed/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
 43        android:debuggable="true"
 44        android:extractNativeLibs="false"
 45        android:icon="@mipmap/ic_launcher"
-45-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:6:9-43
+45-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:5:9-43
 46        android:label="@string/app_name"
-46-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:7:9-41
+46-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:6:9-41
 47        android:networkSecurityConfig="@xml/network_security_config"
-47-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:11:9-69
+47-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:10:9-69
 48        android:roundIcon="@mipmap/ic_launcher_round"
-48-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:8:9-54
+48-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:7:9-54
 49        android:supportsRtl="true"
-49-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:9:9-35
+49-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:8:9-35
 50        android:testOnly="true"
 51        android:theme="@style/AppTheme" >
-51-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:10:9-40
+51-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:9:9-40
 52        <activity
-52-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:13:9-33:20
+52-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:11:9-29:20
 53            android:name="com.regimento.app.MainActivity"
-53-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:14:13-41
+53-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:12:13-41
 54            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
-54-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:19:13-129
+54-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:17:13-129
 55            android:exported="true"
-55-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:18:13-36
+55-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:16:13-36
 56            android:label="@string/title_activity_main"
-56-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:15:13-56
+56-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:13:13-56
 57            android:launchMode="singleTask"
-57-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:17:13-44
+57-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:15:13-44
 58            android:theme="@style/AppTheme.NoActionBarLaunch" >
-58-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:16:13-62
+58-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:14:13-62
 59            <intent-filter>
-59-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:21:13-24:29
+59-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:18:13-21:29
 60                <action android:name="android.intent.action.MAIN" />
-60-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:22:17-69
-60-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:22:25-66
+60-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:19:17-69
+60-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:19:25-66
 61
 62                <category android:name="android.intent.category.LAUNCHER" />
-62-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:23:17-77
-62-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:23:27-74
+62-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:20:17-77
+62-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:20:27-74
 63            </intent-filter>
 64            <intent-filter android:autoVerify="true" >
-64-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:13-32:29
-64-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:28-53
+64-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:23:13-28:29
+64-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:23:28-53
 65                <action android:name="android.intent.action.VIEW" />
-65-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:17-69
-65-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:25-66
+65-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:17-69
+65-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:25-66
 66
 67                <category android:name="android.intent.category.DEFAULT" />
-67-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:29:17-76
-67-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:29:27-73
+67-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:25:17-76
+67-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:25:27-73
 68                <category android:name="android.intent.category.BROWSABLE" />
-68-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:17-78
-68-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:27-75
+68-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:17-78
+68-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:27-75
 69
 70                <data android:scheme="com.regimento.app" />
-70-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:17-60
-70-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:23-57
+70-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
+70-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
 71            </intent-filter>
 72        </activity>
 73
 74        <provider
 75            android:name="androidx.core.content.FileProvider"
-75-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:36:13-62
+75-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:32:13-62
 76            android:authorities="com.regimento.app.fileprovider"
-76-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:37:13-64
+76-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:33:13-64
 77            android:exported="false"
-77-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:13-37
+77-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:34:13-37
 78            android:grantUriPermissions="true" >
-78-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:39:13-47
+78-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:35:13-47
 79            <meta-data
-79-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:40:13-42:54
+79-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:36:13-112
 80                android:name="android.support.FILE_PROVIDER_PATHS"
-80-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:41:17-67
+80-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:36:24-74
 81                android:resource="@xml/file_paths" />
-81-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:42:17-51
+81-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:36:75-109
 82        </provider>
 83
 84        <activity
@@ -180,21 +180,21 @@
 96            android:exported="true" >
 96-->[net.openid:appauth:0.9.1] /Users/ismaeldias/.gradle/caches/transforms-3/c27537908dd88a7067ba098a32878fa3/transformed/appauth-0.9.1/AndroidManifest.xml:42:13-36
 97            <intent-filter>
-97-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:13-32:29
+97-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:23:13-28:29
 98                <action android:name="android.intent.action.VIEW" />
-98-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:17-69
-98-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:25-66
+98-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:17-69
+98-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:25-66
 99
 100                <category android:name="android.intent.category.DEFAULT" />
-100-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:29:17-76
-100-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:29:27-73
+100-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:25:17-76
+100-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:25:27-73
 101                <category android:name="android.intent.category.BROWSABLE" />
-101-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:17-78
-101-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:27-75
+101-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:17-78
+101-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:27-75
 102
 103                <data android:scheme="com.regimento.app" />
-103-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:17-60
-103-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:23-57
+103-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
+103-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
 104            </intent-filter>
 105        </activity>
 106        <activity
@@ -212,22 +212,22 @@
 112            <intent-filter>
 112-->[com.google.firebase:firebase-auth:23.2.0] /Users/ismaeldias/.gradle/caches/transforms-3/81aca94574eaae8013a4d1a4c204d350/transformed/firebase-auth-23.2.0/AndroidManifest.xml:35:13-45:29
 113                <action android:name="android.intent.action.VIEW" />
-113-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:17-69
-113-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:25-66
+113-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:17-69
+113-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:25-66
 114
 115                <category android:name="android.intent.category.DEFAULT" />
-115-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:29:17-76
-115-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:29:27-73
+115-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:25:17-76
+115-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:25:27-73
 116                <category android:name="android.intent.category.BROWSABLE" />
-116-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:17-78
-116-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:27-75
+116-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:17-78
+116-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:27-75
 117
 118                <data
-118-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:17-60
+118-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
 119                    android:host="firebase.auth"
 120                    android:path="/"
 121                    android:scheme="genericidp" />
-121-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:23-57
+121-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
 122            </intent-filter>
 123        </activity>
 124        <activity
@@ -245,22 +245,22 @@
 130            <intent-filter>
 130-->[com.google.firebase:firebase-auth:23.2.0] /Users/ismaeldias/.gradle/caches/transforms-3/81aca94574eaae8013a4d1a4c204d350/transformed/firebase-auth-23.2.0/AndroidManifest.xml:53:13-63:29
 131                <action android:name="android.intent.action.VIEW" />
-131-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:17-69
-131-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:28:25-66
+131-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:17-69
+131-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:25-66
 132
 133                <category android:name="android.intent.category.DEFAULT" />
-133-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:29:17-76
-133-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:29:27-73
+133-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:25:17-76
+133-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:25:27-73
 134                <category android:name="android.intent.category.BROWSABLE" />
-134-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:17-78
-134-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:30:27-75
+134-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:17-78
+134-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:27-75
 135
 136                <data
-136-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:17-60
+136-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
 137                    android:host="firebase.auth"
 138                    android:path="/"
 139                    android:scheme="recaptcha" />
-139-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:23-57
+139-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
 140            </intent-filter>
 141        </activity>
 142

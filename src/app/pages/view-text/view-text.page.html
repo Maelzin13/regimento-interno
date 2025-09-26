@@ -6,44 +6,33 @@
       </ion-button>
     </ion-buttons>
     <ion-title class="titulo-personalizado">Regimento Comentado</ion-title>
-    <ion-buttons slot="end">
-      <ion-button
-        *ngIf="navigationHistory.length > 1 && currentHistoryIndex > 0"
-        (click)="navigateBack()"
-        class="back-button"
-        fill="clear"
-        color="light"
-      >
-        <ion-icon name="arrow-undo" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
-    <div class="toolbar-row">
-      <div class="label">Busca por:</div>
-
-      <ion-segment [(ngModel)]="searchBy" value="keyword" class="seg">
-        <ion-segment-button value="keyword">
+    <div class="search-row">
+      <span class="search-label">Busca por:</span>
+  
+      <ion-radio-group [(ngModel)]="searchBy" class="radio-inline">
+        <ion-item lines="none" class="radio-item">
+          <ion-radio slot="start" value="keyword"></ion-radio>
           <ion-label>Palavra-chave</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="artigo">
+        </ion-item>
+  
+        <ion-item lines="none" class="radio-item">
+          <ion-radio slot="start" value="artigo"></ion-radio>
           <ion-label>Artigo</ion-label>
-        </ion-segment-button>
-      </ion-segment>
+        </ion-item>
+      </ion-radio-group>
     </div>
-  </ion-toolbar> 
+  </ion-toolbar>
 
-  <ion-toolbar class="search-toolbar ion-padding-top">
+  <ion-toolbar>
     <ion-searchbar
+      #searchInput
       slot="start"
-      color="medium"
-      animated="true"
-      [placeholder]="getSearchPlaceholder()"
+      class="custom"
+      searchIcon="none"
       [(ngModel)]="query"
       (ionClear)="clearSearch()"
-      debounce="300"
-      (keyup.enter)="search()"
-      class="searchbar-shrink searchbar-no-icon"
     >
     </ion-searchbar>
 
@@ -83,18 +72,12 @@
             [innerHTML]="highlightAndSanitize(titulo.conteudo)"
           ></h2>
 
-          <ng-container
-            *ngFor="let capitulo of titulo.capitulos; trackBy: trackByCapituloId"
-          >
-            <h3
-              class="capitulo"
+          <ng-container *ngFor="let capitulo of titulo.capitulos; trackBy: trackByCapituloId">
+            <h3 class="capitulo"
               [innerHTML]="highlightAndSanitize(capitulo.conteudo)"
             ></h3>
-            <ng-container
-              *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId"
-            >
-              <h4
-                class="secao"
+            <ng-container *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId">
+              <h4 class="secao"
                 [innerHTML]="highlightAndSanitize(secao.conteudo)"
               ></h4>
               <div class="artigo-container">
@@ -103,6 +86,7 @@
                 >
                   <h5
                     [id]="'artigo-' + artigo.id"
+                    class="artigo"
                     [innerHTML]="highlightAndSanitize(artigo.conteudo)"
                   ></h5>
 
@@ -111,12 +95,11 @@
                   >
                     <h5
                       [id]="'paragrafo-' + paragrafo.id"
+                      class="paragrafo"
                       [innerHTML]="highlightAndSanitize(paragrafo.conteudo)"
-                      class="text-justify"
                     ></h5>
 
                     <ng-container *ngFor="let remissao of paragrafo.remissoes">
-                      <!-- Remissões Internas (com destinos) -->
                       <div
                         class="remissao-container mt-3 mb-4 pl-4"
                         *ngIf="remissao.conteudo && remissao.tipo === 'interna'"
@@ -128,26 +111,9 @@
                           [attr.data-destinos-count]="remissao.destinos?.length || 0"
                         >
                           <div
-                            class="remissao-text"
+                            class="remissao"
                             [innerHTML]="highlightAndSanitize(remissao.conteudo)"
                           ></div>
-                          <div class="remissao-indicator">
-                            <ion-icon
-                              name="link-outline"
-                              class="remissao-icon"
-                            ></ion-icon>
-                            <span
-                              *ngIf="remissao.destinos && remissao.destinos.length > 0"
-                            >
-                              {{ remissao.destinos.length === 1 ? 'Clique paranavegar' 
-                              : 'Clique para escolher destino' }}
-                            </span>
-                            <span
-                              *ngIf="!remissao.destinos || remissao.destinos.length === 0"
-                            >
-                              Processando...
-                            </span>
-                          </div>
                         </div>
                       </div>
 
@@ -162,7 +128,7 @@
                           [class.not-clickable]="!remissao.url_externa"
                         >
                           <div
-                            class="remissao-text"
+                            class="remissao"
                             [innerHTML]="highlightAndSanitize(remissao.conteudo)"
                           ></div>
                           <ion-icon
@@ -175,18 +141,25 @@
                       </div>
                     </ng-container>
 
-                    <ng-container
-                      *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId"
-                    >
-                      <p class="comentario mt-4">
-                        <span class="comentario-tipo font-semibold"
-                          >{{ comentario.tipo | titlecase }}</span
-                        >
-                        <span
-                          [innerHTML]="processComentarioContentFormated(comentario.conteudo, comentario.id)"
-                          (click)="toggleComment(comentario.id)"
-                        ></span>
-                      </p>
+                    <ng-container *ngFor="let comentario of paragrafo.comentarios; trackBy: trackByComentarioId">
+                      <div class="comentario" [attr.data-comentario-id]="comentario.id">
+                        <strong>{{ comentario.tipo | titlecase }}</strong>
+                    
+                        <div class="conteudo-comentario"
+                             [class.expanded]="isCommentExpanded(comentario.id)"
+                             [class.collapsed]="!isCommentExpanded(comentario.id)">
+                    
+                          <ng-container *ngIf="!isCommentExpanded(comentario.id); else expanded">
+                            <div class="rich-text" [innerHTML]="highlightAndSanitize(comentario.conteudo)"></div>
+                            <a class="ver-mais" (click)="toggleComment(comentario.id)">Ver mais</a>
+                          </ng-container>
+                    
+                          <ng-template #expanded>
+                            <div class="rich-text" [innerHTML]="highlightAndSanitize(comentario.conteudo)"></div>
+                            <a class="ver-menos" (click)="toggleComment(comentario.id)">Ver menos</a>
+                          </ng-template>
+                        </div>
+                      </div>
                     </ng-container>
                   </div>
                 </div>
@@ -218,14 +191,7 @@
 
 <!-- Barra de navegação de resultados melhorada -->
 <div class="search-navigation-bar" *ngIf="totalResults > 0">
-  <!-- Tooltip de contexto -->
-  <div class="navigation-tooltip" *ngIf="currentResultIndex >= 0">
-    <span class="tooltip-text">{{ getCurrentResultContext() }}</span>
-  </div>
-
-  <!-- Controles de navegação -->
   <div class="navigation-controls">
-    <!-- Navegação com setas -->
     <div class="navigation-arrows">
       <button
         class="nav-arrow-btn"
