@@ -1,7 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, Platform } from '@ionic/angular';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { SumarioService } from 'src/app/services/sumario.service';
+
+type Secao = { id: number; texto: string };
+type Capitulo = { id: number; texto: string; secoes?: Secao[] };
+type Titulo = { id: number; texto: string; capitulos: Capitulo[] };
 
 @Component({
   selector: 'app-regimento-modal',
@@ -10,8 +15,9 @@ import { Router } from '@angular/router';
 })
 export class RegimentoModalComponent implements OnInit {
   @Input() type: string = '';
+  @Input() bookId!: number; // necessário para buscar o sumário
 
-  content: any = {
+  content: Record<string, { title: string; content: SafeHtml | string }> = {
     abreviaturas: {
       title: 'Abreviaturas',
       content: `
@@ -71,21 +77,99 @@ export class RegimentoModalComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private platform: Platform,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer,
+    private sumarioService: SumarioService
   ) {}
 
   ngOnInit() {
-    // Se o tipo for um PDF, redirecionar para a página de visualização
-    if (this.type === 'resumo' || this.type === 'esquema') {
-      const pdfName = this.type === 'resumo' ? 'resumos' : 'esquemas';
+    const t = (this.type || '').toLowerCase();
+
+    // PDFs (mantém seu comportamento)
+    if (t === 'resumo' || t === 'esquema' || t === 'esquematico') {
+      const pdfName = t === 'resumo' ? 'resumos' : 'esquemas';
       this.redirectToPdfViewer(pdfName);
+      return;
+    }
+
+    // Sumário (ao abrir com 'indice' ou 'sumario')
+    if (t === 'indice' || t === 'sumario') {
+      this.content[t] = { title: 'Carregando…', content: '' };
+      this.getSumario(t);
+    }
+  }
+
+  private escapeHtml(s: string = ''): string {
+    return s.replace(
+      /[&<>"]/g,
+      (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string)
+    );
+  }
+
+  private buildSumarioHtml(titulos: Titulo[]): string {
+    const out: string[] = [];
+
+    for (const t of titulos) {
+      out.push(`
+        <div class="nivel-1">
+          <a href="#titulo-${t.id}">${this.escapeHtml(t.texto)}</a>
+        </div>
+      `);
+
+      if (t.capitulos?.length) {
+        out.push('<ul class="lista-capitulos">');
+
+        for (const c of t.capitulos) {
+          out.push(`
+            <li class="nivel-2">
+              <a href="#capitulo-${c.id}">${this.escapeHtml(c.texto)}</a>
+            </li>
+          `);
+
+          if (c.secoes?.length) {
+            out.push('<ul class="lista-secoes">');
+            for (const s of c.secoes) {
+              out.push(`
+                <li class="nivel-3">
+                  <a href="#secao-${s.id}">${this.escapeHtml(s.texto)}</a>
+                </li>
+              `);
+            }
+            out.push('</ul>');
+          }
+        }
+
+        out.push('</ul>');
+      }
+
+      out.push('<hr>');
+    }
+
+    return out.join('');
+  }
+
+  private async getSumario(key: 'indice' | 'sumario') {
+    try {
+      const resp = await this.sumarioService.getSumario(this.bookId);
+      const titulos: Titulo[] = resp?.data?.sumario ?? [];
+      const html = this.buildSumarioHtml(titulos);
+
+      this.content[key] = {
+        title: 'Sumário',
+        content: this.sanitizer.bypassSecurityTrustHtml(html),
+      };
+    } catch (e) {
+      console.error('Erro ao carregar sumário:', e);
+      this.content[key] = {
+        title: 'Sumário',
+        content: 'Não foi possível carregar o sumário.',
+      };
     }
   }
 
   redirectToPdfViewer(pdfName: string) {
-    // Fechar o modal
     this.modalCtrl.dismiss().then(() => {
-      // Navegar para a página de visualização de PDF
       this.router.navigateByUrl(`/pdf-viewer/${pdfName}`);
     });
   }
