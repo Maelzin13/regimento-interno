@@ -78,17 +78,6 @@ export class LivroPage implements OnInit {
     await modal.present();
   }
 
-  // async openDescricaoModal(texto: any) {
-  //   try { await Haptics.impact({ style: ImpactStyle.Light }); } catch {}
-  //   const modal = await this.modalCtrl.create({
-  //     component: DescricaoModalComponent,
-  //     componentProps: { titulo: texto.title, descricao: texto.description },
-  //     breakpoints: [0, .4, .75],
-  //     initialBreakpoint: .4, // sheet modal style
-  //   });
-  //   await modal.present();
-  // }
-
   async showSubscriptionMessage() {
     const toast = await this.toastCtrl.create({
       message: 'É necessário ter uma assinatura ativa para acessar este conteúdo',

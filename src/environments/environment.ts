@@ -17,7 +17,13 @@ const GOOGLE_OAUTH_CONFIG = {
 
 export const environment = {
   production: true,
-  baseUrl: 'https://regimentocd.com.br',
+  // baseUrl: 'https://regimentocd.com.br',
+  baseUrl: 'http://localhost:8000',
+  manageSubscriptionUrl: 'https://regimentocd.com.br/assinatura',
+  stripePrices: {
+    mensal: "price_1R1wDvFHDwuz6ZFYld8HKutC",
+    anual:  "price_1R1wElFHDwuz6ZFYgYItI2bM",
+  },
   firebase: FIREBASE_CONFIG,
   googleOAuth: GOOGLE_OAUTH_CONFIG,
 };

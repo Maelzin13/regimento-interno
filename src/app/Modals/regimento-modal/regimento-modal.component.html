@@ -16,7 +16,7 @@
   <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
 
   <div
-    *ngIf="!loading && !errorMsg"
+    *ngIf="!loading && !errorMsg && content[type]?.content"
     class="modal-content sumario-html"
     [innerHTML]="content[type].content">
   </div>
