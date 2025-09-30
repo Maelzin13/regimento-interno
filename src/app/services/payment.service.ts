@@ -1,156 +1,116 @@
 import { App } from '@capacitor/app';
 import { firstValueFrom } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
-import { Stripe } from '@capacitor-community/stripe';
+import { HttpClient } from '@angular/common/http';
 import { ApiService } from 'src/app/services/api.service';
-import { environment } from 'src/environments/environment';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+
+type CheckoutResponse = { success: boolean; checkout_url: string; session_id: string };
+type PortalResponse   = { url: string };
+type CancelResponse   = { success: boolean; message: string; ends_at?: string };
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  private deepLinkSuccess = 'regimentoapp://checkout/success';
-  private deepLinkCancel  = 'regimentoapp://checkout/cancel';
-  private isStripeInitialized = false;
+  private deepLinkHandler = false;
 
-  constructor(private http: HttpClient, private apiservice: ApiService) {
-    this.initializeStripe();
-    this.setupAppUrlListener();
+  constructor(private http: HttpClient, private api: ApiService) {}
+
+  async getPayments() {
+    const res: any = await firstValueFrom(this.http.get(`${this.api.baseUrl}/pagamentos`));
+    return res?.data ?? [];
   }
 
-  private async initializeStripe() {
-    if (this.platform !== 'web' && !this.isStripeInitialized) {
-      try {
-        await Stripe.initialize({
-          publishableKey: environment.stripe.publishableKey,
-          stripeAccount: undefined,
-        });
-        this.isStripeInitialized = true;
-      } catch (error) {
-        console.error('Erro ao inicializar Stripe:', error);
-      }
+  /**
+   * Inicia Stripe Checkout (assinatura) e abre a URL hospedada pela Stripe.
+   * O backend já cria a sessão e usa deep links: regimento://checkout/success|cancel
+   */
+  async startCheckout(priceId: string, platform: 'ios' | 'android' | 'web' = this.detectPlatform()) {
+    const res = await firstValueFrom(
+      this.http.post<CheckoutResponse>(`${this.api.baseUrl}/checkout/processar`, {
+        price_id: priceId,
+        platform,
+      })
+    );
+
+    if (!res?.success || !res?.checkout_url) {
+      throw new Error('Erro ao processar pagamento');
     }
+
+    this.ensureDeepLinkListener();
+    // Dica: _self evita abrir em outra aba no WebView
+    await Browser.open({ url: res.checkout_url, windowName: '_self' });
   }
 
-  private setupAppUrlListener() {
-    App.addListener('appUrlOpen', (event) => {
-      if (!event?.url) return;
-      const url = new URL(event.url);
-      if (url.origin + url.pathname === this.deepLinkSuccess) {
-        Browser.close();
-      }
-      if (url.origin + url.pathname === this.deepLinkCancel) {
-        Browser.close();
+  /**
+   * Atualiza o plano (mensal <-> anual) conforme regras do backend.
+   */
+  async updatePlan(priceId: string) {
+    return await firstValueFrom(
+      this.http.post<{ success: boolean; message: string; valorCobrado?: number }>(
+        `${this.api.baseUrl}/checkout/atualizar`,
+        { price_id: priceId }
+      )
+    );
+  }
+
+  /**
+   * Cancela assinatura no fim do período.
+   */
+  async cancelSubscription() {
+    return await firstValueFrom(
+      this.http.post<CancelResponse>(`${this.api.baseUrl}/checkout/cancelar`, {})
+    );
+  }
+
+  /**
+   * Abre o Billing Portal (troca de cartão, ver faturas etc.)
+   */
+  async openBillingPortal(): Promise<void> {
+    const { url } = await firstValueFrom(
+      this.http.post<PortalResponse>(`${this.api.baseUrl}/checkout/portal`, {})
+    );
+    if (!url) throw new Error('Falha ao abrir o portal de faturamento.');
+    await Browser.open({ url, windowName: '_self' });
+  }
+
+  /**
+   * Escuta os deep links: regimento://checkout/success?session_id=...
+   * e regimento://checkout/cancel
+   */
+  private ensureDeepLinkListener() {
+    if (this.deepLinkHandler) return;
+    this.deepLinkHandler = true;
+
+    App.addListener('appUrlOpen', async (event) => {
+      try {
+        // Ex.: regimento://checkout/success?session_id=cs_test_123
+        const url = new URL(event.url);
+        const path = url.host + url.pathname; // "checkout/success"
+        const sessionId = url.searchParams.get('session_id') || undefined;
+
+        await Browser.close().catch(() => void 0);
+
+        if (path === 'checkout/success') {
+          // Opcional: bater no /api/checkout/sucesso p/ log/telemetria
+          // await firstValueFrom(this.http.get(`${this.api.baseUrl}/checkout/sucesso`, { params: { session_id: sessionId! } }));
+          // Aqui você pode disparar um evento global, atualizar store ou navegar:
+          console.log('[Stripe] Assinatura concluída', sessionId);
+        }
+
+        if (path === 'checkout/cancel') {
+          console.log('[Stripe] Checkout cancelado');
+        }
+      } catch (error) {
+        console.error('Erro ao processar deep link', error);
       }
     });
   }
 
-  get platform(): 'ios'|'android'|'web' {
-    return Capacitor.getPlatform() as any;
-  }
-
-  async getPayments() {
-    try {
-      const response: any = await firstValueFrom(
-        this.http.get(`${this.apiservice.baseUrl}/pagamentos`)
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao buscar pagamentos', error);
-      throw error;
-    }
-  }
-
-
-  async openBillingPortal(): Promise<void> {
-    const { url } = await firstValueFrom(
-      this.http.post<{url:string}>(`${this.apiservice.baseUrl}/checkout/portal`, {})
-    );
-    await Browser.open({ url });
-  }
-
-  /**
-   * Processa pagamento baseado na plataforma
-   * Todas as plataformas: Redireciona para web (evita problemas com Stripe)
-   */
-  async processPayment(priceId: string): Promise<void> {
-    // Usar fluxo web para todas as plataformas para evitar problemas com Stripe
-    await this.processWebPayment(priceId);
-  }
-
-  /**
-   * Processa pagamento via web (iOS e Web)
-   * Conforme diretrizes da Apple para iOS
-   */
-  async processWebPayment(priceId: string): Promise<void> {
-    try {
-      const response = await firstValueFrom(
-        this.http.post<{checkout_url: string, session_id: string}>(
-          `${this.apiservice.baseUrl}/checkout/processar`,
-          { price_id: priceId, platform: this.platform }
-        )
-      );
-  
-      if (response.checkout_url) {
-        // Para iOS, usar _blank para evitar problemas com deep links
-        const windowName = this.platform === 'ios' ? '_blank' : '_self';
-        await Browser.open({ 
-          url: response.checkout_url, 
-          windowName: windowName 
-        });
-      }
-    } catch (err) {
-      const e = err as HttpErrorResponse;
-      if (e.status === 409) {
-        // Já possui assinatura - redirecionar para portal
-        await Browser.open({ 
-          url: (await firstValueFrom(this.http.post<{url:string}>(`${this.apiservice.baseUrl}/checkout/portal`, {}))).url,
-          windowName: '_blank'
-        });
-      } else {
-        // Fallback: redirecionar para página de assinatura web
-        await Browser.open({ 
-          url: this.webSubscriptionUrl,
-          windowName: '_blank'
-        });
-      }
-      throw err;
-    }
-  }
-
-  /**
-   * Processa pagamento nativo (Android)
-   * Usa @capacitor-community/stripe
-   */
-  private async processNativePayment(priceId: string): Promise<void> {
-    try {
-      // Para Android, também usar o fluxo web para evitar problemas com Stripe
-      console.log('Android: Redirecionando para fluxo web');
-      await this.processWebPayment(priceId);
-      
-    } catch (error) {
-      console.error('Erro ao processar pagamento nativo:', error);
-      // Fallback: redirecionar para página de assinatura web
-      await Browser.open({ 
-        url: this.webSubscriptionUrl,
-        windowName: '_blank'
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Verifica se deve usar fluxo web (todas as plataformas)
-   */
-  get shouldUseWebFlow(): boolean {
-    return true; // Sempre usar fluxo web para evitar problemas com Stripe
-  }
-
-  /**
-   * Retorna URL de assinatura web para iOS
-   */
-  get webSubscriptionUrl(): string {
-    return environment.manageSubscriptionUrl;
+  private detectPlatform(): 'ios' | 'android' | 'web' {
+    const ua = navigator.userAgent.toLowerCase();
+    if (/iphone|ipad|ipod/.test(ua)) return 'ios';
+    if (/android/.test(ua)) return 'android';
+    return 'web';
+    // Se quiser, dá para usar Capacitor.getPlatform(), mas para webviews o UA costuma bastar.
   }
 }

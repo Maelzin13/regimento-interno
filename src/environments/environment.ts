@@ -18,8 +18,8 @@ const GOOGLE_OAUTH_CONFIG = {
 export const environment = {
   production: true,
   // baseUrl: 'https://regimentocd.com.br',
-  baseUrl: 'http://localhost:8000',
-  manageSubscriptionUrl: 'https://regimentocd.com.br/assinatura',
+  baseUrl: 'https://dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me',
+  manageSubscriptionUrl: 'https://dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me/assinatura',
   stripe: {
     publishableKey: 'pk_test_51R1FxvFHDwuz6ZFYhlQz61ZVkIXZe2NqyXSb5AzxKVizVW6pCGBi6PPp9tGdcQufgSAM59EIXTgIyGVJcaGdwHOq00WZyUOndv',
   },

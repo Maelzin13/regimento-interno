@@ -1,14 +1,13 @@
-import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { PaymentService } from 'src/app/services/payment.service';
+import { Router } from '@angular/router';
+import { ToastController, LoadingController } from '@ionic/angular';
+import { UserModel } from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
 import { PlansService } from 'src/app/services/plans.service';
-import { Capacitor } from '@capacitor/core';
-import { Browser } from '@capacitor/browser';
-import { UserModel } from 'src/app/models/userModel';
+import { PaymentService } from 'src/app/services/payment.service';
 import { Plan, PlansResponse } from 'src/app/models/plan.model';
-import { Router } from '@angular/router';
+
+type Intervalo = 'Mensal' | 'Anual';
 
 @Component({
   selector: 'app-assinatura',
@@ -16,332 +15,238 @@ import { Router } from '@angular/router';
   styleUrls: ['./assinatura.page.scss'],
 })
 export class AssinaturaPage implements OnInit {
+  isLoading = true;
+  assinaturaAtiva: {
+    ends_at: string;
+    id: string;
+    status: string;
+  } | null = null;
+  loading = false;
+  isActive = false;
+  allPlans: Plan[] = [];
+  annualPlans: Plan[] = [];
+  isLoadingCancelar = false;
+  monthlyPlans: Plan[] = [];
+  filteredPlans: Plan[] = [];
+  segment: Intervalo = 'Mensal';
+  planoAtivo: Plan | null = null;
   currentUser: UserModel | null = null;
   plansData: PlansResponse | null = null;
-  availablePlans: Plan[] = [];
-  monthlyPlans: Plan[] = [];
-  annualPlans: Plan[] = [];
-  loading = false;
-
-  get platform(): 'ios'|'android'|'web' {
-    return Capacitor.getPlatform() as any;
-  }
+  activeInterval: Intervalo | null = null;
 
   constructor(
     private router: Router,
     private auth: AuthService,
     private pay: PaymentService,
-    private modal: ModalController,
     private toast: ToastController,
     private plansService: PlansService,
     private loadingController: LoadingController
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.loadData();
+    await this.loadUser();
+    await this.loadPlans();
+    this.applyFilter();
   }
 
-  /**
-   * Carrega dados do usuário e planos
-   */
-  private async loadData(): Promise<void> {
-    const loading = await this.loadingController.create({
-      message: 'Carregando...',
-      spinner: 'crescent'
-    });
-    
+  // ========= helpers regras de negócio =========
+
+  private deriveUserFlags() {
+    this.isActive = ['active', 'trialing'].includes(this.currentUser?.subscription_status ?? '');
+
+    // deduz intervalo pelo nome do plano salvo no usuário
+    const p = (this.currentUser?.plan || '').toLowerCase();
+    if (p.includes('mensal')) this.activeInterval = 'Mensal';
+    else if (p.includes('anual')) this.activeInterval = 'Anual';
+    else this.activeInterval = null;
+  }
+
+  isPlanActive(plan: Plan): boolean {
+    if (!this.isActive) return false;
+    // sem id do preço na tabela do usuário, usamos heurística pelo intervalo/nome:
+    const u = (this.currentUser?.plan || '').toLowerCase();
+    const nomeMatch = u && plan?.nome && u.includes(plan.nome.toLowerCase());
+    const intervaloMatch = !!this.activeInterval && plan.intervalo === this.activeInterval;
+    // Se houver dois “Free”, você pode optar por ocultá-los da UI
+    return nomeMatch || intervaloMatch;
+  }
+
+  canMigrateTo(plan: Plan): boolean {
+    // Regra:
+    // - Se usuário tem MENSAL ativo, pode migrar para ANUAL
+    if (this.isActive && this.activeInterval === 'Mensal' && plan.intervalo === 'Anual') return true;
+    // - Se usuário tem ANUAL ativo, não migra para MENSAL (precisa cancelar antes)
+    return false;
+  }
+
+  mustCancelFirst(plan: Plan): boolean {
+    // Regra ANUAL -> MENSAL exige cancelamento
+    return this.isActive && this.activeInterval === 'Anual' && plan.intervalo === 'Mensal';
+  }
+  
+  formatDate(date: any): any {
+    return new Date(date).toLocaleDateString('pt-BR');
+  }
+
+  // ============ carregamento ============
+
+  private async loadUser(): Promise<void> {
+    const loading = await this.loadingController.create({ message: 'Carregando...', spinner: 'crescent' });
     try {
       await loading.present();
-      
-      // Carregar dados do usuário
       this.currentUser = await this.auth.getUser();
-      
-      // Carregar planos da API
-      await this.loadPlans();
-      
+      console.log(this.currentUser);
+      this.deriveUserFlags();
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      await this.mostrarToast('Erro ao carregar dados. Tente novamente.', 'danger');
+      await this.showToast('Erro ao carregar usuário', 'danger');
+      console.error(error);
     } finally {
       await loading.dismiss();
     }
   }
 
-  /**
-   * Carrega planos da API
-   */
   private async loadPlans(): Promise<void> {
+    this.isLoading = true;
     try {
       this.plansData = await this.plansService.getPlans();
-      this.availablePlans = this.plansService.getActivePlans(this.plansData.planos);
-      this.monthlyPlans = this.plansService.getMonthlyPlans(this.availablePlans);
-      this.annualPlans = this.plansService.getAnnualPlans(this.availablePlans);
+
+      this.assinaturaAtiva = this.plansData.assinaturaAtiva;
+      console.log(this.assinaturaAtiva);
+
+      // base para filtros
+      this.allPlans = this.plansData.planos ?? [];
+
+      // se quiser ocultar FREE:
+      this.allPlans = this.allPlans.filter(p => p.nome?.toLowerCase() !== 'free');
+
+      // detecta segmento inicial conforme o plano do usuário
+      if (this.isActive && this.activeInterval) {
+        this.segment = this.activeInterval;
+      }
+
+      // pré-filtrados
+      this.monthlyPlans = this.allPlans.filter(p => p.intervalo === 'Mensal');
+      this.annualPlans  = this.allPlans.filter(p => p.intervalo === 'Anual');
+
+
+
+      // se sua API um dia enviar o plano ativo como objeto, já guardamos:
+      this.planoAtivo = this.plansData.planoAtivo ?? null;
     } catch (error) {
-      console.error('Erro ao carregar planos:', error);
-      // Fallback para planos do environment
-      this.availablePlans = [
-        {
-          id: environment.stripePrices.mensal,
-          nome: 'Plano Mensal',
-          preco: 'R$ 19,00',
-          intervalo: 'Mensal',
-          ativo: true,
-          atualizavel: true
-        },
-        {
-          id: environment.stripePrices.anual,
-          nome: 'Plano Anual',
-          preco: 'R$ 190,00',
-          intervalo: 'Anual',
-          ativo: true,
-          atualizavel: true
-        }
-      ];
-      this.monthlyPlans = this.availablePlans.filter(p => p.intervalo === 'Mensal');
-      this.annualPlans = this.availablePlans.filter(p => p.intervalo === 'Anual');
+      await this.showToast('Erro ao carregar planos', 'danger');
+      console.error(error);
+    } finally {
+      this.isLoading = false;
     }
   }
+
+  applyFilter() {
+    this.filteredPlans = this.segment === 'Anual' ? [...this.annualPlans] : [...this.monthlyPlans];
+  }
+
+  filtrar() {
+    this.applyFilter();
+  }
+
+  // ============ ações ============
 
   fecharModal() {
     this.router.navigate(['/home/menu']);
   }
 
-  async portal() { 
-    await this.pay.openBillingPortal(); 
-  }
-
-  /**
-   * Processa assinatura de um plano específico
-   */
-  async assinarPlano(plan: Plan) {
-    // Verificar se pode migrar para mensal
-    if (plan.intervalo.toLowerCase() === 'mensal' && this.hasActiveAnnualPlan()) {
-      await this.mostrarToast('Para assinar o plano mensal, primeiro cancele seu plano anual.', 'warning');
-      return;
-    }
-    
-    // Se já tem plano anual ativo, não pode assinar novamente
-    if (plan.intervalo.toLowerCase() === 'anual' && this.hasActiveAnnualPlan()) {
-      await this.mostrarToast('Você já possui um plano anual ativo.', 'warning');
-      return;
-    }
-    
-    await this.processarAssinatura(plan.id, plan.nome);
-  }
-
-  /**
-   * Processa assinatura mensal (método de compatibilidade)
-   */
-  async assinarMensal() {
-    const monthlyPlan = this.monthlyPlans[0];
-    if (monthlyPlan) {
-      await this.assinarPlano(monthlyPlan);
-    }
-  }
-
-  /**
-   * Processa assinatura anual (método de compatibilidade)
-   */
-  async assinarAnual() {
-    const annualPlan = this.annualPlans[0];
-    if (annualPlan) {
-      await this.assinarPlano(annualPlan);
-    }
-  }
-
-  /**
-   * Processa assinatura baseado na plataforma
-   */
-  private async processarAssinatura(priceId: string, tipo: string) {
-    const loading = await this.loadingController.create({
-      message: 'Processando pagamento...',
-      spinner: 'crescent'
-    });
-    
+  async portal() {
     try {
-      await loading.present();
-      
-      // Usar fluxo web para todas as plataformas
-      await this.pay.processPayment(priceId);
-      
-      await this.mostrarToast(`Assinatura ${tipo} iniciada com sucesso!`, 'success');
-      
-    } catch (error) {
-      console.error('Erro ao processar assinatura:', error);
-      await this.mostrarToast('Erro ao processar pagamento. Tente novamente.', 'danger');
+      await this.pay.openBillingPortal();
+    } catch (e) {
+      await this.showToast('Falha ao abrir o Portal de Faturamento', 'danger');
+      console.error(e);
+    }
+  }
+
+  async cancelar() {
+    this.isLoadingCancelar = true;
+    try {
+      const res = await this.pay.cancelSubscription();
+      if (res?.success) {
+        await this.showToast(res.message || 'Cancelamento agendado', 'success');
+        // refaz estado local
+        await this.loadUser();
+        await this.loadPlans();
+        this.applyFilter();
+      } else {
+        await this.showToast(res?.message || 'Não foi possível cancelar', 'warning');
+      }
+    } catch (e: any) {
+      await this.showToast(e?.error?.message || 'Erro ao cancelar assinatura', 'danger');
+      console.error(e);
     } finally {
-      await loading.dismiss();
+      this.isLoadingCancelar = false;
     }
   }
 
-  /**
-   * Mostra toast de feedback
-   */
-  private async mostrarToast(message: string, color: 'success' | 'danger' | 'warning') {
-    const toast = await this.toast.create({
-      message,
-      duration: 3000,
-      color,
-      position: 'bottom'
-    });
-    await toast.present();
-  }
-
-  /**
-   * Verifica se o usuário tem um plano anual ativo
-   */
-  hasActiveAnnualPlan(): boolean {
-    if (!this.currentUser) return false;
-    
-    const plan = this.currentUser.plan?.toLowerCase() || '';
-    const status = this.currentUser.subscription_status?.toLowerCase() || '';
-    
-    return status === 'active' && (plan.includes('anual') || plan.includes('annual'));
-  }
-
-  /**
-   * Verifica se o usuário tem um plano mensal ativo
-   */
-  hasActiveMonthlyPlan(): boolean {
-    if (!this.currentUser) return false;
-    
-    const plan = this.currentUser.plan?.toLowerCase() || '';
-    const status = this.currentUser.subscription_status?.toLowerCase() || '';
-    
-    return status === 'active' && (plan.includes('mensal') || plan.includes('monthly'));
-  }
-
-  /**
-   * Verifica se o usuário tem alguma assinatura ativa
-   */
-  hasActiveSubscription(): boolean {
-    if (!this.currentUser) return false;
-    
-    const status = this.currentUser.subscription_status?.toLowerCase() || '';
-    return status === 'active';
-  }
-
-  /**
-   * Retorna o plano atual do usuário
-   */
-  get currentPlan(): string {
-    return this.currentUser?.plan || 'Nenhum plano ativo';
-  }
-
-  /**
-   * Retorna o status da assinatura
-   */
-  get subscriptionStatus(): string {
-    return this.currentUser?.subscription_status || 'inactive';
-  }
-
-  /**
-   * Verifica se pode migrar de mensal para anual
-   */
-  canUpgradeToAnnual(): boolean {
-    return this.hasActiveMonthlyPlan();
-  }
-
-  /**
-   * Verifica se o botão mensal deve estar desabilitado
-   */
-  get isMonthlyButtonDisabled(): boolean {
-    return this.hasActiveAnnualPlan();
-  }
-
-  /**
-   * Verifica se o botão anual deve estar desabilitado
-   */
-  get isAnnualButtonDisabled(): boolean {
-    return this.hasActiveAnnualPlan();
-  }
-
-  /**
-   * Retorna a mensagem de status do plano
-   */
-  get planStatusMessage(): string {
-    if (!this.currentUser) return 'Nenhum plano ativo';
-    
-    if (this.hasActiveAnnualPlan()) {
-      return 'Plano Anual Ativo - Para migrar para mensal, cancele primeiro';
+  async assinar(priceId: string) {
+    // só permite se NÃO estiver ativo
+    if (this.isActive) {
+      await this.showToast('Você já possui assinatura ativa.', 'warning');
+      return;
     }
-    
-    if (this.hasActiveMonthlyPlan()) {
-      return 'Plano Mensal Ativo - Pode migrar para anual';
+    try {
+      this.loading = true;
+      await this.pay.startCheckout(priceId);
+      // confirmação virá via deep link
+    } catch (e: any) {
+      await this.showToast(e?.error?.message || 'Erro ao iniciar checkout', 'danger');
+      console.error(e);
+    } finally {
+      this.loading = false;
     }
-    
-    return 'Nenhum plano ativo';
   }
 
-  /**
-   * Verifica se um plano específico está ativo
-   */
-  isPlanActive(plan: Plan): boolean {
-    if (!this.currentUser) return false;
-    
-    const userPlan = this.currentUser.plan?.toLowerCase() || '';
-    const planName = plan.nome.toLowerCase();
-    const planInterval = plan.intervalo.toLowerCase();
-    
-    return userPlan.includes(planName) && userPlan.includes(planInterval);
+  async migrar(priceId: string) {
+    // só permite MENSAL -> ANUAL
+    if (!(this.isActive && this.activeInterval === 'Mensal')) {
+      await this.showToast('Migração indisponível para seu plano atual.', 'warning');
+      return;
+    }
+    try {
+      this.loading = true;
+      const res = await this.pay.updatePlan(priceId);
+      if (res?.success) {
+        await this.showToast(res.message || 'Plano atualizado.', 'success');
+        await this.loadUser();
+        await this.loadPlans();
+        this.applyFilter();
+      } else {
+        await this.showToast(res?.message || 'Não foi possível atualizar o plano', 'warning');
+      }
+    } catch (e: any) {
+      await this.showToast(e?.error?.message || 'Erro ao atualizar o plano', 'danger');
+      console.error(e);
+    } finally {
+      this.loading = false;
+    }
   }
 
-  /**
-   * Verifica se um plano pode ser assinado
-   */
-  canSubscribeToPlan(plan: Plan): boolean {
-    if (plan.intervalo.toLowerCase() === 'mensal' && this.hasActiveAnnualPlan()) {
-      return false;
-    }
-    
-    if (plan.intervalo.toLowerCase() === 'anual' && this.hasActiveAnnualPlan()) {
-      return false;
-    }
-    
-    return true;
+  // ============ UI helpers ============
+
+  showAssinar(plan: Plan): boolean {
+    if (this.isPlanActive(plan)) return false;          // nunca mostra se é o ativo
+    if (this.isActive) return false;                    // usuário já tem assinatura ativa
+    return true;                                        // usuário sem assinatura -> pode assinar
   }
 
-  /**
-   * Retorna o texto do botão para um plano
-   */
-  getPlanButtonText(plan: Plan): string {
-    if (this.isPlanActive(plan)) {
-      return 'Plano Ativo';
-    }
-    
-    if (plan.intervalo.toLowerCase() === 'anual' && this.hasActiveMonthlyPlan()) {
-      return 'Migrar para Anual';
-    }
-    
-    return `Assinar ${plan.nome}`;
+  showMigrar(plan: Plan): boolean {
+    // mostra botão "Migrar para Anual" apenas quando habilitado
+    return this.canMigrateTo(plan);
   }
 
-  /**
-   * Retorna a cor do botão para um plano
-   */
-  getPlanButtonColor(plan: Plan): string {
-    if (this.isPlanActive(plan)) {
-      return 'medium';
-    }
-    
-    if (plan.intervalo.toLowerCase() === 'anual' && this.hasActiveMonthlyPlan()) {
-      return 'success';
-    }
-    
-    return 'primary';
+  showCancelarParaMigrar(plan: Plan): boolean {
+    // mostra CTA para cancelar antes, quando tentar anual -> mensal
+    return this.mustCancelFirst(plan);
   }
 
-  /**
-   * Verifica se deve mostrar botões nativos ou web
-   */
-  get shouldShowNativeButtons(): boolean {
-    return this.platform === 'android';
-  }
-
-  /**
-   * Verifica se deve mostrar botões web (iOS)
-   */
-  get shouldShowWebButtons(): boolean {
-    return this.platform === 'ios';
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'medium' = 'medium') {
+    const t = await this.toast.create({ message, duration: 2400, color, position: 'bottom' });
+    await t.present();
   }
 }

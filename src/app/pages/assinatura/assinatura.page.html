@@ -9,236 +9,102 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="subscription-container">
-  
-  <!-- Status do Plano Atual -->
-  <div class="status-card fade-in" *ngIf="currentUser">
-    <div class="status-header">
-      <div class="status-icon">
-        <ion-icon [name]="hasActiveSubscription() ? 'checkmark-circle' : 'time'"></ion-icon>
-      </div>
-      <div class="status-info">
-        <h2>{{ currentPlan }}</h2>
-        <p>Status: {{ subscriptionStatus | titlecase }}</p>
-      </div>
-    </div>
-    <div class="status-details">
-      <div class="plan-badge" *ngIf="hasActiveSubscription()">
-        <ion-icon [name]="hasActiveAnnualPlan() ? 'calendar' : 'calendar-outline'"></ion-icon>
-        <span>{{ hasActiveAnnualPlan() ? 'Plano Anual' : 'Plano Mensal' }}</span>
-      </div>
-      <div class="status-message" *ngIf="hasActiveSubscription()">
-        {{ planStatusMessage }}
-      </div>
-    </div>
-  </div>
-  
-  <!-- Interface para Android (botões nativos) -->
-  <div class="plans-container" *ngIf="shouldShowNativeButtons">
-    <h3 class="section-title slide-up">Escolha seu Plano</h3>
-    <p class="section-subtitle slide-up">Assinatura via aplicativo</p>
-    
-    <!-- Loop pelos planos disponíveis -->
-    <div class="plan-card slide-up" 
-         *ngFor="let plan of availablePlans; let i = index"
-         [class.disabled]="!canSubscribeToPlan(plan)"
-         [class.featured]="plan.intervalo.toLowerCase() === 'anual' && !hasActiveSubscription()">
-      
-      <div class="plan-header">
-        <div class="plan-icon">
-          <ion-icon [name]="plan.intervalo.toLowerCase() === 'anual' ? 'calendar' : 'calendar-outline'"></ion-icon>
-        </div>
-        <h4 class="plan-title">{{ plan.nome }}</h4>
-        <p class="plan-subtitle">{{ plan.intervalo }}</p>
-        <div class="plan-price">{{ plan.preco }}</div>
-      </div>
-      
-      <div class="plan-features">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Acesso completo ao conteúdo</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Cancelamento a qualquer momento</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Suporte prioritário</span>
-        </div>
-        <div class="feature-item" *ngIf="plan.intervalo.toLowerCase() === 'anual'">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Economia de até 20%</span>
-        </div>
-      </div>
-      
-      <div class="plan-actions">
-        <ion-button 
-          class="plan-button"
-          [class]="isPlanActive(plan) ? 'secondary' : 'primary'"
-          (click)="assinarPlano(plan)"
-          [disabled]="!canSubscribeToPlan(plan)">
-          <ion-icon [name]="isPlanActive(plan) ? 'checkmark' : 'calendar'" slot="start"></ion-icon>
-          {{ getPlanButtonText(plan) }}
-        </ion-button>
-      </div>
-    </div>
-  </div>
+<ion-content class="subscription-container ion-padding">
+  <ion-segment [(ngModel)]="segment" (ionChange)="filtrar()">
+    <ion-segment-button value="Mensal">Mensal</ion-segment-button>
+    <ion-segment-button value="Anual">Anual</ion-segment-button>
+  </ion-segment>
 
-  <!-- Interface para iOS (redirecionamento web) -->
-  <div class="plans-container" *ngIf="shouldShowWebButtons">
-    <h3 class="section-title slide-up">Escolha seu Plano</h3>
-    <p class="section-subtitle slide-up">Para assinar, você será redirecionado para nossa página web</p>
-    
-    <!-- Informação sobre iOS -->
-    <div class="platform-info slide-up">
-      <div class="info-icon">
-        <ion-icon name="information-circle"></ion-icon>
-      </div>
-      <div class="info-content">
-        <h4>Conformidade Apple</h4>
-        <p>Conforme as diretrizes da Apple, as assinaturas são processadas em nossa página web segura.</p>
-      </div>
+  <ng-container *ngIf="isLoading">
+    <div class="ion-text-center ion-margin-top">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Carregando planos...</p>
     </div>
-    
-    <!-- Loop pelos planos disponíveis -->
-    <div class="plan-card slide-up" 
-         *ngFor="let plan of availablePlans; let i = index"
-         [class.disabled]="!canSubscribeToPlan(plan)"
-         [class.featured]="plan.intervalo.toLowerCase() === 'anual' && !hasActiveSubscription()">
-      
-      <div class="plan-header">
-        <div class="plan-icon">
-          <ion-icon [name]="plan.intervalo.toLowerCase() === 'anual' ? 'calendar' : 'calendar-outline'"></ion-icon>
-        </div>
-        <h4 class="plan-title">{{ plan.nome }}</h4>
-        <p class="plan-subtitle">{{ plan.intervalo }}</p>
-        <div class="plan-price">{{ plan.preco }}</div>
-      </div>
-      
-      <div class="plan-features">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Acesso completo ao conteúdo</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Cancelamento a qualquer momento</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Suporte prioritário</span>
-        </div>
-        <div class="feature-item" *ngIf="plan.intervalo.toLowerCase() === 'anual'">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Economia de até 20%</span>
-        </div>
-      </div>
-      
-      <div class="plan-actions">
-        <ion-button 
-          class="plan-button"
-          [class]="isPlanActive(plan) ? 'secondary' : 'primary'"
-          (click)="assinarPlano(plan)"
-          [disabled]="!canSubscribeToPlan(plan)">
-          <ion-icon [name]="isPlanActive(plan) ? 'checkmark' : 'calendar'" slot="start"></ion-icon>
-          {{ getPlanButtonText(plan) }}
-        </ion-button>
-      </div>
-    </div>
-  </div>
+  </ng-container>
 
-  <!-- Interface para Web -->
-  <div class="plans-container" *ngIf="platform === 'web'">
-    <h3 class="section-title slide-up">Escolha seu Plano</h3>
-    <p class="section-subtitle slide-up">Assinatura via Stripe Checkout</p>
-    
-    <!-- Loop pelos planos disponíveis -->
-    <div class="plan-card slide-up" 
-         *ngFor="let plan of availablePlans; let i = index"
-         [class.disabled]="!canSubscribeToPlan(plan)"
-         [class.featured]="plan.intervalo.toLowerCase() === 'anual' && !hasActiveSubscription()">
-      
-      <div class="plan-header">
-        <div class="plan-icon">
-          <ion-icon [name]="plan.intervalo.toLowerCase() === 'anual' ? 'calendar' : 'calendar-outline'"></ion-icon>
-        </div>
-        <h4 class="plan-title">{{ plan.nome }}</h4>
-        <p class="plan-subtitle">{{ plan.intervalo }}</p>
-        <div class="plan-price">{{ plan.preco }}</div>
-      </div>
-      
-      <div class="plan-features">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Acesso completo ao conteúdo</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Cancelamento a qualquer momento</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Suporte prioritário</span>
-        </div>
-        <div class="feature-item" *ngIf="plan.intervalo.toLowerCase() === 'anual'">
-          <div class="feature-icon">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-          <span class="feature-text">Economia de até 20%</span>
-        </div>
-      </div>
-      
-      <div class="plan-actions">
-        <ion-button 
-          class="plan-button"
-          [class]="isPlanActive(plan) ? 'secondary' : 'primary'"
-          (click)="assinarPlano(plan)"
-          [disabled]="!canSubscribeToPlan(plan)">
-          <ion-icon [name]="isPlanActive(plan) ? 'checkmark' : 'calendar'" slot="start"></ion-icon>
-          {{ getPlanButtonText(plan) }}
-        </ion-button>
-      </div>
-    </div>
-  </div>
+  <ng-container *ngIf="!isLoading">
+    <ion-grid *ngIf="filteredPlans?.length">
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="4" *ngFor="let p of filteredPlans">
+          <ion-card class="plan-card" [class.active-plan]="isPlanActive(p)">
+            <ion-card-header>
+              <ion-card-title>{{ p.nome }}</ion-card-title>
+              <ion-card-subtitle>{{ p.intervalo }}</ion-card-subtitle>
+            </ion-card-header>
 
-  <!-- Portal de Faturamento (todas as plataformas) -->
-  <div class="portal-card slide-up" *ngIf="hasActiveSubscription()">
-    <div class="portal-header">
-      <div class="portal-icon">
-        <ion-icon name="card-outline"></ion-icon>
-      </div>
-      <div class="portal-info">
-        <h3>Gerenciar Assinatura</h3>
-        <p>Visualize faturas, altere método de pagamento e gerencie sua assinatura</p>
-      </div>
-    </div>
-    <ion-button class="portal-button" (click)="portal()">
-      <ion-icon name="card" slot="start"></ion-icon>
-      Abrir Portal de Faturamento
-    </ion-button>
-  </div>
+            <ion-card-content>
+              <div class="price-section">
+                <h2 class="price">{{ p.preco }}</h2>
+                <p class="interval-text">por {{ p.intervalo.toLowerCase() === 'mensal' ? 'Mês' : 'Ano' }}</p>
+              </div>
 
+              <!-- Status do plano -->
+              <div class="plan-status">
+                <ion-chip *ngIf="isPlanActive(p)" color="success">
+                  <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                  Plano Ativo
+                </ion-chip>
+                <ion-chip *ngIf="!isPlanActive(p)" color="medium">
+                  <ion-icon name="time-outline" slot="start"></ion-icon>
+                  Disponível
+                </ion-chip>
+              </div>
+
+              <!-- Informações da assinatura ativa -->
+              <div *ngIf="isPlanActive(p) && assinaturaAtiva?.id && currentUser?.subscription_status === 'active'" class="subscription-info">
+                <ion-chip color="secondary">
+                  <ion-icon name="calendar-outline" slot="start"></ion-icon>
+                  Válido até {{ formatDate(assinaturaAtiva?.ends_at) }}
+                </ion-chip>
+              </div>
+
+              <!-- Botões de ação -->
+              <div class="action-buttons">
+                <ion-button 
+                  *ngIf="showAssinar(p)"
+                  expand="block"
+                  [disabled]="loading"
+                  (click)="assinar(p.id)">
+                  <ion-icon name="card-outline" slot="start"></ion-icon>
+                  Assinar
+                </ion-button>
+
+                <ion-button 
+                  *ngIf="showMigrar(p)"
+                  expand="block"
+                  color="primary"
+                  [disabled]="loading"
+                  (click)="migrar(p.id)">
+                  <ion-icon name="arrow-up-outline" slot="start"></ion-icon>
+                  Migrar para Anual
+                </ion-button>
+
+                <ion-button 
+                  *ngIf="showCancelarParaMigrar(p)"
+                  expand="block"
+                  color="warning"
+                  [disabled]="loading"
+                  (click)="cancelar()">
+                  <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                  Cancelar para migrar
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-card *ngIf="!filteredPlans?.length" class="ion-margin-top">
+      <ion-card-content>Nenhum plano disponível para {{ segment }}.</ion-card-content>
+    </ion-card>
+  </ng-container>
+
+  <ion-button expand="block" class="ion-margin-top" color="medium" (click)="portal()">
+    Portal de Faturamento
+  </ion-button>
+
+  <ion-button expand="block" class="ion-margin-top" color="danger" (click)="cancelar()" [disabled]="!isActive || isLoadingCancelar">
+    Cancelar assinatura
+  </ion-button>
 </ion-content>

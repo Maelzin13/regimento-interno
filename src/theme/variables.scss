@@ -163,11 +163,6 @@ ion-accordion::part(header) ion-icon {
   color: var(--link-color);
 }
 
-.menu-content {
-  --background: var(--bg-color);
-  padding: 1.5rem 1rem;
-}
-
 .menu-item {
   display: flex;
   justify-content: center;
@@ -258,10 +253,7 @@ ion-accordion::part(header) ion-icon {
       }
     }
   }
-  
-  .menu-content {
-    padding: 1rem 0.5rem;
-  }
+
   
   .menu-item, .menu-item-livro {
     margin-bottom: 0.5rem;
@@ -399,10 +391,6 @@ ion-accordion::part(header) ion-icon {
   .login-card {
     max-width: 90vw;
     margin: 0.5rem auto;
-  }
-  
-  .menu-content {
-    padding: 1rem;
   }
   
   .menu-box {

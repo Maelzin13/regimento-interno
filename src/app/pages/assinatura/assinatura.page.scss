@@ -331,6 +331,105 @@
   }
 }
 
+// Cards de planos
+.plan-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  border: 2px solid transparent;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.active-plan {
+    border-color: var(--ion-color-success);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  }
+  
+  ion-card-header {
+    padding-bottom: 8px;
+    
+    ion-card-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+    
+    ion-card-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+  
+  ion-card-content {
+    padding-top: 0;
+  }
+}
+
+.price-section {
+  text-align: center;
+  margin-bottom: 20px;
+  
+  .price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+    margin: 0;
+    line-height: 1;
+  }
+  
+  .interval-text {
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    margin: 4px 0 0;
+    text-transform: lowercase;
+  }
+}
+
+.plan-status {
+  text-align: center;
+  margin-bottom: 16px;
+  
+  ion-chip {
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+.subscription-info {
+  text-align: center;
+  margin-bottom: 16px;
+  
+  ion-chip {
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+.action-buttons {
+  margin-top: 20px;
+  
+  ion-button {
+    margin: 8px 0;
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
 // Responsividade
 @media (max-width: 768px) {
   .subscription-container {
@@ -346,16 +445,10 @@
   }
   
   .plan-card {
-    padding: 20px;
+    margin-bottom: 16px;
     
-    .plan-header {
-      .plan-title {
-        font-size: 20px;
-      }
-      
-      .plan-price {
-        font-size: 28px;
-      }
+    .price-section .price {
+      font-size: 2rem;
     }
   }
 }

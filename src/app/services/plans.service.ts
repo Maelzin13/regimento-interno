@@ -3,7 +3,7 @@ import { ApiService } from './api.service';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError, firstValueFrom } from 'rxjs';
-import { PlansResponse, Plan } from 'src/app/models/plan.model';
+import { PlansResponse } from 'src/app/models/plan.model';
 
 @Injectable({
   providedIn: 'root',
@@ -28,26 +28,5 @@ export class PlansService {
     } catch (error: any) {
       throw new Error(error.message || 'Erro ao buscar planos.');
     }
-  }
-
-  /**
-   * Filtra planos ativos (não gratuitos)
-   */
-  getActivePlans(plans: Plan[]): Plan[] {
-    return plans.filter(plan => plan.ativo && plan.preco !== 'R$ 0,00');
-  }
-
-  /**
-   * Filtra planos mensais
-   */
-  getMonthlyPlans(plans: Plan[]): Plan[] {
-    return plans.filter(plan => plan.intervalo.toLowerCase() === 'mensal');
-  }
-
-  /**
-   * Filtra planos anuais
-   */
-  getAnnualPlans(plans: Plan[]): Plan[] {
-    return plans.filter(plan => plan.intervalo.toLowerCase() === 'anual');
   }
 }

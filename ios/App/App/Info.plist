@@ -34,10 +34,9 @@
     </dict>
     <dict>
       <key>CFBundleURLName</key>
-      <string>Regimento Deep Link</string>
+      <string>regimento</string>
       <key>CFBundleURLSchemes</key>
       <array>
-        <!-- Esquema do app para Stripe Checkout deep link -->
         <string>regimento</string>
       </array>
     </dict>
