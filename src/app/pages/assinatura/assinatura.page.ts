@@ -43,7 +43,7 @@ export class AssinaturaPage implements OnInit {
     private loadingController: LoadingController
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  async ngOnInit() {
     await this.loadUser();
     await this.loadPlans();
     this.applyFilter();
@@ -185,7 +185,6 @@ export class AssinaturaPage implements OnInit {
   }
 
   async assinar(priceId: string) {
-    // só permite se NÃO estiver ativo
     if (this.isActive) {
       await this.showToast('Você já possui assinatura ativa.', 'warning');
       return;
@@ -194,6 +193,10 @@ export class AssinaturaPage implements OnInit {
       this.loading = true;
       await this.pay.startCheckout(priceId);
       // confirmação virá via deep link
+      await this.showToast('Assinatura iniciada.', 'success');
+      await this.loadUser(); 
+      await this.loadPlans();
+      this.applyFilter();
     } catch (e: any) {
       await this.showToast(e?.error?.message || 'Erro ao iniciar checkout', 'danger');
       console.error(e);
@@ -203,6 +206,7 @@ export class AssinaturaPage implements OnInit {
   }
 
   async migrar(priceId: string) {
+    console.log('migrar', priceId);
     // só permite MENSAL -> ANUAL
     if (!(this.isActive && this.activeInterval === 'Mensal')) {
       await this.showToast('Migração indisponível para seu plano atual.', 'warning');
@@ -211,6 +215,7 @@ export class AssinaturaPage implements OnInit {
     try {
       this.loading = true;
       const res = await this.pay.updatePlan(priceId);
+      console.log('res', res);
       if (res?.success) {
         await this.showToast(res.message || 'Plano atualizado.', 'success');
         await this.loadUser();

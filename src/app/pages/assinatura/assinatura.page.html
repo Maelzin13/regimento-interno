@@ -100,11 +100,11 @@
     </ion-card>
   </ng-container>
 
-  <ion-button expand="block" class="ion-margin-top" color="medium" (click)="portal()">
-    Portal de Faturamento
+  <ion-button expand="block" class="ion-margin-top" color="medium" (click)="portal()" *ngIf="isActive">
+    Gerenciar assinatura
   </ion-button>
 
-  <ion-button expand="block" class="ion-margin-top" color="danger" (click)="cancelar()" [disabled]="!isActive || isLoadingCancelar">
+  <ion-button expand="block" class="ion-margin-top" color="danger" (click)="cancelar()" [disabled]="!isActive || isLoadingCancelar" *ngIf="isActive">
     Cancelar assinatura
   </ion-button>
 </ion-content>

@@ -24,7 +24,8 @@ export class PaymentService {
    * Inicia Stripe Checkout (assinatura) e abre a URL hospedada pela Stripe.
    * O backend já cria a sessão e usa deep links: regimento://checkout/success|cancel
    */
-  async startCheckout(priceId: string, platform: 'ios' | 'android' | 'web' = this.detectPlatform()) {
+  async startCheckout(priceId: string, platform: 'ios' | 'android' = this.detectPlatform()) {
+    console.log('startCheckout', priceId, platform);
     const res = await firstValueFrom(
       this.http.post<CheckoutResponse>(`${this.api.baseUrl}/checkout/processar`, {
         price_id: priceId,
@@ -70,7 +71,7 @@ export class PaymentService {
       this.http.post<PortalResponse>(`${this.api.baseUrl}/checkout/portal`, {})
     );
     if (!url) throw new Error('Falha ao abrir o portal de faturamento.');
-    await Browser.open({ url, windowName: '_self' });
+    await Browser.open({ url });
   }
 
   /**
@@ -106,11 +107,11 @@ export class PaymentService {
     });
   }
 
-  private detectPlatform(): 'ios' | 'android' | 'web' {
+  private detectPlatform(): 'ios' | 'android' {
     const ua = navigator.userAgent.toLowerCase();
     if (/iphone|ipad|ipod/.test(ua)) return 'ios';
     if (/android/.test(ua)) return 'android';
-    return 'web';
+    return 'android';
     // Se quiser, dá para usar Capacitor.getPlatform(), mas para webviews o UA costuma bastar.
   }
 }
