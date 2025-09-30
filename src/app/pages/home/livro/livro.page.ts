@@ -12,9 +12,11 @@ import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descrica
   styleUrls: ['./livro.page.scss'],
 })
 export class LivroPage implements OnInit {
-  user: UserModel | null = null;
-  books: any;
+  books: any; 
+  bookLimit: any;
+  isActive = false;
   isLoading: boolean = true;
+  user: UserModel | null = null;
 
   textos = [
     {
@@ -54,16 +56,23 @@ export class LivroPage implements OnInit {
   async ngOnInit() {
     const user = await this.authService.getUser();
     this.user = user;
-    this.bookService
-      .getAllBooks()
-      .then((data) => {
-        this.books = data.data;
-        this.isLoading = false;
-      })
-      .catch((error) => {
-        console.error('Erro ao carregar os livros:', error);
-        this.isLoading = false;
-      });
+    
+    if (this.user && this.user.subscription_status === 'active') {
+      this.bookService
+        .getAllBooks()
+        .then((data) => {
+          this.books = data.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.error('Erro ao carregar os livros:', error);
+          this.isLoading = false;
+        });
+    } else {
+      const data = await this.bookService.getBookByIdLimit(1);
+      this.bookLimit = data;
+      this.isLoading = false;
+    }
   }
 
   async openDescricaoModal(texto: any) {
@@ -91,5 +100,12 @@ export class LivroPage implements OnInit {
   cleanHTML(content: string): string {
     const doc = new DOMParser().parseFromString(content, 'text/html');
     return doc.body.textContent || '';
+  }
+
+  /**
+   * Verifica se o usuário tem plano ativo
+   */
+  hasActivePlan(): boolean {
+    return this.user ? this.user.subscription_status === 'active' : false;
   }
 }
