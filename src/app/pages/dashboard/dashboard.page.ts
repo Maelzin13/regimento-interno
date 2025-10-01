@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController, ToastController } from '@ionic/angular';
 import { DashboardData } from 'src/app/models/dashboard.model';
 import { DashboardService } from 'src/app/services/dashboard.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,10 +15,15 @@ export class DashboardPage implements OnInit {
   constructor(
     private navCtrl: NavController,
     private toastController: ToastController,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private authService: AuthService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Sincronizar perfil do usuário em background
+    this.authService.syncProfileInBackground();
+    
+    // Carregar dados do dashboard
     this.dashboardService.getDashboardData().then(async (data) => {
       this.data = await data;
     });
@@ -25,6 +31,10 @@ export class DashboardPage implements OnInit {
 
   async doRefresh(event: any) {
     try {
+      // Sincronizar perfil do usuário primeiro
+      await this.authService.syncProfileInBackground();
+      
+      // Atualizar dados do dashboard
       const data = await this.dashboardService.getDashboardData();
       this.data = data;
 

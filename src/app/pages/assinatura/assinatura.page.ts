@@ -7,7 +7,7 @@ import { PlansService } from 'src/app/services/plans.service';
 import { PaymentService } from 'src/app/services/payment.service';
 import { Plan, PlansResponse } from 'src/app/models/plan.model';
 
-type Intervalo = 'Mensal' | 'Anual';
+type Intervalo = 'Mensal' | 'Anual' | 'Free';
 
 @Component({
   selector: 'app-assinatura',
@@ -25,6 +25,7 @@ export class AssinaturaPage implements OnInit {
   isActive = false;
   allPlans: Plan[] = [];
   annualPlans: Plan[] = [];
+  freePlans: Plan[] = [];
   isLoadingCancelar = false;
   monthlyPlans: Plan[] = [];
   filteredPlans: Plan[] = [];
@@ -58,6 +59,7 @@ export class AssinaturaPage implements OnInit {
     const p = (this.currentUser?.plan || '').toLowerCase();
     if (p.includes('mensal')) this.activeInterval = 'Mensal';
     else if (p.includes('anual')) this.activeInterval = 'Anual';
+    else if (p.includes('free') || p.includes('gratuito')) this.activeInterval = 'Free';
     else this.activeInterval = null;
   }
 
@@ -80,7 +82,6 @@ export class AssinaturaPage implements OnInit {
   }
 
   mustCancelFirst(plan: Plan): boolean {
-    // Regra ANUAL -> MENSAL exige cancelamento
     return this.isActive && this.activeInterval === 'Anual' && plan.intervalo === 'Mensal';
   }
   
@@ -90,16 +91,19 @@ export class AssinaturaPage implements OnInit {
 
   // ============ carregamento ============
 
-  private async loadUser(): Promise<void> {
+  private async loadUser(forceSync: boolean = false): Promise<void> {
     const loading = await this.loadingController.create({ message: 'Carregando...', spinner: 'crescent' });
     try {
       await loading.present();
-      this.currentUser = await this.auth.getUser();
-      console.log(this.currentUser);
+      
+      // Usar o novo método de sincronização
+      this.currentUser = await this.auth.getCurrentUser(forceSync);
+      
+      console.log('👤 Usuário carregado:', this.currentUser);
       this.deriveUserFlags();
     } catch (error) {
       await this.showToast('Erro ao carregar usuário', 'danger');
-      console.error(error);
+      console.error('❌ Erro ao carregar usuário:', error);
     } finally {
       await loading.dismiss();
     }
@@ -115,18 +119,31 @@ export class AssinaturaPage implements OnInit {
 
       // base para filtros
       this.allPlans = this.plansData.planos ?? [];
-
-      // se quiser ocultar FREE:
-      this.allPlans = this.allPlans.filter(p => p.nome?.toLowerCase() !== 'free');
-
-      // detecta segmento inicial conforme o plano do usuário
+      this.allPlans = this.allPlans.filter(p => p.nome !== '"myproduct"');
       if (this.isActive && this.activeInterval) {
         this.segment = this.activeInterval;
       }
+      
+      console.log('Todos os planos:', this.allPlans);
 
-      // pré-filtrados
-      this.monthlyPlans = this.allPlans.filter(p => p.intervalo === 'Mensal');
-      this.annualPlans  = this.allPlans.filter(p => p.intervalo === 'Anual');
+      this.monthlyPlans = this.allPlans.filter(p => 
+        p.intervalo === 'Mensal' && 
+        p.nome !== 'Free' && 
+        p.preco !== 'R$ 0,00'
+      );
+      
+      this.annualPlans = this.allPlans.filter(p => 
+        p.intervalo === 'Anual' && 
+        p.nome !== 'Free' && 
+        p.preco !== 'R$ 0,00'
+      );
+      
+      this.freePlans = this.allPlans.filter(p => 
+        p.nome === 'Free' || 
+        p.preco === 'R$ 0,00' ||
+        p.preco === '0,00' ||
+        p.preco === '0'
+      );
 
 
 
@@ -141,7 +158,18 @@ export class AssinaturaPage implements OnInit {
   }
 
   applyFilter() {
-    this.filteredPlans = this.segment === 'Anual' ? [...this.annualPlans] : [...this.monthlyPlans];
+    switch (this.segment) {
+      case 'Anual':
+        this.filteredPlans = [...this.annualPlans];
+        break;
+      case 'Free':
+        this.filteredPlans = [...this.freePlans];
+        break;
+      case 'Mensal':
+      default:
+        this.filteredPlans = [...this.monthlyPlans];
+        break;
+    }
   }
 
   filtrar() {
@@ -154,9 +182,9 @@ export class AssinaturaPage implements OnInit {
     this.router.navigate(['/home/menu']);
   }
 
-  async portal() {
+  async portal() { 
     try {
-      await this.pay.openBillingPortal();
+    await this.pay.openBillingPortal(); 
     } catch (e) {
       await this.showToast('Falha ao abrir o Portal de Faturamento', 'danger');
       console.error(e);
@@ -169,8 +197,9 @@ export class AssinaturaPage implements OnInit {
       const res = await this.pay.cancelSubscription();
       if (res?.success) {
         await this.showToast(res.message || 'Cancelamento agendado', 'success');
-        // refaz estado local
-        await this.loadUser();
+        
+        // Forçar sincronização para obter dados atualizados após cancelamento
+        await this.loadUser(true);
         await this.loadPlans();
         this.applyFilter();
       } else {
@@ -178,7 +207,7 @@ export class AssinaturaPage implements OnInit {
       }
     } catch (e: any) {
       await this.showToast(e?.error?.message || 'Erro ao cancelar assinatura', 'danger');
-      console.error(e);
+      console.error('❌ Erro ao cancelar assinatura:', e);
     } finally {
       this.isLoadingCancelar = false;
     }
@@ -194,12 +223,14 @@ export class AssinaturaPage implements OnInit {
       await this.pay.startCheckout(priceId);
       // confirmação virá via deep link
       await this.showToast('Assinatura iniciada.', 'success');
-      await this.loadUser(); 
+      
+      // Forçar sincronização para obter dados atualizados após assinatura
+      await this.loadUser(true); 
       await this.loadPlans();
       this.applyFilter();
     } catch (e: any) {
       await this.showToast(e?.error?.message || 'Erro ao iniciar checkout', 'danger');
-      console.error(e);
+      console.error('❌ Erro ao iniciar checkout:', e);
     } finally {
       this.loading = false;
     }
@@ -237,16 +268,41 @@ export class AssinaturaPage implements OnInit {
   showAssinar(plan: Plan): boolean {
     if (this.isPlanActive(plan)) return false;          // nunca mostra se é o ativo
     if (this.isActive) return false;                    // usuário já tem assinatura ativa
+    if (this.isPlanFree(plan)) return false;            // planos free não mostram botão assinar
     return true;                                        // usuário sem assinatura -> pode assinar
   }
 
+  isPlanFree(plan: Plan): boolean {
+    return plan.nome === 'Free' || 
+           plan.preco === 'R$ 0,00' || 
+           plan.preco === '0,00' || 
+           plan.preco === '0' ||
+           plan.preco === 'R$ 0';
+  }
+
+  async ativarPlanoFree(planId: string) {
+    this.loading = true;
+    try {
+      await this.pay.startCheckout(planId);
+      await this.showToast('Plano gratuito ativado com sucesso!', 'success');
+      
+      // Forçar sincronização para obter dados atualizados
+      await this.loadUser(true);
+      await this.loadPlans();
+      this.applyFilter();
+    } catch (e: any) {
+      await this.showToast(e?.error?.message || 'Erro ao ativar plano gratuito', 'danger');
+      console.error('❌ Erro ao ativar plano gratuito:', e);
+    } finally {
+      this.loading = false;
+    }
+  }
+
   showMigrar(plan: Plan): boolean {
-    // mostra botão "Migrar para Anual" apenas quando habilitado
     return this.canMigrateTo(plan);
   }
 
   showCancelarParaMigrar(plan: Plan): boolean {
-    // mostra CTA para cancelar antes, quando tentar anual -> mensal
     return this.mustCancelFirst(plan);
   }
 

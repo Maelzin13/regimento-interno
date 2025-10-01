@@ -91,6 +91,92 @@ export class AuthService {
   }
 
   /**
+   * Sincroniza o perfil do usuário com o servidor e atualiza o storage local
+   * Útil para manter dados atualizados após mudanças de assinatura
+   */
+  async syncUserProfile(): Promise<UserModel | null> {
+    try {
+      console.log('🔄 Sincronizando perfil do usuário...');
+      
+      // Verificar se o token é válido
+      if (!(await this.isTokenValid())) {
+        console.log('❌ Token inválido, fazendo logout...');
+        await this.logout();
+        return null;
+      }
+
+      // Buscar perfil atualizado do servidor
+      const response: any = await firstValueFrom(this.http.get(`${this.apiService.baseUrl}/profile`));
+      
+      if (response?.user) {
+        // Atualizar storage local com dados mais recentes
+        await this.storage.set('authUser', response.user);
+        
+        // Notificar mudanças para outros componentes
+        this.userChanged.next(response.user);
+        
+        console.log('✅ Perfil sincronizado com sucesso:', response.user);
+        return response.user;
+      }
+      
+      return null;
+    } catch (error: any) {
+      console.error('❌ Erro ao sincronizar perfil:', error);
+      
+      if (error.status === 401) {
+        console.log('🔐 Token expirado, fazendo logout...');
+        await this.logout();
+      }
+      
+      throw new Error('Erro ao sincronizar perfil do usuário.');
+    }
+  }
+
+  /**
+   * Obtém o usuário atual, tentando sincronizar se necessário
+   * @param forceSync - Força sincronização mesmo se dados locais existirem
+   */
+  async getCurrentUser(forceSync: boolean = false): Promise<UserModel | null> {
+    try {
+      // Se não forçar sync, tentar usar dados locais primeiro
+      if (!forceSync) {
+        const localUser = await this.getUser();
+        if (localUser) {
+          return localUser;
+        }
+      }
+
+      // Sincronizar com servidor
+      return await this.syncUserProfile();
+    } catch (error) {
+      console.error('Erro ao obter usuário atual:', error);
+      // Fallback para dados locais em caso de erro
+      return await this.getUser();
+    }
+  }
+
+  /**
+   * Sincroniza automaticamente o perfil em background
+   * Útil para manter dados atualizados sem interromper a UX
+   */
+  async syncProfileInBackground(): Promise<void> {
+    try {
+      // Verificar se há token válido antes de tentar sincronizar
+      if (!(await this.isTokenValid())) {
+        console.log('🔄 Sync em background: Token inválido, pulando sincronização');
+        return;
+      }
+
+      console.log('🔄 Sincronizando perfil em background...');
+      await this.syncUserProfile();
+      console.log('✅ Sync em background concluído');
+    } catch (error) {
+      console.log('⚠️ Sync em background falhou (não crítico):', error);
+      // Não propagar erro para não interromper a UX
+    }
+  }
+
+  /**
    * Google login apenas para Android e iOS (nativo). Web é bloqueado.
    */
   async googleLogin(): Promise<any> {

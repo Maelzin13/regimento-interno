@@ -11,6 +11,7 @@
 
 <ion-content class="subscription-container ion-padding">
   <ion-segment [(ngModel)]="segment" (ionChange)="filtrar()">
+    <ion-segment-button value="Free">Gratuito</ion-segment-button>
     <ion-segment-button value="Mensal">Mensal</ion-segment-button>
     <ion-segment-button value="Anual">Anual</ion-segment-button>
   </ion-segment>
@@ -35,9 +36,13 @@
             <ion-card-content>
               <div class="price-section">
                 <h2 class="price">{{ p.preco }}</h2>
-                <p class="interval-text">por {{ p.intervalo.toLowerCase() === 'mensal' ? 'Mês' : 'Ano' }}</p>
+                <p class="interval-text" *ngIf="!isPlanFree(p)">
+                  por {{ p.intervalo.toLowerCase() === 'mensal' ? 'Mês' : 'Ano' }}
+                </p>
+                <p class="interval-text" *ngIf="isPlanFree(p)">
+                  Sempre gratuito
+                </p>
               </div>
-
               <!-- Status do plano -->
               <div class="plan-status">
                 <ion-chip *ngIf="isPlanActive(p)" color="success">
@@ -48,18 +53,29 @@
                   <ion-icon name="time-outline" slot="start"></ion-icon>
                   Disponível
                 </ion-chip>
-              </div>
-
+      </div>
+      
               <!-- Informações da assinatura ativa -->
               <div *ngIf="isPlanActive(p) && assinaturaAtiva?.id && currentUser?.subscription_status === 'active'" class="subscription-info">
                 <ion-chip color="secondary">
                   <ion-icon name="calendar-outline" slot="start"></ion-icon>
                   Válido até {{ formatDate(assinaturaAtiva?.ends_at) }}
                 </ion-chip>
-              </div>
-
+      </div>
+      
               <!-- Botões de ação -->
               <div class="action-buttons">
+                <!-- Botão especial para planos Free -->
+                <ion-button 
+                  *ngIf="isPlanFree(p) && !isPlanActive(p)"
+                  expand="block"
+                  color="success"
+                  [disabled]="loading"
+                  (click)="ativarPlanoFree(p.id)">
+                  <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                  Ativar Plano Gratuito
+                </ion-button>
+
                 <ion-button 
                   *ngIf="showAssinar(p)"
                   expand="block"
@@ -79,7 +95,7 @@
                   Migrar para Anual
                 </ion-button>
 
-                <ion-button 
+        <ion-button 
                   *ngIf="showCancelarParaMigrar(p)"
                   expand="block"
                   color="warning"
@@ -87,8 +103,8 @@
                   (click)="cancelar()">
                   <ion-icon name="close-circle-outline" slot="start"></ion-icon>
                   Cancelar para migrar
-                </ion-button>
-              </div>
+        </ion-button>
+      </div>
             </ion-card-content>
           </ion-card>
         </ion-col>
@@ -102,9 +118,9 @@
 
   <ion-button expand="block" class="ion-margin-top" color="medium" (click)="portal()" *ngIf="isActive">
     Gerenciar assinatura
-  </ion-button>
+        </ion-button>
 
   <ion-button expand="block" class="ion-margin-top" color="danger" (click)="cancelar()" [disabled]="!isActive || isLoadingCancelar" *ngIf="isActive">
     Cancelar assinatura
-  </ion-button>
+    </ion-button>
 </ion-content>
