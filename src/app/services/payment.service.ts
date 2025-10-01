@@ -20,12 +20,16 @@ export class PaymentService {
     return res?.data ?? [];
   }
 
+  async getMeAssinatura() {
+    const res = await firstValueFrom(this.http.get(`${this.api.baseUrl}/me/assinatura`));
+    return res;
+  }
+
   /**
    * Inicia Stripe Checkout (assinatura) e abre a URL hospedada pela Stripe.
    * O backend já cria a sessão e usa deep links: regimento://checkout/success|cancel
    */
   async startCheckout(priceId: string, platform: 'ios' | 'android' = this.detectPlatform()) {
-    console.log('startCheckout', priceId, platform);
     const res = await firstValueFrom(
       this.http.post<CheckoutResponse>(`${this.api.baseUrl}/checkout/processar`, {
         price_id: priceId,
@@ -88,6 +92,7 @@ export class PaymentService {
         const url = new URL(event.url);
         const path = url.host + url.pathname; // "checkout/success"
         const sessionId = url.searchParams.get('session_id') || undefined;
+        
 
         await Browser.close().catch(() => void 0);
 
@@ -95,7 +100,6 @@ export class PaymentService {
           // Opcional: bater no /api/checkout/sucesso p/ log/telemetria
           // await firstValueFrom(this.http.get(`${this.api.baseUrl}/checkout/sucesso`, { params: { session_id: sessionId! } }));
           // Aqui você pode disparar um evento global, atualizar store ou navegar:
-          console.log('[Stripe] Assinatura concluída', sessionId);
         }
 
         if (path === 'checkout/cancel') {

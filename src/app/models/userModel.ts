@@ -10,6 +10,7 @@ export class UserModel {
   plan: any = '';
   subscription_start_date: string = '';
   subscription_end_date: string = '';
+  ends_at: string = '';
   stripe_id: string = '';
   pm_type: string = '';
   pm_last_four: string = '';

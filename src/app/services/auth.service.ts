@@ -96,11 +96,9 @@ export class AuthService {
    */
   async syncUserProfile(): Promise<UserModel | null> {
     try {
-      console.log('🔄 Sincronizando perfil do usuário...');
       
       // Verificar se o token é válido
       if (!(await this.isTokenValid())) {
-        console.log('❌ Token inválido, fazendo logout...');
         await this.logout();
         return null;
       }
@@ -114,8 +112,6 @@ export class AuthService {
         
         // Notificar mudanças para outros componentes
         this.userChanged.next(response.user);
-        
-        console.log('✅ Perfil sincronizado com sucesso:', response.user);
         return response.user;
       }
       
@@ -124,7 +120,6 @@ export class AuthService {
       console.error('❌ Erro ao sincronizar perfil:', error);
       
       if (error.status === 401) {
-        console.log('🔐 Token expirado, fazendo logout...');
         await this.logout();
       }
       
@@ -161,18 +156,11 @@ export class AuthService {
    */
   async syncProfileInBackground(): Promise<void> {
     try {
-      // Verificar se há token válido antes de tentar sincronizar
       if (!(await this.isTokenValid())) {
-        console.log('🔄 Sync em background: Token inválido, pulando sincronização');
         return;
       }
-
-      console.log('🔄 Sincronizando perfil em background...');
       await this.syncUserProfile();
-      console.log('✅ Sync em background concluído');
     } catch (error) {
-      console.log('⚠️ Sync em background falhou (não crítico):', error);
-      // Não propagar erro para não interromper a UX
     }
   }
 
@@ -509,6 +497,12 @@ export class AuthService {
     await this.tokenStorage.removeToken();
     await this.storage.remove('authUser');
     await this.storage.remove('google_refresh_token');
+    
+    // Limpar dados de assinatura e planos que podem estar em cache
+    await this.storage.remove('assinaturaData');
+    await this.storage.remove('plansData');
+    await this.storage.remove('userSubscription');
+    
     sessionStorage.clear();
     this.userChanged.next(null);
     await this.router.navigateByUrl('/login', { replaceUrl: true });

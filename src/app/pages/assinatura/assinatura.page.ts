@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { UserModel } from 'src/app/models/userModel';
@@ -6,6 +6,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { PlansService } from 'src/app/services/plans.service';
 import { PaymentService } from 'src/app/services/payment.service';
 import { Plan, PlansResponse } from 'src/app/models/plan.model';
+import { StorageService } from 'src/app/services/storage.service';
+import { Subscription } from 'rxjs';
 
 type Intervalo = 'Mensal' | 'Anual' | 'Free';
 
@@ -14,7 +16,7 @@ type Intervalo = 'Mensal' | 'Anual' | 'Free';
   templateUrl: './assinatura.page.html',
   styleUrls: ['./assinatura.page.scss'],
 })
-export class AssinaturaPage implements OnInit {
+export class AssinaturaPage implements OnInit, OnDestroy {
   isLoading = true;
   assinaturaAtiva: {
     ends_at: string;
@@ -31,23 +33,57 @@ export class AssinaturaPage implements OnInit {
   filteredPlans: Plan[] = [];
   segment: Intervalo = 'Mensal';
   planoAtivo: Plan | null = null;
+  assinaturaMe: any = null;
   currentUser: UserModel | null = null;
   plansData: PlansResponse | null = null;
   activeInterval: Intervalo | null = null;
+  private userSubscription: Subscription | null = null;
 
   constructor(
     private router: Router,
     private auth: AuthService,
     private pay: PaymentService,
     private toast: ToastController,
+    private storage: StorageService,
     private plansService: PlansService,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
   ) {}
 
   async ngOnInit() {
+    // Limpar dados anteriores antes de carregar novos dados
+    this.resetPageState();
+    
+    // Escutar mudanças de usuário para limpar dados automaticamente
+    this.userSubscription = this.auth.userChanged.subscribe((user) => {
+      if (!user) {
+        this.resetPageState();
+      }
+    });
+    
     await this.loadUser();
     await this.loadPlans();
     this.applyFilter();
+  }
+
+  /**
+   * Reseta o estado da página para evitar dados de usuários anteriores
+   */
+  private resetPageState(): void {
+    this.currentUser = null;
+    this.assinaturaMe = null;
+    this.assinaturaAtiva = null;
+    this.plansData = null;
+    this.allPlans = [];
+    this.annualPlans = [];
+    this.freePlans = [];
+    this.monthlyPlans = [];
+    this.filteredPlans = [];
+    this.planoAtivo = null;
+    this.isActive = false;
+    this.activeInterval = null;
+    this.segment = 'Mensal';
+    this.loading = false;
+    this.isLoadingCancelar = false;
   }
 
   // ========= helpers regras de negócio =========
@@ -55,21 +91,59 @@ export class AssinaturaPage implements OnInit {
   private deriveUserFlags() {
     this.isActive = ['active', 'trialing'].includes(this.currentUser?.subscription_status ?? '');
 
-    // deduz intervalo pelo nome do plano salvo no usuário
+    // deduz intervalo pelo nome do plano salvo no usuário OU pelo ID da assinatura ativa
     const p = (this.currentUser?.plan || '').toLowerCase();
-    if (p.includes('mensal')) this.activeInterval = 'Mensal';
-    else if (p.includes('anual')) this.activeInterval = 'Anual';
-    else if (p.includes('free') || p.includes('gratuito')) this.activeInterval = 'Free';
-    else this.activeInterval = null;
+    const assinaturaId = this.assinaturaAtiva?.id;
+    
+    if (p.includes('mensal')) {
+      this.activeInterval = 'Mensal';
+    } else if (p.includes('anual')) {
+      this.activeInterval = 'Anual';
+    } else if (p.includes('free') || p.includes('gratuito')) {
+      this.activeInterval = 'Free';
+    } else if (assinaturaId) {
+      // Se não temos nome do plano, tentar deduzir pelo ID da assinatura
+      this.activeInterval = this.deduzirIntervaloPorId(assinaturaId);
+    } else {
+      this.activeInterval = null;
+    }
+  }
+
+  private deduzirIntervaloPorId(assinaturaId: string): Intervalo | null {
+    // IDs dos planos Free
+    const freeIds = [
+      'price_1Ry2e5FHDwuz6ZFYjvJmbvWX', // Free Mensal
+      'price_1Ry2cfFHDwuz6ZFYQpFvhkGw'  // Free Anual
+    ];
+    
+    // IDs dos planos pagos
+    const mensalIds = ['price_1R1wDvFHDwuz6ZFYld8HKutC']; // Plano Mensal
+    const anualIds = ['price_1R1wElFHDwuz6ZFYgYItI2bM'];  // Plano Anual
+    
+    if (freeIds.includes(assinaturaId)) {
+      return 'Free';
+    } else if (mensalIds.includes(assinaturaId)) {
+      return 'Mensal';
+    } else if (anualIds.includes(assinaturaId)) {
+      return 'Anual';
+    }
+    
+    return null;
   }
 
   isPlanActive(plan: Plan): boolean {
     if (!this.isActive) return false;
-    // sem id do preço na tabela do usuário, usamos heurística pelo intervalo/nome:
+    
+    // Verificar se o ID do plano corresponde ao ID da assinatura ativa
+    if (this.assinaturaAtiva?.id && plan.id === this.assinaturaAtiva.id) {
+      return true;
+    }
+    
+    // Fallback: usar heurística pelo intervalo/nome
     const u = (this.currentUser?.plan || '').toLowerCase();
     const nomeMatch = u && plan?.nome && u.includes(plan.nome.toLowerCase());
     const intervaloMatch = !!this.activeInterval && plan.intervalo === this.activeInterval;
-    // Se houver dois “Free”, você pode optar por ocultá-los da UI
+    
     return nomeMatch || intervaloMatch;
   }
 
@@ -86,21 +160,50 @@ export class AssinaturaPage implements OnInit {
   }
   
   formatDate(date: any): any {
-    return new Date(date).toLocaleDateString('pt-BR');
+    if (!date) return '';
+    
+    // Para datas ISO com timezone, usar UTC para evitar problemas de fuso horário
+    const dateObj = new Date(date);
+    
+    // Verificar se é uma data válida
+    if (isNaN(dateObj.getTime())) return '';
+    
+    // Usar UTC para evitar problemas de fuso horário
+    const year = dateObj.getUTCFullYear();
+    const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getUTCDate()).padStart(2, '0');
+    
+    return `${day}/${month}/${year}`;
   }
 
   // ============ carregamento ============
 
-  private async loadUser(forceSync: boolean = false): Promise<void> {
+  private async loadUser(): Promise<void> {
     const loading = await this.loadingController.create({ message: 'Carregando...', spinner: 'crescent' });
     try {
       await loading.present();
       
-      // Usar o novo método de sincronização
-      this.currentUser = await this.auth.getCurrentUser(forceSync);
+      // Limpar dados de assinatura antes de carregar novos
+      this.assinaturaMe = null;
+      this.assinaturaAtiva = null;
       
-      console.log('👤 Usuário carregado:', this.currentUser);
-      this.deriveUserFlags();
+      this.currentUser = await this.auth.fetchProfile();
+      
+      // Carregar dados de assinatura apenas se o usuário estiver logado
+      if (this.currentUser) {
+        try {
+          const assinatura = await this.pay.getMeAssinatura();
+          if (assinatura) {
+            this.assinaturaMe = assinatura;
+          }
+        } catch (assinaturaError) {
+          console.warn('Erro ao carregar assinatura:', assinaturaError);
+          // Não falha o carregamento se não conseguir carregar assinatura
+        }
+        
+        await this.storage.set('authUser', this.currentUser);
+        this.deriveUserFlags();
+      }
     } catch (error) {
       await this.showToast('Erro ao carregar usuário', 'danger');
       console.error('❌ Erro ao carregar usuário:', error);
@@ -112,10 +215,20 @@ export class AssinaturaPage implements OnInit {
   private async loadPlans(): Promise<void> {
     this.isLoading = true;
     try {
+      // Limpar dados de planos anteriores
+      this.plansData = null;
+      this.assinaturaAtiva = null;
+      this.allPlans = [];
+      this.annualPlans = [];
+      this.freePlans = [];
+      this.monthlyPlans = [];
+      this.filteredPlans = [];
+      this.planoAtivo = null;
+      
       this.plansData = await this.plansService.getPlans();
 
       this.assinaturaAtiva = this.plansData.assinaturaAtiva;
-      console.log(this.assinaturaAtiva);
+      this.deriveUserFlags();
 
       // base para filtros
       this.allPlans = this.plansData.planos ?? [];
@@ -123,8 +236,6 @@ export class AssinaturaPage implements OnInit {
       if (this.isActive && this.activeInterval) {
         this.segment = this.activeInterval;
       }
-      
-      console.log('Todos os planos:', this.allPlans);
 
       this.monthlyPlans = this.allPlans.filter(p => 
         p.intervalo === 'Mensal' && 
@@ -144,9 +255,6 @@ export class AssinaturaPage implements OnInit {
         p.preco === '0,00' ||
         p.preco === '0'
       );
-
-
-
       // se sua API um dia enviar o plano ativo como objeto, já guardamos:
       this.planoAtivo = this.plansData.planoAtivo ?? null;
     } catch (error) {
@@ -199,7 +307,7 @@ export class AssinaturaPage implements OnInit {
         await this.showToast(res.message || 'Cancelamento agendado', 'success');
         
         // Forçar sincronização para obter dados atualizados após cancelamento
-        await this.loadUser(true);
+        await this.loadUser();
         await this.loadPlans();
         this.applyFilter();
       } else {
@@ -225,7 +333,7 @@ export class AssinaturaPage implements OnInit {
       await this.showToast('Assinatura iniciada.', 'success');
       
       // Forçar sincronização para obter dados atualizados após assinatura
-      await this.loadUser(true); 
+      await this.loadUser(); 
       await this.loadPlans();
       this.applyFilter();
     } catch (e: any) {
@@ -237,7 +345,6 @@ export class AssinaturaPage implements OnInit {
   }
 
   async migrar(priceId: string) {
-    console.log('migrar', priceId);
     // só permite MENSAL -> ANUAL
     if (!(this.isActive && this.activeInterval === 'Mensal')) {
       await this.showToast('Migração indisponível para seu plano atual.', 'warning');
@@ -246,7 +353,6 @@ export class AssinaturaPage implements OnInit {
     try {
       this.loading = true;
       const res = await this.pay.updatePlan(priceId);
-      console.log('res', res);
       if (res?.success) {
         await this.showToast(res.message || 'Plano atualizado.', 'success');
         await this.loadUser();
@@ -287,7 +393,7 @@ export class AssinaturaPage implements OnInit {
       await this.showToast('Plano gratuito ativado com sucesso!', 'success');
       
       // Forçar sincronização para obter dados atualizados
-      await this.loadUser(true);
+      await this.loadUser();
       await this.loadPlans();
       this.applyFilter();
     } catch (e: any) {
@@ -306,8 +412,34 @@ export class AssinaturaPage implements OnInit {
     return this.mustCancelFirst(plan);
   }
 
+  /**
+   * Verifica se há cancelamento agendado
+   */
+  hasScheduledCancellation(): boolean {
+    if (!this.assinaturaMe?.ends_at) return false;
+    
+    return this.assinaturaMe.ends_at !== null && 
+           this.assinaturaMe.ends_at !== undefined &&
+           this.assinaturaMe.ends_at !== '';
+  }
+
+  /**
+   * Retorna a data de fim do período de cancelamento
+   */
+  getCancellationDate(): string {
+    if (!this.hasScheduledCancellation()) return '';
+    return this.assinaturaMe?.ends_at || '';
+  }
+
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'medium' = 'medium') {
     const t = await this.toast.create({ message, duration: 2400, color, position: 'bottom' });
     await t.present();
+  }
+
+  ngOnDestroy(): void {
+    // Limpar subscription para evitar memory leaks
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 }

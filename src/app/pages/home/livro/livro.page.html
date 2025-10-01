@@ -9,7 +9,7 @@
 <ion-content>  
   <ion-card-content>
     <section class="section">
-      <ng-container *ngIf="!isLoading && hasActivePlan() && books?.length">
+      <ng-container *ngIf="!isLoading && hasFullAccess() && books?.length">
         <ion-grid *ngFor="let book of books" >
           <ion-row [routerLink]="['/view-text', book.id]">
             <ion-col class="menu-item-livro text-center">
@@ -20,31 +20,30 @@
                   </strong>
                 </h2>
                 <p class="auxiliares-text">
-                  <span>1ª Edição 2025</span>
+                  <span>1ª Edição 2025 - Acesso Completo</span>
                 </p>
               </div>
             </ion-col>
           </ion-row>
         </ion-grid>
       </ng-container>
-      <ng-container *ngIf="!isLoading && bookLimit">
+      <ng-container *ngIf="!isLoading && bookLimit && (!hasFullAccess())">
         <ion-grid>
           <ion-row [routerLink]="['/view-text-limit', bookLimit.livro.id]">
             <ion-col class="menu-item-livro text-center">
               <div>
                 <h2 class="auxiliares-text">
-        
-                <strong>
-                  Regimento Interno Comentado da Câmara dos Deputados
-                </strong>
-              </h2>
-              <p class="auxiliares-text">
-                <span>1ª Edição 2025</span>
-              </p>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+                  <strong>
+                    Regimento Interno Comentado da Câmara dos Deputados
+                  </strong>
+                </h2>
+                <p class="auxiliares-text">
+                  <span>1ª Edição 2025 - {{ isFreePlan ? 'Acesso Limitado (Plano Free)' : 'Acesso Limitado' }}</span>
+                </p>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </ng-container>
     </section>
 

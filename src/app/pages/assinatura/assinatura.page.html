@@ -24,9 +24,74 @@
   </ng-container>
 
   <ng-container *ngIf="!isLoading">
-    <ion-grid *ngIf="filteredPlans?.length">
+    <!-- Planos Free - Design Compacto -->
+    <div
+      *ngIf="segment === 'Free' && freePlans?.length"
+      class="free-plans-container"
+    >
+      <div
+        class="free-plan-item"
+        *ngFor="let p of freePlans"
+        [class.active-plan]="isPlanActive(p)"
+      >
+        <div class="free-plan-content">
+          <div class="free-plan-info">
+            <div class="free-plan-header">
+              <h3 class="free-plan-title">{{ p.nome }}</h3>
+              <div class="free-plan-status">
+                <ion-chip *ngIf="isPlanActive(p)" color="success" size="small">
+                  <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                  Ativo
+                </ion-chip>
+                <ion-chip *ngIf="!isPlanActive(p)" color="medium" size="small">
+                  <ion-icon name="time-outline" slot="start"></ion-icon>
+                  Disponível
+                </ion-chip>
+              </div>
+            </div>
+            <div class="free-plan-price">
+              <span class="price">{{ p.preco }}</span>
+              <span class="price-label">Sempre gratuito</span>
+            </div>
+          </div>
+          <div class="free-plan-action">
+            <ion-button
+              *ngIf="isPlanFree(p) && !isPlanActive(p)"
+              fill="solid"
+              color="success"
+              size="default"
+              [disabled]="loading"
+              (click)="ativarPlanoFree(p.id)"
+            >
+              <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+              Ativar
+            </ion-button>
+            <ion-button
+              *ngIf="isPlanActive(p)"
+              fill="outline"
+              color="success"
+              size="default"
+              disabled
+            >
+              <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+              Ativo
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Planos Pagos - Cards Tradicionais -->
+    <ion-grid
+      *ngIf="(segment !== 'Free' && filteredPlans?.length) || (segment === 'Free' && !freePlans?.length)"
+    >
       <ion-row>
-        <ion-col size="12" size-md="6" size-lg="4" *ngFor="let p of filteredPlans">
+        <ion-col
+          size="12"
+          size-md="6"
+          size-lg="4"
+          *ngFor="let p of filteredPlans"
+        >
           <ion-card class="plan-card" [class.active-plan]="isPlanActive(p)">
             <ion-card-header>
               <ion-card-title>{{ p.nome }}</ion-card-title>
@@ -37,7 +102,8 @@
               <div class="price-section">
                 <h2 class="price">{{ p.preco }}</h2>
                 <p class="interval-text" *ngIf="!isPlanFree(p)">
-                  por {{ p.intervalo.toLowerCase() === 'mensal' ? 'Mês' : 'Ano' }}
+                  por {{ p.intervalo.toLowerCase() === 'mensal' ? 'Mês' : 'Ano'
+                  }}
                 </p>
                 <p class="interval-text" *ngIf="isPlanFree(p)">
                   Sempre gratuito
@@ -53,58 +119,56 @@
                   <ion-icon name="time-outline" slot="start"></ion-icon>
                   Disponível
                 </ion-chip>
-      </div>
-      
+              </div>
+
               <!-- Informações da assinatura ativa -->
-              <div *ngIf="isPlanActive(p) && assinaturaAtiva?.id && currentUser?.subscription_status === 'active'" class="subscription-info">
+              <div
+                *ngIf="isPlanActive(p) && assinaturaAtiva?.id && currentUser?.subscription_status === 'active'"
+                class="subscription-info"
+              >
                 <ion-chip color="secondary">
                   <ion-icon name="calendar-outline" slot="start"></ion-icon>
                   Válido até {{ formatDate(assinaturaAtiva?.ends_at) }}
                 </ion-chip>
-      </div>
-      
+              </div>
+
               <!-- Botões de ação -->
               <div class="action-buttons">
-                <!-- Botão especial para planos Free -->
-                <ion-button 
-                  *ngIf="isPlanFree(p) && !isPlanActive(p)"
-                  expand="block"
-                  color="success"
-                  [disabled]="loading"
-                  (click)="ativarPlanoFree(p.id)">
-                  <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-                  Ativar Plano Gratuito
-                </ion-button>
-
-                <ion-button 
+                <ion-button
                   *ngIf="showAssinar(p)"
                   expand="block"
+                  size="large"
                   [disabled]="loading"
-                  (click)="assinar(p.id)">
+                  (click)="assinar(p.id)"
+                >
                   <ion-icon name="card-outline" slot="start"></ion-icon>
                   Assinar
                 </ion-button>
 
-                <ion-button 
+                <ion-button
                   *ngIf="showMigrar(p)"
                   expand="block"
                   color="primary"
+                  size="large"
                   [disabled]="loading"
-                  (click)="migrar(p.id)">
+                  (click)="migrar(p.id)"
+                >
                   <ion-icon name="arrow-up-outline" slot="start"></ion-icon>
                   Migrar para Anual
                 </ion-button>
 
-        <ion-button 
+                <ion-button
                   *ngIf="showCancelarParaMigrar(p)"
                   expand="block"
                   color="warning"
+                  size="large"
                   [disabled]="loading"
-                  (click)="cancelar()">
+                  (click)="cancelar()"
+                >
                   <ion-icon name="close-circle-outline" slot="start"></ion-icon>
                   Cancelar para migrar
-        </ion-button>
-      </div>
+                </ion-button>
+              </div>
             </ion-card-content>
           </ion-card>
         </ion-col>
@@ -112,15 +176,58 @@
     </ion-grid>
 
     <ion-card *ngIf="!filteredPlans?.length" class="ion-margin-top">
-      <ion-card-content>Nenhum plano disponível para {{ segment }}.</ion-card-content>
+      <ion-card-content
+        >Nenhum plano disponível para {{ segment }}.</ion-card-content
+      >
     </ion-card>
   </ng-container>
 
-  <ion-button expand="block" class="ion-margin-top" color="medium" (click)="portal()" *ngIf="isActive">
-    Gerenciar assinatura
-        </ion-button>
+  <!-- Informação de Cancelamento Agendado -->
+  <div class="cancellation-info" *ngIf="isActive && hasScheduledCancellation()">
+    <ion-card class="cancellation-card">
+      <ion-card-content>
+        <div class="cancellation-content">
+          <div class="cancellation-icon">
+            <ion-icon name="warning-outline" color="warning"></ion-icon>
+          </div>
+          <div class="cancellation-details">
+            <h3 class="cancellation-title">Cancelamento Agendado</h3>
+            <p class="cancellation-message">
+              Seu cancelamento já está agendado para o fim do período.
+            </p>
+            <div class="cancellation-date">
+              <ion-chip color="warning" outline>
+                <ion-icon name="calendar-outline" slot="start"></ion-icon>
+                Válido até {{ formatDate(getCancellationDate()) }}
+              </ion-chip>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
-  <ion-button expand="block" class="ion-margin-top" color="danger" (click)="cancelar()" [disabled]="!isActive || isLoadingCancelar" *ngIf="isActive">
-    Cancelar assinatura
+  <!-- Botões de gerenciamento -->
+  <div class="management-buttons" *ngIf="isActive">
+    <ion-button
+      expand="block"
+      size="large"
+      class="portal-button"
+      (click)="portal()"
+    >
+      <ion-icon name="settings-outline" slot="start"></ion-icon>
+      Gerenciar Assinatura
     </ion-button>
+
+    <ion-button
+      expand="block"
+      size="large"
+      class="cancel-button"
+      (click)="cancelar()"
+      [disabled]="!isActive || isLoadingCancelar || hasScheduledCancellation()"
+    >
+      <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+      {{ hasScheduledCancellation() ? 'Cancelamento Agendado' : 'Cancelar Assinatura' }} 
+    </ion-button>
+  </div>
 </ion-content>

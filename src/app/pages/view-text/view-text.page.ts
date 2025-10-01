@@ -1151,11 +1151,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
     
     if (!targetElement) {
-      console.log('Nenhum resultado encontrado para o índice:', index);
       return;
     }
-
-    console.log('Navegando para resultado:', targetElement, 'ocorrência:', targetOccurrence);
 
     // Encontrar o elemento baseado no tipo e ID
     let element: HTMLElement | null = null;
@@ -1198,8 +1195,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     if (element) {
-      console.log('Elemento encontrado e destacado:', element);
-      
       // Garantir que o elemento está visível
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       
@@ -1216,7 +1211,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         this.expandedComments.add(String(targetElement.id));
       }
     } else {
-      console.log('Nenhum elemento encontrado para navegação');
       
       // Fallback: tentar encontrar por highlights
       setTimeout(() => {

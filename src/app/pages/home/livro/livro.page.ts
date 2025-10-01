@@ -5,6 +5,7 @@ import { UserModel } from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
 import { BookService } from 'src/app/services/book.service';
 import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
+import { PlansService } from 'src/app/services/plans.service';
 
 @Component({
   selector: 'app-livro',
@@ -17,6 +18,8 @@ export class LivroPage implements OnInit {
   isActive = false;
   isLoading: boolean = true;
   user: UserModel | null = null;
+  assinaturaAtiva: any = null;
+  isFreePlan = false;
 
   textos = [
     {
@@ -50,27 +53,43 @@ export class LivroPage implements OnInit {
     public bookService: BookService,
     private authService: AuthService,
     private modalCtrl: ModalController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private plansService: PlansService
   ) {}
 
   async ngOnInit() {
-    const user = await this.authService.getUser();
-    this.user = user;
-    
-    if (this.user && this.user.subscription_status === 'active') {
-      this.bookService
-        .getAllBooks()
-        .then((data) => {
-          this.books = data.data;
-          this.isLoading = false;
-        })
-        .catch((error) => {
-          console.error('Erro ao carregar os livros:', error);
-          this.isLoading = false;
-        });
-    } else {
-      const data = await this.bookService.getBookByIdLimit(1);
-      this.bookLimit = data;
+    try {
+      // Carregar dados do usuário
+      this.user = await this.authService.getUser();
+      
+      // Carregar dados de planos para verificar tipo de assinatura
+      const plansData = await this.plansService.getPlans();
+      this.assinaturaAtiva = plansData.assinaturaAtiva;
+      
+      // Verificar se é plano Free
+      this.isFreePlan = this.checkIfFreePlan();
+      
+      // Aplicar regra de negócio: Free = limitado, Pago = completo
+      if (this.user && this.user.subscription_status === 'active' && !this.isFreePlan) {
+        // Plano PAGO ativo - acesso completo
+        this.bookService
+          .getAllBooks()
+          .then((data) => {
+            this.books = data.data;
+            this.isLoading = false;
+          })
+          .catch((error) => {
+            console.error('Erro ao carregar os livros:', error);
+            this.isLoading = false;
+          });
+      } else {
+        // Plano FREE ou sem assinatura - acesso limitado
+        const data = await this.bookService.getBookByIdLimit(1);
+        this.bookLimit = data;
+        this.isLoading = false;
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
       this.isLoading = false;
     }
   }
@@ -107,5 +126,29 @@ export class LivroPage implements OnInit {
    */
   hasActivePlan(): boolean {
     return this.user ? this.user.subscription_status === 'active' : false;
+  }
+
+  /**
+   * Verifica se o plano ativo é Free
+   */
+  private checkIfFreePlan(): boolean {
+    if (!this.assinaturaAtiva?.id) {
+      return false;
+    }
+
+    // IDs dos planos Free
+    const freeIds = [
+      'price_1Ry2e5FHDwuz6ZFYjvJmbvWX', // Free Mensal
+      'price_1Ry2cfFHDwuz6ZFYQpFvhkGw'  // Free Anual
+    ];
+
+    return freeIds.includes(this.assinaturaAtiva.id);
+  }
+
+  /**
+   * Verifica se o usuário tem acesso completo (plano pago)
+   */
+  hasFullAccess(): boolean {
+    return this.hasActivePlan() && !this.isFreePlan;
   }
 }

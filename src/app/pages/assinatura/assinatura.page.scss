@@ -423,9 +423,198 @@
   ion-button {
     margin: 8px 0;
     font-weight: 500;
+    min-height: 48px; // Altura mínima para touch
+    font-size: 16px; // Tamanho de fonte adequado para mobile
     
     ion-icon {
       margin-right: 8px;
+      font-size: 18px; // Ícones maiores para melhor visibilidade
+    }
+  }
+}
+
+// Planos Free - Design Compacto
+.free-plans-container {
+  margin-bottom: 24px;
+  
+  .free-plan-item {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    
+    &.active-plan {
+      border-color: var(--ion-color-success);
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+    
+    .free-plan-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      
+      .free-plan-info {
+        flex: 1;
+        
+        .free-plan-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+          
+          .free-plan-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--ion-color-dark);
+            margin: 0;
+          }
+          
+          .free-plan-status {
+            ion-chip {
+              font-size: 0.75rem;
+              height: 24px;
+              
+              ion-icon {
+                font-size: 14px;
+                margin-right: 4px;
+              }
+            }
+          }
+        }
+        
+        .free-plan-price {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          
+          .price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--ion-color-success);
+          }
+          
+          .price-label {
+            font-size: 0.85rem;
+            color: var(--ion-color-medium);
+            font-weight: 500;
+          }
+        }
+      }
+      
+      .free-plan-action {
+        margin-left: 16px;
+        
+        ion-button {
+          min-width: 100px;
+          height: 36px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          border-radius: 8px;
+          
+          ion-icon {
+            font-size: 16px;
+            margin-right: 6px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Informação de Cancelamento Agendado
+.cancellation-info {
+  margin: 20px 0;
+  
+  .cancellation-card {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid var(--ion-color-warning);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+    
+    .cancellation-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      
+      .cancellation-icon {
+        flex-shrink: 0;
+        margin-top: 4px;
+        
+        ion-icon {
+          font-size: 32px;
+        }
+      }
+      
+      .cancellation-details {
+        flex: 1;
+        
+        .cancellation-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #92400e;
+          margin: 0 0 8px 0;
+        }
+        
+        .cancellation-message {
+          font-size: 0.95rem;
+          color: #92400e;
+          margin: 0 0 12px 0;
+          line-height: 1.4;
+        }
+        
+        .cancellation-date {
+          ion-chip {
+            font-weight: 600;
+            font-size: 0.9rem;
+            
+            ion-icon {
+              font-size: 16px;
+              margin-right: 6px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Botões de gerenciamento (fora dos cards)
+.management-buttons {
+  margin-top: 24px;
+  padding: 0 4px;
+  
+  ion-button {
+    min-height: 52px; // Altura maior para botões importantes
+    font-size: 16px;
+    font-weight: 600;
+    margin: 12px 0;
+    border-radius: 12px;
+    
+    ion-icon {
+      font-size: 20px;
+      margin-right: 10px;
+    }
+    
+    &.portal-button {
+      --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--secondary-color) 100%);
+      --color: white;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    &.cancel-button {
+      --background: var(--ion-color-danger);
+      --color: white;
+      --box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      
+      &[disabled] {
+        --background: var(--ion-color-medium);
+        --color: var(--ion-color-light);
+        --box-shadow: none;
+        opacity: 0.7;
+      }
     }
   }
 }
@@ -449,6 +638,103 @@
     
     .price-section .price {
       font-size: 2rem;
+    }
+    
+    // Melhorar botões em mobile
+    .action-buttons ion-button {
+      min-height: 52px;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+  }
+  
+  // Planos Free em mobile
+  .free-plans-container {
+    margin-bottom: 20px;
+    
+    .free-plan-item {
+      margin-bottom: 10px;
+      
+      .free-plan-content {
+        padding: 14px 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        
+        .free-plan-info {
+          .free-plan-header {
+            margin-bottom: 6px;
+            
+            .free-plan-title {
+              font-size: 1rem;
+            }
+          }
+          
+          .free-plan-price {
+            .price {
+              font-size: 1.2rem;
+            }
+            
+            .price-label {
+              font-size: 0.8rem;
+            }
+          }
+        }
+        
+        .free-plan-action {
+          margin-left: 0;
+          
+          ion-button {
+            width: 100%;
+            min-width: auto;
+            height: 44px; // Altura adequada para touch
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+  
+  // Informação de cancelamento em mobile
+  .cancellation-info {
+    margin: 16px 0;
+    
+    .cancellation-card {
+      .cancellation-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        
+        .cancellation-icon {
+          margin-top: 0;
+          align-self: center;
+          
+          ion-icon {
+            font-size: 28px;
+          }
+        }
+        
+        .cancellation-details {
+          .cancellation-title {
+            font-size: 1.1rem;
+          }
+          
+          .cancellation-message {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+  }
+  
+  // Botões de gerenciamento em mobile
+  .management-buttons {
+    margin-top: 20px;
+    
+    ion-button {
+      min-height: 56px; // Ainda maior em mobile
+      font-size: 17px;
+      margin: 14px 0;
     }
   }
 }
