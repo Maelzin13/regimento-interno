@@ -643,6 +643,46 @@
   }
 }
 
+// Mensagem de "nenhum plano disponível"
+.no-plans-message {
+  text-align: center;
+  padding: 20px;
+  
+  ion-icon {
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+  
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin: 0 0 12px 0;
+  }
+  
+  p {
+    font-size: 0.95rem;
+    color: var(--ion-color-medium);
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+    
+    strong {
+      color: var(--ion-color-primary);
+      font-weight: 600;
+    }
+  }
+  
+  ion-button {
+    margin-top: 8px;
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 6px;
+      font-size: 16px;
+    }
+  }
+}
+
 // Botões de gerenciamento (fora dos cards)
 .management-buttons {
   margin-top: 24px;

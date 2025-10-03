@@ -184,9 +184,29 @@
     </ion-grid>
 
     <ion-card *ngIf="!filteredPlans?.length" class="ion-margin-top">
-      <ion-card-content
-        >Nenhum plano disponível para {{ segment }}.</ion-card-content
-      >
+      <ion-card-content>
+        <div class="no-plans-message">
+          <ion-icon name="information-circle-outline" color="medium" size="large"></ion-icon>
+          <h3>Nenhum plano disponível para {{ segment }}</h3>
+          <p *ngIf="isActive && activeInterval">
+            Seu plano ativo é <strong>{{ activeInterval }}</strong>. 
+            Verifique se você está no segmento correto.
+          </p>
+          <p *ngIf="!isActive">
+            Você não possui uma assinatura ativa no momento.
+          </p>
+          <ion-button 
+            *ngIf="isActive && activeInterval && activeInterval !== segment"
+            fill="outline" 
+            color="primary" 
+            size="small"
+            (click)="segment = activeInterval; applyFilter()"
+          >
+            <ion-icon name="arrow-forward-outline" slot="start"></ion-icon>
+            Ir para {{ activeInterval }}
+          </ion-button>
+        </div>
+      </ion-card-content>
     </ion-card>
   </ng-container>
 

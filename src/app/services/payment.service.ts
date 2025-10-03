@@ -36,6 +36,7 @@ export class PaymentService {
     private toastController: ToastController
   ) {
     this.initializePaymentStatus();
+    this.setupBrowserListeners();
   }
 
   async getPayments() {
@@ -61,6 +62,60 @@ export class PaymentService {
       }
     } catch (error) {
       console.error('Erro ao inicializar status de pagamento:', error);
+    }
+  }
+
+  /**
+   * Configura listeners para eventos do browser
+   */
+  private async setupBrowserListeners(): Promise<void> {
+    try {
+      // Listener para quando o browser é fechado
+      await Browser.addListener('browserFinished', () => {
+        console.log('🔄 Browser fechado - verificando status da assinatura...');
+        this.handleBrowserClosed();
+      });
+
+      // Listener para quando a página do browser carrega
+      await Browser.addListener('browserPageLoaded', () => {
+        console.log('📄 Página do browser carregada');
+      });
+
+    } catch (error) {
+      console.error('Erro ao configurar listeners do browser:', error);
+    }
+  }
+
+  /**
+   * Trata o fechamento do browser
+   */
+  private async handleBrowserClosed(): Promise<void> {
+    try {
+      console.log('🔄 Processando fechamento do browser...');
+      
+      // Aguardar um pouco para o backend processar
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Verificar status da assinatura
+      const assinatura = await this.checkSubscriptionStatus();
+      
+      if (assinatura) {
+        console.log('✅ Status da assinatura verificado:', assinatura.status);
+        
+        // Forçar atualização da interface
+        await this.refreshUserData();
+        
+        // Mostrar feedback ao usuário
+        if (assinatura.active || assinatura.status === 'active') {
+          await this.showSuccessToast('Assinatura ativada com sucesso!');
+        } else if (assinatura.status === 'past_due') {
+          await this.showWarningToast('Pagamento pendente. Verifique seus dados.');
+        }
+      }
+      
+    } catch (error) {
+      console.error('Erro ao processar fechamento do browser:', error);
+      await this.showErrorToast('Erro ao verificar status da assinatura');
     }
   }
 
@@ -328,8 +383,9 @@ export class PaymentService {
         url: res.checkout_url,
         presentationStyle: 'fullscreen',
       });
-  
+
       // O status será atualizado automaticamente via webhook quando o pagamento for concluído
+      // O listener 'browserFinished' irá tratar o fechamento do browser
       console.log('✅ Navegador aberto. Aguardando processamento via webhook...');
   
     } catch (error) {
@@ -474,5 +530,18 @@ export class PaymentService {
     if (/android/.test(ua)) return 'android';
     return 'android';
     // Se quiser, dá para usar Capacitor.getPlatform(), mas para webviews o UA costuma bastar.
+  }
+
+  /**
+   * Limpa todos os listeners do browser
+   * Deve ser chamado quando o serviço for destruído
+   */
+  async cleanup(): Promise<void> {
+    try {
+      await Browser.removeAllListeners();
+      console.log('🧹 Listeners do browser removidos');
+    } catch (error) {
+      console.error('Erro ao limpar listeners do browser:', error);
+    }
   }
 }
