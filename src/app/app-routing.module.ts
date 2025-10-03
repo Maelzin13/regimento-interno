@@ -73,11 +73,6 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'plans',
-    loadChildren: () =>
-      import('./pages/plans/plans.module').then((m) => m.PlansPageModule),
-  },
-  {
     path: 'dashboard',
     loadChildren: () =>
       import('./pages/dashboard/dashboard.module').then(
@@ -90,9 +85,14 @@ const routes: Routes = [
       import('./pages/questao-ordem-nova/questao-ordem-nova.module').then(
         (m) => m.QuestaoOrdemNovaPageModule
       ),
-  },  {
+  },
+  {
     path: 'cadastro',
     loadChildren: () => import('./pages/cadastro/cadastro.module').then( m => m.CadastroPageModule)
+  },
+  {
+    path: 'assinatura',
+    loadChildren: () => import('./pages/assinatura/assinatura.module').then( m => m.AssinaturaPageModule)
   },
 
 ];

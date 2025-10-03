@@ -14,7 +14,8 @@
 	},
 	"ios": {
 		"backgroundColor": "#ffffff",
-		"webContentsDebuggingEnabled": false
+		"webContentsDebuggingEnabled": false,
+		"scheme": "regimento"
 	},
 	"plugins": {
 		"SplashScreen": {

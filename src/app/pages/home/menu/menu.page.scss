@@ -1,5 +1,7 @@
-.menu-content {
-  padding: 1rem 0.75rem;
+.menu-grid {
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .menu-item {
@@ -86,10 +88,6 @@
 // Breakpoints específicos para Android
 // Galaxy A03s e dispositivos similares (320px - 360px)
 @media (max-width: 360px) {
-  .menu-content {
-    padding: 0.75rem 0.5rem;
-  }
-  
   .menu-item {
     margin-bottom: 0.5rem;
   }
@@ -120,9 +118,6 @@
 
 // Dispositivos Android médios (361px - 480px)
 @media (min-width: 361px) and (max-width: 480px) {
-  .menu-content {
-    padding: 1rem 0.75rem;
-  }
   
   .menu-box {
     max-width: 110px;
@@ -147,11 +142,7 @@
 }
 
 // Dispositivos Android grandes (481px - 768px)
-@media (min-width: 481px) and (max-width: 768px) {
-  .menu-content {
-    padding: 1.25rem 1rem;
-  }
-  
+@media (min-width: 481px) and (max-width: 768px) {  
   .menu-box {
     max-width: 130px;
     height: 110px;
@@ -176,9 +167,6 @@
 
 // Tablets e dispositivos grandes (769px+)
 @media (min-width: 769px) {
-  .menu-content {
-    padding: 1.5rem 1.25rem;
-  }
   
   .menu-box {
     max-width: 150px;
@@ -204,9 +192,6 @@
 
 // Otimizações para orientação landscape em dispositivos pequenos
 @media (max-width: 480px) and (orientation: landscape) {
-  .menu-content {
-    padding: 0.75rem 0.5rem;
-  }
   
   .menu-box {
     max-width: 100px;

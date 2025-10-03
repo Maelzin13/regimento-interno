@@ -31,8 +31,8 @@ export class PerfilPage implements OnInit {
 
   async loadUser() {
     try {
-      const userData = await this.authService.fetchProfile();
-      this.user = userData;
+      const profileData = await this.authService.fetchProfile();
+      this.user = profileData.user;
     } catch (error) {
       console.error(error);
     }

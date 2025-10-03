@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
-import { UserModel } from 'src/app/models/userModel';
+import { UserModel, ProfileResponse, SubscriptionInfo, PlanInfo } from 'src/app/models/userModel';
 import { firstValueFrom, BehaviorSubject } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
 import { StorageService } from './storage.service';
@@ -30,6 +30,27 @@ export class AuthService {
 
   async getUser(): Promise<UserModel | null> {
     return await this.storage.get<UserModel>('authUser');
+  }
+
+  /**
+   * Obtém dados completos do perfil (user, subscription, plan_info)
+   */
+  async getProfileData(): Promise<ProfileResponse | null> {
+    return await this.storage.get<ProfileResponse>('profileData');
+  }
+
+  /**
+   * Obtém dados da assinatura
+   */
+  async getSubscriptionData(): Promise<SubscriptionInfo | null> {
+    return await this.storage.get<SubscriptionInfo>('subscriptionData');
+  }
+
+  /**
+   * Obtém informações do plano
+   */
+  async getPlanInfoData(): Promise<PlanInfo | null> {
+    return await this.storage.get<PlanInfo>('planInfoData');
   }
 
   async getAuthToken(): Promise<string | null> {
@@ -76,21 +97,107 @@ export class AuthService {
     }
   }
 
-  async fetchProfile(): Promise<any> {
+  async fetchProfile(): Promise<ProfileResponse> {
     if (!(await this.isTokenValid())) {
       await this.logout();
       throw new Error('Token expirado');
     }
 
     try {
-      return await firstValueFrom(
-        this.http.get(`${this.apiService.baseUrl}/profile`)
+      const response: ProfileResponse = await firstValueFrom(
+        this.http.get<ProfileResponse>(`${this.apiService.baseUrl}/profile`)
       );
+      
+      // Armazenar dados completos no storage
+      await this.storage.set('profileData', response);
+      await this.storage.set('subscriptionData', response.subscription);
+      await this.storage.set('planInfoData', response.plan_info);
+      
+      return response;
     } catch (error: any) {
       if (error.status === 401) {
         await this.logout();
       }
       throw new Error('Erro ao buscar perfil do usuário.');
+    }
+  }
+
+  /**
+   * Sincroniza o perfil do usuário com o servidor e atualiza o storage local
+   * Útil para manter dados atualizados após mudanças de assinatura
+   */
+  async syncUserProfile(): Promise<UserModel | null> {
+    try {
+      
+      // Verificar se o token é válido
+      if (!(await this.isTokenValid())) {
+        await this.logout();
+        return null;
+      }
+
+      // Buscar perfil atualizado do servidor
+      const response: ProfileResponse = await firstValueFrom(
+        this.http.get<ProfileResponse>(`${this.apiService.baseUrl}/profile`)
+      );
+      
+      if (response?.user) {
+        // Atualizar storage local com dados mais recentes
+        await this.storage.set('authUser', response.user);
+        await this.storage.set('profileData', response);
+        await this.storage.set('subscriptionData', response.subscription);
+        await this.storage.set('planInfoData', response.plan_info);
+        
+        // Notificar mudanças para outros componentes
+        this.userChanged.next(response.user);
+        return response.user;
+      }
+      
+      return null;
+    } catch (error: any) {
+      console.error('❌ Erro ao sincronizar perfil:', error);
+      
+      if (error.status === 401) {
+        await this.logout();
+      }
+      
+      throw new Error('Erro ao sincronizar perfil do usuário.');
+    }
+  }
+
+  /**
+   * Obtém o usuário atual, tentando sincronizar se necessário
+   * @param forceSync - Força sincronização mesmo se dados locais existirem
+   */
+  async getCurrentUser(forceSync: boolean = false): Promise<UserModel | null> {
+    try {
+      // Se não forçar sync, tentar usar dados locais primeiro
+      if (!forceSync) {
+        const localUser = await this.getUser();
+        if (localUser) {
+          return localUser;
+        }
+      }
+
+      // Sincronizar com servidor
+      return await this.syncUserProfile();
+    } catch (error) {
+      console.error('Erro ao obter usuário atual:', error);
+      // Fallback para dados locais em caso de erro
+      return await this.getUser();
+    }
+  }
+
+  /**
+   * Sincroniza automaticamente o perfil em background
+   * Útil para manter dados atualizados sem interromper a UX
+   */
+  async syncProfileInBackground(): Promise<void> {
+    try {
+      if (!(await this.isTokenValid())) {
+        return;
+      }
+      await this.syncUserProfile();
+    } catch (error) {
     }
   }
 
@@ -477,6 +584,15 @@ export class AuthService {
     await this.tokenStorage.removeToken();
     await this.storage.remove('authUser');
     await this.storage.remove('google_refresh_token');
+    
+    // Limpar dados de assinatura e planos que podem estar em cache
+    await this.storage.remove('assinaturaData');
+    await this.storage.remove('plansData');
+    await this.storage.remove('userSubscription');
+    await this.storage.remove('profileData');
+    await this.storage.remove('subscriptionData');
+    await this.storage.remove('planInfoData');
+    
     sessionStorage.clear();
     this.userChanged.next(null);
     await this.router.navigateByUrl('/login', { replaceUrl: true });

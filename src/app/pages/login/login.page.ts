@@ -47,9 +47,9 @@ export class LoginPage implements OnInit {
 
       // Valida token da API
       try {
-        const user = await this.authService.fetchProfile();
-        await this.storage.set('authUser', user);
-        this.authService.userChanged.next(user);
+        const profileData = await this.authService.fetchProfile();
+        await this.storage.set('authUser', profileData.user);
+        this.authService.userChanged.next(profileData.user);
         await loading.dismiss();
         this.router.navigate(['/home']);
       } catch (error) {
@@ -71,9 +71,9 @@ export class LoginPage implements OnInit {
       const token = await this.authService.login(this.email, this.password);
       // authService.login já salva o token internamente, não precisa chamar saveAuthToken
 
-      const userProfile = await this.authService.fetchProfile();
-      await this.storage.set('authUser', userProfile);
-      this.authService.userChanged.next(userProfile);
+      const profileData = await this.authService.fetchProfile();
+      await this.storage.set('authUser', profileData.user);
+      this.authService.userChanged.next(profileData.user);
 
       await loading.dismiss();
       this.email = '';

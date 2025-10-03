@@ -3,7 +3,7 @@ PODS:
     - CapacitorCordova
   - CapacitorApp (7.0.1):
     - Capacitor
-  - CapacitorBrowser (7.0.1):
+  - CapacitorBrowser (7.0.2):
     - Capacitor
   - CapacitorCommunityAppleSignIn (7.0.1):
     - Capacitor
@@ -128,7 +128,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Capacitor: 156d98aba46ec01dde72c4bbb92fa626837cad29
   CapacitorApp: d63334c052278caf5d81585d80b21905c6f93f39
-  CapacitorBrowser: 081852cf532acf77b9d2953f3a88fe5b9711fb06
+  CapacitorBrowser: 45c681e7abc3b4384e54eb52bafeef1347d98fa8
   CapacitorCommunityAppleSignIn: b95415441e6c4223783a543f3a736ea4eabf8524
   CapacitorCommunityGenericOauth2: a30d35d43010aca671e8c5b5d3da45b9386eafae
   CapacitorCordova: 5e58d04631bc5094894ac106e2bf1da18a9e6151

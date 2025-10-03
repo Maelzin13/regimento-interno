@@ -1,0 +1,874 @@
+// Container principal
+.subscription-container {
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+}
+
+// Status Card
+.status-card {
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--secondary-color) 100%);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 30px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(30, 153, 154, 0.3);
+  
+  .status-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    
+    .status-icon {
+      margin-right: 16px;
+      
+      ion-icon {
+        font-size: 32px;
+        color: var(--comentario-color);
+      }
+    }
+    
+    .status-info {
+      h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+      }
+      
+      p {
+        margin: 4px 0 0;
+        opacity: 0.9;
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .status-details {
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      
+      ion-icon {
+        margin-right: 8px;
+        font-size: 16px;
+      }
+      
+      span {
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+    
+    .status-message {
+      font-size: 14px;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+  }
+}
+
+// Container de planos
+.plans-container {
+  .section-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+  }
+  
+  .section-subtitle {
+    text-align: center;
+    color: #6b7280;
+    font-size: 16px;
+    margin: 0 0 30px 0;
+  }
+}
+
+// Informação da plataforma (iOS)
+.platform-info {
+  background: #fef3c7;
+  border: 1px solid var(--color-plan);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  
+  .info-icon {
+    margin-right: 12px;
+    margin-top: 2px;
+    
+    ion-icon {
+      font-size: 20px;
+      color: var(--color-plan);
+    }
+  }
+  
+  .info-content {
+    h4 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #92400e;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #92400e;
+      line-height: 1.4;
+    }
+  }
+}
+
+// Cards de planos
+.plan-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+  
+  &.featured {
+    border-color: var(--comentario-color);
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    
+    &::before {
+      content: 'Mais Popular';
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      background: var(--comentario-color);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+  }
+  
+  &.disabled {
+    opacity: 0.6;
+    background: #f9fafb;
+    
+    .plan-button {
+      background: #e5e7eb !important;
+      color: #9ca3af !important;
+    }
+  }
+  
+  .plan-header {
+    text-align: center;
+    margin-bottom: 24px;
+    
+    .plan-icon {
+      margin-bottom: 16px;
+      
+      ion-icon {
+        font-size: 48px;
+        color: var(--ion-color-primary);
+      }
+    }
+    
+    .plan-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0 0 8px 0;
+    }
+    
+    .plan-subtitle {
+      font-size: 16px;
+      color: #6b7280;
+      margin: 0 0 12px 0;
+    }
+    
+    .plan-price {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--comentario-color);
+      margin: 0;
+    }
+  }
+  
+  .plan-features {
+    margin-bottom: 24px;
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      .feature-icon {
+        margin-right: 12px;
+        
+        ion-icon {
+          font-size: 18px;
+          color: var(--comentario-color);
+        }
+      }
+      
+      .feature-text {
+        font-size: 14px;
+        color: #374151;
+        font-weight: 500;
+      }
+    }
+  }
+  
+  .plan-actions {
+    .plan-button {
+      width: 100%;
+      height: 48px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      text-transform: none;
+      
+      &.primary {
+        --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--secondary-color) 100%);
+        --color: white;
+      }
+      
+      &.secondary {
+        --background: #e5e7eb;
+        --color: #6b7280;
+      }
+    }
+  }
+}
+
+// Portal de faturamento
+.portal-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  margin-top: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  
+  .portal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    .portal-icon {
+      margin-right: 16px;
+      
+      ion-icon {
+        font-size: 32px;
+        color: var(--ion-color-primary);
+      }
+    }
+    
+    .portal-info {
+      h3 {
+        margin: 0 0 4px 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: #6b7280;
+        line-height: 1.4;
+      }
+    }
+  }
+  
+  .portal-button {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    text-transform: none;
+    --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--secondary-color) 100%);
+    --color: white;
+  }
+}
+
+// Animações
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Cards de planos
+.plan-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  border: 2px solid transparent;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.active-plan {
+    border-color: var(--ion-color-success);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  }
+  
+  ion-card-header {
+    padding-bottom: 8px;
+    
+    ion-card-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+    
+    ion-card-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+  
+  ion-card-content {
+    padding-top: 0;
+  }
+}
+
+.price-section {
+  text-align: center;
+  margin-bottom: 20px;
+  
+  .price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+    margin: 0;
+    line-height: 1;
+  }
+  
+  .interval-text {
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    margin: 4px 0 0;
+    text-transform: lowercase;
+  }
+}
+
+.plan-status {
+  text-align: center;
+  margin-bottom: 16px;
+  
+  ion-chip {
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+.subscription-info {
+  text-align: center;
+  margin-bottom: 16px;
+  
+  ion-chip {
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+.action-buttons {
+  margin-top: 20px;
+  
+  ion-button {
+    margin: 8px 0;
+    font-weight: 500;
+    min-height: 48px; // Altura mínima para touch
+    font-size: 16px; // Tamanho de fonte adequado para mobile
+    
+    ion-icon {
+      margin-right: 8px;
+      font-size: 18px; // Ícones maiores para melhor visibilidade
+    }
+  }
+}
+
+// Planos Free - Design Compacto
+.free-plans-container {
+  margin-bottom: 24px;
+  
+  .free-plan-item {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    
+    &.active-plan {
+      border-color: var(--ion-color-success);
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+    
+    .free-plan-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      
+      .free-plan-info {
+        flex: 1;
+        
+        .free-plan-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+          
+          .free-plan-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--ion-color-dark);
+            margin: 0;
+          }
+          
+          .free-plan-status {
+            ion-chip {
+              font-size: 0.75rem;
+              height: 24px;
+              
+              ion-icon {
+                font-size: 14px;
+                margin-right: 4px;
+              }
+            }
+          }
+        }
+        
+        .free-plan-price {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          
+          .price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--ion-color-success);
+          }
+          
+          .price-label {
+            font-size: 0.85rem;
+            color: var(--ion-color-medium);
+            font-weight: 500;
+          }
+        }
+      }
+      
+      .free-plan-action {
+        margin-left: 16px;
+        
+        ion-button {
+          min-width: 100px;
+          height: 36px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          border-radius: 8px;
+          
+          ion-icon {
+            font-size: 16px;
+            margin-right: 6px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Informação de Cancelamento Agendado
+.cancellation-info {
+  margin: 20px 0;
+  
+  .cancellation-card {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid var(--ion-color-warning);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+    
+    .cancellation-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      
+      .cancellation-icon {
+        flex-shrink: 0;
+        margin-top: 4px;
+        
+        ion-icon {
+          font-size: 32px;
+        }
+      }
+      
+      .cancellation-details {
+        flex: 1;
+        
+        .cancellation-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #92400e;
+          margin: 0 0 8px 0;
+        }
+        
+        .cancellation-message {
+          font-size: 0.95rem;
+          color: #92400e;
+          margin: 0 0 12px 0;
+          line-height: 1.4;
+        }
+        
+        .cancellation-date {
+          ion-chip {
+            font-weight: 600;
+            font-size: 0.9rem;
+            
+            ion-icon {
+              font-size: 16px;
+              margin-right: 6px;
+            }
+          }
+        }
+        
+        .cancellation-note {
+          margin-top: 8px;
+          
+          ion-chip {
+            font-size: 0.8rem;
+            font-weight: 500;
+            --background: rgba(220, 38, 38, 0.1);
+            --color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            
+            ion-icon {
+              font-size: 14px;
+              margin-right: 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Informação sobre Política de Cancelamento Único
+.cancellation-policy-info {
+  margin: 20px 0;
+  
+  .policy-card {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 2px solid var(--ion-color-primary);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+    
+    .policy-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      
+      .policy-icon {
+        flex-shrink: 0;
+        margin-top: 4px;
+        
+        ion-icon {
+          font-size: 32px;
+        }
+      }
+      
+      .policy-details {
+        flex: 1;
+        
+        .policy-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #1e40af;
+          margin: 0 0 8px 0;
+        }
+        
+        .policy-message {
+          font-size: 0.95rem;
+          color: #1e40af;
+          margin: 0;
+          line-height: 1.4;
+        }
+      }
+    }
+  }
+}
+
+// Mensagem de "nenhum plano disponível"
+.no-plans-message {
+  text-align: center;
+  padding: 20px;
+  
+  ion-icon {
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+  
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin: 0 0 12px 0;
+  }
+  
+  p {
+    font-size: 0.95rem;
+    color: var(--ion-color-medium);
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+    
+    strong {
+      color: var(--ion-color-primary);
+      font-weight: 600;
+    }
+  }
+  
+  ion-button {
+    margin-top: 8px;
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 6px;
+      font-size: 16px;
+    }
+  }
+}
+
+// Botões de gerenciamento (fora dos cards)
+.management-buttons {
+  margin-top: 24px;
+  padding: 0 4px;
+  
+  ion-button {
+    min-height: 52px; // Altura maior para botões importantes
+    font-size: 16px;
+    font-weight: 600;
+    margin: 12px 0;
+    border-radius: 12px;
+    
+    ion-icon {
+      font-size: 20px;
+      margin-right: 10px;
+    }
+    
+    &.portal-button {
+      --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--secondary-color) 100%);
+      --color: white;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    &.cancel-button {
+      --background: var(--ion-color-danger);
+      --color: white;
+      --box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      
+      &[disabled] {
+        --background: var(--ion-color-medium);
+        --color: var(--ion-color-light);
+        --box-shadow: none;
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .subscription-container {
+    padding: 16px;
+  }
+  
+  .status-card {
+    padding: 20px;
+    
+    .status-header .status-info h2 {
+      font-size: 20px;
+    }
+  }
+  
+  .plan-card {
+    margin-bottom: 16px;
+    
+    .price-section .price {
+      font-size: 2rem;
+    }
+    
+    // Melhorar botões em mobile
+    .action-buttons ion-button {
+      min-height: 52px;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+  }
+  
+  // Planos Free em mobile
+  .free-plans-container {
+    margin-bottom: 20px;
+    
+    .free-plan-item {
+      margin-bottom: 10px;
+      
+      .free-plan-content {
+        padding: 14px 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        
+        .free-plan-info {
+          .free-plan-header {
+            margin-bottom: 6px;
+            
+            .free-plan-title {
+              font-size: 1rem;
+            }
+          }
+          
+          .free-plan-price {
+            .price {
+              font-size: 1.2rem;
+            }
+            
+            .price-label {
+              font-size: 0.8rem;
+            }
+          }
+        }
+        
+        .free-plan-action {
+          margin-left: 0;
+          
+          ion-button {
+            width: 100%;
+            min-width: auto;
+            height: 44px; // Altura adequada para touch
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+  
+  // Informação de cancelamento em mobile
+  .cancellation-info {
+    margin: 16px 0;
+    
+    .cancellation-card {
+      .cancellation-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        
+        .cancellation-icon {
+          margin-top: 0;
+          align-self: center;
+          
+          ion-icon {
+            font-size: 28px;
+          }
+        }
+        
+        .cancellation-details {
+          .cancellation-title {
+            font-size: 1.1rem;
+          }
+          
+          .cancellation-message {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+  }
+  
+  // Informação de política de cancelamento em mobile
+  .cancellation-policy-info {
+    margin: 16px 0;
+    
+    .policy-card {
+      .policy-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        
+        .policy-icon {
+          margin-top: 0;
+          align-self: center;
+          
+          ion-icon {
+            font-size: 28px;
+          }
+        }
+        
+        .policy-details {
+          .policy-title {
+            font-size: 1.1rem;
+          }
+          
+          .policy-message {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+  }
+  
+  // Botões de gerenciamento em mobile
+  .management-buttons {
+    margin-top: 20px;
+    
+    ion-button {
+      min-height: 56px; // Ainda maior em mobile
+      font-size: 17px;
+      margin: 14px 0;
+    }
+  }
+}

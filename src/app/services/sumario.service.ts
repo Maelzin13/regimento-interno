@@ -15,7 +15,6 @@ export class SumarioService {
 
   async getSumario(bookId: number): Promise<any> {
     const url = `${this.apiService.baseUrl}/books/${bookId}/sumario`;
-    console.log('Fetching summary from URL:', url);
     const headers = await this.buildAuthHeaders();
     const req$ = this.http.get<any>(url, { headers }).pipe(
       catchError((error) => {

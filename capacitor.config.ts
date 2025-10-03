@@ -6,17 +6,18 @@ const config: CapacitorConfig = {
   webDir: 'www',
   server: {
     androidScheme: 'https',
-    iosScheme: 'https'
+    iosScheme: 'https',
   },
   android: {
     backgroundColor: '#ffffff',
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: false
+    webContentsDebuggingEnabled: false,
   },
   ios: {
     backgroundColor: '#ffffff',
-    webContentsDebuggingEnabled: false
+    webContentsDebuggingEnabled: false,
+     scheme: 'regimento'
   },
   plugins: {
     SplashScreen: {

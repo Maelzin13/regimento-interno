@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomePage } from 'src/app/pages/home/home.page';
 import { UserPage } from 'src/app/pages/user/user.page';
-import { PlansPage } from 'src/app/pages/plans/plans.page';
 import { DashboardPage } from '../dashboard/dashboard.page';
 import { MenuPage } from 'src/app/pages/home/menu/menu.page';
 import { LivroPage } from 'src/app/pages/home/livro/livro.page';
@@ -47,10 +46,6 @@ const routes: Routes = [
       {
         path: 'menu/dashboards',
         component: DashboardPage,
-      },
-      {
-        path: 'menu/planos',
-        component: PlansPage,
       },
       {
         path: '',
