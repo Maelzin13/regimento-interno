@@ -1,20 +1,20 @@
 -- Merging decision tree log ---
 provider#androidx.core.content.FileProvider
-INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:9-37:20
+INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:48:9-54:20
 	android:grantUriPermissions
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:35:13-47
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:52:13-47
 	android:authorities
 		INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:33:13-64
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:50:13-64
 	android:exported
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:34:13-37
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:51:13-37
 	android:name
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:32:13-62
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:49:13-62
 manifest
-ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:1-39:12
-INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:1-39:12
-INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:1-39:12
-INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:1-39:12
+ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:1-56:12
+INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:1-56:12
+INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:1-56:12
+INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:1-56:12
 MERGED from [:capacitor-community-apple-sign-in] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor-community/apple-sign-in/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:capacitor-community-generic-oauth2] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor-community/generic-oauth2/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:capacitor-firebase-authentication] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor-firebase/authentication/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
@@ -108,8 +108,8 @@ MERGED from [com.google.android.play:core-common:2.0.3] /Users/ismaeldias/.gradl
 	xmlns:android
 		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:2:11-69
 application
-ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:3:5-38:19
-INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:3:5-38:19
+ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:3:5-55:19
+INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:3:5-55:19
 MERGED from [:capacitor-browser] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/browser/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-19:19
 MERGED from [:capacitor-browser] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/browser/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-19:19
 MERGED from [:capacitor-cordova-android-plugins] /Users/ismaeldias/Documents/projetos/regimento-interno/android/capacitor-cordova-android-plugins/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:5-9:19
@@ -195,7 +195,7 @@ MERGED from [com.google.android.play:core-common:2.0.3] /Users/ismaeldias/.gradl
 	android:networkSecurityConfig
 		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:10:9-69
 activity#com.regimento.app.MainActivity
-ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:11:9-29:20
+ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:11:9-46:20
 	android:label
 		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:13:13-56
 	android:launchMode
@@ -220,8 +220,6 @@ ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/sr
 		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:20:27-74
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:com.regimento.app
 ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:23:13-28:29
-	android:autoVerify
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:23:28-53
 action#android.intent.action.VIEW
 ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:24:17-69
 	android:name
@@ -236,14 +234,22 @@ ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/sr
 		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:26:27-75
 data
 ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
+	android:host
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:17-99
 	android:scheme
 		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
+	android:pathPrefix
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:39:17-39
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me+data:pathPrefix:/+data:scheme:https
+ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:13-45:29
+	android:autoVerify
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:28-53
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:36:13-112
+ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:53:13-112
 	android:resource
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:36:75-109
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:53:75-109
 	android:name
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:36:24-74
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:53:24-74
 uses-sdk
 INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml

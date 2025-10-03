@@ -576,6 +576,68 @@
             }
           }
         }
+        
+        .cancellation-note {
+          margin-top: 8px;
+          
+          ion-chip {
+            font-size: 0.8rem;
+            font-weight: 500;
+            --background: rgba(220, 38, 38, 0.1);
+            --color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            
+            ion-icon {
+              font-size: 14px;
+              margin-right: 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Informação sobre Política de Cancelamento Único
+.cancellation-policy-info {
+  margin: 20px 0;
+  
+  .policy-card {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 2px solid var(--ion-color-primary);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+    
+    .policy-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      
+      .policy-icon {
+        flex-shrink: 0;
+        margin-top: 4px;
+        
+        ion-icon {
+          font-size: 32px;
+        }
+      }
+      
+      .policy-details {
+        flex: 1;
+        
+        .policy-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #1e40af;
+          margin: 0 0 8px 0;
+        }
+        
+        .policy-message {
+          font-size: 0.95rem;
+          color: #1e40af;
+          margin: 0;
+          line-height: 1.4;
+        }
       }
     }
   }
@@ -720,6 +782,38 @@
           }
           
           .cancellation-message {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+  }
+  
+  // Informação de política de cancelamento em mobile
+  .cancellation-policy-info {
+    margin: 16px 0;
+    
+    .policy-card {
+      .policy-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        
+        .policy-icon {
+          margin-top: 0;
+          align-self: center;
+          
+          ion-icon {
+            font-size: 28px;
+          }
+        }
+        
+        .policy-details {
+          .policy-title {
+            font-size: 1.1rem;
+          }
+          
+          .policy-message {
             font-size: 0.9rem;
           }
         }

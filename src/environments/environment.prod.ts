@@ -17,8 +17,9 @@ const GOOGLE_OAUTH_CONFIG = {
 
 export const environment = {
   production: true,
+  //baseUrl: 'https://dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me',
+  // baseUrl: 'http://localhost:8000',
   baseUrl: 'https://dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me',
-  manageSubscriptionUrl: 'https://dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me/assinatura',
   stripePrices: {
     mensal: "price_1R1wDvFHDwuz6ZFYld8HKutC",
     anual:  "price_1R1wElFHDwuz6ZFYgYItI2bM",

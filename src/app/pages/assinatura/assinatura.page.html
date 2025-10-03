@@ -37,7 +37,15 @@
         <div class="free-plan-content">
           <div class="free-plan-info">
             <div class="free-plan-header">
-              <h3 class="free-plan-title">{{ p.nome }}</h3>
+              <div class="free-plan-title-section">
+                <h3 class="free-plan-title">{{ p.nome }}</h3>
+                <div class="free-plan-interval" *ngIf="p.intervalo">
+                  <ion-chip color="primary" outline size="small">
+                    <ion-icon name="calendar-outline" slot="start"></ion-icon>
+                    {{ p.intervalo }}
+                  </ion-chip>
+                </div>
+              </div>
               <div class="free-plan-status">
                 <ion-chip *ngIf="isPlanActive(p)" color="success" size="small">
                   <ion-icon name="checkmark-circle" slot="start"></ion-icon>
@@ -193,7 +201,12 @@
           <div class="cancellation-details">
             <h3 class="cancellation-title">Cancelamento Agendado</h3>
             <p class="cancellation-message">
-              Seu cancelamento já está agendado para o fim do período.
+              <span *ngIf="isCancellationScheduled()">
+                Seu cancelamento já está agendado para o fim do período.
+              </span>
+              <span *ngIf="!isCancellationScheduled()">
+                Seu cancelamento já está agendado para o fim do período.
+              </span>
             </p>
             <div class="cancellation-date">
               <ion-chip color="warning" outline>
@@ -201,6 +214,33 @@
                 Válido até {{ formatDate(getCancellationDate()) }}
               </ion-chip>
             </div>
+            <div class="cancellation-note" *ngIf="isCancellationScheduled()">
+              <ion-chip color="danger" size="small">
+                <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+                Cancelamento confirmado pelo servidor
+              </ion-chip>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Informação sobre Política de Cancelamento Único -->
+  <div class="cancellation-policy-info" *ngIf="isActive && hasCancelledOnce">
+    <ion-card class="policy-card">
+      <ion-card-content>
+        <div class="policy-content">
+          <div class="policy-icon">
+            <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          </div>
+          <div class="policy-details">
+            <h3 class="policy-title">Política de Cancelamento</h3>
+            <p class="policy-message">
+              Você já cancelou sua assinatura uma vez. Por política da empresa, 
+              não é possível cancelar novamente. Entre em contato com o suporte 
+              se precisar de assistência.
+            </p>
           </div>
         </div>
       </ion-card-content>
@@ -224,10 +264,10 @@
       size="large"
       class="cancel-button"
       (click)="cancelar()"
-      [disabled]="!isActive || isLoadingCancelar || hasScheduledCancellation()"
+      [disabled]="!canCancelSubscription() || isLoadingCancelar"
     >
       <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-      {{ hasScheduledCancellation() ? 'Cancelamento Agendado' : 'Cancelar Assinatura' }} 
+      {{ getCancelButtonText() }} 
     </ion-button>
   </div>
 </ion-content>

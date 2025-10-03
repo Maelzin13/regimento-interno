@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController, LoadingController } from '@ionic/angular';
-import { UserModel } from 'src/app/models/userModel';
+import { UserModel, ProfileResponse, SubscriptionInfo, PlanInfo, MeAssinaturaResponse } from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
 import { PlansService } from 'src/app/services/plans.service';
 import { PaymentService } from 'src/app/services/payment.service';
@@ -37,7 +37,16 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   currentUser: UserModel | null = null;
   plansData: PlansResponse | null = null;
   activeInterval: Intervalo | null = null;
+  hasCancelledOnce: boolean = false; // Controla se o usuário já cancelou uma vez
+  
+  // Novos dados da API
+  profileData: ProfileResponse | null = null;
+  subscriptionData: SubscriptionInfo | null = null;
+  planInfoData: PlanInfo | null = null;
+  meAssinaturaData: MeAssinaturaResponse | null = null;
+  
   private userSubscription: Subscription | null = null;
+  private paymentStatusSubscription: Subscription | null = null;
 
   constructor(
     private router: Router,
@@ -58,6 +67,26 @@ export class AssinaturaPage implements OnInit, OnDestroy {
       if (!user) {
         this.resetPageState();
       }
+    });
+
+    // Monitorar mudanças no status de pagamento
+    this.paymentStatusSubscription = this.pay.paymentStatus$.subscribe((status) => {
+      console.log('🔄 Status de pagamento atualizado:', status);
+      this.handlePaymentStatusChange(status);
+    });
+
+    // Escutar eventos de mudança de status de pagamento
+    window.addEventListener('paymentStatusChanged', () => {
+      console.log('🔄 Evento de mudança de status de pagamento recebido');
+      this.loadUser();
+      this.loadPlans();
+    });
+
+    // Escutar evento de refresh forçado de dados do usuário
+    window.addEventListener('forceRefreshUserData', () => {
+      console.log('🔄 Evento de refresh forçado recebido');
+      this.loadUser();
+      this.loadPlans();
     });
     
     await this.loadUser();
@@ -84,62 +113,99 @@ export class AssinaturaPage implements OnInit, OnDestroy {
     this.segment = 'Mensal';
     this.loading = false;
     this.isLoadingCancelar = false;
+    this.hasCancelledOnce = false;
+    
+    // Reset novos dados da API
+    this.profileData = null;
+    this.subscriptionData = null;
+    this.planInfoData = null;
+    this.meAssinaturaData = null;
   }
 
   // ========= helpers regras de negócio =========
 
   private deriveUserFlags() {
-    this.isActive = ['active', 'trialing'].includes(this.currentUser?.subscription_status ?? '');
+    // Usar dados da nova API se disponíveis, senão fallback para dados antigos
+    const subscriptionStatus = this.subscriptionData?.stripe_status || this.currentUser?.subscription_status || '';
+    this.isActive = ['active', 'trialing'].includes(subscriptionStatus);
 
-    // deduz intervalo pelo nome do plano salvo no usuário OU pelo ID da assinatura ativa
-    const p = (this.currentUser?.plan || '').toLowerCase();
-    const assinaturaId = this.assinaturaAtiva?.id;
-    
-    if (p.includes('mensal')) {
-      this.activeInterval = 'Mensal';
-    } else if (p.includes('anual')) {
-      this.activeInterval = 'Anual';
-    } else if (p.includes('free') || p.includes('gratuito')) {
-      this.activeInterval = 'Free';
-    } else if (assinaturaId) {
-      // Se não temos nome do plano, tentar deduzir pelo ID da assinatura
-      this.activeInterval = this.deduzirIntervaloPorId(assinaturaId);
+    // PRIORIDADE 1: Usar dados do plan_info se disponível
+    if (this.planInfoData) {
+      // Verificar se é um plano Free baseado em is_free ou display_name
+      if (this.planInfoData.is_free || 
+          this.planInfoData.display_name?.toLowerCase().includes('free') ||
+          this.planInfoData.name?.toLowerCase().includes('free')) {
+        this.activeInterval = 'Free';
+      } else {
+        // Se não é Free, verificar o intervalo
+        const intervalo = this.planInfoData.intervalo?.toLowerCase();
+        if (intervalo?.includes('mensal')) {
+          this.activeInterval = 'Mensal';
+        } else if (intervalo?.includes('anual')) {
+          this.activeInterval = 'Anual';
+        } else {
+          this.activeInterval = null;
+        }
+      }
     } else {
-      this.activeInterval = null;
+      // PRIORIDADE 2: Fallback para lógica antiga usando dados do usuário
+      const p = (this.currentUser?.plan || '').toLowerCase();
+      
+      if (p.includes('free') || p.includes('gratuito')) {
+        this.activeInterval = 'Free';
+      } else if (p.includes('mensal')) {
+        this.activeInterval = 'Mensal';
+      } else if (p.includes('anual')) {
+        this.activeInterval = 'Anual';
+      } else {
+        this.activeInterval = null;
+      }
     }
   }
 
-  private deduzirIntervaloPorId(assinaturaId: string): Intervalo | null {
-    // IDs dos planos Free
-    const freeIds = [
-      'price_1Ry2e5FHDwuz6ZFYjvJmbvWX', // Free Mensal
-      'price_1Ry2cfFHDwuz6ZFYQpFvhkGw'  // Free Anual
-    ];
-    
-    // IDs dos planos pagos
-    const mensalIds = ['price_1R1wDvFHDwuz6ZFYld8HKutC']; // Plano Mensal
-    const anualIds = ['price_1R1wElFHDwuz6ZFYgYItI2bM'];  // Plano Anual
-    
-    if (freeIds.includes(assinaturaId)) {
-      return 'Free';
-    } else if (mensalIds.includes(assinaturaId)) {
-      return 'Mensal';
-    } else if (anualIds.includes(assinaturaId)) {
-      return 'Anual';
-    }
-    
-    return null;
-  }
 
   isPlanActive(plan: Plan): boolean {
     if (!this.isActive) return false;
     
-    // Verificar se o ID do plano corresponde ao ID da assinatura ativa
+    // PRIORIDADE 1: Verificar se o ID do plano corresponde ao ID da assinatura ativa
     if (this.assinaturaAtiva?.id && plan.id === this.assinaturaAtiva.id) {
       return true;
     }
     
-    // Fallback: usar heurística pelo intervalo/nome
+    // PRIORIDADE 2: Usar dados do plan_info para comparação precisa
+    if (this.planInfoData) {
+      // Verificar se o plano corresponde aos dados do plan_info
+      const planMatches = (
+        plan.id === this.planInfoData.price_id ||
+        (plan.nome === this.planInfoData.name && plan.intervalo === this.planInfoData.intervalo)
+      );
+      
+      if (planMatches) {
+        return true;
+      }
+    }
+    
+    // PRIORIDADE 3: Para planos Free, verificar se corresponde ao plano atual do usuário
+    if (this.activeInterval === 'Free' && this.isPlanFree(plan)) {
+      // Se temos dados do plan_info, usar para comparação
+      if (this.planInfoData) {
+        return plan.intervalo === this.planInfoData.intervalo;
+      } else {
+        // Fallback: usar dados do usuário para comparar
+        const userPlan = (this.currentUser?.plan || '').toLowerCase();
+        if (userPlan.includes('free') && plan.nome.toLowerCase().includes('free')) {
+          // Se o usuário tem Free e o plano é Free, verificar se o intervalo coincide
+          if (userPlan.includes('mensal') && plan.intervalo === 'Mensal') {
+            return true;
+          }
+          if (userPlan.includes('anual') && plan.intervalo === 'Anual') {
+            return true;
+          }
+        }
+      }
+    }
+    
+    // PRIORIDADE 4: Fallback usando heurística pelo intervalo/nome
     const u = (this.currentUser?.plan || '').toLowerCase();
     const nomeMatch = u && plan?.nome && u.includes(plan.nome.toLowerCase());
     const intervaloMatch = !!this.activeInterval && plan.intervalo === this.activeInterval;
@@ -187,28 +253,51 @@ export class AssinaturaPage implements OnInit, OnDestroy {
       this.assinaturaMe = null;
       this.assinaturaAtiva = null;
       
-      this.currentUser = await this.auth.fetchProfile();
+      // Carregar dados completos do perfil usando a nova API
+      this.profileData = await this.auth.fetchProfile();
       
-      // Carregar dados de assinatura apenas se o usuário estiver logado
-      if (this.currentUser) {
-        try {
-          const assinatura = await this.pay.getMeAssinatura();
-          if (assinatura) {
-            this.assinaturaMe = assinatura;
-          }
-        } catch (assinaturaError) {
-          console.warn('Erro ao carregar assinatura:', assinaturaError);
-          // Não falha o carregamento se não conseguir carregar assinatura
-        }
+      if (this.profileData) {
+        this.currentUser = this.profileData.user;
+        this.subscriptionData = this.profileData.subscription;
+        this.planInfoData = this.profileData.plan_info;
         
-        await this.storage.set('authUser', this.currentUser);
-        this.deriveUserFlags();
+        // Carregar dados de assinatura apenas se o usuário estiver logado
+        if (this.currentUser) {
+          try {
+            const assinatura = await this.pay.getMeAssinatura();
+            if (assinatura) {
+              this.assinaturaMe = assinatura;
+              this.meAssinaturaData = assinatura;
+            }
+          } catch (assinaturaError) {
+            console.warn('Erro ao carregar assinatura:', assinaturaError);
+            // Não falha o carregamento se não conseguir carregar assinatura
+          }
+          
+          // Verificar se o usuário já cancelou uma vez
+          await this.checkCancellationStatus();
+          
+          await this.storage.set('authUser', this.currentUser);
+          this.deriveUserFlags();
+        }
       }
     } catch (error) {
       await this.showToast('Erro ao carregar usuário', 'danger');
       console.error('❌ Erro ao carregar usuário:', error);
     } finally {
       await loading.dismiss();
+    }
+  }
+
+  /**
+   * Verifica se o usuário já cancelou uma assinatura anteriormente
+   */
+  private async checkCancellationStatus(): Promise<void> {
+    try {
+      this.hasCancelledOnce = await this.pay.hasUserCancelledOnce();
+    } catch (error) {
+      console.error('Erro ao verificar status de cancelamento:', error);
+      this.hasCancelledOnce = false;
     }
   }
 
@@ -248,13 +337,38 @@ export class AssinaturaPage implements OnInit, OnDestroy {
         p.nome !== 'Free' && 
         p.preco !== 'R$ 0,00'
       );
-      
-      this.freePlans = this.allPlans.filter(p => 
+
+      // Filtrar planos Free
+      const freePlansFiltered = this.allPlans.filter(p => 
         p.nome === 'Free' || 
         p.preco === 'R$ 0,00' ||
         p.preco === '0,00' ||
         p.preco === '0'
       );
+      
+      // Remover duplicatas baseado no ID do plano
+      this.freePlans = freePlansFiltered.filter((plan, index, self) => 
+        index === self.findIndex(p => p.id === plan.id)
+      );
+      
+      // Se o usuário tem um plano Free ativo, mostrar apenas o plano ativo
+      if (this.isActive && this.activeInterval === 'Free' && this.freePlans.length > 1) {
+        // Tentar encontrar o plano ativo primeiro
+        const activePlan = this.freePlans.find(plan => this.isPlanActive(plan));
+        
+        if (activePlan) {
+          // Se encontrou o plano ativo, mostrar apenas ele
+          this.freePlans = [activePlan];
+        } else {
+          // Se não encontrou o plano ativo, tentar deduzir pelo plan_info
+          if (this.planInfoData?.price_id) {
+            const planByPriceId = this.freePlans.find(plan => plan.id === this.planInfoData?.price_id);
+            if (planByPriceId) {
+              this.freePlans = [planByPriceId];
+            }
+          }
+        }
+      }
       // se sua API um dia enviar o plano ativo como objeto, já guardamos:
       this.planoAtivo = this.plansData.planoAtivo ?? null;
     } catch (error) {
@@ -300,11 +414,20 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   }
 
   async cancelar() {
+    // Verificar se o usuário já cancelou uma vez
+    if (this.hasCancelledOnce) {
+      await this.showToast('Você já cancelou sua assinatura uma vez. Não é possível cancelar novamente.', 'warning');
+      return;
+    }
+
     this.isLoadingCancelar = true;
     try {
       const res = await this.pay.cancelSubscription();
       if (res?.success) {
         await this.showToast(res.message || 'Cancelamento agendado', 'success');
+        
+        // Atualizar o status local de cancelamento
+        this.hasCancelledOnce = true;
         
         // Forçar sincronização para obter dados atualizados após cancelamento
         await this.loadUser();
@@ -314,7 +437,8 @@ export class AssinaturaPage implements OnInit, OnDestroy {
         await this.showToast(res?.message || 'Não foi possível cancelar', 'warning');
       }
     } catch (e: any) {
-      await this.showToast(e?.error?.message || 'Erro ao cancelar assinatura', 'danger');
+      const errorMessage = e?.message || e?.error?.message || 'Erro ao cancelar assinatura';
+      await this.showToast(errorMessage, 'danger');
       console.error('❌ Erro ao cancelar assinatura:', e);
     } finally {
       this.isLoadingCancelar = false;
@@ -328,14 +452,17 @@ export class AssinaturaPage implements OnInit, OnDestroy {
     }
     try {
       this.loading = true;
-      await this.pay.startCheckout(priceId);
-      // confirmação virá via deep link
-      await this.showToast('Assinatura iniciada.', 'success');
       
-      // Forçar sincronização para obter dados atualizados após assinatura
-      await this.loadUser(); 
-      await this.loadPlans();
-      this.applyFilter();
+      // Iniciar checkout - abre navegador web
+      await this.pay.startCheckout(priceId);
+      
+      // Mostrar mensagem informativa
+      await this.showToast('Redirecionando para pagamento...', 'success');
+      
+      // O status será atualizado automaticamente via webhook quando o pagamento for concluído
+      // Não precisamos mais forçar sincronização imediata
+      console.log('✅ Checkout iniciado. Aguardando processamento via webhook...');
+      
     } catch (e: any) {
       await this.showToast(e?.error?.message || 'Erro ao iniciar checkout', 'danger');
       console.error('❌ Erro ao iniciar checkout:', e);
@@ -389,13 +516,15 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   async ativarPlanoFree(planId: string) {
     this.loading = true;
     try {
+      // Iniciar checkout - abre navegador web
       await this.pay.startCheckout(planId);
-      await this.showToast('Plano gratuito ativado com sucesso!', 'success');
       
-      // Forçar sincronização para obter dados atualizados
-      await this.loadUser();
-      await this.loadPlans();
-      this.applyFilter();
+      // Mostrar mensagem informativa
+      await this.showToast('Redirecionando para ativação...', 'success');
+      
+      // O status será atualizado automaticamente via webhook quando o pagamento for concluído
+      console.log('✅ Plano gratuito iniciado. Aguardando processamento via webhook...');
+      
     } catch (e: any) {
       await this.showToast(e?.error?.message || 'Erro ao ativar plano gratuito', 'danger');
       console.error('❌ Erro ao ativar plano gratuito:', e);
@@ -413,14 +542,120 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Verifica se o usuário pode cancelar a assinatura
+   */
+  canCancelSubscription(): boolean {
+    // Verificar se já cancelou uma vez (política local)
+    if (this.hasCancelledOnce) {
+      return false;
+    }
+    
+    // Verificar se will_cancel está true (dados do servidor)
+    if (this.meAssinaturaData?.will_cancel) {
+      return false;
+    }
+    
+    // Verificar se há cancelamento agendado
+    if (this.hasScheduledCancellation()) {
+      return false;
+    }
+    
+    // Verificar se está ativo
+    return this.isActive;
+  }
+
+  /**
+   * Obtém informações do plano atual usando os novos dados da API
+   */
+  getCurrentPlanInfo(): PlanInfo | null {
+    return this.planInfoData;
+  }
+
+  /**
+   * Obtém dados da assinatura atual usando os novos dados da API
+   */
+  getCurrentSubscriptionInfo(): SubscriptionInfo | null {
+    return this.subscriptionData;
+  }
+
+  /**
+   * Verifica se o plano atual é gratuito
+   */
+  isCurrentPlanFree(): boolean {
+    return this.planInfoData?.is_free || false;
+  }
+
+  /**
+   * Obtém o valor do plano atual
+   */
+  getCurrentPlanValue(): number {
+    return this.planInfoData?.valor || 0;
+  }
+
+  /**
+   * Obtém o nome de exibição do plano atual
+   */
+  getCurrentPlanDisplayName(): string {
+    return this.planInfoData?.display_name || this.currentUser?.plan || 'Plano não identificado';
+  }
+
+  /**
+   * Obtém dados do endpoint /me/assinatura
+   */
+  getMeAssinaturaData(): MeAssinaturaResponse | null {
+    return this.meAssinaturaData;
+  }
+
+  /**
+   * Verifica se o cancelamento está agendado (will_cancel = true)
+   */
+  isCancellationScheduled(): boolean {
+    return this.meAssinaturaData?.will_cancel || false;
+  }
+
+  /**
+   * Obtém a política da assinatura
+   */
+  getSubscriptionPolicy() {
+    return this.meAssinaturaData?.policy || null;
+  }
+
+  /**
+   * Obtém o texto do botão de cancelar baseado no estado atual
+   */
+  getCancelButtonText(): string {
+    if (this.isCancellationScheduled()) {
+      return 'Cancelamento Confirmado';
+    }
+    
+    if (this.hasScheduledCancellation()) {
+      return 'Cancelamento Agendado';
+    }
+    
+    if (this.hasCancelledOnce) {
+      return 'Cancelamento Não Permitido';
+    }
+    
+    return 'Cancelar Assinatura';
+  }
+
+  /**
    * Verifica se há cancelamento agendado
    */
   hasScheduledCancellation(): boolean {
-    if (!this.assinaturaMe?.ends_at) return false;
+    // Verificar se will_cancel está true (dados do servidor)
+    if (this.meAssinaturaData?.will_cancel) {
+      return true;
+    }
     
-    return this.assinaturaMe.ends_at !== null && 
-           this.assinaturaMe.ends_at !== undefined &&
-           this.assinaturaMe.ends_at !== '';
+    // Usar dados da nova API se disponíveis, senão fallback para dados antigos
+    const endsAt = this.subscriptionData?.ends_at || this.assinaturaMe?.ends_at;
+    
+    if (!endsAt) return false;
+    
+    return endsAt !== null && 
+           endsAt !== undefined &&
+           endsAt !== '';
   }
 
   /**
@@ -428,7 +663,41 @@ export class AssinaturaPage implements OnInit, OnDestroy {
    */
   getCancellationDate(): string {
     if (!this.hasScheduledCancellation()) return '';
-    return this.assinaturaMe?.ends_at || '';
+    
+    // Priorizar dados do endpoint /me/assinatura
+    if (this.meAssinaturaData?.ends_at) {
+      return this.meAssinaturaData.ends_at;
+    }
+    
+    // Fallback para outros dados
+    return this.subscriptionData?.ends_at || this.assinaturaMe?.ends_at || '';
+  }
+
+  /**
+   * Trata mudanças no status de pagamento
+   */
+  private handlePaymentStatusChange(status: string): void {
+    switch (status) {
+      case 'processing':
+        console.log('🔄 Processando pagamento...');
+        break;
+      case 'succeeded':
+        console.log('✅ Pagamento realizado com sucesso!');
+        // Forçar atualização dos dados
+        setTimeout(() => {
+          this.loadUser();
+          this.loadPlans();
+        }, 1000);
+        break;
+      case 'failed':
+        console.log('❌ Falha no pagamento');
+        break;
+      case 'cancelled':
+        console.log('🚫 Pagamento cancelado');
+        break;
+      default:
+        console.log('Status de pagamento:', status);
+    }
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'medium' = 'medium') {
@@ -440,6 +709,40 @@ export class AssinaturaPage implements OnInit, OnDestroy {
     // Limpar subscription para evitar memory leaks
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
+    }
+    if (this.paymentStatusSubscription) {
+      this.paymentStatusSubscription.unsubscribe();
+    }
+    
+    // Remover event listener
+    window.removeEventListener('paymentStatusChanged', () => {
+      this.loadUser();
+      this.loadPlans();
+    });
+  }
+
+  /**
+   * Método chamado quando a página é focada novamente
+   * Útil para verificar se o pagamento foi processado quando o usuário retorna do navegador
+   */
+  async ionViewDidEnter() {
+    console.log('🔄 Página de assinatura focada - verificando status...');
+    
+    // Verificar se há um pagamento em processamento
+    const currentStatus = this.pay.getCurrentPaymentStatus();
+    if (currentStatus === 'processing') {
+      console.log('⏳ Pagamento em processamento - verificando status...');
+      
+      // Verificar status da assinatura
+      try {
+        const assinatura = await this.pay.checkSubscriptionStatus();
+        if (assinatura?.active || assinatura?.status === 'active') {
+          console.log('✅ Pagamento processado com sucesso!');
+          await this.showToast('Pagamento processado com sucesso!', 'success');
+        }
+      } catch (error) {
+        console.error('Erro ao verificar status da assinatura:', error);
+      }
     }
   }
 }
