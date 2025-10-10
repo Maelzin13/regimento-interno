@@ -1,4 +1,3 @@
-// Configurações do Firebase - você pode substituir pelos valores reais
 const FIREBASE_CONFIG = {
   apiKey: 'AIzaSyA76-1Beau7Zc1HATQXPwS0Z1zWgrEIw4c',
   authDomain: 'regimento-interno-comentado.firebaseapp.com',
@@ -9,7 +8,6 @@ const FIREBASE_CONFIG = {
   measurementId: 'G-2SSKFE05MP',
 };
 
-// Configurações do Google OAuth
 const GOOGLE_OAUTH_CONFIG = {
   clientId: '202495948548-is3ea3s3tmcv3956m6oe24eqfod5458q.apps.googleusercontent.com', // iOS client ID
   serverClientId: '202495948548-u96k38icouig7se6rq4pu065d5oeb0sc.apps.googleusercontent.com', // Web client ID para backend
@@ -17,9 +15,9 @@ const GOOGLE_OAUTH_CONFIG = {
 
 export const environment = {
   production: true,
-  // baseUrl: 'https://regimentocd.com.br',
+  baseUrl: 'https://regimentocd.com.br',
   // baseUrl: 'http://localhost:8000',
-  baseUrl: 'https://dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me',
+  //baseUrl: 'https://dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me',
   stripe: {
     publishableKey: 'pk_test_51R1FxvFHDwuz6ZFYhlQz61ZVkIXZe2NqyXSb5AzxKVizVW6pCGBi6PPp9tGdcQufgSAM59EIXTgIyGVJcaGdwHOq00WZyUOndv',
   },

@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ModalController, Platform } from '@ionic/angular';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { SumarioService } from 'src/app/services/sumario.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
 type Secao = { id: number; texto: string };
 type Capitulo = { id: number; texto: string; secoes?: Secao[] };
@@ -12,6 +12,7 @@ type Titulo = { id: number; texto: string; capitulos: Capitulo[] };
   selector: 'app-regimento-modal',
   templateUrl: './regimento-modal.component.html',
   styleUrls: ['./regimento-modal.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class RegimentoModalComponent implements OnInit {
   @Input() type: string = '';
@@ -84,9 +85,8 @@ export class RegimentoModalComponent implements OnInit {
 
   constructor(
     private modalCtrl: ModalController,
-    private platform: Platform,
-    private router: Router,
     private sanitizer: DomSanitizer,
+    private router: Router,
     private sumarioService: SumarioService
   ) {}
 
@@ -120,10 +120,12 @@ export class RegimentoModalComponent implements OnInit {
     );
   }
 
+  /** Constrói o HTML com a hierarquia Título → Capítulo → Seção */
   private buildSumarioHtml(titulos: Titulo[]): string {
     const out: string[] = [];
 
     for (const t of titulos) {
+      // TÍTULO
       out.push(`
         <div class="nivel-1">
           <a href="#titulo-${t.id}">${this.escapeHtml(t.texto)}</a>
@@ -134,12 +136,14 @@ export class RegimentoModalComponent implements OnInit {
         out.push('<ul class="lista-capitulos">');
 
         for (const c of t.capitulos) {
+          // CAPÍTULO
           out.push(`
             <li class="nivel-2">
               <a href="#capitulo-${c.id}">${this.escapeHtml(c.texto)}</a>
             </li>
           `);
 
+          // SEÇÕES
           if (c.secoes?.length) {
             out.push('<ul class="lista-secoes">');
             for (const s of c.secoes) {
@@ -162,22 +166,24 @@ export class RegimentoModalComponent implements OnInit {
     return out.join('');
   }
 
-  private async getSumario(key: 'indice' | 'sumario') {
+  async getSumario() {
+    this.loading = true;
+    this.errorMsg = '';
     try {
       const resp = await this.sumarioService.getSumario(this.bookId);
+
       const titulos: Titulo[] = resp?.data?.sumario ?? [];
       const html = this.buildSumarioHtml(titulos);
 
-      this.content[key] = {
+      this.content[this.type] = {
         title: 'Sumário',
         content: this.sanitizer.bypassSecurityTrustHtml(html),
       };
     } catch (e) {
       console.error('Erro ao carregar sumário:', e);
-      this.content[key] = {
-        title: 'Sumário',
-        content: 'Não foi possível carregar o sumário.',
-      };
+      this.errorMsg = 'Não foi possível carregar o sumário.';
+    } finally {
+      this.loading = false;
     }
   }
 

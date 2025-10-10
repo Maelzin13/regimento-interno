@@ -4,8 +4,8 @@ import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
 import { BookService } from 'src/app/services/book.service';
-import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
 import { PlansService } from 'src/app/services/plans.service';
+import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
 
 @Component({
   selector: 'app-livro',
@@ -59,19 +59,16 @@ export class LivroPage implements OnInit {
 
   async ngOnInit() {
     try {
-      // Carregar dados do usuário
       this.user = await this.authService.getUser();
-      
-      // Carregar dados de planos para verificar tipo de assinatura
+      console.log('user', this.user?.is_admin);
+      console.log('user', this.user?.subscription_status);
       const plansData = await this.plansService.getPlans();
       this.assinaturaAtiva = plansData.assinaturaAtiva;
-      
-      // Verificar se é plano Free
+      console.log('assinaturaAtiva', this.assinaturaAtiva);
       this.isFreePlan = this.checkIfFreePlan();
+      console.log('isFreePlan', this.isFreePlan);
       
-      // Aplicar regra de negócio: Free = limitado, Pago = completo
-      if (this.user && this.user.subscription_status === 'active' && !this.isFreePlan) {
-        // Plano PAGO ativo - acesso completo
+      if (this.user && this.user?.is_admin === true || this.user?.subscription_status === 'active' ) {
         this.bookService
           .getAllBooks()
           .then((data) => {
@@ -83,7 +80,6 @@ export class LivroPage implements OnInit {
             this.isLoading = false;
           });
       } else {
-        // Plano FREE ou sem assinatura - acesso limitado
         const data = await this.bookService.getBookByIdLimit(1);
         this.bookLimit = data;
         this.isLoading = false;
@@ -149,6 +145,6 @@ export class LivroPage implements OnInit {
    * Verifica se o usuário tem acesso completo (plano pago)
    */
   hasFullAccess(): boolean {
-    return this.hasActivePlan() && !this.isFreePlan;
+    return this.hasActivePlan() || this.user?.is_admin === true;
   }
 }
