@@ -59,13 +59,6 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'pagamento',
-    loadChildren: () =>
-      import('./pages/pagamento/pagamento.module').then(
-        (m) => m.PagamentoPageModule
-      ),
-  },
-  {
     path: 'change',
     loadChildren: () =>
       import('./pages/change-password/change-password.module').then(

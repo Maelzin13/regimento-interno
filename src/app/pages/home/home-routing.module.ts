@@ -7,7 +7,6 @@ import { MenuPage } from 'src/app/pages/home/menu/menu.page';
 import { LivroPage } from 'src/app/pages/home/livro/livro.page';
 import { AutorPage } from 'src/app/pages/home/autor/autor.page';
 import { PerfilPage } from 'src/app/pages/home/perfil/perfil.page';
-import { PagamentoPage } from 'src/app/pages/pagamento/pagamento.page';
 import { ChangePasswordPage } from 'src/app/pages/change-password/change-password.page';
 
 const routes: Routes = [
@@ -34,10 +33,6 @@ const routes: Routes = [
       {
         path: 'menu/users',
         component: UserPage,
-      },
-      {
-        path: 'menu/pagamentos',
-        component: PagamentoPage,
       },
       {
         path: 'menu/change-password',

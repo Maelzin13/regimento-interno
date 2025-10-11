@@ -4,11 +4,11 @@
   --color-plan: #eab308;
   --link-color: #2563eb;
   --facebook-blue: #3b5998;
-  --primary-color: #1e999a;
-  --secondary-color: #157d7d;
+  --primary-color: #042438;
+  --secondary-color: #050606;
   --comentario-color: #16a34a;
 
-  --ion-color-primary: #1e999a;
+  --ion-color-primary: #042438;
   --ion-color-primary-rgb: 30, 153, 154;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
@@ -68,9 +68,6 @@
   }
 }
 
-ion-content {
-  --background: #ffffff;
-}
 
 ion-refresher {
   background: var(--ion-color-primary-contrast);
@@ -81,7 +78,7 @@ ion-accordion::part(header) ion-icon {
 }
 
 #toolbar {
-  --background: linear-gradient(to bottom right, #6b7280, #10b981);
+  --background: #042438;
   color: white;
   --min-height: 56px;
 }
@@ -171,7 +168,6 @@ ion-accordion::part(header) ion-icon {
 }
 
 .textos-item {
-  display: flex;
   align-items: center;
   margin-bottom: 0.75rem;
   

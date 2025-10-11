@@ -5,12 +5,103 @@
   --accent-color: #1e999a;
 }
 
+// Estilos para o header e título responsivo
+ion-header {
+  ion-toolbar {
+    --background: transparent;
+    --border-width: 0;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --min-height: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    ion-title {
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: unset;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.2;
+      padding: 0;
+      margin: 0;
+      max-width: none;
+      width: auto;
+      flex: none;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      // Responsividade para diferentes tamanhos de tela
+      @media (max-width: 320px) {
+        font-size: 13px;
+      }
+      
+      @media (min-width: 321px) and (max-width: 375px) {
+        font-size: 14px;
+      }
+      
+      @media (min-width: 376px) and (max-width: 414px) {
+        font-size: 15px;
+      }
+      
+      @media (min-width: 415px) and (max-width: 480px) {
+        font-size: 16px;
+      }
+      
+      @media (min-width: 481px) {
+        font-size: 17px;
+      }
+      
+      // Orientação landscape
+      @media (orientation: landscape) and (max-height: 500px) {
+        font-size: 14px;
+      }
+      
+      // Estilo para a palavra "Comentado" em dourado
+      span {
+        color: #b08f4d;
+        font-weight: 600;
+        margin-left: 4px;
+      }
+    }
+  }
+}
+
+// Garantir que o header não seja cortado
+ion-header {
+  z-index: 1000;
+  position: relative;
+}
+
+// Wrapper para garantir que o background seja aplicado
+.background-wrapper {
+  min-height: 100vh;
+  background-image: url('../../../../assets/fundo.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+}
+
 ion-content {
   height: 100vh;
   overflow: hidden !important;
   --overflow: hidden;
   --padding-top: 0;
 }
+
+// Fallback para garantir que o background seja aplicado
+// ion-content::part(scroll) {
+//   background-image: url('../../../../assets/fundo.png');
+//   background-size: cover;
+//   background-position: center;
+//   background-repeat: no-repeat;
+//   background-attachment: fixed;
+// }
 
 .card-content-ios {
   -webkit-padding-start: 20px;
@@ -24,7 +115,7 @@ ion-content {
 }
 
 .menu-item-livro {
-  background-color: #f8f9fa;
+  background-color: rgba(248, 249, 250, 0.95);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -32,13 +123,14 @@ ion-content {
   margin-top: 1.5rem;
   padding: 37px;
   color: #1e999a;
-  box-shadow: 4px 3px 7px 2px #9ba59e;
+  box-shadow: 4px 3px 7px 2px rgba(155, 165, 158, 0.8);
+  backdrop-filter: blur(5px);
 }
 
 .dashboard-title {
-  display: flex;
   font-weight: 500;
-  color: black;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .textos-auxiliares-box {
@@ -46,16 +138,17 @@ ion-content {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
+  background-color: rgba(248, 249, 250, 0.95);
   border-radius: 10px;
   padding: 8px;
   height: 100%;
   transition: all 0.3s ease;
-  box-shadow: 3px 2px 6px #9ba59e;
+  box-shadow: 3px 2px 6px rgba(155, 165, 158, 0.8);
+  backdrop-filter: blur(5px);
   
   &:hover, &:active {
-    background-color: #e9f5ff;
-    box-shadow: 3px 2px 6px #9ba59e;
+    background-color: rgba(233, 245, 255, 0.95);
+    box-shadow: 3px 2px 6px rgba(155, 165, 158, 0.8);
   }
 }
 
