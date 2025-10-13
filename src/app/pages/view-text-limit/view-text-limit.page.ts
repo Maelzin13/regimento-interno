@@ -1,6 +1,6 @@
 import { ModalPage } from '../modal/modal.page';
-import { ActivatedRoute } from '@angular/router';
-import { UserModel } from 'src/app/models/userModel';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UserModel, ProfileResponse, SubscriptionInfo, PlanInfo } from 'src/app/models/userModel';
 import { BookService } from 'src/app/services/book.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -105,6 +105,13 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
   searchType: 'contains' | 'exact' = 'contains';
   @ViewChild('searchInput') searchInput!: ElementRef;
   
+  // Novos dados da API para controle de acesso
+  profileData: ProfileResponse | null = null;
+  subscriptionData: SubscriptionInfo | null = null;
+  planInfoData: PlanInfo | null = null;
+  isActive = false;
+  activeInterval: 'Mensal' | 'Anual' | 'Free' | null = null;
+  
   private scrollDebounceTimeout: any;
   private notasCache: Map<number, any> = new Map()
   private handleRemissaoClick: any;
@@ -118,6 +125,7 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private sanitizer: DomSanitizer,
     private storage: StorageService,
     private authService: AuthService,
@@ -133,6 +141,7 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
     await this.loadSearchHistory();
+    await this.loadUserProfile();
     await this.loadBook();
   }
 
@@ -1369,6 +1378,12 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
   }
 
   toggleComment(commentId: string | number) {
+    // Verificar se o usuário tem acesso aos comentários completos
+    if (!this.hasPaidPlan()) {
+      this.showUpgradeModal();
+      return;
+    }
+    
     const id = String(commentId);
     if (this.expandedComments.has(id)) {
       this.expandedComments.delete(id);
@@ -1378,6 +1393,12 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
   }
   
   toggleAllComments() {
+    // Verificar se o usuário tem acesso aos comentários completos
+    if (!this.hasPaidPlan()) {
+      this.showUpgradeModal();
+      return;
+    }
+    
     this.allCommentsExpanded = !this.allCommentsExpanded;
     if (this.allCommentsExpanded) {
       this.expandedComments = new Set(this.getAllCommentIds().map(id => String(id)));
@@ -2027,5 +2048,126 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
     if (this.comentarioCache.size > 100) {
       this.comentarioCache.clear();
     }
+  }
+
+  // ============ CONTROLE DE ACESSO ============
+
+  /**
+   * Carrega o perfil completo do usuário para verificação de plano
+   */
+  private async loadUserProfile(): Promise<void> {
+    try {
+      // Carregar dados completos do perfil usando a nova API
+      this.profileData = await this.authService.fetchProfile();
+
+      if (this.profileData) {
+        this.user = this.profileData.user;
+        this.subscriptionData = this.profileData.subscription;
+        this.planInfoData = this.profileData.plan_info;
+        
+        // Derivar flags do usuário
+        this.deriveUserFlags();
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar perfil do usuário:', error);
+    }
+  }
+
+  /**
+   * Deriva flags do usuário baseado nos dados da API
+   */
+  private deriveUserFlags(): void {
+    // Usar dados da nova API se disponíveis, senão fallback para dados antigos
+    const subscriptionStatus = this.subscriptionData?.stripe_status || this.user?.subscription_status || '';
+    this.isActive = ['active', 'trialing'].includes(subscriptionStatus);
+
+    console.log('🔍 Derivando flags do usuário:', {
+      subscriptionStatus,
+      isActive: this.isActive,
+      planInfoData: this.planInfoData,
+      currentUser: this.user?.plan
+    });
+
+    // PRIORIDADE 1: Usar dados do plan_info se disponível
+    if (this.planInfoData) {
+      // Verificar se é um plano Free baseado em is_free ou display_name
+      if (this.planInfoData.is_free ||
+        this.planInfoData.display_name?.toLowerCase().includes('free') ||
+        this.planInfoData.name?.toLowerCase().includes('free')) {
+        this.activeInterval = 'Free';
+        console.log('✅ Intervalo determinado como Free (plan_info)');
+      } else {
+        // Se não é Free, verificar o intervalo
+        const intervalo = this.planInfoData.intervalo?.toLowerCase();
+        if (intervalo?.includes('mensal')) {
+          this.activeInterval = 'Mensal';
+          console.log('✅ Intervalo determinado como Mensal (plan_info)');
+        } else if (intervalo?.includes('anual')) {
+          this.activeInterval = 'Anual';
+          console.log('✅ Intervalo determinado como Anual (plan_info)');
+        } else {
+          this.activeInterval = null;
+          console.log('⚠️ Intervalo não determinado (plan_info)');
+        }
+      }
+    } else {
+      // PRIORIDADE 2: Fallback para lógica antiga usando dados do usuário
+      const p = (this.user?.plan || '').toLowerCase();
+
+      if (p.includes('free') || p.includes('gratuito')) {
+        this.activeInterval = 'Free';
+        console.log('✅ Intervalo determinado como Free (fallback)');
+      } else if (p.includes('mensal')) {
+        this.activeInterval = 'Mensal';
+        console.log('✅ Intervalo determinado como Mensal (fallback)');
+      } else if (p.includes('anual')) {
+        this.activeInterval = 'Anual';
+        console.log('✅ Intervalo determinado como Anual (fallback)');
+      } else {
+        this.activeInterval = null;
+        console.log('⚠️ Intervalo não determinado (fallback)');
+      }
+    }
+
+    console.log('🎯 Flags finais:', {
+      isActive: this.isActive,
+      activeInterval: this.activeInterval
+    });
+  }
+
+  /**
+   * Verifica se o usuário tem plano pago ativo ou é admin
+   */
+  hasPaidPlan(): boolean {
+    // Verificar se é admin primeiro
+    if (this.user?.is_admin === true) {
+      return true;
+    }
+    
+    // Verificar se tem plano pago ativo
+    return this.isActive && this.activeInterval !== 'Free';
+  }
+
+  /**
+   * Mostra modal de upgrade para usuários com plano Free
+   */
+  async showUpgradeModal() {
+    const alert = await this.alertController.create({
+      header: 'Acesso Restrito',
+      message: 'Para acessar o conteúdo dos comentários completos você precisa de um plano pago (Mensal ou Anual).',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Ver Planos',
+          handler: () => {
+            this.router.navigate(['/assinatura']);
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

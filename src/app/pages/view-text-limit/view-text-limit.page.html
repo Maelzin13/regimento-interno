@@ -225,7 +225,7 @@
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="toggleAllComments()">
+      <ion-button *ngIf="hasPaidPlan()" (click)="toggleAllComments()">
         <ion-icon
           [name]="allCommentsExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"
         ></ion-icon>
