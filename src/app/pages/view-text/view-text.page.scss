@@ -1170,3 +1170,135 @@ ion-segment-button {
     font-size: 0.9rem;
   }
 }
+
+// Estilos para quadros/esquemas
+.quadro-container {
+  margin: 16px 0;
+  padding: 0;
+  
+  .quadro-titulo {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #157D7D;
+    border-radius: 4px;
+  }
+  
+  .quadro-tabela {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    .quadro-table {
+      width: 100%;
+      min-width: 300px;
+      border-collapse: collapse;
+      background-color: white;
+      
+      thead {
+        tr {
+          th {
+            background-color: #157D7D;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            white-space: nowrap;
+            
+            &:first-child {
+              border-top-left-radius: 8px;
+            }
+            
+            &:last-child {
+              border-top-right-radius: 8px;
+            }
+          }
+        }
+      }
+      
+      tbody {
+        tr {
+          &:nth-child(even) {
+            background-color: #f8f9fa;
+          }
+          
+          &:nth-child(odd) {
+            background-color: white;
+          }
+          
+          &:last-child {
+            td {
+              &:first-child {
+                border-bottom-left-radius: 8px;
+              }
+              
+              &:last-child {
+                border-bottom-right-radius: 8px;
+              }
+            }
+          }
+          
+          td {
+            padding: 10px 8px;
+            border: none;
+            font-size: 13px;
+            line-height: 1.4;
+            vertical-align: top;
+            word-wrap: break-word;
+            max-width: 200px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsividade para telas muito pequenas
+@media (max-width: 320px) {
+  .quadro-container {
+    .quadro-tabela {
+      .quadro-table {
+        min-width: 280px;
+        
+        thead tr th {
+          padding: 8px 6px;
+          font-size: 12px;
+        }
+        
+        tbody tr td {
+          padding: 8px 6px;
+          font-size: 12px;
+          max-width: 150px;
+        }
+      }
+    }
+  }
+}
+
+// Responsividade para tablets
+@media (min-width: 768px) {
+  .quadro-container {
+    .quadro-tabela {
+      .quadro-table {
+        min-width: 500px;
+        
+        thead tr th {
+          padding: 14px 12px;
+          font-size: 15px;
+        }
+        
+        tbody tr td {
+          padding: 12px 12px;
+          font-size: 14px;
+          max-width: 300px;
+        }
+      }
+    }
+  }
+}

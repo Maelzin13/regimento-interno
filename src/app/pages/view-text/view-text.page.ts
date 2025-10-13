@@ -114,6 +114,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   private comentarioCache = new Map<string, SafeHtml>();
   private elementosCache: Map<string, HTMLElement | null> = new Map();
   private artigoByNumero = new Map<string, { id: number; ref: any }>();
+  private quadrosCache = new Map<string, any>();
 
   constructor(
     private route: ActivatedRoute,
@@ -156,6 +157,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.book = Allbooks.livro;
       this.buildIndices();
       this.processRemissoes();
+      this.processQuadros(Allbooks.quadros);
       
       // Otimizar performance
       this.optimizePerformance();
@@ -2013,6 +2015,46 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   private processRemissoesForSearch() {
     this.remissoesCache.clear();
   }
+  // Método para processar quadros
+  private processQuadros(quadros: any) {
+    if (!quadros) return;
+    
+    this.quadrosCache.clear();
+    
+    // Processar cada categoria de quadros
+    Object.keys(quadros).forEach(key => {
+      const quadroList = quadros[key];
+      if (Array.isArray(quadroList)) {
+        quadroList.forEach(quadro => {
+          try {
+            // Parse do conteúdo JSON
+            const conteudoParsed = JSON.parse(quadro.conteudo);
+            const quadroProcessado = {
+              ...quadro,
+              titulo: conteudoParsed.titulo,
+              dados: conteudoParsed.dados
+            };
+            
+            // Armazenar no cache usando a chave de associação
+            const cacheKey = `${quadro.associado_a}_${quadro.associado_id}`;
+            if (!this.quadrosCache.has(cacheKey)) {
+              this.quadrosCache.set(cacheKey, []);
+            }
+            this.quadrosCache.get(cacheKey)!.push(quadroProcessado);
+          } catch (error) {
+            console.error('Erro ao processar quadro:', error);
+          }
+        });
+      }
+    });
+  }
+
+  // Método para obter quadros associados a um comentário ou parágrafo
+  getQuadrosAssociados(tipo: string, id: number): any[] {
+    const cacheKey = `${tipo}_${id}`;
+    return this.quadrosCache.get(cacheKey) || [];
+  }
+
   // Método para otimizar performance
   private optimizePerformance() {
     // Limpar caches antigos periodicamente
@@ -2026,6 +2068,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     
     if (this.comentarioCache.size > 100) {
       this.comentarioCache.clear();
+    }
+    
+    if (this.quadrosCache.size > 50) {
+      this.quadrosCache.clear();
     }
   }
 }
