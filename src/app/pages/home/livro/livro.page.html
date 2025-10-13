@@ -9,39 +9,19 @@
 <ion-content class="background-page">  
   <div class="background-wrapper">
     <ion-card-content>
-    <section class="section">
-      <ng-container *ngIf="!isLoading && hasFullAccess() && books?.length">
-        <ion-grid *ngFor="let book of books" >
-          <ion-row [routerLink]="['/view-text', book.id]">
+    <section class="section ">
+      <ng-container *ngIf="hasFullAccess()">
+        <ion-grid >
+          <ion-row [routerLink]="['/view-text', 1]">
             <ion-col class="menu-item-livro text-center">
-              <div>
-                <h2 class="auxiliares-text"> 
-                  <strong>
-                    Regimento Interno Comentado da Câmara dos Deputados
-                  </strong>
-                </h2>
-                <p class="auxiliares-text">
-                  <span>1ª Edição 2025</span>
-                </p>
-              </div>
             </ion-col>
           </ion-row>
         </ion-grid>
       </ng-container>
-      <ng-container *ngIf="!isLoading && bookLimit && (!hasFullAccess())">
+      <ng-container *ngIf="!hasFullAccess()">
         <ion-grid>
-          <ion-row [routerLink]="['/view-text-limit', bookLimit.livro.id]">
+          <ion-row [routerLink]="['/view-text-limit', 1]">
             <ion-col class="menu-item-livro text-center">
-              <div>
-                <h2 class="auxiliares-text">
-                  <strong>
-                    Regimento Interno Comentado da Câmara dos Deputados
-                  </strong>
-                </h2>
-                <p class="auxiliares-text">
-                  <span>1ª Edição 2025</span>
-                </p>
-              </div>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -89,7 +69,7 @@
       <ion-row>
         <ion-col size="4" *ngFor="let texto of textos" class="menu-item">
           <div class="textos-auxiliares-box text-center" (click)="openDescricaoModal(texto)" *ngIf="!texto.link; else externalLink">
-            <div class="auxiliares-text" style="color: #1e999a;">{{ cleanHTML(texto.title) }}</div>
+            <div class="auxiliares-text" style="color: #231f20;">{{ cleanHTML(texto.title) }}</div>
           </div>
           <ng-template #externalLink>
             <a class="textos-auxiliares-box text-center" [href]="texto.link" target="_blank">

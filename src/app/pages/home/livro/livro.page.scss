@@ -115,16 +115,27 @@ ion-content {
 }
 
 .menu-item-livro {
-  background-color: rgba(248, 249, 250, 0.95);
+  background-image: url('/assets/livro.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
   border-radius: 10px;
+  padding: 20px;
   display: flex;
-  flex-direction: column;
-  margin-bottom: 0.75rem;
-  margin-top: 1.5rem;
-  padding: 37px;
-  color: #1e999a;
-  // box-shadow: 4px 3px 7px 2px rgba(155, 165, 158, 0.8);
-  backdrop-filter: blur(5px);
+  min-height: 200px;
+  margin: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 .dashboard-title {
@@ -165,6 +176,7 @@ ion-content {
 
 .auxiliares-text {
   font-size: 14px;
+  color: #231f20;
   line-height: 1.4;
   font-family: Poppins;
   word-break: break-word;
@@ -173,6 +185,7 @@ ion-content {
 .auxiliares-text-solo {
   font-size: 16px;
   line-height: 1.4;
+  color: #231f20;
   font-family: Poppins;
   word-break: break-word;
 }

@@ -16,10 +16,9 @@ export class LivroPage implements OnInit {
   books: any; 
   bookLimit: any;
   isActive = false;
-  isLoading: boolean = true;
-  user: UserModel | null = null;
-  assinaturaAtiva: any = null;
   isFreePlan = false;
+  assinaturaAtiva: any = null;
+  user: UserModel | null = null;
 
   textos = [
     {
@@ -67,26 +66,8 @@ export class LivroPage implements OnInit {
       console.log('assinaturaAtiva', this.assinaturaAtiva);
       this.isFreePlan = this.checkIfFreePlan();
       console.log('isFreePlan', this.isFreePlan);
-      
-      if (this.user && this.user?.is_admin === true || this.user?.subscription_status === 'active' ) {
-        this.bookService
-          .getAllBooks()
-          .then((data) => {
-            this.books = data.data;
-            this.isLoading = false;
-          })
-          .catch((error) => {
-            console.error('Erro ao carregar os livros:', error);
-            this.isLoading = false;
-          });
-      } else {
-        const data = await this.bookService.getBookByIdLimit(1);
-        this.bookLimit = data;
-        this.isLoading = false;
-      }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
-      this.isLoading = false;
     }
   }
 
