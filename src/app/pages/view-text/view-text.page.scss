@@ -6,6 +6,10 @@
   --search-radius: 8px;
   --search-padding: 10px;
   --search-gap: 4px;
+  --primary-color: #1e999a;
+  --primary-rgb: 30, 153, 154;
+  --warning-rgb: 255, 193, 7;
+  --success-rgb: 40, 167, 69;
 }
 
 /* Classes para justificação de texto */
@@ -76,8 +80,8 @@ ion-radio::part(mark) {
 }
 
 ion-radio.radio-checked::part(container) {
-  background: #1e999a;
-  border-color: #1e999a;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 ion-radio.radio-checked::part(mark) {
@@ -100,8 +104,7 @@ ion-searchbar.custom {
   --clear-button-color: #000;
 }
 
-.search-highlight,
-mark.search-highlight {
+.search-highlight, mark.search-highlight {
   background-color: var(--search-highlight);
   border-radius: 4px;
   padding: 0 2px;
@@ -189,7 +192,7 @@ ion-content {
   margin-bottom: 5px;
   padding-right: 28px;
   position: relative;
-  color: #329632;
+  color: var(--primary-color);
   text-align: justify;
   text-justify: inter-word;
 }
@@ -204,13 +207,13 @@ ion-content {
   font-style: italic;
   contain: content;
   will-change: transform, opacity;
-  color: #329632;
+  color: var(--primary-color);
   text-align: justify;
   text-justify: inter-word;
 }
 
 .comentario-tipo {
-  color: #329632;
+  color: var(--primary-color);
   font-weight: bold;
   font-style: italic;
   display: inline-block;
@@ -292,27 +295,8 @@ a.ver-menos {
   background-color: #f1f1f1;
 
   @keyframes pulse {
-    0% {
-      background-color: rgba(56, 128, 255, 0.1);
-    }
-    50% {
-      background-color: rgba(56, 128, 255, 0.3);
-    }
-    100% {
-      background-color: rgba(56, 128, 255, 0.1);
-    }
-  }
-
-  @keyframes pulse-highlight {
-    0% {
-      background-color: rgba(56, 128, 255, 0.1);
-    }
-    50% {
-      background-color: rgba(56, 128, 255, 0.3);
-    }
-    100% {
-      background-color: rgba(56, 128, 255, 0.15);
-    }
+    0%, 100% { background-color: rgba(56, 128, 255, 0.1); }
+    50% { background-color: rgba(56, 128, 255, 0.3); }
   }
   margin-bottom: 5px;
   border-radius: 5px;
@@ -396,7 +380,7 @@ a.ver-menos {
   margin-top: 4px;
 
   font-size: 0.8rem;
-  color: #1e999a;
+  color: var(--primary-color);
   text-align: right;
   opacity: 0.7;
   font-style: italic;
@@ -433,7 +417,7 @@ a.ver-menos {
 
 .remissao-inline,
 .remissoes {
-  color: #1e999a;
+  color: var(--primary-color);
   font-weight: bold;
   font-style: italic;
   cursor: pointer;
@@ -469,15 +453,9 @@ a.ver-menos {
 }
 
 @keyframes flash-animation {
-  0% {
-    background: rgba(255, 254, 176, 0.9);
-  }
-  40% {
-    background: rgba(208, 255, 238, 0.7);
-  }
-  100% {
-    background: rgba(30, 153, 154, 0.05);
-  }
+  0% { background: rgba(255, 254, 176, 0.9); }
+  40% { background: rgba(208, 255, 238, 0.7); }
+  100% { background: rgba(var(--primary-rgb), 0.05); }
 }
 
 .nav-button-text {
@@ -584,11 +562,11 @@ a.ver-menos {
 }
 // Estilos específicos para a tag mark
 mark.highlight-search {
-  background-color: rgba(255, 230, 0, 0.8) !important;
+  background-color: var(--search-highlight) !important;
   color: #000 !important;
   padding: 2px 4px !important;
   border-radius: 3px !important;
-  box-shadow: 0 0 6px rgba(255, 230, 0, 0.5) !important;
+  box-shadow: 0 0 6px var(--search-highlight) !important;
   font-weight: 600 !important;
   text-decoration: none !important;
   position: relative !important;
@@ -672,12 +650,12 @@ mark.highlight-search {
 
 // Estilos para highlights de busca (baseado no modelo da web)
 .search-highlight {
-  background-color: rgba(255, 230, 0, 0.8) !important;
+  background-color: var(--search-highlight) !important;
   color: #000 !important;
   padding: 2px 4px !important;
   border-radius: 3px !important;
   font-weight: 600 !important;
-  box-shadow: 0 0 6px rgba(255, 230, 0, 0.5) !important;
+  box-shadow: 0 0 6px var(--search-highlight) !important;
   text-decoration: none !important;
   z-index: 10 !important;
   position: relative !important;
@@ -692,18 +670,9 @@ mark.highlight-search {
 }
 
 @keyframes highlight-pulse {
-  0% {
-    background-color: rgba(255, 230, 0, 0.8);
-    box-shadow: 0 0 6px rgba(255, 230, 0, 0.5);
-  }
-  50% {
-    background-color: rgba(255, 230, 0, 1);
-    box-shadow: 0 0 20px rgba(56, 128, 255, 0.8);
-  }
-  100% {
-    background-color: rgba(255, 230, 0, 1);
-    box-shadow: 0 0 15px rgba(56, 128, 255, 0.6);
-  }
+  0% { background-color: var(--search-highlight); box-shadow: 0 0 6px var(--search-highlight); }
+  50% { background-color: rgba(255, 230, 0, 1); box-shadow: 0 0 20px rgba(56, 128, 255, 0.8); }
+  100% { background-color: rgba(255, 230, 0, 1); box-shadow: 0 0 15px rgba(56, 128, 255, 0.6); }
 }
 
 // Flash highlight para navegação (temporário)
@@ -717,39 +686,18 @@ mark.highlight-search {
 }
 
 @keyframes flash-pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-  100% {
-    opacity: 1;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.flash-highlight {
-  animation: flash-highlight 1.5s ease-out;
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes flash-highlight {
-  0% {
-    background-color: rgba(var(--ion-color-warning-rgb), 0.5);
-  }
-  100% {
-    background-color: transparent;
-  }
+  0% { background-color: rgba(var(--ion-color-warning-rgb), 0.5); }
+  100% { background-color: transparent; }
 }
 
 .remissao-inline {
@@ -790,7 +738,7 @@ mark.highlight-search {
 }
 // Animação de pulso para remissões clicadas
 @keyframes remissao-pulse {
-  0% {
+  0%, 100% { 
     transform: scale(1);
     background-color: rgba(var(--ion-color-warning-rgb), 0.2);
     box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
@@ -798,13 +746,7 @@ mark.highlight-search {
   50% {
     transform: scale(1.1);
     background-color: rgba(var(--ion-color-warning-rgb), 0.3);
-    box-shadow: 0 0 0 4px rgba(var(--ion-color-warning-rgb), 0.4),
-      0 0 20px rgba(var(--ion-color-warning-rgb), 0.3);
-  }
-  100% {
-    transform: scale(1);
-    background-color: rgba(var(--ion-color-warning-rgb), 0.15);
-    box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
+    box-shadow: 0 0 0 4px rgba(var(--ion-color-warning-rgb), 0.4), 0 0 20px rgba(var(--ion-color-warning-rgb), 0.3);
   }
 }
 // Destaque especial para remissões dentro de parênteses
@@ -1043,7 +985,7 @@ mark.highlight-search {
 }
 
 @keyframes artigo-pulse {
-  0% {
+  0%, 100% { 
     transform: scale(1);
     background-color: rgba(var(--ion-color-primary-rgb), 0.1);
     box-shadow: 0 0 5px rgba(var(--ion-color-primary-rgb), 0.3);
@@ -1053,11 +995,6 @@ mark.highlight-search {
     background-color: rgba(var(--ion-color-primary-rgb), 0.15);
     box-shadow: 0 0 15px rgba(var(--ion-color-primary-rgb), 0.5);
   }
-  100% {
-    transform: scale(1);
-    background-color: rgba(var(--ion-color-primary-rgb), 0.08);
-    box-shadow: 0 0 10px rgba(var(--ion-color-primary-rgb), 0.3);
-  }
 }
 
 .remissao-active {
@@ -1065,18 +1002,9 @@ mark.highlight-search {
 }
 
 @keyframes remissao-return-highlight {
-  0% {
-    background-color: rgba(var(--ion-color-success-rgb), 0.3);
-    box-shadow: 0 0 20px rgba(var(--ion-color-success-rgb), 0.6);
-  }
-  50% {
-    background-color: rgba(var(--ion-color-success-rgb), 0.15);
-    box-shadow: 0 0 10px rgba(var(--ion-color-success-rgb), 0.4);
-  }
-  100% {
-    background-color: rgba(var(--ion-color-success-rgb), 0.05);
-    box-shadow: 0 0 0 rgba(var(--ion-color-success-rgb), 0);
-  }
+  0% { background-color: rgba(var(--ion-color-success-rgb), 0.3); box-shadow: 0 0 20px rgba(var(--ion-color-success-rgb), 0.6); }
+  50% { background-color: rgba(var(--ion-color-success-rgb), 0.15); box-shadow: 0 0 10px rgba(var(--ion-color-success-rgb), 0.4); }
+  100% { background-color: rgba(var(--ion-color-success-rgb), 0.05); box-shadow: 0 0 0 rgba(var(--ion-color-success-rgb), 0); }
 }
 /* Botão de busca compacto, sem estourar altura do toolbar */
 .search-btn {

@@ -152,9 +152,9 @@
 80                <data
 80-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
 81                    android:host="dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me"
-81-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:17-99
+81-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:21-103
 82                    android:pathPrefix="/"
-82-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:39:17-39
+82-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:39:21-43
 83                    android:scheme="https" />
 83-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
 84                <!--
@@ -255,7 +255,7 @@
 137                <data
 137-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
 138                    android:host="firebase.auth"
-138-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:17-99
+138-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:21-103
 139                    android:path="/"
 140                    android:scheme="genericidp" />
 140-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
@@ -289,7 +289,7 @@
 155                <data
 155-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
 156                    android:host="firebase.auth"
-156-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:17-99
+156-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:21-103
 157                    android:path="/"
 158                    android:scheme="recaptcha" />
 158-->/Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57

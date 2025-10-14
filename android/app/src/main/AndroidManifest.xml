@@ -32,11 +32,11 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                
+
                 <data
-                android:scheme="https"
-                android:host="dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me"
-                android:pathPrefix="/"
+                    android:scheme="https"
+                    android:host="dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me"
+                    android:pathPrefix="/"
                 />
                 <!-- se quiser limitar apenas ao retorno do Stripe:
                 <data android:scheme="https"

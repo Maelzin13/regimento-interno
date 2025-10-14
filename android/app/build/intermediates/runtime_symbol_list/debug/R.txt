@@ -694,7 +694,6 @@ int drawable ic_call_answer_video 0x7f070071
 int drawable ic_call_answer_video_low 0x7f070072
 int drawable ic_call_decline 0x7f070073
 int drawable ic_call_decline_low 0x7f070074
-int drawable ic_launcher_background 0x7f070075
 int drawable ic_launcher_foreground 0x7f070076
 int drawable ic_other_sign_in 0x7f070077
 int drawable ic_passkey 0x7f070078
@@ -1433,6 +1432,9 @@ int style Widget_AppCompat_Toolbar_Button_Navigation 0x7f0f016b
 int style Widget_Compat_NotificationActionContainer 0x7f0f016c
 int style Widget_Compat_NotificationActionText 0x7f0f016d
 int style Widget_Support_CoordinatorLayout 0x7f0f016e
+int style capacitor_default_style 0x7f0f016f
+int style capacitor_full_screen_style 0x7f0f0170
+int style capacitor_immersive_style 0x7f0f0171
 int[] styleable ActionBar { 0x7f030033, 0x7f030034, 0x7f030035, 0x7f030060, 0x7f030061, 0x7f030062, 0x7f030063, 0x7f030064, 0x7f030065, 0x7f030068, 0x7f03006d, 0x7f03006e, 0x7f030081, 0x7f030093, 0x7f030094, 0x7f030095, 0x7f030096, 0x7f030097, 0x7f03009e, 0x7f0300a1, 0x7f0300bc, 0x7f0300c4, 0x7f0300d0, 0x7f0300d4, 0x7f0300d5, 0x7f0300f4, 0x7f0300f7, 0x7f030113, 0x7f03011c }
 int styleable ActionBar_background 0
 int styleable ActionBar_backgroundSplit 1

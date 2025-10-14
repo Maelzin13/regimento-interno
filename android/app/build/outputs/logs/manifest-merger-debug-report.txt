@@ -24,6 +24,7 @@ MERGED from [:capacitor-haptics] /Users/ismaeldias/Documents/projetos/regimento-
 MERGED from [:capacitor-keyboard] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/keyboard/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:capacitor-network] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/network/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:capacitor-preferences] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/preferences/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:capacitor-splash-screen] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/splash-screen/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:capacitor-status-bar] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/status-bar/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:capacitor-android] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/android/capacitor/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:capacitor-cordova-android-plugins] /Users/ismaeldias/Documents/projetos/regimento-interno/android/capacitor-cordova-android-plugins/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-11:12
@@ -235,11 +236,11 @@ ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/sr
 data
 ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:17-60
 	android:host
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:17-99
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:38:21-103
 	android:scheme
 		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:27:23-57
 	android:pathPrefix
-		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:39:17-39
+		ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:39:21-43
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:dokploymael-regimentoteste-pxgi6t-2294df-134-209-169-169.traefik.me+data:pathPrefix:/+data:scheme:https
 ADDED from /Users/ismaeldias/Documents/projetos/regimento-interno/android/app/src/main/AndroidManifest.xml:31:13-45:29
 	android:autoVerify
@@ -272,6 +273,8 @@ MERGED from [:capacitor-network] /Users/ismaeldias/Documents/projetos/regimento-
 MERGED from [:capacitor-network] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/network/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:capacitor-preferences] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/preferences/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:capacitor-preferences] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/preferences/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-splash-screen] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/splash-screen/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:capacitor-splash-screen] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/splash-screen/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:capacitor-status-bar] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/status-bar/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:capacitor-status-bar] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/status-bar/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:capacitor-android] /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/android/capacitor/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44

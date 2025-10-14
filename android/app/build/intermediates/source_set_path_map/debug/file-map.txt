@@ -50,4 +50,5 @@ com.regimento.app-packaged_res-48 /Users/ismaeldias/Documents/projetos/regimento
 com.regimento.app-packaged_res-49 /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/keyboard/android/build/intermediates/packaged_res/debug
 com.regimento.app-packaged_res-50 /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/network/android/build/intermediates/packaged_res/debug
 com.regimento.app-packaged_res-51 /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/preferences/android/build/intermediates/packaged_res/debug
-com.regimento.app-packaged_res-52 /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/status-bar/android/build/intermediates/packaged_res/debug
+com.regimento.app-packaged_res-52 /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/splash-screen/android/build/intermediates/packaged_res/debug
+com.regimento.app-packaged_res-53 /Users/ismaeldias/Documents/projetos/regimento-interno/node_modules/@capacitor/status-bar/android/build/intermediates/packaged_res/debug

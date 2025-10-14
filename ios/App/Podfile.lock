@@ -1,7 +1,7 @@
 PODS:
-  - Capacitor (7.4.2):
+  - Capacitor (7.4.3):
     - CapacitorCordova
-  - CapacitorApp (7.0.1):
+  - CapacitorApp (7.1.0):
     - Capacitor
   - CapacitorBrowser (7.0.2):
     - Capacitor
@@ -10,23 +10,25 @@ PODS:
   - CapacitorCommunityGenericOauth2 (6.1.0):
     - Capacitor
     - OAuthSwift (= 2.2.0)
-  - CapacitorCordova (7.4.2)
-  - CapacitorFirebaseAuthentication (7.2.0):
+  - CapacitorCordova (7.4.3)
+  - CapacitorFirebaseAuthentication (7.3.1):
     - Capacitor
-    - CapacitorFirebaseAuthentication/Lite (= 7.2.0)
+    - CapacitorFirebaseAuthentication/Lite (= 7.3.1)
     - FirebaseAuth (~> 11.7.0)
-  - CapacitorFirebaseAuthentication/Lite (7.2.0):
+  - CapacitorFirebaseAuthentication/Lite (7.3.1):
     - Capacitor
     - FirebaseAuth (~> 11.7.0)
-  - CapacitorHaptics (7.0.1):
+  - CapacitorHaptics (7.0.2):
     - Capacitor
-  - CapacitorKeyboard (7.0.1):
+  - CapacitorKeyboard (7.0.3):
     - Capacitor
-  - CapacitorNetwork (7.0.1):
+  - CapacitorNetwork (7.0.2):
     - Capacitor
   - CapacitorPreferences (7.0.2):
     - Capacitor
-  - CapacitorStatusBar (7.0.2):
+  - CapacitorSplashScreen (7.0.3):
+    - Capacitor
+  - CapacitorStatusBar (7.0.3):
     - Capacitor
   - FirebaseAppCheckInterop (11.11.0)
   - FirebaseAuth (11.7.0):
@@ -84,6 +86,7 @@ DEPENDENCIES:
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
+  - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
 
 SPEC REPOS:
@@ -122,22 +125,25 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/network"
   CapacitorPreferences:
     :path: "../../node_modules/@capacitor/preferences"
+  CapacitorSplashScreen:
+    :path: "../../node_modules/@capacitor/splash-screen"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
-  Capacitor: 156d98aba46ec01dde72c4bbb92fa626837cad29
-  CapacitorApp: d63334c052278caf5d81585d80b21905c6f93f39
+  Capacitor: b4741ca7affb32c1b70debd03df92cbf522d8a80
+  CapacitorApp: 846d4b4a1dbb19dd1e9029c08ba6f028aa7be862
   CapacitorBrowser: 45c681e7abc3b4384e54eb52bafeef1347d98fa8
   CapacitorCommunityAppleSignIn: b95415441e6c4223783a543f3a736ea4eabf8524
   CapacitorCommunityGenericOauth2: a30d35d43010aca671e8c5b5d3da45b9386eafae
-  CapacitorCordova: 5e58d04631bc5094894ac106e2bf1da18a9e6151
-  CapacitorFirebaseAuthentication: 7043f8e03813762af1b037da82c67963fa5768e0
-  CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
-  CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
-  CapacitorNetwork: 07ec4c69c1bb696f41c23e00d31bda1bbb221bba
+  CapacitorCordova: 435121e81a2df4d0034f0fb11fcefab5104cfdb5
+  CapacitorFirebaseAuthentication: e86d4bbb1d926c53a290114f3054c7c017f8ef65
+  CapacitorHaptics: 09d96bcb5a2b74ede8fd039b4cdf58fc43dcacf1
+  CapacitorKeyboard: 3822c3a0c6b58168f96ca562f9534ed095d40860
+  CapacitorNetwork: 9b9eaeb417ec0ffa22e2bc33a4c71df10e1d6f06
   CapacitorPreferences: b583b5deb74e564c35968189d25d32c0fd41200d
-  CapacitorStatusBar: 5526833b87fa9c96a2a90c1322bb1f663c04505f
+  CapacitorSplashScreen: d06ae8804808e9f649a08e7bb7f283c77b688084
+  CapacitorStatusBar: 7d8fcbd6768db014bd721d75e246590b014928e8
   FirebaseAppCheckInterop: f23709c9ce92d810aa53ff4ce12ad3e666a3c7be
   FirebaseAuth: 77e25aa24f3e1c626c5babd3338551fc1669ee0e
   FirebaseAuthInterop: ac22ed402c2f4e3a8c63ebd3278af9a06073c1be
@@ -149,6 +155,6 @@ SPEC CHECKSUMS:
   OAuthSwift: 75efbb5bd9a4b2b71a37bd7e986bf3f55ddd54c6
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
 
-PODFILE CHECKSUM: 13af21c4918fb7877556e7fd8bd32157045e8c34
+PODFILE CHECKSUM: dd66c405bf8867ddd2109b43ba933ab7d68b14a5
 
 COCOAPODS: 1.16.2

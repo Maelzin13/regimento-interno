@@ -21,14 +21,19 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 0,
+      launchShowDuration: 3000,
+      launchAutoHide: true,
+      launchFadeOutDuration: 300,
       backgroundColor: '#ffffff',
+      androidSplashResourceName: 'splash',
+      androidScaleType: 'FIT_CENTER',
       showSpinner: false,
-      androidSpinnerStyle: 'small',
+      androidSpinnerStyle: 'large',
       iosSpinnerStyle: 'small',
       spinnerColor: '#1e999a',
       splashFullScreen: true,
-      splashImmersive: true
+      splashImmersive: true,
+      useDialog: false
     },
     Keyboard: {
       resize: 'body',

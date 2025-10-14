@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core';
 import { Component, NgZone } from '@angular/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { SplashScreen } from '@capacitor/splash-screen';
 import { ConfigService } from './services/config.service';
 import { Platform, ToastController } from '@ionic/angular';
 import { NetworkService } from './services/network.service';
@@ -58,6 +59,17 @@ export class AppComponent {
       } catch (error) {
         console.error('❌ Erro ao inicializar Firebase Authentication:', error);
       }
+    }
+
+    // Aguardar um tempo para mostrar o splash screen
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Esconder o splash screen após a inicialização
+    try {
+      await SplashScreen.hide();
+      console.log('✅ Splash screen escondido com sucesso');
+    } catch (error) {
+      console.error('❌ Erro ao esconder splash screen:', error);
     }
 
     // Removido: processamento de deeplinks do Stripe

@@ -12,6 +12,10 @@
         "source": "com.regimento.app-main-40:/xml/file_paths.xml"
     },
     {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-mdpi/ic_launcher_foreground.png"
+    },
+    {
         "merged": "com.regimento.app-merged_res-38:/drawable-land-night-xhdpi_splash.png.flat",
         "source": "com.regimento.app-main-40:/drawable-land-night-xhdpi/splash.png"
     },
@@ -28,8 +32,16 @@
         "source": "com.regimento.app-main-40:/drawable-land-xxxhdpi/splash.png"
     },
     {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
         "merged": "com.regimento.app-merged_res-38:/drawable-land-night-mdpi_splash.png.flat",
         "source": "com.regimento.app-main-40:/drawable-land-night-mdpi/splash.png"
+    },
+    {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-ldpi_ic_launcher.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-ldpi/ic_launcher.png"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/drawable-port-night-hdpi_splash.png.flat",
@@ -52,28 +64,12 @@
         "source": "com.regimento.app-main-40:/drawable-port-night-mdpi/splash.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xxhdpi/ic_launcher_round.webp"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-hdpi/ic_launcher_round.png"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/drawable-land-hdpi_splash.png.flat",
         "source": "com.regimento.app-main-40:/drawable-land-hdpi/splash.png"
-    },
-    {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xhdpi_ic_launcher_round.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xhdpi/ic_launcher_round.webp"
-    },
-    {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-mdpi_ic_launcher.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-mdpi/ic_launcher.webp"
-    },
-    {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-mdpi_ic_launcher_round.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-mdpi/ic_launcher_round.webp"
-    },
-    {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xhdpi/ic_launcher_foreground.webp"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/drawable-land-mdpi_splash.png.flat",
@@ -84,12 +80,12 @@
         "source": "com.regimento.app-main-40:/drawable-land-night-xxxhdpi/splash.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/drawable-port-xxhdpi_splash.png.flat",
-        "source": "com.regimento.app-main-40:/drawable-port-xxhdpi/splash.png"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xxxhdpi/ic_launcher_foreground.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.regimento.app-main-40:/drawable/ic_launcher_background.xml"
+        "merged": "com.regimento.app-merged_res-38:/drawable-port-xxhdpi_splash.png.flat",
+        "source": "com.regimento.app-main-40:/drawable-port-xxhdpi/splash.png"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/drawable-port-ldpi_splash.png.flat",
@@ -100,12 +96,24 @@
         "source": "com.regimento.app-main-40:/drawable-land-night-xxhdpi/splash.png"
     },
     {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
         "merged": "com.regimento.app-merged_res-38:/drawable-port-night-ldpi_splash.png.flat",
         "source": "com.regimento.app-main-40:/drawable-port-night-ldpi/splash.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xxhdpi/ic_launcher.png"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/drawable-night_splash.png.flat",
@@ -120,16 +128,16 @@
         "source": "com.regimento.app-main-40:/drawable-land-xhdpi/splash.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-hdpi_ic_launcher_foreground.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-hdpi/ic_launcher_foreground.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xxxhdpi/ic_launcher.webp"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-mdpi/ic_launcher.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-mdpi/ic_launcher_foreground.webp"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xhdpi/ic_launcher_round.png"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/mipmap-anydpi-v26_ic_launcher.xml.flat",
@@ -142,6 +150,10 @@
     {
         "merged": "com.regimento.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher_background.png.flat",
         "source": "com.regimento.app-main-40:/mipmap-xxxhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xxxhdpi/ic_launcher.png"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/mipmap-ldpi_ic_launcher_background.png.flat",
@@ -160,52 +172,48 @@
         "source": "com.regimento.app-main-40:/drawable-port-hdpi/splash.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-hdpi/ic_launcher_foreground.webp"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-ldpi_ic_launcher_round.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-ldpi/ic_launcher_round.png"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/drawable-port-night-xxxhdpi_splash.png.flat",
         "source": "com.regimento.app-main-40:/drawable-port-night-xxxhdpi/splash.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/xml_network_security_config.xml.flat",
-        "source": "com.regimento.app-main-40:/xml/network_security_config.xml"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xxhdpi/ic_launcher_round.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xxxhdpi/ic_launcher_round.webp"
+        "merged": "com.regimento.app-merged_res-38:/xml_network_security_config.xml.flat",
+        "source": "com.regimento.app-main-40:/xml/network_security_config.xml"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/mipmap-hdpi_ic_launcher_background.png.flat",
         "source": "com.regimento.app-main-40:/mipmap-hdpi/ic_launcher_background.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.regimento.app-main-40:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-hdpi/ic_launcher.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-hdpi_ic_launcher_round.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-hdpi/ic_launcher_round.webp"
+        "merged": "com.regimento.app-merged_res-38:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-ldpi_ic_launcher_foreground.png.flat",
+        "source": "com.regimento.app-main-40:/mipmap-ldpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.regimento.app-merged_res-38:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.regimento.app-main-40:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/drawable-port-night-xxhdpi_splash.png.flat",
         "source": "com.regimento.app-main-40:/drawable-port-night-xxhdpi/splash.png"
     },
     {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xxhdpi_ic_launcher.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xxhdpi/ic_launcher.webp"
-    },
-    {
         "merged": "com.regimento.app-merged_res-38:/xml_config.xml.flat",
         "source": "com.regimento.app-main-40:/xml/config.xml"
-    },
-    {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-xhdpi_ic_launcher.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-xhdpi/ic_launcher.webp"
-    },
-    {
-        "merged": "com.regimento.app-merged_res-38:/mipmap-hdpi_ic_launcher.webp.flat",
-        "source": "com.regimento.app-main-40:/mipmap-hdpi/ic_launcher.webp"
     },
     {
         "merged": "com.regimento.app-merged_res-38:/mipmap-xxhdpi_ic_launcher_background.png.flat",
