@@ -3,8 +3,19 @@
   --text-muted: #6c757d;
 }
 
+.perfil-content {
+  // Aplicar padding para safe area
+  --padding-top: var(--ion-safe-area-top, 0px);
+  --padding-bottom: var(--ion-safe-area-bottom, 0px);
+  --padding-start: var(--ion-safe-area-left, 0px);
+  --padding-end: var(--ion-safe-area-right, 0px);
+}
+
 .profile-card {
-  margin-top: 10px;
+  margin-top: calc(10px + var(--ion-safe-area-top, 0px));
+  margin-left: calc(1rem + var(--ion-safe-area-left, 0px));
+  margin-right: calc(1rem + var(--ion-safe-area-right, 0px));
+  margin-bottom: calc(1rem + var(--ion-safe-area-bottom, 0px));
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
   padding: 1.2rem;
@@ -99,5 +110,35 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// Estilos específicos para iOS
+.platform-ios {
+  .perfil-content {
+    // Ajustar padding para iOS
+    --padding-top: calc(var(--ion-safe-area-top, 0px) + 0.5rem);
+  }
+  
+  .profile-card {
+    // Ajustar margem superior para iOS
+    margin-top: calc(0.5rem + var(--ion-safe-area-top, 0px));
+  }
+}
+
+// Ajustes para dispositivos com notch (iPhone X e superiores)
+@media (max-width: 430px) and (min-height: 800px) {
+  .profile-card {
+    margin-top: calc(1rem + var(--ion-safe-area-top, 0px));
+    margin-left: calc(0.5rem + var(--ion-safe-area-left, 0px));
+    margin-right: calc(0.5rem + var(--ion-safe-area-right, 0px));
+  }
+}
+
+// Ajustes para orientação landscape
+@media (orientation: landscape) and (max-height: 500px) {
+  .profile-card {
+    margin-top: calc(0.5rem + var(--ion-safe-area-top, 0px));
+    margin-bottom: calc(0.5rem + var(--ion-safe-area-bottom, 0px));
   }
 }

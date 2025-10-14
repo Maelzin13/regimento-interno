@@ -152,7 +152,6 @@ ion-header.ios {
   background-repeat: no-repeat;
   background-attachment: fixed;
   position: relative;
-  padding: 16px;
   
   // Responsividade para telas menores
   @media (max-width: 375px) {
@@ -160,11 +159,11 @@ ion-header.ios {
   }
   
   @media (min-width: 376px) and (max-width: 414px) {
-    padding: 14px;
+    padding: 1px;
   }
   
   @media (min-width: 415px) {
-    padding: 16px;
+    padding: 0px;
   }
 }
 
@@ -197,18 +196,17 @@ ion-grid {
   }
   
   ion-col {
-    padding: 4px;
     
     @media (max-width: 375px) {
-      padding: 3px;
+      padding: 1px;
     }
     
     @media (min-width: 376px) and (max-width: 414px) {
-      padding: 3.5px;
+      padding: 1px;
     }
     
     @media (min-width: 415px) {
-      padding: 4px;
+      padding: 1px;
     }
   }
 }
@@ -221,6 +219,29 @@ ion-grid {
   padding-bottom: 20px;
   font-size: 1rem;
   line-height: 1.4;
+
+  @media (max-width: 375px) {
+    padding-top: 0px;
+  }
+
+  @media (min-width: 376px) and (max-width: 414px) {
+    padding-top: 10px;
+  }
+
+  @media (min-width: 415px) {
+    padding-top: 7px;
+  }
+}
+
+.card-content-md {
+  -webkit-padding-start: 16px;
+  padding-inline-start: 16px;
+  -webkit-padding-end: 16px;
+  padding-inline-end: 16px;
+  padding-top: 10px;
+  padding-bottom: 13px;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .menu-item-livro {
@@ -231,26 +252,27 @@ ion-grid {
   position: relative;
   border-radius: 10px;
   display: flex;
-  min-height: 200px;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin-bottom: 16px;
   
   // Responsividade para telas menores (iPhone)
   @media (max-width: 375px) {
-    min-height: 140px;
-    margin-bottom: 12px;
+    min-height: 171px;
   }
   
   @media (min-width: 376px) and (max-width: 414px) {
-    min-height: 160px;
+    min-height: 190px;
     margin-bottom: 14px;
   }
   
   // Para telas maiores
-  @media (min-width: 415px) {
-    min-height: 200px;
-    margin-bottom: 16px;
+  @media (min-width: 415px) and (max-width: 507px) {
+    min-height: 220px;
+    margin-bottom: 13px;
+  }
+
+  @media (min-width: 508px) {
+    min-height: 252px;
   }
   
   &:hover {
@@ -265,28 +287,28 @@ ion-grid {
 
 .dashboard-title {
   color: white;
-  font-weight: 500;
   font-family: Poppins;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  margin: 20px 0 12px 0;
-  padding: 0 8px;
   
   // Responsividade para telas menores
   @media (max-width: 375px) {
     margin: 16px 0 10px 0;
-    font-size: 14px;
+    font-size: 13px;
     padding: 0 4px;
+    margin: 0px;
   }
   
   @media (min-width: 376px) and (max-width: 414px) {
     margin: 18px 0 11px 0;
     font-size: 15px;
     padding: 0 6px;
+    margin: 0px;
+    padding: 0px;
   }
   
   @media (min-width: 415px) {
     margin: 20px 0 12px 0;
-    font-size: 16px;
+    font-size: 13px;
     padding: 0 8px;
   }
 }
@@ -298,17 +320,15 @@ ion-grid {
   justify-content: center;
   background-color: rgba(248, 249, 250, 0.95);
   border-radius: 10px;
-  padding: 8px;
   height: 100%;
   transition: all 0.3s ease;
-  margin-bottom: 8px;
   // box-shadow: 3px 2px 6px rgba(155, 165, 158, 0.8);
   backdrop-filter: blur(5px);
   
   // Responsividade para telas menores
   @media (max-width: 375px) {
-    padding: 6px;
-    margin-bottom: 6px;
+    padding: 4px;
+    margin-bottom: 0px;
     border-radius: 8px;
   }
   
@@ -319,7 +339,7 @@ ion-grid {
   }
   
   @media (min-width: 415px) {
-    padding: 8px;
+    padding: 3px;
     margin-bottom: 8px;
     border-radius: 10px;
   }
@@ -335,15 +355,8 @@ ion-grid {
   font-family: Poppins;
 }
 
-.icon-large {
-  font-size: 36px;
-  margin-bottom: 10px;
-}
-
 .auxiliares-text {
-  font-size: 14px;
   color: #231f20;
-  line-height: 1.4;
   font-family: Poppins;
   word-break: break-word;
   
@@ -365,8 +378,6 @@ ion-grid {
 }
 
 .auxiliares-text-solo {
-  font-size: 16px;
-  line-height: 1.4;
   color: #231f20;
   font-family: Poppins;
   word-break: break-word;

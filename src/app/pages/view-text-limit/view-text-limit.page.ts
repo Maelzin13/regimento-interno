@@ -2081,13 +2081,6 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
     const subscriptionStatus = this.subscriptionData?.stripe_status || this.user?.subscription_status || '';
     this.isActive = ['active', 'trialing'].includes(subscriptionStatus);
 
-    console.log('🔍 Derivando flags do usuário:', {
-      subscriptionStatus,
-      isActive: this.isActive,
-      planInfoData: this.planInfoData,
-      currentUser: this.user?.plan
-    });
-
     // PRIORIDADE 1: Usar dados do plan_info se disponível
     if (this.planInfoData) {
       // Verificar se é um plano Free baseado em is_free ou display_name
@@ -2095,19 +2088,15 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
         this.planInfoData.display_name?.toLowerCase().includes('free') ||
         this.planInfoData.name?.toLowerCase().includes('free')) {
         this.activeInterval = 'Free';
-        console.log('✅ Intervalo determinado como Free (plan_info)');
       } else {
         // Se não é Free, verificar o intervalo
         const intervalo = this.planInfoData.intervalo?.toLowerCase();
         if (intervalo?.includes('mensal')) {
           this.activeInterval = 'Mensal';
-          console.log('✅ Intervalo determinado como Mensal (plan_info)');
         } else if (intervalo?.includes('anual')) {
           this.activeInterval = 'Anual';
-          console.log('✅ Intervalo determinado como Anual (plan_info)');
         } else {
           this.activeInterval = null;
-          console.log('⚠️ Intervalo não determinado (plan_info)');
         }
       }
     } else {
@@ -2116,23 +2105,14 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
 
       if (p.includes('free') || p.includes('gratuito')) {
         this.activeInterval = 'Free';
-        console.log('✅ Intervalo determinado como Free (fallback)');
       } else if (p.includes('mensal')) {
         this.activeInterval = 'Mensal';
-        console.log('✅ Intervalo determinado como Mensal (fallback)');
       } else if (p.includes('anual')) {
         this.activeInterval = 'Anual';
-        console.log('✅ Intervalo determinado como Anual (fallback)');
       } else {
         this.activeInterval = null;
-        console.log('⚠️ Intervalo não determinado (fallback)');
       }
     }
-
-    console.log('🎯 Flags finais:', {
-      isActive: this.isActive,
-      activeInterval: this.activeInterval
-    });
   }
 
   /**

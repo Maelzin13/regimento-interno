@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
 import { PdfViewerComponent } from '../../components/pdf-viewer/pdf-viewer.component';
 
 @Component({
@@ -17,6 +17,7 @@ export class PdfViewerPageComponent implements OnInit {
   useRemoteUrl: boolean = true; // Por padrão, usar URLs remotas
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private toastController: ToastController
   ) {}

@@ -9,31 +9,12 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 
-// Otimizações globais para Android
-.platform-android {
-  // Melhorar a experiência de toque
-  * {
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  // Otimizar scroll
-  ion-content {
-    --overflow: hidden;
-  }
-  
-  // Melhorar performance de animações
-  ion-card, ion-item, ion-button {
-    will-change: transform;
-  }
-  
-  // Otimizar safe areas
-  ion-header {
-    --ion-safe-area-top: env(safe-area-inset-top);
-  }
-  
-  ion-footer {
-    --ion-safe-area-bottom: env(safe-area-inset-bottom);
-  }
+// Safe area variables globais para iOS
+:root {
+  --ion-safe-area-top: env(safe-area-inset-top, 0px);
+  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --ion-safe-area-left: env(safe-area-inset-left, 0px);
+  --ion-safe-area-right: env(safe-area-inset-right, 0px);
 }
 
 // Melhorias de acessibilidade globais
@@ -41,37 +22,5 @@ ion-button, ion-item, .menu-box {
   &:focus-visible {
     outline: 2px solid var(--ion-color-primary);
     outline-offset: 2px;
-  }
-}
-
-// Otimizações para dispositivos com tela pequena
-@media (max-width: 360px) {
-  ion-content {
-    --padding-start: 0.5rem;
-    --padding-end: 0.5rem;
-  }
-  
-  ion-card {
-    margin: 0.5rem;
-  }
-  
-  ion-item {
-    --padding-start: 0.5rem;
-    --padding-end: 0.5rem;
-  }
-}
-
-// Otimizações para alta densidade de pixels
-@media (-webkit-min-device-pixel-ratio: 2.5), (min-resolution: 240dpi) {
-  ion-card {
-    border-radius: 6px;
-  }
-  
-  ion-button {
-    border-radius: 6px;
-  }
-  
-  ion-item {
-    border-radius: 4px;
   }
 }

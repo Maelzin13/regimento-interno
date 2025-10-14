@@ -72,13 +72,11 @@ export class PaymentService {
     try {
       // Listener para quando o browser é fechado
       await Browser.addListener('browserFinished', () => {
-        console.log('🔄 Browser fechado - verificando status da assinatura...');
         this.handleBrowserClosed();
       });
 
       // Listener para quando a página do browser carrega
       await Browser.addListener('browserPageLoaded', () => {
-        console.log('📄 Página do browser carregada');
       });
 
     } catch (error) {
@@ -91,8 +89,6 @@ export class PaymentService {
    */
   private async handleBrowserClosed(): Promise<void> {
     try {
-      console.log('🔄 Processando fechamento do browser...');
-      
       // Aguardar um pouco para o backend processar
       await new Promise(resolve => setTimeout(resolve, 2000));
       
@@ -100,9 +96,6 @@ export class PaymentService {
       const assinatura = await this.checkSubscriptionStatus();
       
       if (assinatura) {
-        console.log('✅ Status da assinatura verificado:', assinatura.status);
-        
-        // Forçar atualização da interface
         await this.refreshUserData();
         
         // Mostrar feedback ao usuário
@@ -124,8 +117,6 @@ export class PaymentService {
    */
   private async updatePaymentStatus(status: PaymentStatus): Promise<void> {
     try {
-      console.log('🔄 Atualizando status de pagamento:', status);
-      console.log('🔄 Key:', this.PAYMENT_STATUS_KEY);
       await this.storage.set(this.PAYMENT_STATUS_KEY, status);
       this.paymentStatusSubject.next(status);
     } catch (error) {
@@ -145,8 +136,6 @@ export class PaymentService {
    */
   async processWebhookEvent(event: WebhookEvent): Promise<void> {
     try {
-      console.log('🔄 Processando webhook do Stripe:', event.type);
-      
       // Salvar evento para auditoria
       await this.saveWebhookEvent(event);
       
@@ -167,7 +156,6 @@ export class PaymentService {
           await this.handleSubscriptionDeleted(event);
           break;
         default:
-          console.log('Evento de webhook não tratado:', event.type);
       }
     } catch (error) {
       console.error('Erro ao processar webhook:', error);
@@ -202,8 +190,6 @@ export class PaymentService {
    */
   private async handleCheckoutCompleted(event: WebhookEvent): Promise<void> {
     const session = event.data.object;
-    console.log('✅ Checkout concluído:', session.id);
-    
     await this.updatePaymentStatus('succeeded');
     await this.showSuccessToast('Pagamento realizado com sucesso!');
     
@@ -216,8 +202,6 @@ export class PaymentService {
    */
   private async handlePaymentSucceeded(event: WebhookEvent): Promise<void> {
     const invoice = event.data.object;
-    console.log('✅ Pagamento de fatura bem-sucedido:', invoice.id);
-    
     await this.updatePaymentStatus('succeeded');
     await this.showSuccessToast('Pagamento processado com sucesso!');
     
@@ -229,7 +213,6 @@ export class PaymentService {
    */
   private async handlePaymentFailed(event: WebhookEvent): Promise<void> {
     const invoice = event.data.object;
-    console.log('❌ Falha no pagamento:', invoice.id);
     
     await this.updatePaymentStatus('failed');
     await this.showErrorToast('Falha no processamento do pagamento. Verifique seus dados.');
@@ -242,7 +225,6 @@ export class PaymentService {
    */
   private async handleSubscriptionUpdated(event: WebhookEvent): Promise<void> {
     const subscription = event.data.object;
-    console.log('🔄 Assinatura atualizada:', subscription.id);
     
     await this.refreshUserData();
   }
@@ -252,7 +234,6 @@ export class PaymentService {
    */
   private async handleSubscriptionDeleted(event: WebhookEvent): Promise<void> {
     const subscription = event.data.object;
-    console.log('🚫 Assinatura cancelada:', subscription.id);
     
     await this.updatePaymentStatus('cancelled');
     await this.showWarningToast('Sua assinatura foi cancelada.');
@@ -265,8 +246,6 @@ export class PaymentService {
    */
   private async refreshUserData(): Promise<void> {
     try {
-      console.log('🔄 Atualizando dados do usuário após mudança de pagamento');
-      
       // Emitir evento para que outros componentes possam reagir
       window.dispatchEvent(new CustomEvent('paymentStatusChanged'));
       
@@ -287,11 +266,9 @@ export class PaymentService {
    */
   async checkSubscriptionStatus(): Promise<MeAssinaturaResponse | null> {
     try {
-      console.log('🔍 Verificando status da assinatura...');
       const assinatura = await this.getMeAssinatura();
       
       if (assinatura?.status) {
-        console.log('📊 Status da assinatura:', assinatura.status);
         
         // Atualizar status baseado no status da assinatura
         if (assinatura.status === 'active' || assinatura.active) {
@@ -368,25 +345,16 @@ export class PaymentService {
         })
       );
   
-      console.log('🔄 Resposta do backend:', res);
-  
       if (!res?.success || !res?.checkout_url) {
         await this.updatePaymentStatus('failed');
         throw new Error('Erro ao processar pagamento');
       }
-  
-      console.log('🔄 Checkout iniciado com sucesso:', res.session_id);
-      console.log('🌐 Abrindo navegador para:', res.checkout_url);
       
       // Abrir navegador web - o Stripe processará tudo e enviará webhook
       await Browser.open({
         url: res.checkout_url,
         presentationStyle: 'fullscreen',
       });
-
-      // O status será atualizado automaticamente via webhook quando o pagamento for concluído
-      // O listener 'browserFinished' irá tratar o fechamento do browser
-      console.log('✅ Navegador aberto. Aguardando processamento via webhook...');
   
     } catch (error) {
       await this.updatePaymentStatus('failed');
@@ -539,7 +507,6 @@ export class PaymentService {
   async cleanup(): Promise<void> {
     try {
       await Browser.removeAllListeners();
-      console.log('🧹 Listeners do browser removidos');
     } catch (error) {
       console.error('Erro ao limpar listeners do browser:', error);
     }

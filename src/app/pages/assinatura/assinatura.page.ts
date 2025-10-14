@@ -1,7 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController, LoadingController } from '@ionic/angular';
-import { UserModel, ProfileResponse, SubscriptionInfo, PlanInfo, MeAssinaturaResponse } from 'src/app/models/userModel';
+import {
+  UserModel,
+  ProfileResponse,
+  SubscriptionInfo,
+  PlanInfo,
+  MeAssinaturaResponse,
+} from 'src/app/models/userModel';
 import { AuthService } from 'src/app/services/auth.service';
 import { PlansService } from 'src/app/services/plans.service';
 import { PaymentService } from 'src/app/services/payment.service';
@@ -55,8 +61,8 @@ export class AssinaturaPage implements OnInit, OnDestroy {
     private toast: ToastController,
     private storage: StorageService,
     private plansService: PlansService,
-    private loadingController: LoadingController,
-  ) { }
+    private loadingController: LoadingController
+  ) {}
 
   async ngOnInit() {
     // Limpar dados anteriores antes de carregar novos dados
@@ -70,21 +76,20 @@ export class AssinaturaPage implements OnInit, OnDestroy {
     });
 
     // Monitorar mudanças no status de pagamento
-    this.paymentStatusSubscription = this.pay.paymentStatus$.subscribe((status) => {
-      console.log('🔄 Status de pagamento atualizado:', status);
-      this.handlePaymentStatusChange(status);
-    });
+    this.paymentStatusSubscription = this.pay.paymentStatus$.subscribe(
+      (status) => {
+        this.handlePaymentStatusChange(status);
+      }
+    );
 
     // Escutar eventos de mudança de status de pagamento
     window.addEventListener('paymentStatusChanged', () => {
-      console.log('🔄 Evento de mudança de status de pagamento recebido');
       this.loadUser();
       this.loadPlans();
     });
 
     // Escutar evento de refresh forçado de dados do usuário
     window.addEventListener('forceRefreshUserData', () => {
-      console.log('🔄 Evento de refresh forçado recebido');
       this.loadUser();
       this.loadPlans();
     });
@@ -125,37 +130,30 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   // ========= helpers regras de negócio =========
 
   private deriveUserFlags() {
-    // Usar dados da nova API se disponíveis, senão fallback para dados antigos
-    const subscriptionStatus = this.subscriptionData?.stripe_status || this.currentUser?.subscription_status || '';
+    const subscriptionStatus =
+      this.subscriptionData?.stripe_status ||
+      this.currentUser?.subscription_status ||
+      '';
     this.isActive = ['active', 'trialing'].includes(subscriptionStatus);
-
-    console.log('🔍 Derivando flags do usuário:', {
-      subscriptionStatus,
-      isActive: this.isActive,
-      planInfoData: this.planInfoData,
-      currentUser: this.currentUser?.plan
-    });
 
     // PRIORIDADE 1: Usar dados do plan_info se disponível
     if (this.planInfoData) {
       // Verificar se é um plano Free baseado em is_free ou display_name
-      if (this.planInfoData.is_free ||
+      if (
+        this.planInfoData.is_free ||
         this.planInfoData.display_name?.toLowerCase().includes('free') ||
-        this.planInfoData.name?.toLowerCase().includes('free')) {
+        this.planInfoData.name?.toLowerCase().includes('free')
+      ) {
         this.activeInterval = 'Free';
-        console.log('✅ Intervalo determinado como Free (plan_info)');
       } else {
         // Se não é Free, verificar o intervalo
         const intervalo = this.planInfoData.intervalo?.toLowerCase();
         if (intervalo?.includes('mensal')) {
           this.activeInterval = 'Mensal';
-          console.log('✅ Intervalo determinado como Mensal (plan_info)');
         } else if (intervalo?.includes('anual')) {
           this.activeInterval = 'Anual';
-          console.log('✅ Intervalo determinado como Anual (plan_info)');
         } else {
           this.activeInterval = null;
-          console.log('⚠️ Intervalo não determinado (plan_info)');
         }
       }
     } else {
@@ -164,25 +162,15 @@ export class AssinaturaPage implements OnInit, OnDestroy {
 
       if (p.includes('free') || p.includes('gratuito')) {
         this.activeInterval = 'Free';
-        console.log('✅ Intervalo determinado como Free (fallback)');
       } else if (p.includes('mensal')) {
         this.activeInterval = 'Mensal';
-        console.log('✅ Intervalo determinado como Mensal (fallback)');
       } else if (p.includes('anual')) {
         this.activeInterval = 'Anual';
-        console.log('✅ Intervalo determinado como Anual (fallback)');
       } else {
         this.activeInterval = null;
-        console.log('⚠️ Intervalo não determinado (fallback)');
       }
     }
-
-    console.log('🎯 Flags finais:', {
-      isActive: this.isActive,
-      activeInterval: this.activeInterval
-    });
   }
-
 
   isPlanActive(plan: Plan): boolean {
     if (!this.isActive) return false;
@@ -213,7 +201,10 @@ export class AssinaturaPage implements OnInit, OnDestroy {
       } else {
         // Fallback: usar dados do usuário para comparar
         const userPlan = (this.currentUser?.plan || '').toLowerCase();
-        if (userPlan.includes('free') && plan.nome.toLowerCase().includes('free')) {
+        if (
+          userPlan.includes('free') &&
+          plan.nome.toLowerCase().includes('free')
+        ) {
           // Se o usuário tem Free e o plano é Free, verificar se o intervalo coincide
           if (userPlan.includes('mensal') && plan.intervalo === 'Mensal') {
             return true;
@@ -228,7 +219,8 @@ export class AssinaturaPage implements OnInit, OnDestroy {
     // PRIORIDADE 4: Fallback usando heurística pelo intervalo/nome
     const u = (this.currentUser?.plan || '').toLowerCase();
     const nomeMatch = u && plan?.nome && u.includes(plan.nome.toLowerCase());
-    const intervaloMatch = !!this.activeInterval && plan.intervalo === this.activeInterval;
+    const intervaloMatch =
+      !!this.activeInterval && plan.intervalo === this.activeInterval;
 
     return nomeMatch || intervaloMatch;
   }
@@ -236,13 +228,22 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   canMigrateTo(plan: Plan): boolean {
     // Regra:
     // - Se usuário tem MENSAL ativo, pode migrar para ANUAL
-    if (this.isActive && this.activeInterval === 'Mensal' && plan.intervalo === 'Anual') return true;
+    if (
+      this.isActive &&
+      this.activeInterval === 'Mensal' &&
+      plan.intervalo === 'Anual'
+    )
+      return true;
     // - Se usuário tem ANUAL ativo, não migra para MENSAL (precisa cancelar antes)
     return false;
   }
 
   mustCancelFirst(plan: Plan): boolean {
-    return this.isActive && this.activeInterval === 'Anual' && plan.intervalo === 'Mensal';
+    return (
+      this.isActive &&
+      this.activeInterval === 'Anual' &&
+      plan.intervalo === 'Mensal'
+    );
   }
 
   formatDate(date: any): any {
@@ -265,7 +266,10 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   // ============ carregamento ============
 
   private async loadUser(): Promise<void> {
-    const loading = await this.loadingController.create({ message: 'Carregando...', spinner: 'crescent' });
+    const loading = await this.loadingController.create({
+      message: 'Carregando...',
+      spinner: 'crescent',
+    });
     try {
       await loading.present();
 
@@ -341,50 +345,52 @@ export class AssinaturaPage implements OnInit, OnDestroy {
 
       // base para filtros
       this.allPlans = this.plansData.planos ?? [];
-      this.allPlans = this.allPlans.filter(p => p.nome !== '"myproduct"');
-      
+      this.allPlans = this.allPlans.filter((p) => p.nome !== '"myproduct"');
       // CORREÇÃO: Sempre atualizar o segmento baseado no plano ativo
       if (this.isActive && this.activeInterval) {
-        console.log('🔄 Atualizando segmento para:', this.activeInterval);
         this.segment = this.activeInterval;
       } else if (this.isActive && this.assinaturaAtiva?.id) {
         // Fallback: tentar determinar o segmento pelo plano ativo
-        const activePlan = this.allPlans.find(p => p.id === this.assinaturaAtiva?.id);
+        const activePlan = this.allPlans.find(
+          (p) => p.id === this.assinaturaAtiva?.id
+        );
         if (activePlan) {
-          console.log('🔄 Segmento determinado pelo plano ativo:', activePlan.intervalo);
           this.segment = activePlan.intervalo as Intervalo;
         }
       }
 
-      this.monthlyPlans = this.allPlans.filter(p =>
-        p.intervalo === 'Mensal' &&
-        p.nome !== 'Free' &&
-        p.preco !== 'R$ 0,00'
+      this.monthlyPlans = this.allPlans.filter(
+        (p) =>
+          p.intervalo === 'Mensal' && p.nome !== 'Free' && p.preco !== 'R$ 0,00'
       );
 
-      this.annualPlans = this.allPlans.filter(p =>
-        p.intervalo === 'Anual' &&
-        p.nome !== 'Free' &&
-        p.preco !== 'R$ 0,00'
+      this.annualPlans = this.allPlans.filter(
+        (p) =>
+          p.intervalo === 'Anual' && p.nome !== 'Free' && p.preco !== 'R$ 0,00'
       );
 
       // Filtrar planos Free
-      const freePlansFiltered = this.allPlans.filter(p =>
-        p.nome === 'Free' ||
-        p.preco === 'R$ 0,00' ||
-        p.preco === '0,00' ||
-        p.preco === '0'
+      const freePlansFiltered = this.allPlans.filter(
+        (p) =>
+          p.nome === 'Free' ||
+          p.preco === 'R$ 0,00'
       );
 
       // Remover duplicatas baseado no ID do plano
-      this.freePlans = freePlansFiltered.filter((plan, index, self) =>
-        index === self.findIndex(p => p.id === plan.id)
+      this.freePlans = freePlansFiltered.filter(
+        (plan, index, self) => index === self.findIndex((p) => p.id === plan.id)
       );
 
       // Se o usuário tem um plano Free ativo, mostrar apenas o plano ativo
-      if (this.isActive && this.activeInterval === 'Free' && this.freePlans.length > 1) {
+      if (
+        this.isActive &&
+        this.activeInterval === 'Free' &&
+        this.freePlans.length > 1
+      ) {
         // Tentar encontrar o plano ativo primeiro
-        const activePlan = this.freePlans.find(plan => this.isPlanActive(plan));
+        const activePlan = this.freePlans.find((plan) =>
+          this.isPlanActive(plan)
+        );
 
         if (activePlan) {
           // Se encontrou o plano ativo, mostrar apenas ele
@@ -392,7 +398,9 @@ export class AssinaturaPage implements OnInit, OnDestroy {
         } else {
           // Se não encontrou o plano ativo, tentar deduzir pelo plan_info
           if (this.planInfoData?.price_id) {
-            const planByPriceId = this.freePlans.find(plan => plan.id === this.planInfoData?.price_id);
+            const planByPriceId = this.freePlans.find(
+              (plan) => plan.id === this.planInfoData?.price_id
+            );
             if (planByPriceId) {
               this.freePlans = [planByPriceId];
             }
@@ -410,42 +418,23 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   }
 
   applyFilter() {
-    console.log('🔄 Aplicando filtro para segmento:', this.segment);
-    console.log('📊 Planos disponíveis:', {
-      mensal: this.monthlyPlans.length,
-      anual: this.annualPlans.length,
-      free: this.freePlans.length
-    });
-    
     switch (this.segment) {
       case 'Anual':
         this.filteredPlans = [...this.annualPlans];
-        console.log('📋 Planos anuais filtrados:', this.filteredPlans.length);
         break;
       case 'Free':
         this.filteredPlans = [...this.freePlans];
-        console.log('📋 Planos gratuitos filtrados:', this.filteredPlans.length);
         break;
       case 'Mensal':
       default:
         this.filteredPlans = [...this.monthlyPlans];
-        console.log('📋 Planos mensais filtrados:', this.filteredPlans.length);
         break;
-    }
-    
-    // Log para debug
-    if (this.filteredPlans.length === 0) {
-      console.warn('⚠️ Nenhum plano encontrado para o segmento:', this.segment);
-      console.log('🔍 Verificando se há plano ativo:', this.isActive);
-      console.log('🔍 Intervalo ativo:', this.activeInterval);
-      console.log('🔍 Assinatura ativa:', this.assinaturaAtiva);
     }
   }
 
   filtrar() {
     this.applyFilter();
   }
-
   // ============ ações ============
 
   fecharModal() {
@@ -464,7 +453,10 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   async cancelar() {
     // Verificar se o usuário já cancelou uma vez
     if (this.hasCancelledOnce) {
-      await this.showToast('Você já cancelou sua assinatura uma vez. Não é possível cancelar novamente.', 'warning');
+      await this.showToast(
+        'Você já cancelou sua assinatura uma vez. Não é possível cancelar novamente.',
+        'warning'
+      );
       return;
     }
 
@@ -482,10 +474,14 @@ export class AssinaturaPage implements OnInit, OnDestroy {
         await this.loadPlans();
         this.applyFilter();
       } else {
-        await this.showToast(res?.message || 'Não foi possível cancelar', 'warning');
+        await this.showToast(
+          res?.message || 'Não foi possível cancelar',
+          'warning'
+        );
       }
     } catch (e: any) {
-      const errorMessage = e?.message || e?.error?.message || 'Erro ao cancelar assinatura';
+      const errorMessage =
+        e?.message || e?.error?.message || 'Erro ao cancelar assinatura';
       await this.showToast(errorMessage, 'danger');
       console.error('❌ Erro ao cancelar assinatura:', e);
     } finally {
@@ -502,55 +498,55 @@ export class AssinaturaPage implements OnInit, OnDestroy {
       this.loading = true;
 
       // Iniciar checkout - abre navegador web
-      await this.pay.startCheckout(priceId).then(async () => {
-        // Limpar dados anteriores antes de carregar novos dados
-        this.resetPageState();
+      await this.pay
+        .startCheckout(priceId)
+        .then(async () => {
+          this.resetPageState();
 
-        // Escutar mudanças de usuário para limpar dados automaticamente
-        this.userSubscription = this.auth.userChanged.subscribe((user) => {
-          if (!user) {
-            this.resetPageState();
-          }
+          this.userSubscription = this.auth.userChanged.subscribe((user) => {
+            if (!user) {
+              this.resetPageState();
+            }
+          });
+
+          // Monitorar mudanças no status de pagamento
+          this.paymentStatusSubscription = this.pay.paymentStatus$.subscribe(
+            (status) => {
+              this.handlePaymentStatusChange(status);
+            }
+          );
+
+          window.addEventListener('paymentStatusChanged', () => {
+            this.loadUser();
+            this.loadPlans();
+          });
+
+          // Escutar evento de refresh forçado de dados do usuário
+          window.addEventListener('forceRefreshUserData', () => {
+            this.loadUser();
+            this.loadPlans();
+          });
+
+          await this.loadUser();
+          await this.loadPlans();
+          this.applyFilter();
+          this.loading = false;
+        })
+        .catch((error) => {
+          this.loading = false;
+          console.error('❌ Erro ao iniciar checkout:', error);
         });
-
-        // Monitorar mudanças no status de pagamento
-        this.paymentStatusSubscription = this.pay.paymentStatus$.subscribe((status) => {
-          console.log('🔄 Status de pagamento atualizado:', status);
-          this.handlePaymentStatusChange(status);
-        });
-
-        // Escutar eventos de mudança de status de pagamento
-        window.addEventListener('paymentStatusChanged', () => {
-          console.log('🔄 Evento de mudança de status de pagamento recebido');
-          this.loadUser();
-          this.loadPlans();
-        });
-
-        // Escutar evento de refresh forçado de dados do usuário
-        window.addEventListener('forceRefreshUserData', () => {
-          console.log('🔄 Evento de refresh forçado recebido');
-          this.loadUser();
-          this.loadPlans();
-        });
-
-        await this.loadUser();
-        await this.loadPlans();
-        this.applyFilter();
-        this.loading = false;
-      }).catch((error) => {
-        this.loading = false;
-        console.error('❌ Erro ao iniciar checkout:', error);
-      });
 
       // Mostrar mensagem informativa
       await this.showToast('Redirecionando para pagamento...', 'success');
 
       // O status será atualizado automaticamente via webhook quando o pagamento for concluído
       // Não precisamos mais forçar sincronização imediata
-      console.log('✅ Checkout iniciado. Aguardando processamento via webhook...');
-
     } catch (e: any) {
-      await this.showToast(e?.error?.message || 'Erro ao iniciar checkout', 'danger');
+      await this.showToast(
+        e?.error?.message || 'Erro ao iniciar checkout',
+        'danger'
+      );
       console.error('❌ Erro ao iniciar checkout:', e);
     } finally {
       this.loading = false;
@@ -560,7 +556,10 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   async migrar(priceId: string) {
     // só permite MENSAL -> ANUAL
     if (!(this.isActive && this.activeInterval === 'Mensal')) {
-      await this.showToast('Migração indisponível para seu plano atual.', 'warning');
+      await this.showToast(
+        'Migração indisponível para seu plano atual.',
+        'warning'
+      );
       return;
     }
     try {
@@ -572,10 +571,16 @@ export class AssinaturaPage implements OnInit, OnDestroy {
         await this.loadPlans();
         this.applyFilter();
       } else {
-        await this.showToast(res?.message || 'Não foi possível atualizar o plano', 'warning');
+        await this.showToast(
+          res?.message || 'Não foi possível atualizar o plano',
+          'warning'
+        );
       }
     } catch (e: any) {
-      await this.showToast(e?.error?.message || 'Erro ao atualizar o plano', 'danger');
+      await this.showToast(
+        e?.error?.message || 'Erro ao atualizar o plano',
+        'danger'
+      );
       console.error(e);
     } finally {
       this.loading = false;
@@ -583,20 +588,18 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   }
 
   // ============ UI helpers ============
-
   showAssinar(plan: Plan): boolean {
-    if (this.isPlanActive(plan)) return false;          // nunca mostra se é o ativo
-    if (this.isActive) return false;                    // usuário já tem assinatura ativa
-    if (this.isPlanFree(plan)) return false;            // planos free não mostram botão assinar
-    return true;                                        // usuário sem assinatura -> pode assinar
+    if (this.isPlanActive(plan)) return false; // nunca mostra se é o ativo
+    if (this.isActive) return false; // usuário já tem assinatura ativa
+    if (this.isPlanFree(plan)) return false; // planos free não mostram botão assinar
+    return true; // usuário sem assinatura -> pode assinar
   }
 
   isPlanFree(plan: Plan): boolean {
-    return plan.nome === 'Free' ||
-      plan.preco === 'R$ 0,00' ||
-      plan.preco === '0,00' ||
-      plan.preco === '0' ||
-      plan.preco === 'R$ 0';
+    return (
+      plan.nome === 'Free' ||
+      plan.preco === 'R$ 0,00'
+    );
   }
 
   async ativarPlanoFree(planId: string) {
@@ -609,10 +612,11 @@ export class AssinaturaPage implements OnInit, OnDestroy {
       await this.showToast('Redirecionando para ativação...', 'success');
 
       // O status será atualizado automaticamente via webhook quando o pagamento for concluído
-      console.log('✅ Plano gratuito iniciado. Aguardando processamento via webhook...');
-
     } catch (e: any) {
-      await this.showToast(e?.error?.message || 'Erro ao ativar plano gratuito', 'danger');
+      await this.showToast(
+        e?.error?.message || 'Erro ao ativar plano gratuito',
+        'danger'
+      );
       console.error('❌ Erro ao ativar plano gratuito:', e);
     } finally {
       this.loading = false;
@@ -626,7 +630,6 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   showCancelarParaMigrar(plan: Plan): boolean {
     return this.mustCancelFirst(plan);
   }
-
   /**
    * Verifica se o usuário pode cancelar a assinatura
    */
@@ -682,7 +685,11 @@ export class AssinaturaPage implements OnInit, OnDestroy {
    * Obtém o nome de exibição do plano atual
    */
   getCurrentPlanDisplayName(): string {
-    return this.planInfoData?.display_name || this.currentUser?.plan || 'Plano não identificado';
+    return (
+      this.planInfoData?.display_name ||
+      this.currentUser?.plan ||
+      'Plano não identificado'
+    );
   }
 
   /**
@@ -739,9 +746,7 @@ export class AssinaturaPage implements OnInit, OnDestroy {
 
     if (!endsAt) return false;
 
-    return endsAt !== null &&
-      endsAt !== undefined &&
-      endsAt !== '';
+    return endsAt !== null && endsAt !== undefined && endsAt !== '';
   }
 
   /**
@@ -763,32 +768,32 @@ export class AssinaturaPage implements OnInit, OnDestroy {
   private handlePaymentStatusChange(status: string): void {
     switch (status) {
       case 'processing':
-        console.log('🔄 Processando pagamento...');
         break;
       case 'succeeded':
-        console.log('✅ Pagamento realizado com sucesso!');
-        // Forçar atualização dos dados e segmento
         setTimeout(async () => {
           await this.loadUser();
           await this.loadPlans();
-          // Garantir que o filtro seja aplicado após carregar os dados
           this.applyFilter();
-          console.log('🔄 Segmento atualizado para:', this.segment);
         }, 1000);
         break;
       case 'failed':
-        console.log('❌ Falha no pagamento');
         break;
       case 'cancelled':
-        console.log('🚫 Pagamento cancelado');
         break;
       default:
-        console.log('Status de pagamento:', status);
     }
   }
 
-  private async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'medium' = 'medium') {
-    const t = await this.toast.create({ message, duration: 2400, color, position: 'bottom' });
+  private async showToast(
+    message: string,
+    color: 'success' | 'danger' | 'warning' | 'medium' = 'medium'
+  ) {
+    const t = await this.toast.create({
+      message,
+      duration: 2400,
+      color,
+      position: 'bottom',
+    });
     await t.present();
   }
 
@@ -813,32 +818,25 @@ export class AssinaturaPage implements OnInit, OnDestroy {
    * Útil para verificar se o pagamento foi processado quando o usuário retorna do navegador
    */
   async ionViewDidEnter() {
-    console.log('🔄 Página de assinatura focada - verificando status...');
-
     // Verificar se há um pagamento em processamento
     const currentStatus = this.pay.getCurrentPaymentStatus();
     if (currentStatus === 'processing') {
-      console.log('⏳ Pagamento em processamento - verificando status...');
 
       // Verificar status da assinatura
       try {
         const assinatura = await this.pay.checkSubscriptionStatus();
         if (assinatura?.active || assinatura?.status === 'active') {
-          console.log('✅ Pagamento processado com sucesso!');
           await this.showToast('Pagamento processado com sucesso!', 'success');
-          
+
           // Recarregar dados e atualizar segmento
           await this.loadUser();
           await this.loadPlans();
           this.applyFilter();
-          console.log('🔄 Dados recarregados e segmento atualizado para:', this.segment);
         }
       } catch (error) {
         console.error('Erro ao verificar status da assinatura:', error);
       }
     } else {
-      // Sempre recarregar dados quando a página é focada para garantir dados atualizados
-      console.log('🔄 Recarregando dados da página...');
       await this.loadUser();
       await this.loadPlans();
       this.applyFilter();

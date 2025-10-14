@@ -59,13 +59,9 @@ export class LivroPage implements OnInit {
   async ngOnInit() {
     try {
       this.user = await this.authService.getUser();
-      console.log('user', this.user?.is_admin);
-      console.log('user', this.user?.subscription_status);
       const plansData = await this.plansService.getPlans();
       this.assinaturaAtiva = plansData.assinaturaAtiva;
-      console.log('assinaturaAtiva', this.assinaturaAtiva);
       this.isFreePlan = this.checkIfFreePlan();
-      console.log('isFreePlan', this.isFreePlan);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     }
