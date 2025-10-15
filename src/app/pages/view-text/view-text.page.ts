@@ -6,7 +6,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
-import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { RegimentoModalComponent } from '../../Modals/regimento-modal/regimento-modal.component';
 import { IonContent, ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 
@@ -79,6 +79,7 @@ interface ApiRemissao {
   selector: 'app-view-text',
   templateUrl: './view-text.page.html',
   styleUrls: ['./view-text.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ViewTextPage implements OnInit, AfterViewInit {
   book: any;
@@ -126,7 +127,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     private alertController: AlertController,
     private modalController: ModalController,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private cdr: ChangeDetectorRef
   ) { }
 
   async ngOnInit() {
@@ -134,10 +136,14 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.user = user;
     this.bookId = this.route.snapshot.paramMap.get('id');
     await this.loadSearchHistory();
-    await this.loadBook();
+    
+    // Usar requestAnimationFrame para melhor performance
+    requestAnimationFrame(async () => {
+      await this.loadBook();
+    });
   }
 
-  async loadBook() {
+  async loadBook(retryCount: number = 0): Promise<void> {
     const loader = await this.loadingController.create({
       message: 'Carregando regimento...',
       spinner: 'circles',
@@ -146,8 +152,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     try {
       await loader.present();
 
-      // Aqui NÃO limpe this.book, mantenha o anterior!
-      // Só limpa caches internos, se quiser
+      if (!navigator.onLine) {
+        throw new Error('Sem conexão com a internet. Verifique sua conexão e tente novamente.');
+      }
+
+      // Limpar apenas caches específicos, não todos
       this.contentCache.clear();
       this.elementosCache.clear();
       this.remissoesCache.clear();
@@ -164,18 +173,48 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.optimizePerformance();
       this.primeiroParagrafo = Allbooks.primeiro?.conteudo ?? ''
       
+      // Forçar detecção de mudanças após carregar os dados
+      this.cdr.markForCheck();
 
       this.route.queryParams.subscribe(params => {
         if (params && params['artigo']) {
-          setTimeout(() => {
-            this.scrollToArtigo(params['artigo']);
-          }, 1000);
+          // Usar requestAnimationFrame para melhor performance
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              this.scrollToArtigo(params['artigo']);
+            }, 1000);
+          });
         }
       });
 
-    } catch (error) {
-      this.presentToast('Erro ao carregar o regimento. Tente novamente.');
+    } catch (error: any) {
       console.error('Erro ao carregar o livro:', error);
+      
+      // Tentar novamente se for erro de rede e ainda não excedeu o limite
+      if ((error.name === 'FetchError' || error.message?.includes('fetch') || error.message?.includes('conexão')) && retryCount < 2) {
+        loader.dismiss();
+        
+        // Aguardar um pouco antes de tentar novamente
+        await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
+        
+        // Tentar novamente
+        return this.loadBook(retryCount + 1);
+      }
+      
+      // Mostrar mensagem de erro específica baseada no tipo de erro
+      let errorMessage = 'Erro ao carregar o regimento. Tente novamente.';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.name === 'FetchError') {
+        errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+      } else if (error.status >= 500) {
+        errorMessage = 'Servidor temporariamente indisponível. Tente novamente em alguns minutos.';
+      } else if (error.status === 401 || error.status === 403) {
+        errorMessage = 'Sessão expirada. Faça login novamente.';
+      }
+      
+      this.presentToast(errorMessage);
     } finally {
       loader.dismiss();
     }
@@ -188,7 +227,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       this.searchDebounceTimeout = null;
     }
     
-    this.query = '';
+    // Só atualizar se houver mudanças (evita re-renders desnecessários)
+    if (this.query !== '') {
+      this.query = '';
+    }
+    
     this.articleQueryNumero = null;
     this.filteredBook = null;
     this.searchResults = [];
@@ -196,7 +239,39 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     this.currentResultIndex = -1;
     this.isSearching = false;
     this.forceClearHighlights();
-    setTimeout(() => this.searchInput?.nativeElement?.focus(), 50);
+    
+    // Forçar detecção de mudanças
+    this.cdr.markForCheck();
+    
+    // Usar requestAnimationFrame para melhor performance
+    requestAnimationFrame(() => {
+      this.searchInput?.nativeElement?.focus();
+    });
+  }
+
+  onSearchInput(event: any) {
+    const value = event.detail.value || '';
+    
+    // Atualizar o valor apenas se for diferente (evita re-renders desnecessários)
+    if (this.query !== value) {
+      this.query = value;
+      // Forçar detecção de mudanças apenas quando necessário
+      this.cdr.markForCheck();
+    }
+    
+    // Se o campo estiver vazio, limpar a busca imediatamente
+    if (!value.trim()) {
+      this.clearSearch();
+      return;
+    }
+  }
+
+  onKeyPress(event: KeyboardEvent) {
+    // Executar busca quando pressionar Enter
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.search();
+    }
   }
   
   
@@ -317,11 +392,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     if (this.searchDebounceTimeout) {
       clearTimeout(this.searchDebounceTimeout);
     }
-    
-    // Implementar debounce de 300ms para melhorar performance em dispositivos móveis
-    this.searchDebounceTimeout = setTimeout(async () => {
-      await this.executeSearch();
-    }, 300);
+
+    await this.executeSearch();
   }
 
   async executeSearch() {
@@ -341,7 +413,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       await this.runArticleSearch(this.query);
       return;
     }
-  
+
     this.isSearching = false;
   }
 
@@ -642,6 +714,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   highlightAndSanitize(text: string): SafeHtml {
+    // Verificação rápida para textos vazios
+    if (!text || text.trim() === '') {
+      return this.sanitizer.bypassSecurityTrustHtml('');
+    }
+
     const cacheKey = `${text}_${this.query}_${this.searchType}_${this.searchBy}_${this.articleQueryNumero ?? ''}`;
     if (this.contentCache.has(cacheKey)) return this.contentCache.get(cacheKey)!;
   
@@ -718,17 +795,21 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit() {
-    if (!this.notaListenerAttached) {
-      this.listenNotaClicks();
-      this.notaListenerAttached = true;
-    }
+    // Usar requestAnimationFrame para melhor performance
+    requestAnimationFrame(() => {
+      if (!this.notaListenerAttached) {
+        this.listenNotaClicks();
+        this.notaListenerAttached = true;
+      }
 
-    // Configurar listeners para remissões
-    this.setupRemissaoLinks();
+      // Configurar listeners para remissões
+      this.setupRemissaoLinks();
 
-    this.setupScrollListener();
+      this.setupScrollListener();
 
-    this.remissoesCache.clear();
+      // Não limpar cache desnecessariamente
+      // this.remissoesCache.clear();
+    });
   }
 
   setupRemissaoLinks() {
@@ -1254,6 +1335,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
   // Métodos para navegação nos resultados
   navigateToResult(index: number) {
+    if (index < 0 || index >= this.totalResults) {
+      return;
+    }
+    
     this.currentResultIndex = index;
     
     // Calcular qual elemento e qual ocorrência dentro desse elemento
@@ -1279,13 +1364,17 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
     switch (targetElement.type) {
       case 'titulo':
-        element = document.querySelector(`h2.titulo`);
+        element = document.querySelector(`h2.titulo[data-titulo-id="${targetElement.id}"]`) || 
+                 document.querySelector(`h2.titulo:nth-of-type(${targetOccurrence + 1})`);
         break;
       case 'capitulo':
-        element = document.querySelector(`h3.capitulo`);
+        // Para capítulos, precisamos encontrar o capítulo específico baseado no ID
+        element = document.querySelector(`h3.capitulo[data-capitulo-id="${targetElement.id}"]`) || 
+                 document.querySelector(`h3.capitulo:nth-of-type(${targetOccurrence + 1})`);
         break;
       case 'secao':
-        element = document.querySelector(`h4.secao`);
+        element = document.querySelector(`h4.secao[data-secao-id="${targetElement.id}"]`) || 
+                 document.querySelector(`h4.secao:nth-of-type(${targetOccurrence + 1})`);
         break;
       case 'artigo':
         element = document.getElementById(`artigo-${targetElement.id}`);
@@ -1315,7 +1404,44 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       case 'quadro':
         // Para quadros, procurar pelo elemento com data-quadro-id
         element = document.querySelector(`[data-quadro-id="${targetElement.id}"]`) as HTMLElement;
-        if (!element) {
+
+        
+        if (element) {
+          // Se encontrou o container do quadro, tentar encontrar o elemento específico dentro da tabela
+          const quadroContainer = element;
+          
+          // Procurar por highlights dentro da tabela do quadro
+          const highlightsInQuadro = quadroContainer.querySelectorAll('.search-highlight');
+          
+          if (highlightsInQuadro.length > 0) {
+            // Se há highlights, navegar para o primeiro (ou o específico baseado na ocorrência)
+            const targetHighlightIndex = Math.min(targetOccurrence, highlightsInQuadro.length - 1);
+            element = highlightsInQuadro[targetHighlightIndex] as HTMLElement;
+          } else {
+            // Se não há highlights, procurar por elementos específicos da tabela
+            const quadroTable = quadroContainer.querySelector('.quadro-table');
+            if (quadroTable) {
+              const headers = Array.from(quadroTable.querySelectorAll('th'));
+              const cells = Array.from(quadroTable.querySelectorAll('td'));
+              
+              for (const header of headers) {
+                if (header.textContent && header.textContent.toLowerCase().includes(this.query.toLowerCase())) {
+                  element = header as HTMLElement;
+                  break;
+                }
+              }
+              
+              if (element === quadroContainer) {
+                for (const cell of cells) {
+                  if (cell.textContent && cell.textContent.toLowerCase().includes(this.query.toLowerCase())) {
+                    element = cell as HTMLElement;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        } else {
           // Fallback: procurar por elementos com classe quadro-titulo que contenham o título
           const quadroTitulos = document.querySelectorAll('.quadro-titulo');
           for (let i = 0; i < quadroTitulos.length; i++) {
@@ -1356,6 +1482,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           el.classList.add('result-focus');
           setTimeout(() => el.classList.remove('result-focus'), 1200);
+        } else {
         }
       }, 300);
     }
@@ -1365,12 +1492,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     if (!this.query) return;
 
     setTimeout(() => {
-      // Encontra todos os destaques existentes (tanto span quanto mark)
-      const highlights = document.querySelectorAll('.highlight-search, mark.highlight-search, .permanent-highlight');
+      const highlights = document.querySelectorAll('.highlight-search, mark.highlight-search, .permanent-highlight, .search-highlight');
 
       // Certifica-se que todos estão com a classe correta e visíveis
       highlights.forEach((el, index) => {
-        el.classList.add('highlight-search', 'permanent-highlight');
+        el.classList.add('highlight-search', 'permanent-highlight', 'search-highlight');
 
         // Garantir que elementos mark tenham os estilos corretos
         if (el.tagName.toLowerCase() === 'mark') {
@@ -1393,10 +1519,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           (el as HTMLElement).style.position = 'relative';
         }
       });
+      const quadroHighlights = document.querySelectorAll('.quadro-container .search-highlight');
     }, 200);
   }
 
-  navigateToNextResult() {
+  navigateToNextResult() {    
     if (this.currentResultIndex < this.totalResults - 1) {
       const nextIndex = this.currentResultIndex + 1;
       this.navigateToResult(nextIndex);
@@ -1406,12 +1533,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   navigateToPreviousResult() {
-
     if (this.currentResultIndex > 0) {
       const prevIndex = this.currentResultIndex - 1;
       this.navigateToResult(prevIndex);
     } else {
-
       this.presentToast('Já no primeiro resultado');
     }
   }
@@ -2193,21 +2318,59 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   // Método para otimizar performance
   private optimizePerformance() {
-    // Limpar caches antigos periodicamente
-    if (this.contentCache.size > 100) {
+    // Limpar caches antigos periodicamente, mas de forma mais inteligente
+    if (this.contentCache.size > 200) {
+      // Limpar apenas metade do cache, mantendo os mais recentes
+      const entries = Array.from(this.contentCache.entries());
+      const toKeep = entries.slice(-100);
       this.contentCache.clear();
+      toKeep.forEach(([key, value]) => this.contentCache.set(key, value));
     }
     
-    if (this.remissoesCache.size > 50) {
+    if (this.remissoesCache.size > 100) {
+      const entries = Array.from(this.remissoesCache.entries());
+      const toKeep = entries.slice(-50);
       this.remissoesCache.clear();
+      toKeep.forEach(([key, value]) => this.remissoesCache.set(key, value));
     }
     
-    if (this.comentarioCache.size > 100) {
+    if (this.comentarioCache.size > 200) {
+      const entries = Array.from(this.comentarioCache.entries());
+      const toKeep = entries.slice(-100);
       this.comentarioCache.clear();
+      toKeep.forEach(([key, value]) => this.comentarioCache.set(key, value));
     }
     
-    if (this.quadrosCache.size > 50) {
+    if (this.quadrosCache.size > 100) {
+      const entries = Array.from(this.quadrosCache.entries());
+      const toKeep = entries.slice(-50);
       this.quadrosCache.clear();
+      toKeep.forEach(([key, value]) => this.quadrosCache.set(key, value));
     }
+  }
+
+  // Método para forçar detecção de mudanças de forma otimizada
+  private forceChangeDetection() {
+    // Usar requestAnimationFrame para melhor performance
+    requestAnimationFrame(() => {
+      this.cdr.markForCheck();
+    });
+  }
+
+  // Método para melhorar a experiência do usuário durante o carregamento
+  private showContentProgressively() {
+    // Mostrar o conteúdo de forma progressiva para melhor UX
+    const elements = document.querySelectorAll('.artigo-container, .comentario, .remissao-container');
+    
+    elements.forEach((element, index) => {
+      (element as HTMLElement).style.opacity = '0';
+      (element as HTMLElement).style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        (element as HTMLElement).style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        (element as HTMLElement).style.opacity = '1';
+        (element as HTMLElement).style.transform = 'translateY(0)';
+      }, index * 50); // Delay progressivo de 50ms entre elementos
+    });
   }
 }

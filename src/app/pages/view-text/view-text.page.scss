@@ -262,6 +262,8 @@ ion-content {
   will-change: scroll-position;
   transform: translateZ(0);
   -webkit-font-smoothing: antialiased;
+  contain: layout style paint;
+  content-visibility: auto;
 }
 
 .main-title {
@@ -271,6 +273,82 @@ ion-content {
   will-change: transform;
   text-align: justify;
   text-justify: inter-word;
+  
+  &[data-loaded="true"] {
+    animation: fadeInContent 0.3s ease-in-out;
+  }
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Estilos para loading melhorado
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 40px 20px;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  --color: var(--primary-color);
+  width: 40px;
+  height: 40px;
+}
+
+.loading-text {
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.loading-progress {
+  width: 200px;
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), #4CAF50);
+  border-radius: 2px;
+  animation: loadingProgress 2s ease-in-out infinite;
+}
+
+@keyframes loadingProgress {
+  0% {
+    width: 0%;
+    transform: translateX(-100%);
+  }
+  50% {
+    width: 70%;
+    transform: translateX(0%);
+  }
+  100% {
+    width: 100%;
+    transform: translateX(0%);
+  }
 }
 
 .titulo {
@@ -439,6 +517,8 @@ a.ver-menos {
   border-radius: 5px;
   padding: 5px;
   contain: content;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 // Classes para remissões externas
@@ -619,6 +699,36 @@ a.ver-menos {
     ion-icon {
       font-size: 1.2em;
     }
+
+    ion-spinner {
+      width: 20px;
+      height: 20px;
+    }
+
+    &[disabled] {
+      opacity: 0.6;
+    }
+  }
+}
+
+// Estilos para o searchbar customizado
+ion-searchbar.custom {
+  --background: rgba(255, 255, 255, 0.9);
+  --border-radius: 8px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --color: #333;
+  --placeholder-color: #666;
+  --icon-color: #666;
+  --clear-button-color: #666;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    --background: rgba(255, 255, 255, 1);
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 }
 

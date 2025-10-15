@@ -33,14 +33,19 @@
       slot="start"
       class="custom"
       searchIcon="none"
-      [(ngModel)]="query"
+      [value]="query"
+      (ionInput)="onSearchInput($event)"
+      [debounce]="600"
       (ionClear)="clearSearch()"
+      (keypress)="onKeyPress($event)"
+      placeholder="Digite e clique na lupa para buscar..."
     >
     </ion-searchbar>
 
     <ion-buttons slot="end">
-      <ion-button shape="round" (click)="search()" class="search-btn">
-        <ion-icon slot="icon-only" name="search"></ion-icon>
+      <ion-button shape="round" (click)="search()" class="search-btn" [disabled]="isSearching">
+        <ion-icon *ngIf="!isSearching" slot="icon-only" name="search"></ion-icon>
+        <ion-spinner *ngIf="isSearching" slot="icon-only" name="crescent"></ion-spinner>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -64,6 +69,7 @@
       <h3
         class="main-title"
         [innerHTML]="highlightAndSanitize(primeiroParagrafo)"
+        [attr.data-loaded]="book ? 'true' : 'false'"
       ></h3>
       <div
         *ngFor="let titulo of (filteredBook || book).titulos; trackBy: trackByTituloId"
@@ -71,11 +77,13 @@
         <ng-container *ngIf="titulo.conteudo?.trim()">
           <h2
             class="titulo"
+            [attr.data-titulo-id]="titulo.id"
             [innerHTML]="highlightAndSanitize(titulo.conteudo)"
           ></h2>
 
           <ng-container *ngFor="let capitulo of titulo.capitulos; trackBy: trackByCapituloId">
             <h3 class="capitulo"
+              [attr.data-capitulo-id]="capitulo.id"
               [innerHTML]="highlightAndSanitize(capitulo.conteudo)"
             ></h3>
             <ng-container *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId">
@@ -249,9 +257,14 @@
   </ng-container>
 
   <ng-template #loading>
-    <div class="ion-text-center ion-margin-top">
-      <ion-spinner></ion-spinner>
-      <p class="text-center">Carregando dados...</p>
+    <div class="loading-container">
+      <div class="loading-content">
+        <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+        <p class="loading-text">Carregando regimento...</p>
+        <div class="loading-progress">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
     </div>
   </ng-template>
 
