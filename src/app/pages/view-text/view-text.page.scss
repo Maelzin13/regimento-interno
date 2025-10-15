@@ -15,7 +15,7 @@
 // Estilos para o header e título responsivo
 ion-header {
   ion-toolbar {
-    --background: transparent;
+    
     --border-width: 0;
     --padding-start: 0;
     --padding-end: 0;
@@ -87,7 +87,6 @@ ion-header {
 // Estilos específicos para iOS (herda do estilo geral)
 ion-header.ios {
   ion-toolbar {
-    --background: transparent;
     --border-width: 0;
     --padding-start: 0;
     --padding-end: 0;
@@ -330,7 +329,7 @@ ion-content {
   margin-bottom: 5px;
   padding-right: 28px;
   position: relative;
-  color: var(--primary-color);
+  color: #329632;
   text-align: justify;
   text-justify: inter-word;
 }
@@ -345,13 +344,13 @@ ion-content {
   font-style: italic;
   contain: content;
   will-change: transform, opacity;
-  color: var(--primary-color);
+  color: #329632;
   text-align: justify;
   text-justify: inter-word;
 }
 
 .comentario-tipo {
-  color: var(--primary-color);
+  color: #329632;
   font-weight: bold;
   font-style: italic;
   display: inline-block;

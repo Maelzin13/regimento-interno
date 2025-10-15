@@ -101,6 +101,31 @@
                       [innerHTML]="highlightAndSanitize(paragrafo.conteudo)"
                     ></h5>
 
+                    <!-- Quadros associados ao comentário -->
+                    <div *ngIf="getQuadrosAssociados('paragrafo', paragrafo.id).length > 0" class="quadros-comentario">
+                      <ion-grid *ngFor="let quadro of getQuadrosAssociados('comentario', paragrafo.id)" class="quadro-container">
+                        <ion-row>
+                          <ion-col>
+                            <div class="quadro-titulo">{{ quadro.titulo }}</div>
+                            <div class="quadro-tabela">
+                              <table class="quadro-table">
+                                <thead>
+                                  <tr>
+                                    <th *ngFor="let header of quadro.dados.header">{{ header }}</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr *ngFor="let row of quadro.dados.rows">
+                                    <td *ngFor="let cell of row">{{ cell }}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </div>
+
                     <ng-container *ngFor="let remissao of paragrafo.remissoes">
                       <div
                         class="remissao-container mt-3 mb-4 pl-4"
@@ -140,6 +165,31 @@
                             (click)="openExternalLink(remissao.url_externa)"
                           ></ion-icon>
                         </div>
+                      </div>
+
+                      <!-- Quadros associados ao comentário -->
+                      <div *ngIf="getQuadrosAssociados('remissao', remissao.id).length > 0" class="quadros-comentario">
+                        <ion-grid *ngFor="let quadro of getQuadrosAssociados('comentario', remissao.id)" class="quadro-container">
+                          <ion-row>
+                            <ion-col>
+                              <div class="quadro-titulo">{{ quadro.titulo }}</div>
+                              <div class="quadro-tabela">
+                                <table class="quadro-table">
+                                  <thead>
+                                    <tr>
+                                      <th *ngFor="let header of quadro.dados.header">{{ header }}</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let row of quadro.dados.rows">
+                                      <td *ngFor="let cell of row">{{ cell }}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
                       </div>
                     </ng-container>
 
