@@ -1313,7 +1313,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         element = document.querySelector(`[data-remissao-id="${targetElement.id}"]`) as HTMLElement;
         break;
       case 'quadro':
-        // Para quadros, procurar pelo elemento com data-quadro-id ou pelo título
+        // Para quadros, procurar pelo elemento com data-quadro-id
         element = document.querySelector(`[data-quadro-id="${targetElement.id}"]`) as HTMLElement;
         if (!element) {
           // Fallback: procurar por elementos com classe quadro-titulo que contenham o título
@@ -1321,7 +1321,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           for (let i = 0; i < quadroTitulos.length; i++) {
             const titulo = quadroTitulos[i];
             if (titulo.textContent && titulo.textContent.includes(targetElement.content.substring(0, 50))) {
-              element = titulo as HTMLElement;
+              // Retornar o container do quadro, não apenas o título
+              element = titulo.closest('.quadro-container') as HTMLElement || titulo as HTMLElement;
               break;
             }
           }

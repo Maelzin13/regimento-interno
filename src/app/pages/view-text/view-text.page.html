@@ -106,17 +106,17 @@
                       <ion-grid *ngFor="let quadro of getQuadrosAssociados('paragrafo', paragrafo.id)" class="quadro-container" [attr.data-quadro-id]="quadro.id">
                         <ion-row>
                           <ion-col>
-                            <div class="quadro-titulo">{{ quadro.titulo }}</div>
+                            <div class="quadro-titulo" [innerHTML]="highlightAndSanitize(quadro.titulo)"></div>
                             <div class="quadro-tabela">
                               <table class="quadro-table">
                                 <thead>
                                   <tr>
-                                    <th *ngFor="let header of quadro.dados.header">{{ header }}</th>
+                                    <th *ngFor="let header of quadro.dados.header" [innerHTML]="highlightAndSanitize(header)"></th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   <tr *ngFor="let row of quadro.dados.rows">
-                                    <td *ngFor="let cell of row">{{ cell }}</td>
+                                    <td *ngFor="let cell of row" [innerHTML]="highlightAndSanitize(cell)"></td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -172,17 +172,17 @@
                         <ion-grid *ngFor="let quadro of getQuadrosAssociados('remissao', remissao.id)" class="quadro-container" [attr.data-quadro-id]="quadro.id">
                           <ion-row>
                             <ion-col>
-                              <div class="quadro-titulo">{{ quadro.titulo }}</div>
+                              <div class="quadro-titulo" [innerHTML]="highlightAndSanitize(quadro.titulo)"></div>
                               <div class="quadro-tabela">
                                 <table class="quadro-table">
                                   <thead>
                                     <tr>
-                                      <th *ngFor="let header of quadro.dados.header">{{ header }}</th>
+                                      <th *ngFor="let header of quadro.dados.header" [innerHTML]="highlightAndSanitize(header)"></th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <tr *ngFor="let row of quadro.dados.rows">
-                                      <td *ngFor="let cell of row">{{ cell }}</td>
+                                      <td *ngFor="let cell of row" [innerHTML]="highlightAndSanitize(cell)"></td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -217,17 +217,17 @@
                           <ion-grid *ngFor="let quadro of getQuadrosAssociados('comentario', comentario.id)" class="quadro-container" [attr.data-quadro-id]="quadro.id">
                             <ion-row>
                               <ion-col>
-                                <div class="quadro-titulo">{{ quadro.titulo }}</div>
+                                <div class="quadro-titulo" [innerHTML]="highlightAndSanitize(quadro.titulo)"></div>
                                 <div class="quadro-tabela">
                                   <table class="quadro-table">
                                     <thead>
                                       <tr>
-                                        <th *ngFor="let header of quadro.dados.header">{{ header }}</th>
+                                        <th *ngFor="let header of quadro.dados.header" [innerHTML]="highlightAndSanitize(header)"></th>
                                       </tr>
                                     </thead>
                                     <tbody>
                                       <tr *ngFor="let row of quadro.dados.rows">
-                                        <td *ngFor="let cell of row">{{ cell }}</td>
+                                        <td *ngFor="let cell of row" [innerHTML]="highlightAndSanitize(cell)"></td>
                                       </tr>
                                     </tbody>
                                   </table>
