@@ -88,6 +88,7 @@
             ></h3>
             <ng-container *ngFor="let secao of capitulo.secaos; trackBy: trackBySecaoId">
               <h4 class="secao"
+                [attr.data-secao-id]="secao.id"
                 [innerHTML]="highlightAndSanitize(secao.conteudo)"
               ></h4>
               <div class="artigo-container">

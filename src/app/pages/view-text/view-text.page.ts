@@ -494,7 +494,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                   if (quadro.dados?.header) {
                     for (const header of quadro.dados.header) {
                       if (this.matchesText(header, q, searchType)) {
-                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro - Header`, header);
                       }
                     }
                   }
@@ -503,7 +503,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                     for (const row of quadro.dados.rows) {
                       for (const cell of row) {
                         if (this.matchesText(cell, q, searchType)) {
-                          add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                          add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro - Célula`, cell);
                         }
                       }
                     }
@@ -523,7 +523,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                 if (quadro.dados?.header) {
                   for (const header of quadro.dados.header) {
                     if (this.matchesText(header, q, searchType)) {
-                      add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                      add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro - Header`, header);
                     }
                   }
                 }
@@ -532,7 +532,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                   for (const row of quadro.dados.rows) {
                     for (const cell of row) {
                       if (this.matchesText(cell, q, searchType)) {
-                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro - Célula`, cell);
                       }
                     }
                   }
@@ -552,7 +552,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                   if (quadro.dados?.header) {
                     for (const header of quadro.dados.header) {
                       if (this.matchesText(header, q, searchType)) {
-                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro - Header`, header);
                       }
                     }
                   }
@@ -561,7 +561,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                     for (const row of quadro.dados.rows) {
                       for (const cell of row) {
                         if (this.matchesText(cell, q, searchType)) {
-                          add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                          add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro - Célula`, cell);
                         }
                       }
                     }
@@ -627,7 +627,15 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       return result;
     }
     
+    // Para busca "contains", fazer busca mais robusta
     const result = textLower.includes(queryLower);
+    
+    // Se não encontrou, tentar busca normalizada (sem acentos)
+    if (!result) {
+      const normalizedText = this.normalizeText(textLower);
+      const normalizedQuery = this.normalizeText(queryLower);
+      return normalizedText.includes(normalizedQuery);
+    }
     
     return result;
   }
@@ -678,8 +686,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       }
 
       // Se são do mesmo tipo, ordenar por posição no documento
-      const posA = a.position || a.id || 0;
-      const posB = b.position || b.id || 0;
+      // Usar o ID como posição, pois representa a ordem no documento
+      const posA = a.id || 0;
+      const posB = b.id || 0;
 
       return posA - posB;
     });
@@ -1405,7 +1414,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         // Para quadros, procurar pelo elemento com data-quadro-id
         element = document.querySelector(`[data-quadro-id="${targetElement.id}"]`) as HTMLElement;
 
-        
         if (element) {
           // Se encontrou o container do quadro, tentar encontrar o elemento específico dentro da tabela
           const quadroContainer = element;
@@ -1424,6 +1432,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
               const headers = Array.from(quadroTable.querySelectorAll('th'));
               const cells = Array.from(quadroTable.querySelectorAll('td'));
               
+              // Primeiro procurar nos headers
               for (const header of headers) {
                 if (header.textContent && header.textContent.toLowerCase().includes(this.query.toLowerCase())) {
                   element = header as HTMLElement;
@@ -1431,12 +1440,21 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                 }
               }
               
+              // Se não encontrou no header, procurar nas células
               if (element === quadroContainer) {
                 for (const cell of cells) {
                   if (cell.textContent && cell.textContent.toLowerCase().includes(this.query.toLowerCase())) {
                     element = cell as HTMLElement;
                     break;
                   }
+                }
+              }
+              
+              // Se ainda não encontrou, procurar no título do quadro
+              if (element === quadroContainer) {
+                const quadroTitulo = quadroContainer.querySelector('.quadro-titulo');
+                if (quadroTitulo && quadroTitulo.textContent && quadroTitulo.textContent.toLowerCase().includes(this.query.toLowerCase())) {
+                  element = quadroTitulo as HTMLElement;
                 }
               }
             }
