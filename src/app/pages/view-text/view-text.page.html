@@ -101,9 +101,9 @@
                       [innerHTML]="highlightAndSanitize(paragrafo.conteudo)"
                     ></h5>
 
-                    <!-- Quadros associados ao comentário -->
+                    <!-- Quadros associados ao parágrafo -->
                     <div *ngIf="getQuadrosAssociados('paragrafo', paragrafo.id).length > 0" class="quadros-comentario">
-                      <ion-grid *ngFor="let quadro of getQuadrosAssociados('comentario', paragrafo.id)" class="quadro-container">
+                      <ion-grid *ngFor="let quadro of getQuadrosAssociados('paragrafo', paragrafo.id)" class="quadro-container" [attr.data-quadro-id]="quadro.id">
                         <ion-row>
                           <ion-col>
                             <div class="quadro-titulo">{{ quadro.titulo }}</div>
@@ -167,9 +167,9 @@
                         </div>
                       </div>
 
-                      <!-- Quadros associados ao comentário -->
+                      <!-- Quadros associados à remissão -->
                       <div *ngIf="getQuadrosAssociados('remissao', remissao.id).length > 0" class="quadros-comentario">
-                        <ion-grid *ngFor="let quadro of getQuadrosAssociados('comentario', remissao.id)" class="quadro-container">
+                        <ion-grid *ngFor="let quadro of getQuadrosAssociados('remissao', remissao.id)" class="quadro-container" [attr.data-quadro-id]="quadro.id">
                           <ion-row>
                             <ion-col>
                               <div class="quadro-titulo">{{ quadro.titulo }}</div>
@@ -214,7 +214,7 @@
                         
                         <!-- Quadros associados ao comentário -->
                         <div *ngIf="getQuadrosAssociados('comentario', comentario.id).length > 0" class="quadros-comentario">
-                          <ion-grid *ngFor="let quadro of getQuadrosAssociados('comentario', comentario.id)" class="quadro-container">
+                          <ion-grid *ngFor="let quadro of getQuadrosAssociados('comentario', comentario.id)" class="quadro-container" [attr.data-quadro-id]="quadro.id">
                             <ion-row>
                               <ion-col>
                                 <div class="quadro-titulo">{{ quadro.titulo }}</div>

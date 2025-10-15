@@ -105,6 +105,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   @ViewChild('searchInput') searchInput!: ElementRef;
   
   private scrollDebounceTimeout: any;
+  private searchDebounceTimeout: any;
   private notasCache: Map<number, any> = new Map()
   private handleRemissaoClick: any;
   private showReturnIndicatorTimeout: any;
@@ -181,6 +182,12 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   clearSearch() {
+    // Limpar timeout de debounce se existir
+    if (this.searchDebounceTimeout) {
+      clearTimeout(this.searchDebounceTimeout);
+      this.searchDebounceTimeout = null;
+    }
+    
     this.query = '';
     this.articleQueryNumero = null;
     this.filteredBook = null;
@@ -305,6 +312,20 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   async search() {
     if (!this.query || !this.book) { this.clearSearch(); return; }
+    
+    // Limpar timeout anterior se existir
+    if (this.searchDebounceTimeout) {
+      clearTimeout(this.searchDebounceTimeout);
+    }
+    
+    // Implementar debounce de 300ms para melhorar performance em dispositivos móveis
+    this.searchDebounceTimeout = setTimeout(async () => {
+      await this.executeSearch();
+    }, 300);
+  }
+
+  async executeSearch() {
+    if (!this.query || !this.book) { this.clearSearch(); return; }
     this.isSearching = true;
     this.saveCurrentPosition();
     this.filteredBook = null;         // mantém árvore inteira visível
@@ -387,6 +408,94 @@ export class ViewTextPage implements OnInit, AfterViewInit {
                   add('remissao', remissao, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Remissão`, remissao.conteudo);
                 }
               }
+
+              // Buscar em quadros associados aos comentários
+              for (const comentario of p.comentarios || []) {
+                const quadrosComentario = this.getQuadrosAssociados('comentario', comentario.id);
+                
+                for (const quadro of quadrosComentario) {
+                  
+                  if (this.matchesText(quadro.titulo, q, searchType)) {
+                    add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                  }
+                  // Buscar em headers dos quadros
+                  if (quadro.dados?.header) {
+                    for (const header of quadro.dados.header) {
+                      if (this.matchesText(header, q, searchType)) {
+                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                      }
+                    }
+                  }
+                  // Buscar em rows dos quadros
+                  if (quadro.dados?.rows) {
+                    for (const row of quadro.dados.rows) {
+                      for (const cell of row) {
+                        if (this.matchesText(cell, q, searchType)) {
+                          add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              // Buscar em quadros associados aos parágrafos
+              const quadrosParagrafo = this.getQuadrosAssociados('paragrafo', p.id);
+              
+              for (const quadro of quadrosParagrafo) {
+                
+                if (this.matchesText(quadro.titulo, q, searchType)) {
+                  add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                }
+                // Buscar em headers dos quadros
+                if (quadro.dados?.header) {
+                  for (const header of quadro.dados.header) {
+                    if (this.matchesText(header, q, searchType)) {
+                      add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                    }
+                  }
+                }
+                // Buscar em rows dos quadros
+                if (quadro.dados?.rows) {
+                  for (const row of quadro.dados.rows) {
+                    for (const cell of row) {
+                      if (this.matchesText(cell, q, searchType)) {
+                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                      }
+                    }
+                  }
+                }
+              }
+
+              // Buscar em quadros associados às remissões
+              for (const remissao of p.remissoes || []) {
+                const quadrosRemissao = this.getQuadrosAssociados('remissao', remissao.id);
+                
+                for (const quadro of quadrosRemissao) {
+                  
+                  if (this.matchesText(quadro.titulo, q, searchType)) {
+                    add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                  }
+                  // Buscar em headers dos quadros
+                  if (quadro.dados?.header) {
+                    for (const header of quadro.dados.header) {
+                      if (this.matchesText(header, q, searchType)) {
+                        add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                      }
+                    }
+                  }
+                  // Buscar em rows dos quadros
+                  if (quadro.dados?.rows) {
+                    for (const row of quadro.dados.rows) {
+                      for (const cell of row) {
+                        if (this.matchesText(cell, q, searchType)) {
+                          add('quadro', quadro, `${titulo.conteudo} > ${capitulo.conteudo} > ${secao.conteudo} > ${artigo.conteudo} > Quadro`, quadro.titulo);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -442,9 +551,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       const normalizedText = this.normalizeText(textLower);
       const normalizedQuery = this.normalizeText(queryLower);
       const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'i');
-      return wordBoundaryRegex.test(normalizedText);
+      const result = wordBoundaryRegex.test(normalizedText);
+      return result;
     }
-    return textLower.includes(queryLower);
+    
+    const result = textLower.includes(queryLower);
+    
+    return result;
   }
 
   private countOccurrences(text: string, queryLower: string, searchType: 'contains' | 'exact'): number {
@@ -456,12 +569,15 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       const normalizedQuery = this.normalizeText(queryLower);
       const wordBoundaryRegex = new RegExp(`\\b${this.escapeRegExp(normalizedQuery)}\\b`, 'gi');
       const matches = normalizedText.match(wordBoundaryRegex);
-      return matches ? matches.length : 0;
+      const count = matches ? matches.length : 0;
+      
+      return count;
     } else {
       // Para busca "contains", contar todas as ocorrências (incluindo dentro de palavras)
       const regex = new RegExp(this.escapeRegExp(queryLower), 'gi');
       const matches = textLower.match(regex);
-      return matches ? matches.length : 0;
+      const count = matches ? matches.length : 0;
+      return count;
     }
   }
 
@@ -477,7 +593,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         'artigo': 4,
         'paragrafo': 5,
         'comentario': 6,
-        'remissao': 7
+        'remissao': 7,
+        'quadro': 8
       };
 
       const priorityA = typePriority[a.type] || 999;
@@ -498,12 +615,13 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   // Método auxiliar para normalizar texto (remover acentos e caracteres especiais)
   private normalizeText(text: string): string {
-    return text
+    const result = text
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '') // Remove acentos
       .replace(/[^\w\s]/g, ' ') // Remove pontuação
       .replace(/\s+/g, ' ') // Normaliza espaços
       .trim();
+    return result;
   }
 
   private normalizeNumero(n: string | undefined | null): string {
@@ -1063,7 +1181,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   private formatNotas(content: string): string {
     if (typeof content !== 'string') {
-      console.warn('formatNotas recebeu conteúdo inválido:', content);
       return '';
     }
     const notaRegex = /###nota\s*(\d+)\s*###/gi;
@@ -1108,7 +1225,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   // Método para escapar caracteres especiais em expressões regulares
   escapeRegExp(string: string): string {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const result = string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return result;
   }
 
   async showModal(content: string) {
@@ -1193,6 +1311,21 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       case 'remissao':
         // Para remissões, procurar pelo elemento com data-remissao-id
         element = document.querySelector(`[data-remissao-id="${targetElement.id}"]`) as HTMLElement;
+        break;
+      case 'quadro':
+        // Para quadros, procurar pelo elemento com data-quadro-id ou pelo título
+        element = document.querySelector(`[data-quadro-id="${targetElement.id}"]`) as HTMLElement;
+        if (!element) {
+          // Fallback: procurar por elementos com classe quadro-titulo que contenham o título
+          const quadroTitulos = document.querySelectorAll('.quadro-titulo');
+          for (let i = 0; i < quadroTitulos.length; i++) {
+            const titulo = quadroTitulos[i];
+            if (titulo.textContent && titulo.textContent.includes(targetElement.content.substring(0, 50))) {
+              element = titulo as HTMLElement;
+              break;
+            }
+          }
+        }
         break;
     }
 
@@ -1704,7 +1837,6 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         return cachedElement;
       }
     } catch (error) {
-      console.error('Erro ao acessar cache:', error);
       // Em caso de erro, continuar com a busca normal
     }
 
@@ -2017,7 +2149,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
   // Método para processar quadros
   private processQuadros(quadros: any) {
-    if (!quadros) return;
+    if (!quadros) {
+      return;
+    }
     
     this.quadrosCache.clear();
     
@@ -2042,17 +2176,18 @@ export class ViewTextPage implements OnInit, AfterViewInit {
             }
             this.quadrosCache.get(cacheKey)!.push(quadroProcessado);
           } catch (error) {
-            console.error('Erro ao processar quadro:', error);
           }
         });
       }
     });
   }
 
-  // Método para obter quadros associados a um comentário ou parágrafo
+  // Método para obter quadros associados a um comentário, parágrafo, remissão ou outros tipos
   getQuadrosAssociados(tipo: string, id: number): any[] {
     const cacheKey = `${tipo}_${id}`;
-    return this.quadrosCache.get(cacheKey) || [];
+    const result = this.quadrosCache.get(cacheKey) || [];
+    
+    return result;
   }
 
   // Método para otimizar performance
