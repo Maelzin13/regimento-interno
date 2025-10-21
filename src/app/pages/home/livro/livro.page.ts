@@ -16,8 +16,8 @@ export class LivroPage implements OnInit {
   books: any; 
   bookLimit: any;
   isActive = false;
-  isFreePlan = false;
-  assinaturaAtiva: any = null;
+  // isFreePlan = false;
+  // assinaturaAtiva: any = null;
   user: UserModel | null = null;
 
   textos = [
@@ -53,15 +53,15 @@ export class LivroPage implements OnInit {
     private authService: AuthService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
-    private plansService: PlansService
+    // private plansService: PlansService
   ) {}
 
   async ngOnInit() {
     try {
       this.user = await this.authService.getUser();
-      const plansData = await this.plansService.getPlans();
-      this.assinaturaAtiva = plansData.assinaturaAtiva;
-      this.isFreePlan = this.checkIfFreePlan();
+      // const plansData = await this.plansService.getPlans();
+      // this.assinaturaAtiva = plansData.assinaturaAtiva;
+      // this.isFreePlan = this.checkIfFreePlan();
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     }
@@ -97,31 +97,31 @@ export class LivroPage implements OnInit {
   /**
    * Verifica se o usuário tem plano ativo
    */
-  hasActivePlan(): boolean {
-    return this.user ? this.user.subscription_status === 'active' : false;
-  }
+  // hasActivePlan(): boolean {
+  //   return this.user ? this.user.subscription_status === 'active' : false;
+  // }
 
-  /**
-   * Verifica se o plano ativo é Free
-   */
-  private checkIfFreePlan(): boolean {
-    if (!this.assinaturaAtiva?.id) {
-      return false;
-    }
+  // /**
+  //  * Verifica se o plano ativo é Free
+  //  */
+  // private checkIfFreePlan(): boolean {
+  //   if (!this.assinaturaAtiva?.id) {
+  //     return false;
+  //   }
 
-    // IDs dos planos Free
-    const freeIds = [
-      'price_1Ry2e5FHDwuz6ZFYjvJmbvWX', // Free Mensal
-      'price_1Ry2cfFHDwuz6ZFYQpFvhkGw'  // Free Anual
-    ];
+  //   // IDs dos planos Free
+  //   const freeIds = [
+  //     'price_1Ry2e5FHDwuz6ZFYjvJmbvWX', // Free Mensal
+  //     'price_1Ry2cfFHDwuz6ZFYQpFvhkGw'  // Free Anual
+  //   ];
 
-    return freeIds.includes(this.assinaturaAtiva.id);
-  }
+  //   return freeIds.includes(this.assinaturaAtiva.id);
+  // }
 
-  /**
-   * Verifica se o usuário tem acesso completo (plano pago)
-   */
-  hasFullAccess(): boolean {
-    return this.hasActivePlan() || this.user?.is_admin === true;
-  }
+  // /**
+  //  * Verifica se o usuário tem acesso completo (plano pago)
+  //  */
+  // hasFullAccess(): boolean {
+  //   return this.hasActivePlan() || this.user?.is_admin === true;
+  // }
 }

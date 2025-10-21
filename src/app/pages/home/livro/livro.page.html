@@ -10,7 +10,8 @@
   <div class="background-wrapper">
     <ion-card-content>
     <section class="section ">
-      <ng-container *ngIf="hasFullAccess()">
+      <!-- <ng-container *ngIf="hasFullAccess()"> -->
+      <ng-container>
         <ion-grid >
           <ion-row [routerLink]="['/view-text', 1]">
             <ion-col class="menu-item-livro text-center">
@@ -18,14 +19,14 @@
           </ion-row>
         </ion-grid>
       </ng-container>
-      <ng-container *ngIf="!hasFullAccess()">
+      <!-- <ng-container *ngIf="!hasFullAccess()">
         <ion-grid>
           <ion-row [routerLink]="['/view-text-limit', 1]">
             <ion-col class="menu-item-livro text-center">
             </ion-col>
           </ion-row>
         </ion-grid>
-      </ng-container>
+      </ng-container> -->
     </section>
 
     <div class="dashboard-title">
