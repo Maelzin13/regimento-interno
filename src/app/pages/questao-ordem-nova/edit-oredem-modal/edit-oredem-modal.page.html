@@ -1,9 +1,16 @@
 <ion-header>
   <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="dismiss()"><ion-icon name="arrow-back-outline"></ion-icon></ion-button>
+      <ion-button (click)="dismiss()" color="light">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>Editar Questão</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()" fill="clear" color="light">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -13,6 +20,17 @@
   </div>
 
   <div *ngIf="!isLoading">
+    <!-- Visualização da descrição atual (sem HTML) -->
+    <ion-card class="ion-padding" *ngIf="item.descricao">
+      <ion-card-header>
+        <ion-card-title>Descrição Atual</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>{{ item.descricao | stripHtml }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Formulário de edição -->
     <ion-card class="ion-padding">
       <ion-item>
        <ion-input [(ngModel)]="item.titulo"
@@ -26,7 +44,7 @@
       <ion-item>
        <ion-textarea
          [autoGrow]="true"
-         [(ngModel)]="item.descricao"
+         [(ngModel)]="cleanDescription"
          label="Descrição"
          labelPlacement="floating"
        >
@@ -34,6 +52,17 @@
      </ion-item>
     </ion-card>
 
-    <ion-button expand="block" (click)="salvarConteudo()">Salvar</ion-button>
+    <!-- Botões de ação -->
+    <div class="ion-padding">
+      <ion-button expand="block" (click)="salvarConteudo()" color="primary">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        Salvar
+      </ion-button>
+      
+      <ion-button expand="block" (click)="dismiss()" fill="outline" color="medium" class="ion-margin-top">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Cancelar
+      </ion-button>
+    </div>
   </div>
 </ion-content>

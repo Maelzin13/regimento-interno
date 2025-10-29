@@ -10,6 +10,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditBookModalPage } from '../edit-book-modal/edit-book-modal.page';
 import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
+import { StripHtmlPipe } from '../../pipes/strip-html.pipe';
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descrica
     IonicModule,
     ReactiveFormsModule,
     HomePageRoutingModule,
+    StripHtmlPipe,
   ],
   declarations: [
     HomePage,

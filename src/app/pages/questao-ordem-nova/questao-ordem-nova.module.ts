@@ -6,13 +6,15 @@ import { QuestaoOrdemNovaPage } from './questao-ordem-nova.page';
 import { NovaOremModalPage } from './nova-orem-modal/nova-orem-modal.page';
 import { EditOredemModalPage } from './edit-oredem-modal/edit-oredem-modal.page';
 import { QuestaoOrdemNovaPageRoutingModule } from './questao-ordem-nova-routing.module';
+import { StripHtmlPipe } from '../../pipes/strip-html.pipe';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    QuestaoOrdemNovaPageRoutingModule
+    QuestaoOrdemNovaPageRoutingModule,
+    StripHtmlPipe
   ],
   declarations: [QuestaoOrdemNovaPage, EditOredemModalPage, NovaOremModalPage]
 })

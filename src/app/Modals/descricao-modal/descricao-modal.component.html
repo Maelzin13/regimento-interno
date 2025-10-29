@@ -11,7 +11,7 @@
 
 <ion-content class="ion-padding">
   <!-- Exibir descrição normal para outros casos -->
-  <p *ngIf="titulo !== 'Atos da Mesa'">{{ descricao || 'Descrição indisponível.' }}</p>
+  <p *ngIf="titulo !== 'Atos da Mesa'">{{ (descricao | stripHtml) || 'Descrição indisponível.' }}</p>
 
   <!-- Exibir tabela de Atos da Mesa -->
   <div *ngIf="titulo === 'Atos da Mesa'" class="atos-mesa-container">

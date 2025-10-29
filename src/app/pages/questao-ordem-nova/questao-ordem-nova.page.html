@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar id="toolbar">
     <ion-buttons slot="start">
       <ion-button (click)="roolBack()">
@@ -22,7 +22,7 @@
       </ion-card-header>
       <ion-card-content>
         <p>
-          {{ questao.descricao }}
+          {{ questao.descricao | stripHtml }}
         </p>
       </ion-card-content>
       

@@ -17,6 +17,7 @@ export class EditOredemModalPage implements OnInit {
   editorContent: string = '';
   isLoading: boolean = false;
   isEditingContent: boolean = false;
+  cleanDescription: string = '';
 
   constructor(
     private modalController: ModalController,
@@ -38,6 +39,8 @@ export class EditOredemModalPage implements OnInit {
 
     try {
       this.item = this.questoesOrdemService.questao;
+      // Limpar HTML da descrição para exibição no textarea
+      this.cleanDescription = this.stripHtml(this.item.descricao);
 
     } catch (error) {
       console.error('Erro ao carregar o item:', error);
@@ -46,6 +49,26 @@ export class EditOredemModalPage implements OnInit {
       loading.dismiss();
       this.isLoading = false;
     }
+  }
+
+  // Método para remover HTML
+  private stripHtml(html: string): string {
+    if (!html) return '';
+    
+    // Remove todas as tags HTML
+    const stripped = html.replace(/<[^>]*>/g, '');
+    
+    // Decodifica entidades HTML comuns
+    const decoded = stripped
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ');
+    
+    // Remove espaços extras e quebras de linha desnecessárias
+    return decoded.trim().replace(/\s+/g, ' ');
   }
 
   dismiss() {
@@ -70,7 +93,7 @@ export class EditOredemModalPage implements OnInit {
     try {
       let data = {
         titulo: this.item.titulo,
-        descricao: this.item.descricao,
+        descricao: this.cleanDescription, // Usar a descrição limpa
       };
       
       await this.questoesOrdemService.updateQuestoesOrdem(this.item.id, data);
