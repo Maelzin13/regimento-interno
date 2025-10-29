@@ -212,7 +212,10 @@ export class AuthService {
 
     if (platform === 'android') {
       // 1) Login nativo (sem browser)
-      const result = await FirebaseAuthentication.signInWithGoogle();
+      // Desabilitar One Tap para evitar erro "Developer console is not set up correctly"
+      const result = await FirebaseAuthentication.signInWithGoogle({
+        useCredentialManager: false
+      });
 
       // 2) Pegue o token CERTO para o backend
       const googleIdToken = result?.credential?.idToken; // ✅ preferido

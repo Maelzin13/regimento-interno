@@ -39,17 +39,21 @@
         <!-- Senha -->
         <ion-item lines="none" class="ion-margin-top">
           <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-          <ion-input type="password" placeholder="Senha" [(ngModel)]="password"
+          <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Senha" [(ngModel)]="password"
             label="Senha" label-placement="floating" minlength="8" maxlength="8" [counter]="true">
           </ion-input>
+          <ion-icon slot="end" [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+            (click)="togglePasswordVisibility('password')" class="eye-icon"></ion-icon>
         </ion-item>
 
         <!-- Confirmar Senha -->
         <ion-item lines="none" class="ion-margin-top">
           <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-          <ion-input type="password" placeholder="Confirmar Senha" [(ngModel)]="password_confirmation"
+          <ion-input [type]="showPasswordConfirmation ? 'text' : 'password'" placeholder="Confirmar Senha" [(ngModel)]="password_confirmation"
             label="Confirmar Senha" label-placement="floating" minlength="8" maxlength="8" [counter]="true">
           </ion-input>
+          <ion-icon slot="end" [name]="showPasswordConfirmation ? 'eye-off-outline' : 'eye-outline'"
+            (click)="togglePasswordVisibility('password_confirmation')" class="eye-icon"></ion-icon>
         </ion-item>
 
         <!-- Botão de cadastro -->

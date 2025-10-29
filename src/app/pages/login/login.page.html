@@ -16,8 +16,10 @@
 
         <ion-item lines="inset" class="ion-margin-top">
           <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-          <ion-input type="password" placeholder="Senha" [(ngModel)]="password" label="Senha"
+          <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Senha" [(ngModel)]="password" label="Senha"
             label-placement="floating"></ion-input>
+          <ion-icon slot="end" [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+            (click)="togglePasswordVisibility()" class="eye-icon"></ion-icon>
         </ion-item>
 
         <br>

@@ -13,6 +13,8 @@ export class CadastroPage {
   email: string = '';
   password: string = '';
   password_confirmation: string = '';
+  showPassword = false;
+  showPasswordConfirmation = false;
 
   constructor(
     private router: Router,
@@ -124,5 +126,13 @@ export class CadastroPage {
       position: 'middle',
     });
     toast.present();
+  }
+
+  togglePasswordVisibility(field: 'password' | 'password_confirmation') {
+    if (field === 'password') {
+      this.showPassword = !this.showPassword;
+    } else {
+      this.showPasswordConfirmation = !this.showPasswordConfirmation;
+    }
   }
 }

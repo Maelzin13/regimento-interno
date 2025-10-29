@@ -9,4 +9,8 @@ import { Component } from '@angular/core';
 export class AutorPage {
   constructor(
   ) {}
+
+  openLinke() {
+    window.open('https://regimentocd.com.br/suporte', '_blank');
+  }
 }

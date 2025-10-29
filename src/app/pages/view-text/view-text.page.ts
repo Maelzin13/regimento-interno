@@ -1030,20 +1030,39 @@ export class ViewTextPage implements OnInit, AfterViewInit {
             }
           }
 
-          // Limpar o histórico de navegação após voltar ao ponto de origem
-          // Mantemos apenas a entrada atual para não sobrecarregar o app
-          this.navigationHistory = this.navigationHistory.slice(0, this.currentHistoryIndex + 1);
+          // Se voltamos para a origem completa (índice 0), limpar todo o histórico
+          if (this.currentHistoryIndex === 0) {
+            this.navigationHistory = [];
+            this.currentHistoryIndex = -1;
+            this.showReturnIndicator = false;
+            this.cdr.detectChanges();
+          } else {
+            // Limpar o histórico de navegação após voltar ao ponto de origem
+            // Mantemos apenas a entrada atual para não sobrecarregar o app
+            this.navigationHistory = this.navigationHistory.slice(0, this.currentHistoryIndex + 1);
+          }
         }, 600);
       } else {
         // Feedback para o usuário
         this.presentToast('Retornando à posição anterior');
 
-        // Limpar o histórico de navegação após voltar ao ponto de origem
-        this.navigationHistory = this.navigationHistory.slice(0, this.currentHistoryIndex + 1);
+        // Se voltamos para a origem completa (índice 0), limpar todo o histórico
+        if (this.currentHistoryIndex === 0) {
+          this.navigationHistory = [];
+          this.currentHistoryIndex = -1;
+          this.showReturnIndicator = false;
+          this.cdr.detectChanges();
+        } else {
+          // Limpar o histórico de navegação após voltar ao ponto de origem
+          this.navigationHistory = this.navigationHistory.slice(0, this.currentHistoryIndex + 1);
+        }
       }
 
-      // Ocultar o indicador de retorno após voltar
-      this.showReturnIndicator = false;
+      // Ocultar o indicador de retorno após voltar (só se não houver mais histórico)
+      this.showReturnIndicator = this.currentHistoryIndex > 0;
+      
+      // Forçar detecção de mudanças para OnPush
+      this.cdr.detectChanges();
     } else {
       this.presentToast('Não há posição anterior para retornar');
     }
@@ -1189,19 +1208,23 @@ export class ViewTextPage implements OnInit, AfterViewInit {
             }, 5000);
           }, 2000);
 
-          // Mostrar o indicador de retorno flutuante, se solicitado
-          if (showReturnOption && this.navigationHistory.length > 1) {
-            this.showReturnIndicator = true;
-
-            // Limpar qualquer timeout existente
+          // Mostrar o indicador de retorno flutuante sempre que navegamos por remissão
+          if (showReturnOption) {
+            // Limpar qualquer timeout existente (não vamos mais usar timeout)
             if (this.showReturnIndicatorTimeout) {
               clearTimeout(this.showReturnIndicatorTimeout);
+              this.showReturnIndicatorTimeout = null;
             }
 
-            // Configurar para ocultar o indicador após 30 segundos
-            this.showReturnIndicatorTimeout = setTimeout(() => {
-              this.showReturnIndicator = false;
-            }, 30000);
+            // Verificar novamente após um pequeno delay para garantir que o histórico foi atualizado
+            setTimeout(() => {
+              // Mostrar o botão sempre que houver histórico de navegação
+              // O botão permanecerá visível até que o usuário volte à origem
+              this.showReturnIndicator = this.currentHistoryIndex > 0;
+              
+              // Forçar detecção de mudanças para OnPush
+              this.cdr.detectChanges();
+            }, 50);
           }
 
           // Feedback visual para o usuário

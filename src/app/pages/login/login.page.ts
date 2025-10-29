@@ -15,6 +15,7 @@ export class LoginPage implements OnInit {
   nameApp: any;
   email: string = '';
   password: string = '';
+  showPassword = false;
 
   // ✅ só habilita social login em plataformas nativas
   readonly isNative = Capacitor.getPlatform() !== 'web';
@@ -165,5 +166,9 @@ export class LoginPage implements OnInit {
       position: 'middle',
     });
     toast.present();
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

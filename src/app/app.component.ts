@@ -51,10 +51,17 @@ export class AppComponent {
         if (FirebaseAuthentication) {
           FirebaseAuthentication.addListener('authStateChange', (change) => {
           });
-          const result = await FirebaseAuthentication.getCurrentUser();
+          // Não inicializar getCurrentUser aqui para evitar que o One Tap seja iniciado automaticamente
+          // O erro "Developer console is not set up correctly" ocorre quando o One Tap tenta inicializar
+          // const result = await FirebaseAuthentication.getCurrentUser();
         } 
-      } catch (error) {
-        console.error('❌ Erro ao inicializar Firebase Authentication:', error);
+      } catch (error: any) {
+        // Ignorar erros relacionados ao One Tap durante a inicialização
+        if (error?.message?.includes('one tap') || error?.message?.includes('Developer console')) {
+          console.warn('⚠️ Google One Tap não configurado - será usado login manual:', error.message);
+        } else {
+          console.error('❌ Erro ao inicializar Firebase Authentication:', error);
+        }
       }
     }
 
