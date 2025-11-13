@@ -24,3 +24,11 @@ ion-button, ion-item, .menu-box {
     outline-offset: 2px;
   }
 }
+
+// Estilos para alert de notas - preserva quebras de linha
+.nota-alert {
+  .alert-message {
+    white-space: pre-line; // Preserva quebras de linha (\n)
+    word-wrap: break-word;
+  }
+}

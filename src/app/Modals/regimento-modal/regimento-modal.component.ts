@@ -128,7 +128,7 @@ export class RegimentoModalComponent implements OnInit {
       // TÍTULO
       out.push(`
         <div class="nivel-1">
-          <a href="#titulo-${t.id}">${this.escapeHtml(t.texto)}</a>
+          <span>${this.escapeHtml(t.texto)}</span>
         </div>
       `);
 
@@ -139,7 +139,7 @@ export class RegimentoModalComponent implements OnInit {
           // CAPÍTULO
           out.push(`
             <li class="nivel-2">
-              <a href="#capitulo-${c.id}">${this.escapeHtml(c.texto)}</a>
+              <span>${this.escapeHtml(c.texto)}</span>
             </li>
           `);
 
@@ -149,7 +149,7 @@ export class RegimentoModalComponent implements OnInit {
             for (const s of c.secoes) {
               out.push(`
                 <li class="nivel-3">
-                  <a href="#secao-${s.id}">${this.escapeHtml(s.texto)}</a>
+                  <span>${this.escapeHtml(s.texto)}</span>
                 </li>
               `);
             }

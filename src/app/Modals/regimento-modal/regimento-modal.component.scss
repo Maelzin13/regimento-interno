@@ -22,65 +22,44 @@ ion-header {
 
 
 .sumario-html {
-  a {
-    cursor: pointer;
-    color: inherit;
-    text-decoration: underline;
-  }
-
-   /* TÍTULO */
-  .nivel-1 a {
-    color: var(--ion-color-primary);
-    text-decoration-line: underline;
-    text-decoration-style: dotted;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px; 
-  }
-  .nivel-1 a:hover {
-    text-decoration-style: solid;  
-    text-decoration-color: var(--ion-color-primary);
-  }
-
-  /* CAPÍTULO */
-  .nivel-2 a {
-    text-decoration: none;  
-    color: #000;
-  }
-  .nivel-2 a:hover {
-    text-decoration: underline; 
-    color: #1e999a;
-  }
-
-  /* SEÇÃO */
-  .nivel-3 a {
-    text-decoration: none; 
-    color: var(--ion-color-primary); 
-  }
-  .nivel-3 a:hover {
-    text-decoration: underline; 
-    color: #1e999a;  
-  }
-
+  /* TÍTULO */
   .nivel-1 {
     border-left: 4px solid var(--ion-color-primary);
     padding-left: 12px;
     margin: 18px 0 10px;
     font-weight: 600;
     color: var(--ion-color-primary);
+    
+    span {
+      color: var(--ion-color-primary);
+      display: inline-block;
+    }
   }
 
+  /* CAPÍTULO */
   .nivel-2 {
     border-left: 3px solid #1aa3a3;
     padding-left: 12px;
     margin: 8px 0;
     font-weight: 500;
+    
+    span {
+      color: #000;
+      display: inline-block;
+    }
   }
 
+  /* SEÇÃO */
   .nivel-3 {
     border-left: 2px solid #5aa;
     padding-left: 12px;
     margin: 6px 0;
     font-style: italic;
+    
+    span {
+      color: var(--ion-color-primary);
+      display: inline-block;
+    }
   }
 }
 

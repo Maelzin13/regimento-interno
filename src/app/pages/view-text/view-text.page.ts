@@ -1320,15 +1320,40 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     });
   }
 
+  /**
+   * Processa quebras de linha HTML no conteúdo das notas
+   * Converte <br/>, <br>, <br /> em quebras de linha de texto (\n) para exibição no alert
+   */
+  private processLineBreaks(content: string): string {
+    if (typeof content !== 'string') {
+      return '';
+    }
+    // Converte variações de <br> em quebras de linha de texto (\n)
+    // Remove tags HTML e converte para texto puro com quebras de linha
+    return content
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/?[^>]+(>|$)/g, ''); // Remove outras tags HTML para exibição em texto puro
+  }
+
   async openAlertWithContent(content: any, notaId: any) {
     if (!content || !content.conteudo) {
       this.presentToast('Conteúdo da nota não disponível');
       return;
     }
 
+    // Processa o conteúdo: primeiro processa quebras de linha, depois formata notas
+    // Como o alert não renderiza HTML, formatNotas apenas remove os marcadores ###nota###
+    let processedContent = content.conteudo;
+    
+    // Remove marcadores de notas (###nota X ###) mantendo apenas o número
+    processedContent = processedContent.replace(/###nota\s*(\d+)\s*###/gi, '[$1]');
+    
+    // Processa quebras de linha
+    processedContent = this.processLineBreaks(processedContent);
+
     const alert = await this.alertController.create({
       header: `Nota ${notaId}`,
-      message: this.formatNotas(content.conteudo),
+      message: processedContent,
       buttons: ['Fechar'],
       cssClass: 'nota-alert'
     });
