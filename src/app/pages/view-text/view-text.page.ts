@@ -381,7 +381,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   private checkArtigoMatchByContent(artigoContent: string, q: string): boolean {
     if (!artigoContent || !q) return false;
-    const re = new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(q)}[º°]?\\b`, 'i');
+    // Suporta artigos com letras: Art. 20-A, Art. 20B, etc.
+    const re = new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(q)}(?:[º°]|[-–]?[A-Z])?\\b`, 'i');
     return re.test(artigoContent);
   }
 
@@ -711,6 +712,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       .trim()
       .replace(/[º°]/g, '')
       .replace(/\s+/g, '')
+      .replace(/-/g, '') // Remove hífens mas preserva letras
       .toUpperCase();
   }
   
@@ -718,7 +720,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     return this.normalizeNumero(
       q
         .replace(/^(art\.?|artigo|arts\.?|artigos)\s*/i, '')
-        .replace(/[^\da-zA-Z-]/g, '')
+        .replace(/[^\da-zA-Z-]/g, '') // Preserva números, letras e hífens
     );
   }
 
@@ -740,8 +742,10 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         html = this.highlightHtmlSafe(html, this.query.trim(), wholeWord);
       } else if (this.searchBy === 'artigo' && this.articleQueryNumero) {
         // Destaca apenas rótulos de artigo: Art. 132 / Artigo 132 / Arts. 132 / Artigos 132
+        // Suporta artigos com letras: Art. 20-A, Art. 20-B, etc.
         const num = this.articleQueryNumero.replace(/[º°]/g, '');
-        const rx = new RegExp(`\\b(?:Art\\.?|Artigo|Arts\\.?|Artigos)\\s*${this.escapeRegExp(num)}[º°]?\\b`, 'gi');
+        // Regex que suporta artigos com letras: Art. 20-A, Art. 20B, etc.
+        const rx = new RegExp(`\\b(?:Art\\.?|Artigo|Arts\\.?|Artigos)\\s*${this.escapeRegExp(num)}(?:[º°]|[-–]?[A-Z])?\\b`, 'gi');
         html = this.highlightHtmlSafeRegex(html, rx);
       }
     }
@@ -1118,8 +1122,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       return;
     }
 
-    // Remover caracteres especiais como º ou ° que podem estar no número do artigo
-    const artigoLimpo = artigo.replace(/[^\d]/g, '');
+    // Normalizar o número do artigo preservando letras (ex: "20-A" -> "20A", "20B" -> "20B")
+    const artigoLimpo = this.normalizeNumero(artigo);
 
     // Salvar posição atual antes de buscar o artigo
     this.content.getScrollElement().then(scrollElement => {
@@ -1228,14 +1232,22 @@ export class ViewTextPage implements OnInit, AfterViewInit {
           }
 
           // Feedback visual para o usuário
-          let mensagem = `Navegando para o Artigo ${artigoLimpo}`;
+          // Formatar o artigo para exibição (adicionar hífen antes da letra se houver)
+          const artigoFormatado = artigoLimpo.match(/^(\d+)([A-Z])?$/i) 
+            ? artigoLimpo.replace(/^(\d+)([A-Z])$/i, '$1-$2') 
+            : artigoLimpo;
+          let mensagem = `Navegando para o Artigo ${artigoFormatado}`;
           if (paragrafo) mensagem += `, § ${paragrafo}`;
           if (inciso) mensagem += `, ${inciso}`;
 
           this.presentToast(mensagem);
         }, 100);
       } else {
-        this.presentToast(`${elementType} ${artigoLimpo} não encontrado`);
+        // Formatar o artigo para exibição
+        const artigoFormatado = artigoLimpo.match(/^(\d+)([A-Z])?$/i) 
+          ? artigoLimpo.replace(/^(\d+)([A-Z])$/i, '$1-$2') 
+          : artigoLimpo;
+        this.presentToast(`${elementType} ${artigoFormatado} não encontrado`);
       }
     });
   }
@@ -1831,14 +1843,20 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       const artigos: string[] = [];
       let eventoFrasePrincipal = textoProcessado;
 
-      // Primeiro identificamos todos os artigos
-      const allNumbersPattern = /(?:Arts?\.?\s*|,\s*|\s+e\s+)(\d+)[º°]?(?:\s*[-–]\s*[A-Z])?/g;
+      // Primeiro identificamos todos os artigos (suporta artigos com letras: 20-A, 20B, etc.)
+      const allNumbersPattern = /(?:Arts?\.?\s*|,\s*|\s+e\s+)(\d+)[º°]?(?:\s*[-–]?\s*[A-Z])?/g;
       let numberMatch;
       while ((numberMatch = allNumbersPattern.exec(textoProcessado)) !== null) {
-        if (numberMatch[1] && !artigos.includes(numberMatch[1])) {
-          artigos.push(numberMatch[1]);
-          // Remover o artigo processado do texto para análise de parágrafos e incisos
-          eventoFrasePrincipal = eventoFrasePrincipal.replace(numberMatch[0], ' ');
+        if (numberMatch[1]) {
+          // Extrair letra se existir (ex: "20-A" -> "20A", "20B" -> "20B")
+          const letra = numberMatch[0].match(/[-–]?\s*([A-Z])/i);
+          const artigoCompleto = letra ? `${numberMatch[1]}${letra[1]}` : numberMatch[1];
+          
+          if (!artigos.includes(artigoCompleto)) {
+            artigos.push(artigoCompleto);
+            // Remover o artigo processado do texto para análise de parágrafos e incisos
+            eventoFrasePrincipal = eventoFrasePrincipal.replace(numberMatch[0], ' ');
+          }
         }
       }
 
@@ -1869,7 +1887,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       }
     }
 
-    const artigoComAlineaPattern = /\bart\.?\s*(\d+)[º°]?\s*[-–]\s*([A-Z])(?:\s*,\s*§\s*(\d+)[º°]?)?(?:\s*,\s*([IVX]+))?/i;
+    // Padrão para artigo com alínea (ex: Art. 20-A, Art. 20B)
+    // Suporta tanto hífen quanto sem hífen: Art. 20-A ou Art. 20A
+    const artigoComAlineaPattern = /\bart\.?\s*(\d+)[º°]?\s*[-–]?\s*([A-Z])(?:\s*,\s*§\s*(\d+)[º°]?)?(?:\s*,\s*([IVX]+))?/i;
     const alineaMatch = artigoComAlineaPattern.exec(textoProcessado);
 
     if (alineaMatch) {
@@ -1878,8 +1898,9 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       const paragrafo = alineaMatch[3];
       const inciso = alineaMatch[4];
 
+      // Normalizar para formato sem hífen: 20A em vez de 20-A
       resultados.push({
-        artigo: `${artigo}-${alinea}`,
+        artigo: `${artigo}${alinea}`,
         paragrafo,
         inciso,
         origem: {
@@ -1891,17 +1912,18 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     // Padrão para remissão de artigo com parágrafo e inciso
-    // Ex: "art. 231, § 8º, I"
-    const artigoComParagrafoIncisoPattern = /\bart\.?\s*(\d+)[º°]?(?:\s*,\s*§\s*(\d+)[º°]?)?(?:\s*,\s*([IVX]+))?/i;
+    // Ex: "art. 231, § 8º, I" ou "art. 20-A, § 2º, I"
+    const artigoComParagrafoIncisoPattern = /\bart\.?\s*(\d+)[º°]?(?:\s*[-–]?\s*([A-Z]))?(?:\s*,\s*§\s*(\d+)[º°]?)?(?:\s*,\s*([IVX]+))?/i;
     const complexMatch = artigoComParagrafoIncisoPattern.exec(textoProcessado);
 
     if (complexMatch) {
       const artigo = complexMatch[1];
-      const paragrafo = complexMatch[2];
-      const inciso = complexMatch[3];
+      const alinea = complexMatch[2];
+      const paragrafo = complexMatch[3];
+      const inciso = complexMatch[4];
 
       resultados.push({
-        artigo,
+        artigo: alinea ? `${artigo}${alinea}` : artigo,
         paragrafo,
         inciso,
         origem: {
@@ -1913,16 +1935,17 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     // Padrão para remissão de artigo com parágrafo
-    // Ex: "Art. 2º, § 2º"
-    const artigoComParagrafoPattern = /\bart\.?\s*(\d+)[º°]?(?:\s*,\s*§\s*(\d+)[º°]?)/i;
+    // Ex: "Art. 2º, § 2º" ou "Art. 20-A, § 2º"
+    const artigoComParagrafoPattern = /\bart\.?\s*(\d+)[º°]?(?:\s*[-–]?\s*([A-Z]))?(?:\s*,\s*§\s*(\d+)[º°]?)/i;
     const paragMatch = artigoComParagrafoPattern.exec(textoProcessado);
 
     if (paragMatch) {
       const artigo = paragMatch[1];
-      const paragrafo = paragMatch[2];
+      const alinea = paragMatch[2];
+      const paragrafo = paragMatch[3];
 
       resultados.push({
-        artigo,
+        artigo: alinea ? `${artigo}${alinea}` : artigo,
         paragrafo,
         origem: {
           text: paragMatch[0]
@@ -1933,16 +1956,17 @@ export class ViewTextPage implements OnInit, AfterViewInit {
     }
 
     // Padrão para artigo único sem parágrafo ou inciso
-    // Ex: "Art. 123"
-    const artigoSimplesPattern = /\bart\.?\s*(\d+)[º°]?/i;
+    // Ex: "Art. 123" ou "Art. 20-A" ou "Art. 20B"
+    const artigoSimplesPattern = /\bart\.?\s*(\d+)[º°]?(?:\s*[-–]?\s*([A-Z]))?/i;
     const simplesMatch = artigoSimplesPattern.exec(textoProcessado);
 
     if (simplesMatch) {
       const artigo = simplesMatch[1];
       const alinea = simplesMatch[2];
 
+      // Normalizar para formato sem hífen: 20A em vez de 20-A
       resultados.push({
-        artigo: alinea ? `${artigo}-${alinea}` : artigo,
+        artigo: alinea ? `${artigo}${alinea}` : artigo,
         origem: {
           text: simplesMatch[0]
         }
@@ -2018,9 +2042,11 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
   // Identifica o elemento específico de um parágrafo ou inciso
   findElementoEspecifico(artigoId: string, paragrafo?: string, inciso?: string): HTMLElement | null {
+    // Normalizar o artigoId preservando letras (ex: "20-A" -> "20A")
+    const artigoNormalizado = this.normalizeNumero(artigoId);
 
-    // Gerar uma chave única para o cache
-    const cacheKey = `artigo-${artigoId}${paragrafo ? `-p${paragrafo}` : ''}${inciso ? `-i${inciso}` : ''}`;
+    // Gerar uma chave única para o cache usando o artigo normalizado
+    const cacheKey = `artigo-${artigoNormalizado}${paragrafo ? `-p${paragrafo}` : ''}${inciso ? `-i${inciso}` : ''}`;
 
     try {
       // Verificar se o elemento já está em cache
@@ -2032,8 +2058,8 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       // Em caso de erro, continuar com a busca normal
     }
 
-    // Primeiro, vamos buscar o artigo diretamente na estrutura de dados
-    const artigoObj = this.findArtigoByNumero(artigoId);
+    // Primeiro, vamos buscar o artigo diretamente na estrutura de dados usando o artigo normalizado
+    const artigoObj = this.findArtigoByNumero(artigoNormalizado);
     if (!artigoObj) {
       return null;
     }
