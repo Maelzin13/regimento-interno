@@ -1422,7 +1422,7 @@ export class ViewTextLimitPage implements OnInit, AfterViewInit {
   }
 
   async openPdfDirectly(pdfName: string) {
-    const url = `/pdf-viewer/${pdfName}?remote=false`;
+    const url = `/pdf-viewer/${pdfName}`;
     window.location.href = url;
   }
 

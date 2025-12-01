@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PdfViewerService {
   private pdfBasePath = '/assets/docs/';
-  private remotePdfBasePath = '/assets/docs/';
   
   private pdfFiles = {
     'esquemas': 'esquemas.pdf',
@@ -18,8 +15,7 @@ export class PdfViewerService {
 
   constructor(
     private sanitizer: DomSanitizer,
-    private platform: Platform,
-    private http: HttpClient
+    private platform: Platform
   ) {}
 
   /**
@@ -37,75 +33,47 @@ export class PdfViewerService {
   /**
    * Obtém o URL do PDF
    * @param pdfName Nome do PDF (esquemas ou resumos)
-   * @param useRemote Se true, usa o URL remoto em vez do local
    * @returns URL seguro para o PDF
    */
-  getPdfUrl(pdfName: string, useRemote: boolean = false): SafeResourceUrl {
+  getPdfUrl(pdfName: string): SafeResourceUrl {
     const fileName = this.pdfFiles[pdfName as keyof typeof this.pdfFiles];
     if (!fileName) {
       throw new Error(`PDF não encontrado: ${pdfName}`);
     }
     
-    const basePath = useRemote ? this.remotePdfBasePath : this.pdfBasePath;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(basePath + fileName);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.pdfBasePath + fileName);
   }
 
   /**
    * Obtém o URL do PDF como string
    * @param pdfName Nome do PDF (esquemas ou resumos)
-   * @param useRemote Se true, usa o URL remoto em vez do local
    * @returns URL como string
    */
-  getPdfUrlAsString(pdfName: string, useRemote: boolean = false): string {
+  getPdfUrlAsString(pdfName: string): string {
     const fileName = this.pdfFiles[pdfName as keyof typeof this.pdfFiles];
     if (!fileName) {
       throw new Error(`PDF não encontrado: ${pdfName}`);
     }
     
-    const basePath = useRemote ? this.remotePdfBasePath : this.pdfBasePath;
-    return basePath + fileName;
+    return this.pdfBasePath + fileName;
   }
 
   /**
    * Carrega o PDF como blob e retorna uma URL de objeto
    * @param pdfName Nome do PDF (esquemas ou resumos)
-   * @param useRemote Se true, usa o URL remoto em vez do local
    * @returns Promise<string> URL de objeto do blob
    */
-  async getPdfAsBlobUrl(pdfName: string, useRemote: boolean = false): Promise<string> {
+  async getPdfAsBlobUrl(pdfName: string): Promise<string> {
     try {
-      const url = this.getPdfUrlAsString(pdfName, useRemote);
+      const url = this.getPdfUrlAsString(pdfName);
       
-      // Se estiver no Capacitor, usar fetch nativo
-      if (this.isCapacitor()) {
-        return this.loadPdfWithFetch(url);
-      }
-      
-      // Configurações para ambiente web
-      const options: any = {
-        responseType: 'blob',
-        observe: 'response'
-      };
-      
-      const response: any = await firstValueFrom(this.http.get(url, options));
-      
-      if (response.status !== 200 || !response.body) {
-        throw new Error(`Erro ao carregar PDF: ${response.status}`);
-      }
-      
-      // Verificar se o tipo de conteúdo é PDF
-      const contentType = response.headers.get('content-type');
-      
-      if (contentType && !contentType.includes('application/pdf') && !contentType.includes('application/octet-stream')) {}
-      // Criar URL de objeto do blob
-      const blob = new Blob([response.body], { type: 'application/pdf' });
-      const blobUrl = URL.createObjectURL(blob);
-      return blobUrl;
+      // Usar fetch nativo (funciona tanto no Capacitor quanto no web)
+      return this.loadPdfWithFetch(url);
       
     } catch (error) {
       console.error('Erro ao carregar PDF como blob:', error);
       
-      return this.getPdfAsBlobUrlAlternative(pdfName, useRemote);
+      return this.getPdfAsBlobUrlAlternative(pdfName);
     }
   }
 
@@ -138,11 +106,11 @@ export class PdfViewerService {
   }
 
   /**
-   * Método alternativo para carregar PDF no Capacitor
+   * Método alternativo para carregar PDF
    */
-  private async getPdfAsBlobUrlAlternative(pdfName: string, useRemote: boolean = false): Promise<string> {
+  private async getPdfAsBlobUrlAlternative(pdfName: string): Promise<string> {
     try {
-      const url = this.getPdfUrlAsString(pdfName, useRemote);
+      const url = this.getPdfUrlAsString(pdfName);
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -155,37 +123,18 @@ export class PdfViewerService {
       
     } catch (error) {
       console.error('Erro no método alternativo:', error);
-      throw new Error('Não foi possível carregar o PDF no dispositivo móvel.');
+      throw new Error('Não foi possível carregar o PDF.');
     }
   }
 
   /**
-   * Verifica se o PDF existe
+   * Verifica se o PDF existe na lista de PDFs disponíveis
    * @param pdfName Nome do PDF (esquemas ou resumos)
-   * @param useRemote Se true, verifica o URL remoto em vez do local
-   * @returns Promise<boolean> que resolve para true se o PDF existe
+   * @returns Promise<boolean> que resolve para true se o PDF está na lista
    */
-  async checkPdfExists(pdfName: string, useRemote: boolean = false): Promise<boolean> {
-    try {
-      const url = this.getPdfUrlAsString(pdfName, useRemote);
-      
-      // Para URLs remotas, podemos fazer uma solicitação HEAD para verificar se o arquivo existe
-      if (useRemote) {
-        const response = await firstValueFrom(this.http.head(url, { observe: 'response' }));
-        return response.status === 200;
-      } 
-      
-      // Para URLs locais, tentamos carregar o arquivo
-      const response = await firstValueFrom(this.http.get(url, { 
-        responseType: 'blob',
-        observe: 'response'
-      }));
-      
-      return response.status === 200 && response.body?.type === 'application/pdf';
-    } catch (error) {
-      console.error('Erro ao verificar PDF:', error);
-      return false;
-    }
+    async checkPdfExists(pdfName: string): Promise<boolean> {
+    // Verifica se o PDF está na lista de PDFs disponíveis
+    return pdfName in this.pdfFiles;
   }
 
   /**
@@ -202,16 +151,14 @@ export class PdfViewerService {
   /**
    * Abre o PDF diretamente em uma nova janela/aba
    * @param pdfName Nome do PDF (esquemas ou resumos)
-   * @param useRemote Se true, usa o URL remoto em vez do local
    */
-  openPdfInNewTab(pdfName: string, useRemote: boolean = false): void {
+  openPdfInNewTab(pdfName: string): void {
     const fileName = this.pdfFiles[pdfName as keyof typeof this.pdfFiles];
     if (!fileName) {
       throw new Error(`PDF não encontrado: ${pdfName}`);
     }
     
-    const basePath = useRemote ? this.remotePdfBasePath : this.pdfBasePath;
-    window.open(basePath + fileName, '_blank');
+    window.open(this.pdfBasePath + fileName, '_blank');
   }
 
   /**

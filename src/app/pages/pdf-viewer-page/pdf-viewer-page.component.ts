@@ -14,7 +14,6 @@ import { PdfViewerComponent } from '../../components/pdf-viewer/pdf-viewer.compo
 export class PdfViewerPageComponent implements OnInit {
   pdfName: string = '';
   pageTitle: string = '';
-  useRemoteUrl: boolean = true; // Por padrão, usar URLs remotas
 
   constructor(
     private router: Router,
@@ -28,20 +27,6 @@ export class PdfViewerPageComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.pdfName = params['name'];
       this.setPageTitle();
-    });
-
-    // Verificar se deve usar URLs locais ou remotas
-    this.route.queryParams.subscribe(params => {
-      if (params['remote'] !== undefined) {
-        this.useRemoteUrl = params['remote'] === 'true';
-      }
-      
-      // Mostrar toast informativo
-      if (this.useRemoteUrl) {
-        this.showToast('Carregando PDF do servidor remoto...');
-      } else {
-        this.showToast('Carregando PDF local...');
-      }
     });
   }
 

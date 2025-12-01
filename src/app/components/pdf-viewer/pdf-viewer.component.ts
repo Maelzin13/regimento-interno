@@ -14,7 +14,6 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 })
 export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() pdfName: string = '';
-  @Input() useRemoteUrl: boolean = false;
   
   pdfUrl: SafeResourceUrl | null = null;
   pdfSrc: string | null = null; // Fonte do PDF como string ou blob URL
@@ -52,8 +51,7 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['pdfName'] && !changes['pdfName'].firstChange) || 
-        (changes['useRemoteUrl'] && !changes['useRemoteUrl'].firstChange)) {
+    if (changes['pdfName'] && !changes['pdfName'].firstChange) {
       this.loadPdf();
     }
   }
@@ -91,27 +89,15 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
     
     try {
       // Verificar se o PDF existe
-      const pdfExists = await this.pdfViewerService.checkPdfExists(this.pdfName, this.useRemoteUrl);
+      const pdfExists = await this.pdfViewerService.checkPdfExists(this.pdfName);
       
       if (!pdfExists) {
-        console.warn(`PDF não encontrado: ${this.pdfName}, remoto: ${this.useRemoteUrl}`);
-        
-        // Se estamos usando URL local, tentar URL remota
-        if (!this.useRemoteUrl) {
-          const remoteExists = await this.pdfViewerService.checkPdfExists(this.pdfName, true);
-          
-          if (remoteExists) {
-            this.useRemoteUrl = true;
-          } else {
-            throw new Error('PDF não encontrado localmente nem remotamente.');
-          }
-        } else {
-          throw new Error('PDF não encontrado no servidor remoto.');
-        }
+        console.warn(`PDF não encontrado: ${this.pdfName}`);
+        throw new Error('PDF não encontrado.');
       }
       
       // Carregar PDF como blob e obter URL de objeto
-      this.currentBlobUrl = await this.pdfViewerService.getPdfAsBlobUrl(this.pdfName, this.useRemoteUrl);
+      this.currentBlobUrl = await this.pdfViewerService.getPdfAsBlobUrl(this.pdfName);
       this.pdfSrc = this.currentBlobUrl;
       
       // Ajustar escala para dispositivos móveis
@@ -146,7 +132,6 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
       error: error,
       pdfSrc: this.pdfSrc,
       pdfName: this.pdfName,
-      useRemoteUrl: this.useRemoteUrl,
       isMobile: this.isMobile
     });
     
@@ -160,12 +145,8 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
     // Mostrar mensagem de erro
     this.showErrorToast('Erro ao renderizar o PDF. Tentando alternativa...');
     
-    // Tentar usar URL remota se estiver usando local
-    if (!this.useRemoteUrl && this.retryCount < 1) {
-      this.retryCount++;
-      this.useRemoteUrl = true;
-      this.loadPdf();
-    } else if (this.retryCount < 2) {
+    // Tentar método alternativo
+    if (this.retryCount < 2) {
       this.retryCount++;
       this.tryAlternativeMethod();
     }
@@ -177,7 +158,7 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
   private async tryAlternativeMethod(): Promise<void> {
     try {
       // Tentar carregar diretamente como URL
-      this.pdfSrc = this.pdfViewerService.getPdfUrlAsString(this.pdfName, this.useRemoteUrl);
+      this.pdfSrc = this.pdfViewerService.getPdfUrlAsString(this.pdfName);
       
       // Aguardar um pouco para ver se carrega
       setTimeout(() => {
@@ -193,8 +174,6 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   retryLoading(): void {
-    // Alternar entre local e remoto para tentar diferentes fontes
-    this.useRemoteUrl = !this.useRemoteUrl;
     this.retryCount++;
     this.loadPdf();
   }
@@ -239,6 +218,6 @@ export class PdfViewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   openInNewTab(): void {
-    this.pdfViewerService.openPdfInNewTab(this.pdfName, this.useRemoteUrl);
+    this.pdfViewerService.openPdfInNewTab(this.pdfName);
   }
 } 

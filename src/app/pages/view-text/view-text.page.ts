@@ -284,8 +284,36 @@ export class ViewTextPage implements OnInit, AfterViewInit {
       for (const capitulo of titulo.capitulos || []) {
         for (const secao of capitulo.secaos || []) {
           for (const artigo of secao.artigos || []) {
-            const numeroNorm = this.normalizeNumero(artigo?.numero);
-            if (numeroNorm) this.artigoByNumero.set(numeroNorm, { id: artigo.id, ref: artigo });
+            // Primeiro, tenta usar o campo numero
+            let numeroNorm = this.normalizeNumero(artigo?.numero);
+            
+            // Se o campo numero não tem letra, tenta extrair do conteúdo
+            // IMPORTANTE: Usar case-insensitive para funcionar no iOS
+            if (numeroNorm && !/[A-Z]$/i.test(numeroNorm) && artigo?.conteudo) {
+              // Extrai número completo do conteúdo (ex: "Art. 20-A" -> "20A", "Art. 20-e" -> "20E")
+              // Case-insensitive para capturar letras minúsculas também
+              const conteudoMatch = artigo.conteudo.match(/\bArt\.?\s*(\d+)[º°]?\s*[-–]?\s*([A-Za-z])?/i);
+              if (conteudoMatch) {
+                const numBase = conteudoMatch[1];
+                const letra = conteudoMatch[2];
+                if (letra) {
+                  // Sempre converter para maiúscula para consistência
+                  numeroNorm = `${numBase}${letra.toUpperCase()}`;
+                } else {
+                  numeroNorm = numBase;
+                }
+              }
+            }
+            
+            if (numeroNorm) {
+              // CRÍTICO: Sempre armazenar a chave completa primeiro (ex: "50C" ou "50")
+              // Isso garante que cada artigo seja acessível pela sua chave exata
+              this.artigoByNumero.set(numeroNorm, { id: artigo.id, ref: artigo });
+              
+              // IMPORTANTE: NÃO armazenar fallback sem letra para artigos com letra
+              // Isso evita conflitos: se existe "50" e "50C", ambos devem estar no índice
+              // mas "50" não deve apontar para "50C" e vice-versa
+            }
           }
         }
       }
@@ -381,9 +409,38 @@ export class ViewTextPage implements OnInit, AfterViewInit {
 
   private checkArtigoMatchByContent(artigoContent: string, q: string): boolean {
     if (!artigoContent || !q) return false;
-    // Suporta artigos com letras: Art. 20-A, Art. 20B, etc.
-    const re = new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(q)}(?:[º°]|[-–]?[A-Z])?\\b`, 'i');
-    return re.test(artigoContent);
+    
+    // Normaliza a query para remover hífens e espaços, mas preserva letras
+    const qNormalized = q.replace(/-/g, '').replace(/\s+/g, '').toUpperCase();
+    
+    // Se a query tem letra (ex: "20A" ou "20E"), busca exata com letra
+    // IMPORTANTE: Usar case-insensitive para funcionar no iOS
+    if (/[A-Z]$/.test(qNormalized)) {
+      const numBase = qNormalized.replace(/[A-Z]$/, '');
+      const letra = qNormalized.match(/[A-Z]$/)?.[0];
+      
+      // Busca por "Art. 20-A", "Art. 20A", "Art. 20 A", "Art. 20-a", "Art. 20a", etc.
+      // Case-insensitive para funcionar no iOS
+      const patterns = [
+        `\\bArt\\.?\\s*${numBase}[º°]?\\s*[-–]?\\s*${letra}\\b`,  // Art. 20-A ou Art. 20A
+        `\\bArt\\.?\\s*${numBase}[º°]?\\s*[-–]\\s*${letra}\\b`,   // Art. 20 - A (com espaços)
+        `\\bArt\\.?\\s*${numBase}[º°]?\\s*${letra}\\b`            // Art. 20A (sem hífen)
+      ];
+      
+      // Testa todos os padrões
+      for (const pattern of patterns) {
+        const re = new RegExp(pattern, 'i'); // Case-insensitive
+        if (re.test(artigoContent)) {
+          return true;
+        }
+      }
+      
+      return false;
+    } else {
+      // Se não tem letra, busca exata do número
+      const re = new RegExp(`\\bArt\\.?\\s*${this.escapeRegExp(qNormalized)}[º°]?\\b`, 'i');
+      return re.test(artigoContent);
+    }
   }
 
   async search() {
@@ -599,21 +656,85 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   
     if (!numero) { this.presentToast('Informe o número do artigo.'); return; }
   
+    // Debug específico para iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const temLetra = /[A-Z]$/.test(numero);
+    
+    if (isIOS) {
+      console.log(`[iOS] Buscando artigo: "${rawQuery}" -> normalizado: "${numero}", temLetra: ${temLetra}`);
+      console.log(`[iOS] Índice tem ${this.artigoByNumero.size} artigos`);
+      console.log(`[iOS] Buscando no índice por: "${numero}"`);
+      
+      // Listar artigos relacionados no índice para debug
+      if (temLetra) {
+        const numBase = numero.replace(/[A-Z]$/, '');
+        const relacionados = Array.from(this.artigoByNumero.keys()).filter(k => k.startsWith(numBase));
+        console.log(`[iOS] Artigos relacionados no índice (começam com "${numBase}"):`, relacionados);
+      }
+    }
+  
     // guarda o contexto para o highlight e força re-render
     this.articleQueryNumero = numero;
     this.contentCache.clear();
   
     this.forceClearHighlights();
   
+    // CRÍTICO: Limpar cache de elementos antes de buscar para evitar resultados antigos
+    this.elementosCache.clear();
+  
     const alvo = this.findArtigoByNumero(numero);
-    if (!alvo) { this.presentToast(`Artigo ${numero} não encontrado`); return; }
+    
+    if (isIOS && !alvo) {
+      console.log(`[iOS] Artigo "${numero}" não encontrado no índice, buscando no conteúdo...`);
+    }
+    
+    // CRÍTICO: Verificar se o artigo encontrado realmente corresponde à busca
+    if (alvo && temLetra) {
+      const artigoNumero = this.normalizeNumero(alvo.numero || '');
+      const artigoConteudo = alvo.conteudo || '';
+      
+      // Verificar se o artigo encontrado realmente tem a letra correta
+      const temLetraNoNumero = /[A-Z]$/.test(artigoNumero);
+      const matchNoConteudo = this.checkArtigoMatchByContent(artigoConteudo, numero);
+      
+      if (!temLetraNoNumero && !matchNoConteudo) {
+        // Artigo encontrado não corresponde à busca, continuar procurando
+        if (isIOS) {
+          console.log(`[iOS] Artigo encontrado (ID ${alvo.id}) não corresponde à busca "${numero}", continuando...`);
+        }
+        
+        // Buscar novamente, mas desta vez ignorando o primeiro resultado
+        const alvoCorreto = this.findArtigoByNumero(numero, alvo.id);
+        if (alvoCorreto) {
+          if (isIOS) {
+            console.log(`[iOS] Artigo correto encontrado: ID ${alvoCorreto.id}`);
+          }
+          this.searchResults = [{ type: 'artigo', id: alvoCorreto.id, content: '', path: '', position: alvoCorreto.id }];
+          this.totalResults = 1; this.currentResultIndex = 0;
+          this.scrollToArtigo(numero, undefined, undefined, false);
+          setTimeout(() => this.forceHighlightsRefresh(), 250);
+          return;
+        }
+      }
+    }
+    
+    if (!alvo) { 
+      // Formatar mensagem de erro com o formato original da busca
+      const formatoOriginal = rawQuery.replace(/^(art\.?|artigo|arts\.?|artigos)\s*/i, '').trim();
+      this.presentToast(`Artigo ${formatoOriginal} não encontrado`); 
+      return; 
+    }
+  
+    if (isIOS) {
+      console.log(`[iOS] Artigo encontrado: ID ${alvo.id}, número: "${this.normalizeNumero(alvo.numero || '')}", conteúdo: "${alvo.conteudo?.substring(0, 50)}..."`);
+    }
   
     this.searchResults = [{ type: 'artigo', id: alvo.id, content: '', path: '', position: alvo.id }];
     this.totalResults = 1; this.currentResultIndex = 0;
   
     this.scrollToArtigo(numero, undefined, undefined, false);
   
-    // dá um “tapinha” para garantir o estilo do <mark>
+    // dá um "tapinha" para garantir o estilo do <mark>
     setTimeout(() => this.forceHighlightsRefresh(), 250);
   }  
 
@@ -1155,93 +1276,108 @@ export class ViewTextPage implements OnInit, AfterViewInit {
         this.content.scrollToPoint(0, scrollY, 0);
 
         // Garantir que o elemento está visível na página
-        setTimeout(() => {
-          // Usar getBoundingClientRect para obter a posição atual do elemento
-          const rect = element.getBoundingClientRect();
-
-          // Calcular a posição para centralizar o elemento na tela
-          const windowHeight = window.innerHeight;
-          const elementHeight = rect.height;
-          const offsetTop = rect.top + window.pageYOffset;
-
-          // Centralizar o elemento na tela, com um pequeno ajuste para cima
-          // para garantir que o elemento fique na parte superior central da tela
-          const scrollPosition = offsetTop - (windowHeight * 0.3); // Posiciona a 30% do topo da tela
-
-          // Rolar para a posição calculada com animação suave
-          this.content.scrollToPoint(0, scrollPosition, 500);
-
-          // Remover qualquer destaque anterior
-          const destaques = document.querySelectorAll('.flash-highlight, .elemento-destacado, .artigo-destacado, .elemento-especifico-highlight');
-          destaques.forEach(el => {
-            el.classList.remove('flash-highlight', 'elemento-destacado', 'artigo-destacado', 'elemento-especifico-highlight');
-          });
-
-          // Aplicar destaque visual mais forte
-          element.classList.add('flash-highlight');
-
-          // Adicionar classe específica para o tipo de elemento
-          if (paragrafo || inciso) {
-            element.classList.add('elemento-especifico-highlight');
-            element.classList.add('elemento-destacado'); // Nova classe para destaque persistente
-
-            // Adicionar uma borda para destacar melhor o elemento específico
-            element.style.border = '2px solid #3880ff';
-            element.style.borderRadius = '4px';
-            element.style.padding = '8px';
-            element.style.backgroundColor = 'rgba(56, 128, 255, 0.1)';
-          } else {
-            element.classList.add('artigo-destacado'); // Nova classe para destaque de artigos
-          }
-
-          // Remover classes de destaque após um tempo
+        // Usar requestAnimationFrame para melhor performance no iOS
+        requestAnimationFrame(() => {
           setTimeout(() => {
-            element.classList.remove('flash-highlight');
+            // Usar getBoundingClientRect para obter a posição atual do elemento
+            const rect = element.getBoundingClientRect();
 
-            // Manter o destaque por mais tempo para elementos específicos
-            setTimeout(() => {
-              element.classList.remove('elemento-especifico-highlight');
-              element.classList.remove('elemento-destacado');
-              element.classList.remove('artigo-destacado');
-
-              // Remover estilos inline
-              element.style.border = '';
-              element.style.borderRadius = '';
-              element.style.padding = '';
-              element.style.backgroundColor = '';
-            }, 5000);
-          }, 2000);
-
-          // Mostrar o indicador de retorno flutuante sempre que navegamos por remissão
-          if (showReturnOption) {
-            // Limpar qualquer timeout existente (não vamos mais usar timeout)
-            if (this.showReturnIndicatorTimeout) {
-              clearTimeout(this.showReturnIndicatorTimeout);
-              this.showReturnIndicatorTimeout = null;
+            // Calcular a posição para centralizar o elemento na tela
+            const windowHeight = window.innerHeight;
+            const elementHeight = rect.height;
+            
+            // iOS: usar scrollIntoView com smooth behavior para melhor compatibilidade
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+            
+            if (isIOS) {
+              // No iOS, usar scrollIntoView que funciona melhor
+              element.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'nearest'
+              });
+            } else {
+              // Para outras plataformas, usar o método original
+              const offsetTop = rect.top + window.pageYOffset;
+              // Centralizar o elemento na tela, com um pequeno ajuste para cima
+              // para garantir que o elemento fique na parte superior central da tela
+              const scrollPosition = offsetTop - (windowHeight * 0.3); // Posiciona a 30% do topo da tela
+              // Rolar para a posição calculada com animação suave
+              this.content.scrollToPoint(0, scrollPosition, 500);
             }
 
-            // Verificar novamente após um pequeno delay para garantir que o histórico foi atualizado
+            // Remover qualquer destaque anterior
+            const destaques = document.querySelectorAll('.flash-highlight, .elemento-destacado, .artigo-destacado, .elemento-especifico-highlight');
+            destaques.forEach(el => {
+              el.classList.remove('flash-highlight', 'elemento-destacado', 'artigo-destacado', 'elemento-especifico-highlight');
+            });
+
+            // Aplicar destaque visual mais forte
+            element.classList.add('flash-highlight');
+
+            // Adicionar classe específica para o tipo de elemento
+            if (paragrafo || inciso) {
+              element.classList.add('elemento-especifico-highlight');
+              element.classList.add('elemento-destacado'); // Nova classe para destaque persistente
+
+              // Adicionar uma borda para destacar melhor o elemento específico
+              element.style.border = '2px solid #3880ff';
+              element.style.borderRadius = '4px';
+              element.style.padding = '8px';
+              element.style.backgroundColor = 'rgba(56, 128, 255, 0.1)';
+            } else {
+              element.classList.add('artigo-destacado'); // Nova classe para destaque de artigos
+            }
+
+            // Remover classes de destaque após um tempo
             setTimeout(() => {
-              // Mostrar o botão sempre que houver histórico de navegação
-              // O botão permanecerá visível até que o usuário volte à origem
-              this.showReturnIndicator = this.currentHistoryIndex > 0;
-              
-              // Forçar detecção de mudanças para OnPush
-              this.cdr.detectChanges();
-            }, 50);
+              element.classList.remove('flash-highlight');
+
+              // Manter o destaque por mais tempo para elementos específicos
+              setTimeout(() => {
+                element.classList.remove('elemento-especifico-highlight');
+                element.classList.remove('elemento-destacado');
+                element.classList.remove('artigo-destacado');
+
+                // Remover estilos inline
+                element.style.border = '';
+                element.style.borderRadius = '';
+                element.style.padding = '';
+                element.style.backgroundColor = '';
+              }, 5000);
+            }, 2000);
+          }, 100);
+        });
+
+        // Mostrar o indicador de retorno flutuante sempre que navegamos por remissão
+        if (showReturnOption) {
+          // Limpar qualquer timeout existente (não vamos mais usar timeout)
+          if (this.showReturnIndicatorTimeout) {
+            clearTimeout(this.showReturnIndicatorTimeout);
+            this.showReturnIndicatorTimeout = null;
           }
 
-          // Feedback visual para o usuário
-          // Formatar o artigo para exibição (adicionar hífen antes da letra se houver)
-          const artigoFormatado = artigoLimpo.match(/^(\d+)([A-Z])?$/i) 
-            ? artigoLimpo.replace(/^(\d+)([A-Z])$/i, '$1-$2') 
-            : artigoLimpo;
-          let mensagem = `Navegando para o Artigo ${artigoFormatado}`;
-          if (paragrafo) mensagem += `, § ${paragrafo}`;
-          if (inciso) mensagem += `, ${inciso}`;
+          // Verificar novamente após um pequeno delay para garantir que o histórico foi atualizado
+          setTimeout(() => {
+            // Mostrar o botão sempre que houver histórico de navegação
+            // O botão permanecerá visível até que o usuário volte à origem
+            this.showReturnIndicator = this.currentHistoryIndex > 0;
+            
+            // Forçar detecção de mudanças para OnPush
+            this.cdr.detectChanges();
+          }, 50);
+        }
 
-          this.presentToast(mensagem);
-        }, 100);
+        // Feedback visual para o usuário
+        // Formatar o artigo para exibição (adicionar hífen antes da letra se houver)
+        const artigoFormatado = artigoLimpo.match(/^(\d+)([A-Z])?$/i) 
+          ? artigoLimpo.replace(/^(\d+)([A-Z])$/i, '$1-$2') 
+          : artigoLimpo;
+        let mensagem = `Navegando para o Artigo ${artigoFormatado}`;
+        if (paragrafo) mensagem += `, § ${paragrafo}`;
+        if (inciso) mensagem += `, ${inciso}`;
+
+        this.presentToast(mensagem);
       } else {
         // Formatar o artigo para exibição
         const artigoFormatado = artigoLimpo.match(/^(\d+)([A-Z])?$/i) 
@@ -1253,10 +1389,130 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   // Novo método para encontrar artigo diretamente na estrutura de dados
-  private findArtigoByNumero(numeroArtigo: string): any {
+  private findArtigoByNumero(numeroArtigo: string, ignorarId?: number): any {
     const key = this.normalizeNumero(numeroArtigo);
-    const hit = this.artigoByNumero.get(key);
-    return hit?.ref ?? null;
+    const temLetra = /[A-Z]$/.test(key);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    
+    if (isIOS) {
+      console.log(`[iOS] findArtigoByNumero: entrada="${numeroArtigo}", normalizado="${key}", temLetra=${temLetra}`);
+    }
+    
+    // CRÍTICO: Se a busca tem letra (ex: "50C"), garantir que encontre APENAS artigos com essa letra específica
+    // NUNCA fazer fallback para artigo sem letra quando a busca tem letra
+    
+    // Primeira tentativa: busca direta no índice pela chave exata
+    let hit = this.artigoByNumero.get(key);
+    if (hit) {
+      // Verificar se o artigo encontrado realmente tem a letra correta
+      if (temLetra) {
+        const artigoNumero = this.normalizeNumero(hit.ref?.numero || '');
+        const artigoConteudo = hit.ref?.conteudo || '';
+        
+        // Se o artigo encontrado não tem letra, mas a busca tem, continuar procurando
+        if (!/[A-Z]$/.test(artigoNumero) && !this.checkArtigoMatchByContent(artigoConteudo, key)) {
+          if (isIOS) {
+            console.log(`[iOS] Artigo "${key}" encontrado no índice mas sem letra, continuando busca...`);
+          }
+          hit = undefined; // Forçar busca no conteúdo
+        } else {
+          if (isIOS) {
+            console.log(`[iOS] Artigo encontrado no índice: "${key}" -> ID ${hit.id}`);
+          }
+          return hit.ref;
+        }
+      } else {
+        if (isIOS) {
+          console.log(`[iOS] Artigo encontrado no índice: "${key}" -> ID ${hit.id}`);
+        }
+        return hit.ref;
+      }
+    }
+    
+    if (isIOS) {
+      console.log(`[iOS] Artigo "${key}" não encontrado no índice, buscando no conteúdo...`);
+      // Listar algumas chaves do índice para debug
+      const keys = Array.from(this.artigoByNumero.keys()).filter(k => k.startsWith(key.replace(/[A-Z]$/, ''))).slice(0, 5);
+      console.log(`[iOS] Chaves relacionadas no índice:`, keys);
+    }
+    
+    // Segunda tentativa: busca no conteúdo dos artigos se não encontrou no índice
+    // Isso é útil quando o campo numero não está preenchido corretamente
+    if (!this.book?.titulos) return null;
+    
+    let encontrados = 0;
+    let melhorMatch: any = null;
+    
+    for (const titulo of this.book.titulos) {
+      for (const capitulo of titulo.capitulos || []) {
+        for (const secao of capitulo.secaos || []) {
+          for (const artigo of secao.artigos || []) {
+            encontrados++;
+            
+            // Se a busca tem letra, garantir que encontre APENAS artigos com a mesma letra
+            if (temLetra) {
+              // Verificar se o artigo tem a letra correta
+              const artigoNumero = this.normalizeNumero(artigo?.numero || '');
+              const temLetraNoNumero = /[A-Z]$/.test(artigoNumero);
+              
+              // Se o artigo tem letra no número, verificar se corresponde
+              if (temLetraNoNumero && artigoNumero === key) {
+                // Ignorar se for o ID que estamos ignorando
+                if (ignorarId && artigo.id === ignorarId) {
+                  continue;
+                }
+                
+                if (isIOS) {
+                  console.log(`[iOS] Artigo encontrado no conteúdo (por número): ID ${artigo.id}, número: "${artigoNumero}"`);
+                }
+                return artigo; // Match exato por número
+              }
+              
+              // Verificar no conteúdo se corresponde exatamente
+              if (this.checkArtigoMatchByContent(artigo.conteudo, key)) {
+                // Ignorar se for o ID que estamos ignorando
+                if (ignorarId && artigo.id === ignorarId) {
+                  continue;
+                }
+                
+                // Verificar se realmente tem a letra correta no conteúdo
+                const conteudoMatch = artigo.conteudo.match(/\bArt\.?\s*(\d+)[º°]?\s*[-–]?\s*([A-Za-z])?/i);
+                if (conteudoMatch) {
+                  const numBase = conteudoMatch[1];
+                  const letra = conteudoMatch[2]?.toUpperCase();
+                  const numeroCompleto = letra ? `${numBase}${letra}` : numBase;
+                  
+                  if (numeroCompleto === key) {
+                    if (isIOS) {
+                      console.log(`[iOS] Artigo encontrado no conteúdo (match exato): ID ${artigo.id}, conteúdo: "${artigo.conteudo?.substring(0, 50)}..."`);
+                    }
+                    return artigo; // Match exato
+                  }
+                }
+              }
+            } else {
+              // Se não tem letra, busca normal
+              if (this.checkArtigoMatchByContent(artigo.conteudo, key)) {
+                // Garantir que o artigo também não tem letra
+                const artigoNumero = this.normalizeNumero(artigo?.numero || '');
+                if (!/[A-Z]$/.test(artigoNumero)) {
+                  if (isIOS) {
+                    console.log(`[iOS] Artigo encontrado no conteúdo: ID ${artigo.id}`);
+                  }
+                  return artigo;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    if (isIOS) {
+      console.log(`[iOS] Nenhum artigo encontrado após verificar ${encontrados} artigos`);
+    }
+    
+    return null;
   }
   
 
@@ -1703,7 +1959,7 @@ export class ViewTextPage implements OnInit, AfterViewInit {
   }
 
   async openPdfDirectly(pdfName: string) {
-    const url = `/pdf-viewer/${pdfName}?remote=false`;
+    const url = `/pdf-viewer/${pdfName}`;
     window.location.href = url;
   }
 
