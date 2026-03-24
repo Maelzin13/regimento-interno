@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 
 @Component({
+  standalone: false,
   selector: 'app-autor',
   templateUrl: './autor.page.html',
   styleUrls: ['./autor.page.scss'],

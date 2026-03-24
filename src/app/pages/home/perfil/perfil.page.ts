@@ -8,6 +8,7 @@ import { ModalController, ToastController, AlertController, LoadingController } 
 import { Router } from '@angular/router';
 
 @Component({
+  standalone: false,
   selector: 'app-perfil',
   templateUrl: './perfil.page.html',
   styleUrls: ['./perfil.page.scss'],

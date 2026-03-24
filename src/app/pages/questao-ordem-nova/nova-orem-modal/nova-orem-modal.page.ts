@@ -8,6 +8,7 @@ import { QuestoesOrdemService } from 'src/app/services/questoes-ordem.service';
 import { QuestoesOremModel } from 'src/app/models/questoesOrem.model';
 
 @Component({
+  standalone: false,
   selector: 'app-nova-orem-modal',
   templateUrl: './nova-orem-modal.page.html',
   styleUrls: ['./nova-orem-modal.page.scss'],

@@ -6,6 +6,7 @@ import { ModalController, NavParams, AlertController, ToastController } from '@i
 import { DetailedUserModel } from 'src/app/models/detailedUserModel';
 
 @Component({
+  standalone: false,
   selector: 'app-user-edit',
   templateUrl: './user-edit.page.html',
   styleUrls: ['./user-edit.page.scss'],

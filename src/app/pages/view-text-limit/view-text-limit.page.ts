@@ -77,6 +77,7 @@ interface ApiRemissao {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-view-text-limit',
   templateUrl: './view-text-limit.page.html',
   styleUrls: ['./view-text-limit.page.scss'],

@@ -7,6 +7,7 @@ import { EditOredemModalPage } from './edit-oredem-modal/edit-oredem-modal.page'
 import { NovaOremModalPage } from './nova-orem-modal/nova-orem-modal.page';
 
 @Component({
+  standalone: false,
   selector: 'app-questao-ordem-nova',
   templateUrl: './questao-ordem-nova.page.html',
   styleUrls: ['./questao-ordem-nova.page.scss'],

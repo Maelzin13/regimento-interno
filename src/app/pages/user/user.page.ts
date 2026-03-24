@@ -8,6 +8,7 @@ import {
 import { DetailedUserModel } from 'src/app/models/detailedUserModel';
 
 @Component({
+  standalone: false,
   selector: 'app-user',
   templateUrl: './user.page.html',
   styleUrls: ['./user.page.scss'],

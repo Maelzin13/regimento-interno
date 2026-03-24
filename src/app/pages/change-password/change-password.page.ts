@@ -3,6 +3,7 @@ import { NavController, ToastController } from '@ionic/angular';
 import { ChangePasswordService } from 'src/app/services/change-password.service';
 
 @Component({
+  standalone: false,
   selector: 'app-change-password',
   templateUrl: './change-password.page.html',
   styleUrls: ['./change-password.page.scss'],

@@ -9,6 +9,7 @@ type Capitulo = { id: number; texto: string; secoes?: Secao[] };
 type Titulo = { id: number; texto: string; capitulos: Capitulo[] };
 
 @Component({
+  standalone: false,
   selector: 'app-regimento-modal',
   templateUrl: './regimento-modal.component.html',
   styleUrls: ['./regimento-modal.component.scss'],

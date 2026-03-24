@@ -8,6 +8,7 @@ import { QuestoesOrdemService } from 'src/app/services/questoes-ordem.service';
 import { QuestoesOremModel } from 'src/app/models/questoesOrem.model';
 
 @Component({
+  standalone: false,
   selector: 'app-edit-oredem-modal',
   templateUrl: './edit-oredem-modal.page.html',
   styleUrls: ['./edit-oredem-modal.page.scss'],

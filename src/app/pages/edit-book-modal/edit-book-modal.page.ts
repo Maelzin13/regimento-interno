@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { BookService } from 'src/app/services/book.service';
 
 @Component({
+  standalone: false,
   selector: 'app-edit-book-modal',
   templateUrl: './edit-book-modal.page.html',
   styleUrls: ['./edit-book-modal.page.scss'],

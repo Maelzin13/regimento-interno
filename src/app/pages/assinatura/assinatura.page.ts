@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 type Intervalo = 'Mensal' | 'Anual' | 'Free';
 
 @Component({
+  standalone: false,
   selector: 'app-assinatura',
   templateUrl: './assinatura.page.html',
   styleUrls: ['./assinatura.page.scss'],

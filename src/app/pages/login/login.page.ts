@@ -7,6 +7,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { ToastController, LoadingController, NavController } from '@ionic/angular';
 
 @Component({
+  standalone: false,
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],

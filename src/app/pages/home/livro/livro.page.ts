@@ -8,6 +8,7 @@ import { PlansService } from 'src/app/services/plans.service';
 import { DescricaoModalComponent } from 'src/app/Modals/descricao-modal/descricao-modal.component';
 
 @Component({
+  standalone: false,
   selector: 'app-livro',
   templateUrl: './livro.page.html',
   styleUrls: ['./livro.page.scss'],

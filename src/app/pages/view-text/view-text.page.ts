@@ -76,6 +76,7 @@ interface ApiRemissao {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-view-text',
   templateUrl: './view-text.page.html',
   styleUrls: ['./view-text.page.scss'],

@@ -9,6 +9,7 @@ import { NetworkService } from './services/network.service';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 @Component({
+  standalone: false,
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
